@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import requests
+import time
+
 
 '''Basic functions for scraping TocToc.cl
 Some of the html tags of this site are hidden and bs4 is unable to scrap. 
@@ -32,21 +33,14 @@ def get_urls(url):
         url_1 = url_[0]+'pagina='+ str(pagnum)+url_[1]
         pages.append(url_1)
         pagnum += 1
-        url_2 = url_[0]+'pagina='+ str(pagnum)+url_[1]
-        browser.get(url)
+        browser.get(url_1)
+        time.sleep(5)
         html = browser.page_source
-        #html= requests.get(url_2)
         soup = BeautifulSoup(html, "html5lib")
-        try:
-            print(len(soup.find('ul', {'class':'list-calugas'})))
-            counter +=1
-            print(counter)
-            if len(soup.find('ul', {'class':'list-calugas'}))==0 or counter==100:
-                page=False
-        except:
+        if len(soup.find('ul', {'class':'list-calugas'})) ==0:
+            page=False
             counter += 1
-            print(counter)
-            if counter ==10:
+            if counter ==100:
                 page= False
     browser.close()
     browser.quit()
@@ -55,7 +49,7 @@ def get_urls(url):
 
 #Basic search for buildings, given a parameter it search for building within TocToc's database and returns a dictionary
 #with "name of the building": url.
-def base_building_searchp(url):
+def base_building_search(url):
     browser = webdriver.PhantomJS()#chromedriver must be in path or set in the env. var. or in .Chrome(path/to/chromedriver)
     browser.get(url)
     html = browser.page_source
@@ -72,16 +66,22 @@ def base_building_searchp(url):
 
 
 
-#Takes a building's name and its url and returns s dictionary with basic building data
+#Takes a building's name and its url and returns a dictionary with basic building data
 def building_data(url, building_name):
     browser = webdriver.PhantomJS()  # Sacar .exe para mac
     browser.get(url)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
-    nameList = bsObj.find('ul', {'class': 'info_ficha'})#Tags with building data
-
-    # Datos Edificio
+    head_info = bsObj.find('div', {'class':"wrap-hfijo"})
+    #head data
     edificio = {'nombre edificio': building_name}
+    edificio['nombre'] = head_info.find('h1').text
+    edificio['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '')
+    edificio['comuna-region'] = head_info.findAll('h2')[1].text.split(', ')[1]
+    edificio[head_info.find('em').text] = head_info.find('strong').text
+    edificio['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
+    nameList = bsObj.find('ul', {'class': 'info_ficha'})#Tags with building data
+    # bulding data
     for name in nameList.findAll('li'):
         if len(name) == 2:
             edificio[name.contents[0].text] = name.contents[1].text
@@ -93,5 +93,19 @@ def building_data(url, building_name):
     browser.quit()
     return(edificio)
 
-
+def appartment_data(url, building_name):
+    browser = webdriver.PhantomJS()  # Sacar .exe para mac
+    browser.get(url)
+    browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    main_search = bsObj.findAll('div', {'class':'info-modelo'})
+    print(len(main_search))
+    for i in main_search:
+        print('break')
+        #print(i.contents[1].text)
+        print(i.findAll('li'))
+    browser.close()
+    browser.quit()
+    return
 
