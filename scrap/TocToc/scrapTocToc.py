@@ -1,8 +1,12 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
+<<<<<<< HEAD
 import bs4
 
+=======
+import requests
+>>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
 
 '''Basic functions for scraping TocToc.cl
 Some of the html tags of this site are hidden and bs4 is unable to scrap. 
@@ -36,22 +40,46 @@ def get_urls(url):
         url_1 = url_[0]+'pagina='+ str(pagnum)+url_[1]
         pages.append(url_1)
         pagnum += 1
+<<<<<<< HEAD
         browser.get(url_1)
+=======
+        url_2 = url_[0]+'pagina='+ str(pagnum)+url_[1]
+        browser.get(url)
+>>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
         time.sleep(5)
         html = browser.page_source
         soup = BeautifulSoup(html, "html5lib")
+<<<<<<< HEAD
         if len(soup.find('ul', {'class':'list-calugas'})) ==0:
             page = False
             counter += 1
             if counter == 1000:
+=======
+        print(url_2)
+        try:
+            print(len(soup.find('ul', {'class':'list-calugas'})))
+            counter +=1
+            print(counter)
+            if len(soup.find('ul', {'class':'list-calugas'}))==0:
+                page = False
+        except:
+            counter += 1
+            print(counter)
+            if counter ==10:
+>>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
                 page = False
     browser.close()
     browser.quit()
     print(pages)
     return pages
 
+<<<<<<< HEAD
 #Basic search for buildings, given a parameter it search for building within TocToc's database and returns a list
 #with ["name of the building", url, house or apartment].
+=======
+#Basic search for buildings, given a parameter it search for building within TocToc's database and returns a dictionary
+#with "name of the building": url.
+>>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
 def base_building_search(url):
     browser = webdriver.PhantomJS()#chromedriver must be in path or set in the env. var. or in .Chrome(path/to/chromedriver)
     browser.get(url)
