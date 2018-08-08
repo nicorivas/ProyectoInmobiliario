@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import time
 import requests
 
 '''Basic functions for scraping TocToc.cl
@@ -34,20 +35,22 @@ def get_urls(url):
         pagnum += 1
         url_2 = url_[0]+'pagina='+ str(pagnum)+url_[1]
         browser.get(url)
+        time.sleep(5)
         html = browser.page_source
         #html= requests.get(url_2)
         soup = BeautifulSoup(html, "html5lib")
+        print(url_2)
         try:
             print(len(soup.find('ul', {'class':'list-calugas'})))
             counter +=1
             print(counter)
-            if len(soup.find('ul', {'class':'list-calugas'}))==0 or counter==100:
-                page=False
+            if len(soup.find('ul', {'class':'list-calugas'}))==0:
+                page = False
         except:
             counter += 1
             print(counter)
             if counter ==10:
-                page= False
+                page = False
     browser.close()
     browser.quit()
     print(pages)
@@ -55,7 +58,7 @@ def get_urls(url):
 
 #Basic search for buildings, given a parameter it search for building within TocToc's database and returns a dictionary
 #with "name of the building": url.
-def base_building_searchp(url):
+def base_building_search(url):
     browser = webdriver.PhantomJS()#chromedriver must be in path or set in the env. var. or in .Chrome(path/to/chromedriver)
     browser.get(url)
     html = browser.page_source
