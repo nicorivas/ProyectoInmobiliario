@@ -1,12 +1,8 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
-<<<<<<< HEAD
 import bs4
-
-=======
 import requests
->>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
 
 '''Basic functions for scraping TocToc.cl
 Some of the html tags of this site are hidden and bs4 is unable to scrap. 
@@ -40,60 +36,54 @@ def get_urls(url):
         url_1 = url_[0]+'pagina='+ str(pagnum)+url_[1]
         pages.append(url_1)
         pagnum += 1
-<<<<<<< HEAD
         browser.get(url_1)
-=======
         url_2 = url_[0]+'pagina='+ str(pagnum)+url_[1]
         browser.get(url)
->>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
         time.sleep(5)
         html = browser.page_source
         soup = BeautifulSoup(html, "html5lib")
-<<<<<<< HEAD
         if len(soup.find('ul', {'class':'list-calugas'})) ==0:
             page = False
             counter += 1
             if counter == 1000:
-=======
+                page = False
         print(url_2)
         try:
             print(len(soup.find('ul', {'class':'list-calugas'})))
-            counter +=1
+            counter += 1
             print(counter)
-            if len(soup.find('ul', {'class':'list-calugas'}))==0:
+            if len(soup.find('ul', {'class':'list-calugas'})) == 0:
                 page = False
         except:
             counter += 1
             print(counter)
             if counter ==10:
->>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
                 page = False
     browser.close()
     browser.quit()
     print(pages)
     return pages
 
-<<<<<<< HEAD
+
 #Basic search for buildings, given a parameter it search for building within TocToc's database and returns a list
 #with ["name of the building", url, house or apartment].
-=======
+
 #Basic search for buildings, given a parameter it search for building within TocToc's database and returns a dictionary
 #with "name of the building": url.
->>>>>>> 4d4fe0b464a1fd9c20e283e947838a3ce53ced77
+
 def base_building_search(url):
     browser = webdriver.PhantomJS()#chromedriver must be in path or set in the env. var. or in .Chrome(path/to/chromedriver)
     browser.get(url)
     time.sleep(5)
     html = browser.page_source
     soup = BeautifulSoup(html, "html5lib")
-
     lista = []
     links = soup.find('ul', {'class':'list-calugas'})#Tag with list of the names a urls of the buildings
     #print(links)
     for link in links:
-        lista.append([link.h3.text, link.a.get('href'),
+        lista.append([link.h3.text,[link.get('data-latitude'),
+                      link.get('data-longitude')], link.a.get('href'),
                      link.find('li', {'class': 'familia'}).find('span').text.split(' ')[0]]) #gets building's name, url and type
-
     browser.close()
     browser.quit()
     return lista
@@ -103,6 +93,7 @@ def base_building_search(url):
 #Takes a building's name and its url and returns a dictionary with basic building data
 def building_data(url, building_name):
     browser = webdriver.PhantomJS()  # Sacar .exe para mac
+    browser.implicitly_wait(10)
     browser.get(url)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
@@ -133,12 +124,15 @@ def building_data(url, building_name):
 # the page's source code.
 def apartment_data(url, building_name):
     browser = webdriver.PhantomJS()
+    browser.implicitly_wait(10)
     browser.get(url)
     browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click() #looks for button with info and clicks it
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
+    head_info = bsObj.find('div', {'class':"wrap-hfijo"})
     main_search = bsObj.findAll('div', {'class':'info-modelo'}) #where is data
-    build_apps = {building_name:{}}
+    build_aps = {building_name:{}}
+    build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
     n = 1
     for i in main_search: #creates the nested dict.
         aux = {}
@@ -147,16 +141,17 @@ def apartment_data(url, building_name):
                 aux[j.contents[0].text] = j.contents[2].text
             else:
                 aux[j.contents[0].text] = j.contents[1]
-        build_apps[building_name][str(n)] = aux
+        build_aps[building_name][str(n)] = aux
         n += 1
     browser.close()
     browser.quit()
-    return build_apps
+    return build_aps
 
 
 def house_data(url, house_name):
     browser = webdriver.PhantomJS()  # Sacar .exe para mac
     browser.get(url)
+    time.sleep(5)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     nameList = bsObj.find('ul', {'class': 'info_ficha'})  # Tags with building data
@@ -167,11 +162,19 @@ def house_data(url, house_name):
     casa['tipo de vivienda'] = 'casa'
     casa['nombre'] = head_info.find('h1').text
     casa['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
-    casa['comuna-region'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
-    casa[head_info.find('em').text] = head_info.find('div', {'class':'precio-b'}).find('strong').text
+    try:
+        casa['comuna-region'] = head_info.findAll('h2')[1].text.split(',')[-1]
+    except:
+        casa['comuna-region'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
+    try:
+        casa[head_info.find('em').text] = head_info.find('div', {'class':'precio-b'}).find('strong').text
+    except:
+        casa[head_info.find('em').text] = head_info.find('div', {'class': 'precio-ficha'}).find('strong').text
     casa['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
     for name in nameList.findAll('li'):
-        if len(name) == 2:
+        if len(name) ==1:
+            casa[name.contents[0].text.split(':')[0]] = name.contents[0].text.split(':')[1]
+        elif len(name) == 2:
             if type(name.contents[0]) is not bs4.element.NavigableString:
                 casa[name.contents[0].text] = name.contents[1].text
             else:
@@ -179,7 +182,10 @@ def house_data(url, house_name):
         elif len(name) == 5:
             casa[name.contents[0].strip()] = name.contents[1].text
         else:
-            casa[name.contents[1].text] = name.contents[3].text
+            try:
+                casa[name.contents[1].text] = name.contents[3].text
+            except:
+                casa[name.contents[1].text] = name.contents[2].text
     browser.close()
     browser.quit()
     return casa
