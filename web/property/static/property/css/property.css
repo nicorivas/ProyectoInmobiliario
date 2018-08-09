@@ -1,0 +1,34 @@
+#id_address {
+  width: 400px;
+}
+
+input {
+  size: 100;
+	border-radius: 6px;
+	height: 50px;
+	border: 0;
+	/*padding: 10px;*/
+	padding: 0 0 0 16px;
+	font-size: 18;
+	background: #1566BB;
+	transition: background .3s ease;
+	color: #ffffff;
+}
+
+*:focus {
+    outline: none !important;
+    border: 3px solid #aaaaff;
+    box-shadow: 0 0 0px #719ECE;
+}
+
+*:focus::placeholder { opacity: 0; } /* Modern Browsers */
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #ffffff;
+    opacity: 0.8; /* Firefox */
+    transition: opacity .0s; /* Modern Browsers */
+}
+
+.map_canvas_wrapper {margin-left: 0px; width: 20em;}
+
+#map_canvas {width: 100%; height: 20em;}

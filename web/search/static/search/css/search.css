@@ -1,0 +1,57 @@
+#id_address {
+  width: 500px;
+}
+
+form input[type=text] {
+	border-radius: 6px;
+	height: 50px;
+	border: 2px solid #3088DD;
+	padding: 0 0 0 16px;
+	font-size: 18;
+	background: #1566BB;
+	transition: background .3s ease;
+	color: #ffffff;
+}
+
+form input[type=submit] {
+	border-radius: 6px;
+	height: 50px;
+	border: 2px solid #3088DD;
+	padding: 0 16px 0 16px;
+	font-size: 18;
+	background: #eeeeee;
+	transition: background .3s ease;
+	color: #555555;
+}
+
+form input:focus {
+    outline: none !important;
+    border: 2px solid #aaaaff;
+    box-shadow: 0 0 0px #719ECE;
+}
+
+*:focus {
+    outline: none !important;
+    border: 3px solid #aaaaff;
+    box-shadow: 0 0 0px #719ECE;
+}
+
+*:focus::placeholder { opacity: 0; } /* Modern Browsers */
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #ffffff;
+    opacity: 0.8; /* Firefox */
+    transition: opacity .0s; /* Modern Browsers */
+}
+
+.map_canvas_wrapper {
+  margin-left: 0px;
+  width: 500px;
+	padding: 0;
+  margin-bottom: 10px;
+}
+
+#map_canvas {
+  width: 100%;
+  height: 500px;
+}

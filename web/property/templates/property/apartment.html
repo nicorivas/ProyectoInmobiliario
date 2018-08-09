@@ -1,0 +1,73 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'property/css/property.css' %}">
+        {% load static %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    </head>
+
+    <h1> Edificio </h1>
+    <h2> Información general </h2>
+
+    <p>Dirección: {{ building.addressStreet }} No. {{building.addressNumber}}</p>
+    <p>Comuna: {{ building.addressCommune }}</p>
+    <p>Region: {{ building.addressRegion }}</p>
+
+    <h2> Departamento {{ apartment.number }} (Piso {{ apartment.floor }}) </h2>
+
+    <p>Piso: {{ apartment.floor }}</p>
+    <p>Numero: {{ apartment.number }}</p>
+    <p>Habitaciones: {{ apartment.bedrooms }}</p>
+    <p>Baños: {{ apartment.bathrooms }}</p>
+    <p>Superficie: {{ apartment.totalSquareMeters }}mts2</p>
+    <p>Superficie útil: {{ apartment.usefulSquareMeters }}mts2</p>
+    <p>Orientación: {{ apartment.orientation }}</p>
+
+    <h2> Descripción general</h2>
+
+    <p>Descripción general: {{ apartment.generalDescription }}</p>
+
+    <h2> Antecedentes tecnico legales</h2>
+
+    <h2> Precio </h2>
+
+    <p> UF/Metro cuadrado en comuna </p>
+
+    <h2> Entorno </h2>
+
+    <h3> Manzana </h3>
+
+    <p> Población </p>
+    <p> Superficie promedio propiedades </p>
+    <p> Año promedio </p>
+    <p> Estado veredas </p>
+    <p> Estado calles </p>
+
+    <h3> Educación </h3>
+
+    <h3> Salud </h3>
+
+    <h3> Otros servicios </h3>
+
+    <p> Farmacias: Más cercana a 5 min caminando. 5 a 10min. </p>
+    <p> Bicicletas: Más cercana a 5 min caminando. 3 a 10min. </p>
+    <p> Supermercados: Más cercano a 5 min caminando. 2 a 10min. </p>
+    <p> Mall: Más cercano a 20 min caminando.</p>
+    <p> Restaurantes: Más cercano a 5 min caminando. 5 a 10min. </p>
+    <p> Bancos: Más cercano a 5 min caminando. 5 a 10min. </p>
+
+    <h3> Transporte </h3>
+
+    <p> Metro: Estación Los Leones a 13 minutos caminando </p>
+    <p> Micro: Líneas 345, 124, 154, 453 a 5 minutos caminando </p>
+
+    <h3> Áreas verdes </h3>
+
+    <h3> Seguridad </h3>
+
+    <p> Índice de delincuencia: </p>
+    <p> Índice de seguridad: </p>
+    <p> Comisaría más cercana: NOMBRE, DIRECCION </p>
+    <p> Plan cuadrante zona: </p>
+
+</html>
