@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup  #For scraping HTML
 from selenium import webdriver  #To navigate and get web page source code
 import time  # For making pause and let the webdriver load the source code
 import bs4 #To get the bsf type object
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 
 
 '''Basic functions for scraping TocToc.cl
@@ -24,9 +26,8 @@ def search_parameters(url):
     print(final_url)
     return final_url
 
-#
-def get_urls(url):
 
+def get_urls(url):
 
     '''Gets all urls pages from a search. It takes one url, and returns
     a list of url with different page number'''
@@ -56,8 +57,6 @@ def get_urls(url):
     browser.close()
     browser.quit()
     return pages
-
-
 
 
 
@@ -194,3 +193,26 @@ def house_data(url, house_name):
     browser.close()
     browser.quit()
     return casa
+
+def apartment_value_data(url, user, password):
+
+    ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser.get(url)
+    time.sleep(10)
+    browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[1]/div[3]/a')[0].click()
+    alert = browser.find_elements_by_xpath('//*[@id="IngresoUsuario_CorreoElectronico"]')[0]
+    time.sleep(3)
+    alert.send_keys(user + Keys.TAB + password)
+    html = browser.page_source
+    
+    browser.close()
+    browser.quit()
+    return
