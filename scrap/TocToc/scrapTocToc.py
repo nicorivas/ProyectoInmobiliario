@@ -192,10 +192,8 @@ def house_data(url, house_name):
                 house[name.contents[1].text] = name.contents[2].text
     browser.close()
     browser.quit()
-<<<<<<< HEAD
     return house
-=======
-    return casa
+
 
 def apartment_value_data(url, user, password):
 
@@ -219,4 +217,4 @@ def apartment_value_data(url, user, password):
     browser.close()
     browser.quit()
     return
->>>>>>> 29b64c863628a7f49a6ac69d35ffde39949baad6
+
