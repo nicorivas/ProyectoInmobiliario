@@ -6,5 +6,5 @@ from scrapTocToc import house_data, base_building_search, building_data, apartme
 #url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/providencia/edificio-don-salvador/475345'
 #print(building_data(url, 'prueba'))
 
-url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/providencia/parque-roman-diaz/522247'
-print(apartment_data(url, 'prueba'))
+#url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/providencia/parque-roman-diaz/522247'
+#print(apartment_data(url, 'prueba'))
