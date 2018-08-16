@@ -1,12 +1,13 @@
 from scrapTocToc import building_data, apartment_data, house_data, base_building_search
+import codecs
 
 ''' Scrape for the actual data of the buildings/houses, using functions on scrapTocToc.py and the basic information
  of building's urls from 1-TocTocScript.py'''
 
-buildings = open('G:/Mi unidad/ProyectoInmobiliario/Datos/providencia_buildings.txt', 'r')
-build_data = open('G:/Mi unidad/ProyectoInmobiliario/Datos/providencia_buildings_data.txt', 'w')
-apart_data = open('G:/Mi unidad/ProyectoInmobiliario/Datos/providencia_apt_data.txt', 'w')
-house_info = open('G:/Mi unidad/ProyectoInmobiliario/Datos/providencia_house_data.txt', 'w')
+buildings = codecs.open('/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/huechuraba_buildings.txt', 'r', "utf-8")
+build_data = codecs.open('/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/huechuraba_buildings_data.txt', 'w', "utf-8")
+apart_data = codecs.open('/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/huechuraba_apt_data.txt', 'w', "utf-8")
+house_info = codecs.open('/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/huechuraba_house_data.txt', 'w', "utf-8")
 counter = 0
 
 for apt in buildings:

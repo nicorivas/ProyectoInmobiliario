@@ -161,38 +161,39 @@ def house_data(url, house_name):
     nameList = bsObj.find('ul', {'class': 'info_ficha'})  # Tags with building data
     # head house data
     head_info = bsObj.find('div', {'class': "wrap-hfijo"})
-    casa = {}
-    casa['nombre casa'] = house_name
-    casa['tipo de vivienda'] = 'casa'
-    casa['nombre'] = head_info.find('h1').text
-    casa['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
+    house = {}
+    house['nombre casa'] = house_name
+    house['tipo de vivienda'] = 'casa'
+    house['nombre'] = head_info.find('h1').text
+    house['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
     try:
-        casa['comuna-region'] = head_info.findAll('h2')[1].text.split(',')[-1]
+        house['comuna-region'] = head_info.findAll('h2')[1].text.split(',')[-1]
     except:
-        casa['comuna-region'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
+        house['comuna-region'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
     try:
-        casa[head_info.find('em').text] = head_info.find('div', {'class':'precio-b'}).find('strong').text
+        house[head_info.find('em').text] = head_info.find('div', {'class':'precio-b'}).find('strong').text
     except:
-        casa[head_info.find('em').text] = head_info.find('div', {'class': 'precio-ficha'}).find('strong').text
-    casa['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+        house[head_info.find('em').text] = head_info.find('div', {'class': 'precio-ficha'}).find('strong').text
+    house['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
     for name in nameList.findAll('li'):
         if len(name) ==1:
-            casa[name.contents[0].text.split(':')[0]] = name.contents[0].text.split(':')[1]
+            house[name.contents[0].text.split(':')[0]] = name.contents[0].text.split(':')[1]
         elif len(name) == 2:
             if type(name.contents[0]) is not bs4.element.NavigableString:
-                casa[name.contents[0].text] = name.contents[1].text
+                house[name.contents[0].text] = name.contents[1].text
             else:
-                casa[name.contents[0]] = name.contents[1].text
+                house[name.contents[0]] = name.contents[1].text
         elif len(name) == 5:
-            casa[name.contents[0].strip()] = name.contents[1].text
+            house[name.contents[0].strip()] = name.contents[1].text
         else:
             try:
-                casa[name.contents[1].text] = name.contents[3].text
+                house[name.contents[1].text] = name.contents[3].text
             except:
-                casa[name.contents[1].text] = name.contents[2].text
+                house[name.contents[1].text] = name.contents[2].text
     browser.close()
     browser.quit()
-    return casa
+    return house
+
 
 def apartment_value_data(url, user, password):
 
@@ -216,3 +217,4 @@ def apartment_value_data(url, user, password):
     browser.close()
     browser.quit()
     return
+
