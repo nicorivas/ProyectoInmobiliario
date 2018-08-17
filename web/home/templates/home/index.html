@@ -1,18 +1,40 @@
+{% extends "home/base.html" %}
 {% load static %}
-<html>
-    <head>
+{% block head %}
         <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
         {% load static %}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
         <script src="{% static 'home/js/google-maps-autocomplete.js' %}"></script>
-    </head>
-    <h1>Tasador</h1>
-    <h2>Búsqueda</h2>
-    <form action="/search/" method="get">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Buscar">
-    </form>
-    <h2>Tasaciones</h2>
-</html>
+{% endblock %}
+
+{% block content %}
+  <h2>Buscar propiedad</h2>
+  <form action="/search/" method="get">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Buscar">
+  </form>
+  <h2>Tasaciones activas</h2>
+    <div class="appraisals_current">
+    {% for appraisal in appraisals %}
+    <div class="appraisal">
+      <div class="appraisal_address">
+        <p>
+        <a href='/appraisal/{{appraisal.apartment.building.addressRegion|slugify}}/{{appraisal.apartment.building.addressCommune|slugify}}/{{appraisal.apartment.building.addressStreet|slugify}}/{{appraisal.apartment.building.addressNumber}}/{{appraisal.apartment.building.id}}/departamento/{{appraisal.apartment.number}}/{{appraisal.apartment.id}}/{{appraisal.id}}/'>
+        {{ appraisal.apartment.building.addressStreet }}
+        {{ appraisal.apartment.building.addressNumber }},
+        Depto. {{ appraisal.apartment.number }},
+        {{ appraisal.apartment.building.addressCommune }},
+        {{ appraisal.apartment.building.addressRegion }}
+        </a>
+      </div>
+      <div class="appraisal_date">
+        Creado: {{ appraisal.timeCreated | date:"m/d, H:i" }} |
+        Modificado: {{ appraisal.timeModified | date:"m/d, H:i"}}
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+  <h2>Tasaciones previas</h2>
+{% endblock %}

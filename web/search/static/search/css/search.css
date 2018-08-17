@@ -2,46 +2,70 @@
   width: 500px;
 }
 
-form input[type=text] {
-	border-radius: 6px;
-	height: 50px;
-	border: 2px solid #3088DD;
-	padding: 0 0 0 16px;
-	font-size: 18;
-	background: #1566BB;
-	transition: background .3s ease;
-	color: #ffffff;
+#form_create input, label {
+  display: block;
 }
 
-form input[type=submit] {
-	border-radius: 6px;
-	height: 50px;
-	border: 2px solid #3088DD;
-	padding: 0 16px 0 16px;
-	font-size: 18;
-	background: #eeeeee;
-	transition: background .3s ease;
-	color: #555555;
+#form_create input[type=text] {
+	font-size: 14;
+  height: 2em;
+  background: #ddd;
+  margin-right: 0.5em;
+  margin-top: 0.2em;
+  border: 0px solid #ddd;
+  border-radius: 10px;
 }
 
-form input:focus {
-    outline: none !important;
-    border: 2px solid #aaaaff;
-    box-shadow: 0 0 0px #719ECE;
+#form_create input[type=submit] {
+  width: 150px;
 }
 
-*:focus {
-    outline: none !important;
-    border: 3px solid #aaaaff;
-    box-shadow: 0 0 0px #719ECE;
+#form_create label {
+  font-family: Arial, Helvetica, sans-serif;
+	font-size: 14;
+  padding-left: 0.5em;
 }
 
-*:focus::placeholder { opacity: 0; } /* Modern Browsers */
+#id_addressStreet_create {
+  width: 200px;
+  padding: 0 0 0 0.5em;
+}
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: #ffffff;
-    opacity: 0.8; /* Firefox */
-    transition: opacity .0s; /* Modern Browsers */
+#id_addressNumber_create, #id_addressNumberFlat_create {
+  width: 5em;
+  padding: 0 0 0 0.5em;
+}
+
+#id_addressCommune_create {
+  width: 200px;
+  padding: 0 0 0 0.5em;
+  font-size: 14;
+  height: 2em;
+  background: #ddd;
+  margin-right: 0.5em;
+  margin-top: 0.2em;
+  border: 0px solid #ddd;
+  border-radius: 10px;
+}
+
+#id_addressRegion_create {
+  width: 200px;
+  padding: 0 0 0 0.5em;
+  font-size: 14;
+  height: 2em;
+  background: #ddd;
+  margin-right: 0.5em;
+  margin-top: 0.2em;
+  border: 0px solid #ddd;
+  border-radius: 10px;
+}
+
+#new_appraisal, #search {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 1em;
+  margin-bottom: 0.5em;
+  background: #fafafa;
 }
 
 .map_canvas_wrapper {
