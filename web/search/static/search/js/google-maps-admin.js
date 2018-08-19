@@ -55,39 +55,52 @@ function googleMapAdmin() {
             });
             */
 
-            var lat = dataBuildings[0]["fields"]["lat"];
-            var lon = dataBuildings[0]["fields"]["lon"];
+            for (i = 0; i < dataBuildings.length; i++) {
 
-            var marker = new google.maps.Marker({
-              position: new google.maps.LatLng(lat,lon),
-              title: "test",
-              map: map
-            });
+              var lat = dataBuildings[i]["fields"]["lat"];
+              var lon = dataBuildings[i]["fields"]["lon"];
 
-            marker.addListener('click', function() {
-              '<str:region>/<str:commune>/<str:street>/edificio/<int:id>/'
-              region = dataBuildings[0]["fields"]["addressRegion"].toLowerCase();
-              commune = dataBuildings[0]["fields"]["addressCommune"].toLowerCase();
-              street = dataBuildings[0]["fields"]["addressStreet"];
-              street = street.replace(/\s+/g, '-').toLowerCase();
-              street = self.removeAccents(street);
-              number = dataBuildings[0]["fields"]["addressNumber"];
-              id = dataBuildings[0]["pk"];
-              url = '/property/'+region+'/'+commune+'/'+street+'/'+number+'/edificio/'+id
-              console.info(url);
-              window.location.href = url
-            });
+              var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat,lon),
+                title: dataBuildings[i]["fields"]["name"],
+                map: map,
+                icon: ' ',
+                label: {
+                    fontFamily: 'Material Icons',
+                    fontSize: '32',
+                    text: 'home',
+                    color: '2244dd'
+                }
+              });
+
+              marker.set("id", i);
+
+              marker.addListener('click', function() {
+                i = this.id
+                region = dataBuildings[i]["fields"]["addressRegion"].toLowerCase();
+                commune = dataBuildings[i]["fields"]["addressCommune"].toLowerCase();
+                street = dataBuildings[i]["fields"]["addressStreet"];
+                street = street.replace(/\s+/g, '-').toLowerCase();
+                street = self.removeAccents(street);
+                number = dataBuildings[i]["fields"]["addressNumber"];
+                id = dataBuildings[i]["pk"];
+                url = '/property/'+region+'/'+commune+'/'+street+'/'+number+'/edificio/'+id
+                console.info(url);
+                window.location.href = url
+              });
+
+            }
         },
 
 
         removeAccents : function(s)
         {
-          s = s.replace(/á/g, "i");
+          s = s.replace(/á/g, "a");
           s = s.replace(/é/g, "e");
           s = s.replace(/í/g, "i");
           s = s.replace(/ó/g, "o");
           s = s.replace(/ú/g, "u");
-          s = s.replace(/ü/g, "ü");
+          s = s.replace(/ü/g, "u");
           return s;
         },
 

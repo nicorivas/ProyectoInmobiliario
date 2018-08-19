@@ -5,6 +5,7 @@ import requests # to call the API of Google to get lat-lon
 import pandas as pd # are cute
 from pathlib import Path # nice way to manage paths
 import json # to save nice dictionaries
+from sqlalchemy import create_engine # for pandas dataframes to postgre
 
 def loadJsonToString(filename=""):
     '''
@@ -132,10 +133,34 @@ def dictionariesToPanda(buildingDicts):
     buildingsDF = pd.DataFrame.from_dict(buildingDicts)
     return buildingsDF
 
-def pandaToPostgre():
+def dataFrameToPostgre(buildingsDF,table,if_exists='append'):
+    '''
+    Given a pandas' DataFrame, insert the data to the database.
+    Sensitive shit, be careful.
     '''
 
-    '''
+    # Hardcoded
+    engine = create_engine('postgresql://nico:@localhost:5432/data')
+
+    if if_exists == 'append':
+        # When appending, we need to first get the last id in the table
+        ids = engine.execute("SELECT id FROM {}".format(table)).fetchall()
+        id_i = max([d[0] for d in ids])+1
+
+        # Then create a new column with the name of unique identifier that
+        # Django uses
+        buildingsDF['id'] = range(id_i,id_i+len(buildingsDF))
+
+
+    elif if_exists == 'replace':
+
+        buildingsDF['id'] = range(len(buildingsDF))
+
+    # Do the thing you do.
+    # We dont want the automatic indexing so index=False
+    buildingsDF.to_sql(table, engine, if_exists=if_exists,index=False)
+
+    return 0
 
 path = Path('../data/inmobiliario/toctoc/')
 load = 1
@@ -150,3 +175,4 @@ else:
     buildingDicts = loadCleanDictionaries(filename)
 
 buildingsDF = dictionariesToPanda(buildingDicts)
+dataFrameToPostgre(buildingsDF,"building_building",if_exists='append')

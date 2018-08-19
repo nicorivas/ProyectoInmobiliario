@@ -31,9 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'home',
-    'search',
-    'property',
     'django_google_maps',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'appraisal',
+    'house',
+    'building',
+    'apartment',
+    'home',
+    'search',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +90,7 @@ WSGI_APPLICATION = 'map.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'database_name',
+        'NAME': 'data',
         'USER': 'nico',
         'PASSWORD': '',
         'HOST': 'localhost',
