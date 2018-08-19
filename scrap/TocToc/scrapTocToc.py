@@ -2,8 +2,8 @@ from bs4 import BeautifulSoup  #For scraping HTML
 from selenium import webdriver  #To navigate and get web page source code
 import time  # For making pause and let the webdriver load the source code
 import bs4 #To get the bsf type object
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys #To use Tab key
+from selenium.webdriver.chrome.options import Options #To use chrome options, as headless
 
 
 '''Basic functions for scraping TocToc.cl
@@ -198,6 +198,7 @@ def house_data(url, house_name):
 def apartment_value_data(url, user, password):
 
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
+
     options = Options()
     options.add_argument("--headless")  # Runs Chrome in headless mode.
     options.add_argument('--no-sandbox')  # Bypass OS security model
