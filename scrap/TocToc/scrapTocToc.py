@@ -112,7 +112,7 @@ def building_data(url, building_name):
             pass
     browser.close()
     browser.quit()
-    return(building)
+    return building
 
 
 
@@ -200,22 +200,50 @@ def apartment_value_data(url, user, password):
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
 
     options = Options()
-    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    #options.add_argument("--headless")  # Runs Chrome in headless mode.
     options.add_argument('--no-sandbox')  # Bypass OS security model
     options.add_argument('--disable-gpu')  # applicable to windows os only
     options.add_argument('start-maximized')  #
     options.add_argument('disable-infobars')
     options.add_argument("--disable-extensions")
+    appraisal_data = {}
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
     browser.get(url)
-    time.sleep(10)
-    browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[1]/div[3]/a')[0].click()
-    alert = browser.find_elements_by_xpath('//*[@id="IngresoUsuario_CorreoElectronico"]')[0]
-    time.sleep(3)
-    alert.send_keys(user + Keys.TAB + password)
     html = browser.page_source
-    
+    bsObj = BeautifulSoup(html, "html5lib")
+    bsObj2 = bsObj.find('ul', {'class': 'listado-plantas'}).findAll('li')
+    n = 1
+    browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li['+ str(n) +']/div[3]/a')[0].click()
+    alert = browser.find_elements_by_xpath('//*[@id="IngresoUsuario_CorreoElectronico"]')[0]
+    time.sleep(2)
+    alert.send_keys(user + Keys.TAB + password)
+    browser.implicitly_wait(2)
+    browser.find_elements_by_xpath('//*[@id="btnIngresoUsuarioPop"]')[0].click()
+    time.sleep(5)
+    for i in bsObj2:
+        if i.find('a') is not None:
+            time.sleep(5)
+            browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[' + str(n) + ']/div[3]/a')[0].click()
+            time.sleep(5)
+            html = browser.page_source
+            bsObj3 = BeautifulSoup(html, "html5lib")
+            apt = {}
+            apt['depto'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
+            apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
+            apt['dormitorios'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
+            apt['banos'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
+            apt['orientacion'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
+            apt['m2_utiles'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
+            apt['m2_terraza'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
+            apt['m2_totales'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
+            appraisal_data[str(n)] = apt
+            n += 1
+            time.sleep(5)
+            webdriver.ActionChains(browser).send_keys(Keys.ESCAPE).perform()
+            browser.execute_script("window.stop();")
+            browser.back()
+
     browser.close()
     browser.quit()
-    return
+    return appraisal_data
 
