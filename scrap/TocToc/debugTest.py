@@ -10,9 +10,9 @@ from scrapTocToc import house_data, base_building_search, building_data, apartme
 #print(apartment_data(url, 'prueba'))
 
 
-url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/providencia/diego-de-almagro/507602'
+url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/huechuraba/arboleda-huechuraba/392919'
 #user = 'the_big_lebowsky@hotmail.com'
-password = 'toctocpass123'
-user = 'covfefe@cove.cl'
+password = 'toctocpass12'
+user = 'covfefe2@cov.cl'
 print(apartment_value_data(url, user, password))
 
