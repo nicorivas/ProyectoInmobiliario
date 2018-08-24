@@ -1,4 +1,4 @@
-from scrapTocToc import apartment_value_data
+from scrapTocToc import apartment_value_data, building_data, apartment_data, house_data
 import codecs
 import re
 
@@ -31,7 +31,7 @@ for apt in buildings:
     house_name =apt.split(',')[0]
     if type == "'Departamento'":
         print(apt)
-        print(apt.split(',')[-2].replace("'",""))
+        print(url)
         counter += 1
         try:
             build_data.write("%s\n" % building_data(url, name))
@@ -40,7 +40,7 @@ for apt in buildings:
             error_list.write("%s\n" % apt)
         if regexp.search(url):
             try:
-                apart_appraisal.write("%s\n" % apartment_value_data(url,user , password))
+                apart_appraisal.write("%s\n" % apartment_value_data(url, user, password))
                 print('success appraisal in ' + apt)
             except:
                 error_list.write("%s\n" % apt)
