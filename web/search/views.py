@@ -47,6 +47,17 @@ def search(request):
                     addressNumber=_addressNumber)
                 # save to database
                 buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
+                # get lat lon
+
+                url = 'https://maps.googleapis.com/maps/api/geocode/json?'
+                url_address = 'address={} {}, {}, {}'.format(_addressStreet,_addressNumber,_addressCommune,_addressRegion)
+                response = requests.get(url+''+url_address)
+                response_json = response.json()
+                response_results = response_json['results'][0]['geometry']['location']
+                building.lat = response_results['lat']
+                building.lon = response_results['lng']
+                print(response_results)
+
                 building.id = buildingId
                 building.save()
             elif len(buildings) > 1:
@@ -111,6 +122,7 @@ def search(request):
 
         form_search = LocationSearchForm
         address = request.GET.get('address', '')
+
         url = 'https://maps.googleapis.com/maps/api/geocode/json?'
         url_address = 'address={}'.format(address)
         response = requests.get(url+''+url_address)

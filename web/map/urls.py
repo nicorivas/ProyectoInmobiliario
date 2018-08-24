@@ -21,5 +21,9 @@ urlpatterns = [
     path('property/', include('property.urls')),
     path('search/', include('search.urls')),
     path('appraisal/', include('appraisal.urls')),
+    path('region/', include('region.urls')),
+    path('province/', include('province.urls')),
+    path('commune/', include('commune.urls')),
+    path('square/', include('square.urls')),
     path('', include('home.urls'))
 ]

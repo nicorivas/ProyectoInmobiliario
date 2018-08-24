@@ -1,0 +1,14 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block head %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'appraisal/css/appraisal.css' %}">
+{% endblock head %}
+
+{% block content %}
+
+<h1>Error</h1>
+<p>{{ error_message }}</p>
+
+{% endblock %}
