@@ -1,0 +1,230 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block head %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'appraisal/css/appraisal.css' %}">
+{% endblock head %}
+
+{% block content %}
+<h1>Tasación departamento</h1>
+
+
+<form action="" method="post" id="form">
+  {% csrf_token %}
+
+  <div id="menu" class="section">
+    <input type="submit" value="Guardar" name="save">
+    <input type="submit" value="Exportar" name="export">
+    <input type="submit" value="Borrar" name="delete">
+  </div>
+
+  <div id="property" class="section">
+  <section>
+    <h2>Propiedad</h2>
+    <div class="field">
+    <div class="field_label"><p>Dirección:</p></div>
+    <div class="field_input"><p><input type="text" value="{{ building.addressStreet }} {{building.addressNumber}}" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Departamento:</p></div>
+    <div class="field_input"><p><input type="text" value="{{ apartment.number }}" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Comuna:</p></div>
+    <div class="field_input"><p><input type="text" value="{{ building.addressCommune }}" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Region:</p></div>
+    <div class="field_input"><p><input type="text" value="{{ building.addressRegion }}" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Numero:</p></div>
+    <div class="field_input"><p><input type="text" value="{{ building.addressStreet }} {{building.addressNumber}}" disabled></p></div>
+    </div>
+  </section>
+
+    <div id="general" class="subsection">
+    <section>
+      <h3>Características generales</h3>
+      <div class="columns">
+      <div class="field">
+      <div class="field_label"><p>{{form.general_floor.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_floor}}</p></div>
+      </div>
+      <div class="field">
+      <div class="field_label"><p>{{form.general_bedrooms.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_bedrooms}}</p></div>
+      </div>
+      <div class="field">
+      <div class="field_label"><p>{{form.general_bathrooms.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_bathrooms}}</p></div>
+      </div>
+      <div class="field">
+      <div class="field_label"><p>{{form.general_totalSquareMeters.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_totalSquareMeters}} mts2</p></div>
+      </div>
+      <div class="field">
+      <div class="field_label"><p>{{form.general_usefulSquareMeters.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_usefulSquareMeters}} mts2</p></div>
+      </div>
+      <div class="field">
+      <div class="field_label"><p>{{form.general_orientation.label_tag}}</p></div>
+      <div class="field_input"><p>{{form.general_orientation}}</p></div>
+      </div>
+      </div>
+      <div class="columns">
+      <div class="field">
+      <div class="field_label"><p>{{form.general_generalDescription.label_tag}}</p></div>
+      <p>{{form.general_generalDescription}}</p>
+      </div>
+      </div>
+    </section>
+    </div>
+
+    <section>
+    <div id="technical_legal" class="subsection">
+      <h3> Antecedentes tecnico legales</h3>
+    </div>
+    </section>
+
+    <section>
+    <div id="price" class="subsection">
+      <h3>Precio</h3>
+      <p> UF/Metro cuadrado en comuna </p>
+    </div>
+    </section>
+
+  </div>
+
+  <section>
+  <div id="surroundings" class="section">
+    <h2> Entorno </h2>
+
+    <h3> Plano de ubicación </h3>
+
+    <img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=800x300&maptype=roadmap
+&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E
+&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}">
+
+    <h3> Manzana </h3>
+
+    <div class="field">
+    <div class="field_label"><p>Población: </p></div>
+    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Superficie promedio: </p></div>
+    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Año promedio: </p></div>
+    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Estado veredas: </p></div>
+    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>Estado calles: </p></div>
+    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    </div>
+
+    <div class="columns">
+      <h3> Educación </h3>
+    </div>
+
+    <div class="columns">
+      <h3> Salud </h3>
+    </div>
+
+    <div class="columns">
+      <h3> Otros servicios </h3>
+      <p> Farmacias: Más cercana a 5 min caminando. 5 a 10min. </p>
+      <p> Bicicletas: Más cercana a 5 min caminando. 3 a 10min. </p>
+      <p> Supermercados: Más cercano a 5 min caminando. 2 a 10min. </p>
+      <p> Mall: Más cercano a 20 min caminando. </p>
+      <p> Restaurantes: Más cercano a 5 min caminando. 5 a 10min. </p>
+      <p> Bancos: Más cercano a 5 min caminando. 5 a 10min. </p>
+    </div>
+
+    <div class="columns">
+      <h3> Transporte </h3>
+      <p> Metro: Estación Los Leones a 13 minutos caminando </p>
+      <p> Micro: Líneas 345, 124, 154, 453 a 5 minutos caminando </p>
+    </div>
+
+    <div class="columns">
+      <h3> Áreas verdes </h3>
+    </div>
+
+    <div class="columns">
+      <h3> Seguridad </h3>
+      <p> Índice de delincuencia: </p>
+      <p> Índice de seguridad: </p>
+      <p> Comisaría más cercana: NOMBRE, DIRECCION </p>
+      <p> Plan cuadrante zona: </p>
+    </div>
+  </div>
+  </section>
+
+  <section>
+  <div id="surroundings" class="section">
+    <h2> Tasación </h2>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_solicitante.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_solicitante}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_solicitanteSucursal.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_solicitanteSucursal}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_solicitanteEjecutivo.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_solicitanteEjecutivo}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_cliente.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_cliente}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_clienteRut.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_clienteRut}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_propietario.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_propietario}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_propietarioRut.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_propietarioRut}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_rolAvaluo.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_rolAvaluo}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_tasadorNombre.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_tasadorNombre}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_tasadorRut.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_tasadorRut}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_visadorEmpresa.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_visadorEmpresa}}</p></div>
+    </div>
+    <div class="field">
+    <div class="field_label"><p>{{form.app_visadorEmpresaMail.label_tag}}</p></div>
+    <div class="field_input"><p>{{form.app_visadorEmpresaMail}}</p></div>
+    </div>
+  </div>
+  </section>
+  <!---
+  <input type="submit" value="Guardar">
+  <input type="submit" value="Exportar">
+  --->
+  </form>
+
+{% endblock %}

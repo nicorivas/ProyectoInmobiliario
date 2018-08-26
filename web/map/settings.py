@@ -38,12 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'appraisal',
     'house',
     'building',
     'apartment',
     'home',
     'search',
+    'neighborhood',
+    'region',
+    'province',
+    'commune',
+    'square',
 ]
 
 MIDDLEWARE = [
@@ -89,7 +95,7 @@ WSGI_APPLICATION = 'map.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'data',
         'USER': 'nico',
         'PASSWORD': '',
