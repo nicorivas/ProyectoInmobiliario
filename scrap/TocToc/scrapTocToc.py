@@ -132,7 +132,7 @@ def building_data(url, building_name):
     #head data of building
     building = {'nombre edificio': building_name}
     building['nombre'] = head_info.find('h1').text
-    building['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '')
+    building['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
     building['comuna-region'] = head_info.findAll('h2')[1].text.split(', ')[1]
     building[head_info.find('em').text] = head_info.find('strong').text
     building['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
@@ -166,30 +166,59 @@ def apartment_data(url, building_name):
     options.add_argument("--disable-extensions")
     options.add_argument("--log-level=3")  # fatal
     LOGGER.setLevel(logging.WARNING)
-    #browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
-    browser = webdriver.PhantomJS()
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    #browser = webdriver.PhantomJS()
     time.sleep(10)  #wait for page to be loaded.
     browser.get(url)
-    browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()  #looks for button with info and clicks it
-    html = browser.page_source
-    bsObj = BeautifulSoup(html, "html5lib")
-    head_info = bsObj.find('div', {'class':"wrap-hfijo"})
-    main_search = bsObj.findAll('div', {'class':'info-modelo'}) #where is data
-    build_aps = {building_name:{}}
-    build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
-    n = 1
-    for i in main_search:  #creates the nested dict.
-        aux = {}
-        for j in i.findAll('li'):
-            if len(j.contents) == 3:
-                aux[j.contents[0].text] = j.contents[2].text
-            else:
-                aux[j.contents[0].text] = j.contents[1]
-        build_aps[building_name][str(n)] = aux
-        n += 1
-    browser.close()
-    browser.quit()
-    return build_aps
+    try:
+        browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()  #looks for button with info and clicks it
+        html = browser.page_source
+        bsObj = BeautifulSoup(html, "html5lib")
+        head_info = bsObj.find('div', {'class': "wrap-hfijo"})
+        main_search = bsObj.findAll('div', {'class': 'info-modelo'})  # where is data
+        build_aps = {}
+        build_aps['nombre_edificio'] = building_name
+        build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+        build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
+        build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
+
+        n = 1
+        for i in main_search:  # creates the nested dict.
+            aux = {}
+            for j in i.findAll('li'):
+                if len(j.contents) == 3:
+                    aux[j.contents[0].text] = j.contents[2].text
+                else:
+                    aux[j.contents[0].text] = j.contents[1]
+            build_aps[building_name][str(n)] = aux
+            n += 1
+        browser.close()
+        browser.quit()
+        return build_aps
+
+    except:
+        html = browser.page_source
+        bsObj = BeautifulSoup(html, "html5lib")
+        head_info = bsObj.find('div', {'class':"wrap-hfijo"})
+        main_search = bsObj.find('ul', {'class':'info_ficha'}) #where is data
+        build_aps = {}
+        build_aps['nombre_edificio'] = building_name
+        build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
+        build_aps['precio_publicacion'] = head_info.find('div', {'class':'precio-b'}).strong.text
+        build_aps['precio_alternativo'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
+        for i in main_search:  #creates the nested dict.
+            try:
+                build_aps[i.find('span').text] = i.find('strong').text
+                #build_aps[i.contents[0]].text = i.contents[1].text
+
+            except:
+                try:
+                    build_aps[i.contents[0].strip()] = i.contents[1].text
+                except:
+                    continue
+        browser.close()
+        browser.quit()
+        return build_aps
 
 
 def house_data(url, house_name):
@@ -294,6 +323,7 @@ def apartment_value_data(url, user, password):
                     apt = {}
                     apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
                     apt['depto'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
+                    apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
                     apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
                     apt['dormitorios'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
                     apt['banos'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text

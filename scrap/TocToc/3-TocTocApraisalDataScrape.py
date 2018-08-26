@@ -8,21 +8,23 @@ The script run through the entire list of buildings and registers all properties
 
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/'
-path = pc_path
+path = mac_path
+
 
 password = 'toctocpass12'
 user = 'app@usa.cl'
+#user = 'covfe@cov.cl'
+#user = 'the_big_lebowsky@hotmail.com'
 
-buildings = codecs.open(path + 'huechuraba_buildings.txt', 'r', "utf-8")
-build_data = codecs.open(path +'huechuraba_buildings_data.txt', 'w', "utf-8")
-apart_data = codecs.open(path +'huechuraba_apt_data.txt', 'w', "utf-8")
-apart_appraisal = codecs.open(path +'huechuraba_apt_appraisal_data.txt', 'w', "utf-8")
-house_info = codecs.open(path + 'huechuraba_house_data.txt', 'w', "utf-8")
-error_list = codecs.open(path + 'huechuraba_error_list.txt', 'w', "utf-8")
+buildings = codecs.open(path + 'providencia_buildings.txt', 'r', "ISO-8859-1")
+build_data = codecs.open(path +'providencia_buildings_data.txt', 'w', "utf-8")
+apart_data = codecs.open(path +'providencia_apt_data.txt', 'w', "utf-8")
+apart_appraisal = codecs.open(path +'providencia_apt_appraisal_data.txt', 'w', "utf-8")
+house_info = codecs.open(path + 'providencia_house_data.txt', 'w', "utf-8")
+error_list = codecs.open(path + 'providencia_error_list.txt', 'w', "utf-8")
 
 counter = 0
 regexp = re.compile(r'compranuevo')
-
 
 for apt in buildings:
     url = apt.split(',')[-2].replace("'","")
@@ -35,9 +37,9 @@ for apt in buildings:
         counter += 1
         try:
             build_data.write("%s\n" % building_data(url, name))
-            apart_data.write("%s\n" % apartment_data(url, name))
         except:
             error_list.write("%s\n" % apt)
+
         if regexp.search(url):
             try:
                 apart_appraisal.write("%s\n" % apartment_value_data(url, user, password))
@@ -46,6 +48,11 @@ for apt in buildings:
                 error_list.write("%s\n" % apt)
                 print('error in ' + apt)
             print(str(counter) + ' ' + 'apartment')
+        else:
+            try:
+                apart_data.write("%s\n" % apartment_data(url, name))
+            except:
+                error_list.write("%s\n" % apt)
 
     elif type == "'Casa'":
         print(apt)
