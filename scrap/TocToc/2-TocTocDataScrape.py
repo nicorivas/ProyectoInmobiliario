@@ -1,8 +1,9 @@
 from scrapTocToc import building_data, apartment_data, house_data, base_building_search, apartment_value_data
 import codecs
 import re
+import sys
 
-print('THIS SCRIPT HAS BEEN DEPRECATED, use 3-TocTocApraisalDataScrape.py')
+sys.exit('THIS SCRIPT HAS BEEN DEPRECATED, use 3-TocTocApraisalDataScrape.py')
 
 ''' Scrape for the actual data of the buildings/houses, using functions on scrapTocToc.py and the basic information
  of building's urls from 1-TocTocScript.py'''

@@ -111,7 +111,7 @@ def base_building_search(url):
 
 
 #
-def building_data(url, building_name):
+def building_data(url, building_name, coordinates):
 
     '''Takes a building's name and its url and returns a dictionary with basic building data'''
 
@@ -133,6 +133,7 @@ def building_data(url, building_name):
     building = {'nombre edificio': building_name}
     building['nombre'] = head_info.find('h1').text
     building['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
+    building['coordenadas'] = coordinates
     building['comuna-region'] = head_info.findAll('h2')[1].text.split(', ')[1]
     building[head_info.find('em').text] = head_info.find('strong').text
     building['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
@@ -151,7 +152,7 @@ def building_data(url, building_name):
 
 
 
-def apartment_data(url, building_name):
+def apartment_data(url, building_name, coordinates):
 
     '''Takes a building name and it url (from base_building_search) and returns a nested dictionary of
     the buildings's apartment. The info is hidden in a deployable button that needs to be "open" before loading
@@ -179,6 +180,7 @@ def apartment_data(url, building_name):
         build_aps = {}
         build_aps['nombre_edificio'] = building_name
         build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+        build_aps['coordenadas'] = coordinates
         build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
         build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
 
@@ -221,7 +223,7 @@ def apartment_data(url, building_name):
         return build_aps
 
 
-def house_data(url, house_name):
+def house_data(url, house_name, coordinates):
 
     ''' Takes a house url and a house name and returns a dictionary with the house's data.
     The page doesn't give the house's data in the same way for all the cases, so the functions needs a lot
@@ -249,6 +251,7 @@ def house_data(url, house_name):
     house['tipo de vivienda'] = 'casa'
     house['nombre'] = head_info.find('h1').text
     house['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
+    house['coordenadas'] = coordinates
     try:
         house['comuna-region'] = head_info.findAll('h2')[1].text.split(',')[-1]
     except:
@@ -278,7 +281,7 @@ def house_data(url, house_name):
     return house
 
 
-def apartment_value_data(url, user, password):
+def apartment_value_data(url, user, password, coordinates):
 
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
 
@@ -322,6 +325,7 @@ def apartment_value_data(url, user, password):
                     head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
                     apt = {}
                     apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+                    apt['coordenadas'] = coordinates
                     apt['depto'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
                     apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
                     apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text

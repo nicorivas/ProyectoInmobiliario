@@ -1,6 +1,7 @@
 from scrapTocToc import apartment_value_data, building_data, apartment_data, house_data
 import codecs
 import re
+import json
 
 ''' Scrape for the actual data of the buildings/houses, using functions on scrapTocToc.py and the basic information
  of building's urls from 1-TocTocScript.py. This is an UPDATE from 2-TocTocDataScrape.py
@@ -9,28 +10,31 @@ The script run through the entire list of buildings and registers all properties
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/'
 path = mac_path
-
+comuna = str(input('Eija comuna: '))
 
 password = 'toctocpass12'
 user = 'app@usa.cl'
 #user = 'covfe@cov.cl'
 #user = 'the_big_lebowsky@hotmail.com'
 
-buildings = codecs.open(path + 'providencia_buildings.txt', 'r', "ISO-8859-1")
-build_data = codecs.open(path +'providencia_buildings_data.txt', 'w', "utf-8")
-apart_data = codecs.open(path +'providencia_apt_data.txt', 'w', "utf-8")
-apart_appraisal = codecs.open(path +'providencia_apt_appraisal_data.txt', 'w', "utf-8")
-house_info = codecs.open(path + 'providencia_house_data.txt', 'w', "utf-8")
-error_list = codecs.open(path + 'providencia_error_list.txt', 'w', "utf-8")
+buildings = codecs.open(path + comuna + '_properties_TT.txt', 'r', "ISO-8859-1")
+build_data = codecs.open(path + comuna + '_buildings_data_TT.txt', 'w', "utf-8")
+apart_data = codecs.open(path + comuna +'_apt_data_TT.txt', 'w', "utf-8")
+apart_appraisal = codecs.open(path + comuna +'_apt_appraisal_data_TT.txt', 'w', "utf-8")
+house_info = codecs.open(path + comuna + '_house_data_TT.txt', 'w', "utf-8")
+error_list = codecs.open(path + comuna +'_error_list_TT.txt', 'w', "utf-8")
 
 counter = 0
 regexp = re.compile(r'compranuevo')
+buildings= json.loads(buildings)
 
 for apt in buildings:
+    apt = ast.literal_eval(apt)
     url = apt.split(',')[-2].replace("'","")
     type = apt.split(',')[-1].replace(']','').replace('', '').strip("\r\n").split(' ')[1]
     name = apt.split(',')[0].replace('[', '')
     house_name =apt.split(',')[0]
+    coordinates = [apt.split(',')[1].replace('[', ''), apt.split(',')[2].replace(']', '')]
     if type == "'Departamento'":
         print(apt)
         print(url)

@@ -43,7 +43,7 @@ def get_urls_PI(url):
     while page:
         url_1 = url_[0] + 'pg=' + str(pagnum) + url_[1]
         browser.get(url_1)
-        time.sleep(5) #Give time to load the page
+        time.sleep(2) #Give time to load the page
         html = browser.page_source
         bsObj = BeautifulSoup(html, "html5lib")
         end = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[-1]
@@ -64,9 +64,10 @@ def get_urls_PI(url):
     browser.quit()
     return pages
 
+
 def base_building_search_PI(url):
 
-    '''Basic search for buildings, given a parameter it search for building within TocToc's database
+    '''Basic search for buildings, given a parameter it search for building within Portal Inmboliario's database
     and returns a list with ["name of the building", [Lat, Long], url, house or apartment].'''
 
     options = Options()
@@ -85,27 +86,21 @@ def base_building_search_PI(url):
     list = []
     links = soup.find('div', {'class':'products-list'})#Tag with list of the names and urls of the buildings
     regexp = re.compile(r'Handler')
+    regexp2 = re.compile(r'departamento')
     base_url = 'https://www.portalinmobiliario.com'
     for link in links:
         #print(link)
         try:
             if not regexp.search(link.a.get('href')):
-                print(base_url + link.a.get('href'))
-                print()
+                if regexp2.search(link.a.get('href')):
+                    list.append(['departamento', base_url + link.a.get('href'),
+                                 link.find('span', {'class': 'product-type-title'}).text.replace(',', '')])
+                else:
+                    list.append(['casa', base_url + link.a.get('href'),
+                                 link.find('span', {'class': 'product-type-title'}).text.replace(',', '')])
         except:
             continue
-
-    ''' 
-    for link in links:
-        if regexp.search(link.a.get('href')):
-            list.append([link.h3.text, [link.get('data-latitude'),
-                         link.get('data-longitude')], 'Nuevo' ,link.a.get('href'),
-                         link.find('li', {'class': 'familia'}).find('span').text.split(' ')[0]]) #gets building's name, url and type
-        else:
-            list.append([link.h3.text, [link.get('data-latitude'),
-                                        link.get('data-longitude')], 'Usado', link.a.get('href'),
-                                        link.find('li', {'class': 'familia'}).find('span').text.split(' ')[0]])  # gets building's name, url and type
-    '''
     browser.close()
     browser.quit()
     return list
+
