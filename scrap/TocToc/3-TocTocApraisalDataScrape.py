@@ -12,8 +12,10 @@ path = mac_path
 
 
 password = 'toctocpass12'
-user = 'app@usa.cl'
-#user = 'covfe@cov.cl'
+#user = 'app@usa.cl'
+user = 'covfefe@cove.cl'
+
+
 #user = 'the_big_lebowsky@hotmail.com'
 
 buildings = codecs.open(path + 'providencia_buildings.txt', 'r', "ISO-8859-1")
