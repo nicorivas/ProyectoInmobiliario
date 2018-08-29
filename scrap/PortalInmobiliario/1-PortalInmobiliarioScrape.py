@@ -11,13 +11,35 @@ the 2-PortalInmobiliarioScrape.py script.'''
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/PortalInmobiliario/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/PortalInmobiliario/'
 path = pc_path
+comuna = str(input('Elija comuna: '))
 
-url = 'https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1'
-urls = get_urls_PI(url)
+'''
+url = ['https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1',
+       'https://www.portalinmobiliario.com/venta/casa/providencia-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1']
+providencia_search_urls = codecs.open(path + 'providencia_urls_PI.txt', 'w+', "utf-8")
 
-providencia_search_urls = codecs.open( path + 'providencia_urls_PI.txt', 'w+', "utf-8")
-
-for item in urls:
-    providencia_search_urls.write("%s\n" % item)
+for dir in url:
+    urls = get_urls_PI(dir)
+    for item in urls:
+        providencia_search_urls.write("%s\n" % item)
+        print(item)
 providencia_search_urls.close()
 
+'''
+
+'''Second step, takes the list of urls from the previous search en returns a 
+list of list with building name, url, type.'''
+
+
+search = codecs.open(path + 'providencia_urls_PI.txt', 'r', "utf-8")
+buildings = codecs.open(path + 'providencia_properties_PI.txt', 'w', "utf-8")
+
+index = 0
+for url in search.readlines():
+    print(index)
+    for item in base_building_search_PI(url):
+        buildings.write("%s\n" % item)
+    index += 1
+
+search.close()
+buildings.close()

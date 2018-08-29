@@ -43,7 +43,7 @@ def get_urls_PI(url):
     while page:
         url_1 = url_[0] + 'pg=' + str(pagnum) + url_[1]
         browser.get(url_1)
-        time.sleep(5) #Give time to load the page
+        time.sleep(2) #Give time to load the page
         html = browser.page_source
         bsObj = BeautifulSoup(html, "html5lib")
         end = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[-1]
@@ -64,9 +64,10 @@ def get_urls_PI(url):
     browser.quit()
     return pages
 
+
 def base_building_search_PI(url):
 
-    '''Basic search for buildings, given a parameter it search for building within TocToc's database
+    '''Basic search for buildings, given a parameter it search for building within Portal Inmboliario's database
     and returns a list with ["name of the building", [Lat, Long], url, house or apartment].'''
 
     options = Options()
@@ -85,27 +86,107 @@ def base_building_search_PI(url):
     list = []
     links = soup.find('div', {'class':'products-list'})#Tag with list of the names and urls of the buildings
     regexp = re.compile(r'Handler')
+    regexp2 = re.compile(r'departamento')
     base_url = 'https://www.portalinmobiliario.com'
     for link in links:
         #print(link)
         try:
             if not regexp.search(link.a.get('href')):
-                print(base_url + link.a.get('href'))
-                print()
+                if regexp2.search(link.a.get('href')):
+                    list.append(['departamento', base_url + link.a.get('href'),
+                                 link.find('span', {'class': 'product-type-title'}).text.replace(',', '')])
+                else:
+                    list.append(['casa', base_url + link.a.get('href'),
+                                 link.find('span', {'class': 'product-type-title'}).text.replace(',', '')])
         except:
             continue
-
-    ''' 
-    for link in links:
-        if regexp.search(link.a.get('href')):
-            list.append([link.h3.text, [link.get('data-latitude'),
-                         link.get('data-longitude')], 'Nuevo' ,link.a.get('href'),
-                         link.find('li', {'class': 'familia'}).find('span').text.split(' ')[0]]) #gets building's name, url and type
-        else:
-            list.append([link.h3.text, [link.get('data-latitude'),
-                                        link.get('data-longitude')], 'Usado', link.a.get('href'),
-                                        link.find('li', {'class': 'familia'}).find('span').text.split(' ')[0]])  # gets building's name, url and type
-    '''
     browser.close()
     browser.quit()
     return list
+
+def building_data_PI(url):
+
+    '''Takes a building's name and its url and returns a dictionary with basic building data'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac)  # Sacar .exe para mac
+    browser.get(url)
+    time.sleep(3)
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    head_info = bsObj.find('div', {'class':"col-sm-10 col-md-8"})
+    #head data of building
+    building = {'nombre_proyecto': head_info.find('h1', {'role':'heading'}).text}
+    building['direccion'] = bsObj.find('section',
+                                       {'class':'project-location-section'}).find('p', {'class':'prj-map-addr-obj'}).text
+    building['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                               bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    building['url'] = url
+    comunareg = head_info.find('div', {'class':'bcrumbs prj-bcrumbs'}).findAll('span', {'itemprop':'title'})
+    building['comuna-region'] = comunareg[-1].text + '-' + comunareg[-2].text
+    building['Precio_desde'] = head_info.find('span', {'class':'prj-price-range-lower'}).text
+    building['codigo'] = head_info.find('span', {'class':'prj-code'}).text.split(' ')[1]
+    nameList = bsObj.findAll('div', {'class': 'project-feature-item'}) #Tags with building data
+    # building data
+    building['tipo_proyecto'] = nameList[0].text.strip()
+    building['dormitorios'] = nameList[1].text.strip()
+    building['baños'] = nameList[2].text.strip()
+    browser.close()
+    browser.quit()
+    return building
+
+
+
+
+
+def apartment_data_PI(url):
+
+    '''Takes a building name and it url (from base_building_search) and returns a nested dictionary of
+    the buildings's apartment. The info is hidden in a deployable button that needs to be "open" before loading
+    the page's source code.'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # fatal
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    #browser = webdriver.PhantomJS()
+    time.sleep(10)  #wait for page to be loaded.
+    browser.get(url)
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    head_info = bsObj.find('div', {'class': "media-block"})
+    main_search = bsObj.findAll('div', {'class': 'property-data-sheet clearfix'})  # where is data
+    build_aps = {}
+    build_aps['nombre_edificio'] = building_name
+    build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+    build_aps['coordenadas'] = coordinates
+    build_aps['url'] = url
+    build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
+    build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
+
+    n = 1
+    for i in main_search:  # creates the nested dict.
+        aux = {}
+        for j in i.findAll('li'):
+            if len(j.contents) == 3:
+                aux[j.contents[0].text] = j.contents[2].text
+            else:
+                aux[j.contents[0].text] = j.contents[1]
+        build_aps[building_name][str(n)] = aux
+        n += 1
+    browser.close()
+    browser.quit()
+    return build_aps
