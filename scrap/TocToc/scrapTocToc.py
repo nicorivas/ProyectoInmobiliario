@@ -124,16 +124,17 @@ def building_data(url, building_name, coordinates):
     options.add_argument("--disable-extensions")
     LOGGER.setLevel(logging.WARNING)
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac)  # Sacar .exe para mac
-    browser.implicitly_wait(10)
     browser.get(url)
+    time.sleep(3)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class':"wrap-hfijo"})
     #head data of building
-    building = {'nombre edificio': building_name}
+    building = {'nombre_edificio': building_name}
     building['nombre'] = head_info.find('h1').text
     building['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
     building['coordenadas'] = coordinates
+    building['url'] = url
     building['comuna-region'] = head_info.findAll('h2')[1].text.split(', ')[1]
     building[head_info.find('em').text] = head_info.find('strong').text
     building['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
@@ -181,6 +182,7 @@ def apartment_data(url, building_name, coordinates):
         build_aps['nombre_edificio'] = building_name
         build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
         build_aps['coordenadas'] = coordinates
+        build_aps['url'] = url
         build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
         build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
 
@@ -206,6 +208,8 @@ def apartment_data(url, building_name, coordinates):
         build_aps = {}
         build_aps['nombre_edificio'] = building_name
         build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
+        build_aps['coordenadas'] = coordinates
+        build_aps['url'] = url
         build_aps['precio_publicacion'] = head_info.find('div', {'class':'precio-b'}).strong.text
         build_aps['precio_alternativo'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
         for i in main_search:  #creates the nested dict.
@@ -250,6 +254,7 @@ def house_data(url, house_name, coordinates):
     house['nombre casa'] = house_name
     house['tipo de vivienda'] = 'casa'
     house['nombre'] = head_info.find('h1').text
+    house['url'] = url
     house['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
     house['coordenadas'] = coordinates
     try:
@@ -326,6 +331,7 @@ def apartment_value_data(url, user, password, coordinates):
                     apt = {}
                     apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
                     apt['coordenadas'] = coordinates
+                    apt['url'] = url
                     apt['depto'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
                     apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
                     apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text

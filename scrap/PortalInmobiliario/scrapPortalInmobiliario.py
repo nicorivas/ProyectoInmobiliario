@@ -104,3 +104,108 @@ def base_building_search_PI(url):
     browser.quit()
     return list
 
+def building_data_PI(url):
+
+    '''Takes a building's name and its url and returns a dictionary with basic building data'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac)  # Sacar .exe para mac
+    browser.get(url)
+    time.sleep(3)
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    head_info = bsObj.find('div', {'class':"col-sm-10 col-md-8"})
+    #head data of building
+    building = {'nombre_proyecto': head_info.find('h1', {'role':'heading'}).text}
+    building['direccion'] = bsObj.find('section',
+                                       {'class':'project-location-section'}).find('p', {'class':'prj-map-addr-obj'}).text
+    building['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                               bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    building['url'] = url
+    comunareg = head_info.find('div', {'class':'bcrumbs prj-bcrumbs'}).findAll('span', {'itemprop':'title'})
+    building['comuna-region'] = comunareg[-1].text + '-' + comunareg[-2].text
+    building['Precio_desde'] = head_info.find('span', {'class':'prj-price-range-lower'}).text
+    building['codigo'] = head_info.find('span', {'class':'prj-code'}).text.split(' ')[1]
+    nameList = bsObj.findAll('div', {'class': 'project-feature-item'}) #Tags with building data
+    # building data
+    building['tipo_proyecto'] = nameList[0].text.strip()
+    building['dormitorios'] = nameList[1].text.strip()
+    building['baños'] = nameList[2].text.strip()
+    browser.close()
+    browser.quit()
+    return building
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def apartment_data_PI(url, state):
+
+    '''Takes a building name and it url (from base_building_search) and returns a nested dictionary of
+    the buildings's apartment. The info is hidden in a deployable button that needs to be "open" before loading
+    the page's source code.'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # fatal
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    #browser = webdriver.PhantomJS()
+    time.sleep(10)  #wait for page to be loaded.
+    browser.get(url)
+    try:
+        if state == 'Proyecto':
+            browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()  #looks for button with info and clicks it
+            html = browser.page_source
+            bsObj = BeautifulSoup(html, "html5lib")
+            head_info = bsObj.find('div', {'class': "wrap-hfijo"})
+            main_search = bsObj.findAll('div', {'class': 'info-modelo'})  # where is data
+            build_aps = {}
+            build_aps['nombre_edificio'] = building_name
+            build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+            build_aps['coordenadas'] = coordinates
+            build_aps['url'] = url
+            build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
+            build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
+
+            n = 1
+            for i in main_search:  # creates the nested dict.
+                aux = {}
+                for j in i.findAll('li'):
+                    if len(j.contents) == 3:
+                        aux[j.contents[0].text] = j.contents[2].text
+                    else:
+                        aux[j.contents[0].text] = j.contents[1]
+                build_aps[building_name][str(n)] = aux
+                n += 1
+            browser.close()
+            browser.quit()
+            return build_aps
+    except:
+        print('error')
+        browser.close()
+        browser.quit()
+        return build_aps
