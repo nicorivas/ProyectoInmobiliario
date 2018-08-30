@@ -10,10 +10,10 @@ from scrapTocToc import house_data, base_building_search, building_data, apartme
 #print(apartment_data(url, 'prueba'))
 
 
-url = 'https://www.toctoc.com/propiedades/compranuevo/departamento/providencia/edificio-pocuro/722130'
+url = 'https://www.toctoc.com/propiedades/compracorredorasr/departamento/providencia/moderno-y-original-loft/1014975'
 #user = 'covfefe2@cov.cl'
 #user = 'the_big_lebowsky@hotmail.com'
 password = 'toctocpass12'
 
-print(apartment_value_data(url, user, password))
+print(apartment_data(url, "nombre", 'coordenadas'))
 

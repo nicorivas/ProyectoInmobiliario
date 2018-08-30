@@ -1,4 +1,4 @@
-from scrapPortalInmobiliario import get_urls_PI, base_building_search_PI, building_data_PI
+from scrapPortalInmobiliario import get_urls_PI, base_building_search_PI, building_data_PI, apartment_data_PI
 import codecs
 import re
 import json
@@ -35,7 +35,8 @@ for apt in buildings:
 '''
 
 url1 ='https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana/7004-edificio-holanda-320-nva?tp=2&op=1&iug=323&ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=0'
-url = 'https://www.portalinmobiliario.com/venta/casa/providencia-metropolitana/7224-holanda-townhouses-nva?tp=1&op=1&iug=323&ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=0'
-print(building_data_PI(url))
+url2 = 'https://www.portalinmobiliario.com/venta/casa/providencia-metropolitana/7224-holanda-townhouses-nva?tp=1&op=1&iug=323&ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=0'
+url = 'https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana/4005284-providencia-jose-manuel-infante-uda?tp=2&op=1&iug=323&ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=71'
+print(apartment_data_PI(url))
 
 

@@ -143,14 +143,10 @@ def building_data_PI(url):
     return building
 
 
-
-
-
 def apartment_data_PI(url):
 
-    '''Takes a building name and it url (from base_building_search) and returns a nested dictionary of
-    the buildings's apartment. The info is hidden in a deployable button that needs to be "open" before loading
-    the page's source code.'''
+    '''Takes an apartment's url (from base_building_search) and returns a nested dictionary of
+    the apartments data. Only apartment that are for sale'''
 
     options = Options()
     options.add_argument("--headless")  # Runs Chrome in headless mode.
@@ -159,34 +155,30 @@ def apartment_data_PI(url):
     options.add_argument('start-maximized')  #
     options.add_argument('disable-infobars')
     options.add_argument("--disable-extensions")
-    options.add_argument("--log-level=3")  # fatal
-    LOGGER.setLevel(logging.WARNING)
+    options.add_argument("--log-level=3")  # fatal errors
+    LOGGER.setLevel(logging.WARNING) #supress console messages
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
-    #browser = webdriver.PhantomJS()
-    time.sleep(10)  #wait for page to be loaded.
+    time.sleep(5)  #wait for page to be loaded.
     browser.get(url)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class': "media-block"})
     main_search = bsObj.findAll('div', {'class': 'property-data-sheet clearfix'})  # where is data
     build_aps = {}
-    build_aps['nombre_edificio'] = building_name
-    build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
-    build_aps['coordenadas'] = coordinates
+    build_aps['nombre_edificio'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
+    build_aps['codigo'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
+    build_aps['fecha-publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
+    build_aps['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                               bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
     build_aps['url'] = url
-    build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
-    build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
+    build_aps['precio_publicacion'] = head_info.find('p', {'class': 'price'}).text
+    build_aps['precio_publicacion2'] = head_info.find('p', {'class': 'price-ref'}).text
+    build_aps['direcion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
+    for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-programm'}).p.stripped_strings:
+        build_aps[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
+    for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-area'}).p.stripped_strings:
+        build_aps[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
 
-    n = 1
-    for i in main_search:  # creates the nested dict.
-        aux = {}
-        for j in i.findAll('li'):
-            if len(j.contents) == 3:
-                aux[j.contents[0].text] = j.contents[2].text
-            else:
-                aux[j.contents[0].text] = j.contents[1]
-        build_aps[building_name][str(n)] = aux
-        n += 1
     browser.close()
     browser.quit()
     return build_aps

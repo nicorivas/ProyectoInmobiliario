@@ -88,7 +88,7 @@ def base_building_search(url):
     LOGGER.setLevel(logging.WARNING)
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
     browser.get(url)
-    time.sleep(10)
+    time.sleep(5)
     html = browser.page_source
     soup = BeautifulSoup(html, "html5lib")
     list = []
@@ -170,8 +170,9 @@ def apartment_data(url, building_name, coordinates):
     LOGGER.setLevel(logging.WARNING)
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
     #browser = webdriver.PhantomJS()
-    time.sleep(10)  #wait for page to be loaded.
     browser.get(url)
+    time.sleep(5)  #wait for page to be loaded.
+    '''
     try:
         browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()  #looks for button with info and clicks it
         html = browser.page_source
@@ -184,7 +185,7 @@ def apartment_data(url, building_name, coordinates):
         build_aps['coordenadas'] = coordinates
         build_aps['url'] = url
         build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
-        build_aps['precio_publicacion'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
+        build_aps['precio_publicacion2'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
 
         n = 1
         for i in main_search:  # creates the nested dict.
@@ -199,32 +200,32 @@ def apartment_data(url, building_name, coordinates):
         browser.close()
         browser.quit()
         return build_aps
+    '''
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    head_info = bsObj.find('div', {'class':"wrap-hfijo"})
+    main_search = bsObj.find('ul', {'class':'info_ficha'}) #where is data
+    build_aps = {}
+    build_aps['nombre_edificio'] = building_name
+    build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
+    build_aps['coordenadas'] = coordinates
+    build_aps['url'] = url
+    build_aps['precio_publicacion'] = head_info.find('div', {'class':'precio-b'}).strong.text
+    build_aps['precio_alternativo2'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
+    for i in main_search:  #creates the nested dict.
+        try:
+            build_aps[i.find('span').text] = i.find('strong').text
+            #build_aps[i.contents[0]].text = i.contents[1].text
 
-    except:
-        html = browser.page_source
-        bsObj = BeautifulSoup(html, "html5lib")
-        head_info = bsObj.find('div', {'class':"wrap-hfijo"})
-        main_search = bsObj.find('ul', {'class':'info_ficha'}) #where is data
-        build_aps = {}
-        build_aps['nombre_edificio'] = building_name
-        build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
-        build_aps['coordenadas'] = coordinates
-        build_aps['url'] = url
-        build_aps['precio_publicacion'] = head_info.find('div', {'class':'precio-b'}).strong.text
-        build_aps['precio_alternativo'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
-        for i in main_search:  #creates the nested dict.
+        except:
             try:
-                build_aps[i.find('span').text] = i.find('strong').text
-                #build_aps[i.contents[0]].text = i.contents[1].text
-
+                build_aps[i.contents[0].strip()] = i.contents[1].text
             except:
-                try:
-                    build_aps[i.contents[0].strip()] = i.contents[1].text
-                except:
-                    continue
-        browser.close()
-        browser.quit()
-        return build_aps
+                continue
+    browser.close()
+    browser.quit()
+
+    return build_aps
 
 
 def house_data(url, house_name, coordinates):
@@ -244,7 +245,7 @@ def house_data(url, house_name, coordinates):
     LOGGER.setLevel(logging.WARNING)
     browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
     browser.get(url)
-    time.sleep(10)
+    time.sleep(5)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     nameList = bsObj.find('ul', {'class': 'info_ficha'})  # Tags with building data
