@@ -21,12 +21,12 @@ os.makedirs(path2)
 
 
 password = 'toctocpass123'
-users = ['covfefe@cove.cl', 'the_big_lebowsky@hotmail.com', 'palpo@nad.cl']
+users = ['the_big_lebowsky@hotmail.com', 'palpo@nad.cl', 'covfefe@cove.cl']
 
 
 #user = 'the_big_lebowsky@hotmail.com'
 
-buildings = codecs.open(path + comuna + '_properties_TT1.txt', 'r', "utf-8-sig")
+buildings = codecs.open(path + comuna + '_properties_TT5.txt', 'r', "utf-8-sig")
 build_data = codecs.open(path2 + '/' + comuna + '_buildings_data_TT.txt', 'w', "utf-8-sig")
 apart_data = codecs.open(path2 + '/' +  comuna +'_apt_data_TT.txt', 'w', "utf-8-sig")
 apart_appraisal = codecs.open(path2 + '/' +  comuna +'_apt_appraisal_data_TT.txt', 'w', "utf-8-sig")
