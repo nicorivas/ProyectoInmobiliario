@@ -12,7 +12,7 @@ The script run through the entire list of buildings and registers all properties
 
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/TocToc/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/TocToc/'
-path = pc_path
+path = mac_path
 comuna = str(input('Eija comuna: '))
 date = str(datetime.datetime.now().replace(microsecond=0).isoformat().replace(':', '-'))
 #commit = str(input('Commit hash: '))
@@ -24,14 +24,13 @@ password = 'toctocpass123'
 users = ['the_big_lebowsky@hotmail.com', 'palpo@nad.cl', 'covfefe@cove.cl']
 
 
-#user = 'the_big_lebowsky@hotmail.com'
+buildings = codecs.open(path + comuna + '_properties_TT.txt', 'r', "utf-8-sig")
 
-buildings = codecs.open(path + comuna + '_properties_TT5.txt', 'r', "utf-8-sig")
-build_data = codecs.open(path2 + '/' + comuna + '_buildings_data_TT.txt', 'w', "utf-8-sig")
-apart_data = codecs.open(path2 + '/' +  comuna +'_apt_data_TT.txt', 'w', "utf-8-sig")
-apart_appraisal = codecs.open(path2 + '/' +  comuna +'_apt_appraisal_data_TT.txt', 'w', "utf-8-sig")
-house_info = codecs.open(path2 + '/' +  comuna + '_house_data_TT.txt', 'w', "utf-8-sig")
-error_list = codecs.open(path2 + '/' +  comuna +'_error_list_TT.txt', 'w', "utf-8-sig")
+build_data = codecs.open(path2 + '/' + comuna + '_buildings_data_toctoc.txt', 'w', "utf-8-sig")
+apart_data = codecs.open(path2 + '/' +  comuna +'_aptarment_data_toctoc.txt', 'w', "utf-8-sig")
+apart_appraisal = codecs.open(path2 + '/' +  comuna +'_aptarment_appraisal_data_toctoc.txt', 'w', "utf-8-sig")
+house_info = codecs.open(path2 + '/' +  comuna + '_house_data_toctoc.txt', 'w', "utf-8-sig")
+error_list = codecs.open(path2 + '/' +  comuna +'_error_list_toctoc.txt', 'w', "utf-8-sig")
 
 counter = 0
 regexp = re.compile(r'compranuevo')
@@ -79,7 +78,7 @@ for apt in buildings:
     elif type == 'Casa':
         print(apt)
         try:
-            counter +=1
+            counter += 1
             house_info.write("%s\n" % house_data(url, house_name, coordinates))
         except:
             error_list.write("%s\n" % apt)
