@@ -163,17 +163,18 @@ def apartment_data_PI(url):
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class': "media-block"})
-    main_search = bsObj.findAll('div', {'class': 'property-data-sheet clearfix'})  # where is data
+    #main_search = bsObj.findAll('div', {'class': 'property-data-sheet clearfix'})  # where is data
     build_aps = {}
     build_aps['nombre_edificio'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
     build_aps['codigo'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
-    build_aps['fecha-publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
+    build_aps['tipo_vivienda'] = 'departamento'
+    build_aps['fecha_publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
     build_aps['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
                                bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
     build_aps['url'] = url
     build_aps['precio_publicacion'] = head_info.find('p', {'class': 'price'}).text
     build_aps['precio_publicacion2'] = head_info.find('p', {'class': 'price-ref'}).text
-    build_aps['direcion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
+    build_aps['direccion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-programm'}).p.stripped_strings:
         build_aps[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-area'}).p.stripped_strings:
@@ -182,3 +183,193 @@ def apartment_data_PI(url):
     browser.close()
     browser.quit()
     return build_aps
+
+def house_data_PI(url):
+
+    ''' Takes a house url and a house name and returns a dictionary with the house's data.
+    The page doesn't give the house's data in the same way for all the cases, so the functions needs a lot
+    of 'if' and 'try' statements. Is not elegant, but it works fine. '''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # only fatal error in console
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser.get(url)
+    time.sleep(5)
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    # head house data
+    head_info = bsObj.find('div', {'class': "media-block"})
+    house = {}
+    house['nombre_casa'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
+    house['codigo'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
+    house['fecha-publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
+    house['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                               bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    house['url'] = url
+    house['precio_publicacion'] = head_info.find('p', {'class': 'price'}).text
+    house['precio_publicacion2'] = head_info.find('p', {'class': 'price-ref'}).text
+    house['direccion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
+    for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-programm'}).p.stripped_strings:
+        house[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
+    for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-area'}).p.stripped_strings:
+        house[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
+
+    browser.close()
+    browser.quit()
+    return house
+
+def apartment_appraisal_data_PI(url ,user, password):
+
+    '''Takes a building project an gets de apartment appraisal data'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # only fatal error in console
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser.get(url)
+    htmlC = browser.page_source
+    cords = BeautifulSoup(htmlC, "html5lib")
+    coordinates = [cords.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                            cords.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    time.sleep(3)
+    browser.find_elements_by_xpath('//*[@id="show-login-prompt"]')[0].click() #open logging
+    time.sleep(3)
+    alert = browser.find_elements_by_xpath('//*[@id="txtEmail"]')[0] # Finds logging form
+    time.sleep(1)
+    alert.send_keys(user + Keys.TAB + password) # Fills logging form
+    browser.find_elements_by_xpath('//*[@id="linkIngresar"]')[0].click() #logging
+    time.sleep(3)
+    browser.find_elements_by_xpath('//*[@id="prj-show-cotizar"]')[0].click()  # open appraisal
+    time.sleep(3)
+    html = browser.page_source
+    bsObj =  BeautifulSoup(html, "html5lib")
+    n = 1
+    list = []
+    for elements in bsObj.find('ul', {'class':'slides clearfix'}):
+        try:
+            i = 1
+            browser.find_elements_by_xpath('// *[ @ id = "prj-cotizacion-dialog"] / div / div / div / div[1] / div[1] / div[3] / div[1] / ul / li['+str(n)+'] / div[2]')[0].click()
+            time.sleep(3)
+            html2 = browser.page_source
+            bsObj2 = BeautifulSoup(html2, "html5lib")
+            for apt in bsObj2.find('select', {'class': 'form-control'}):
+                dept  = {'depto' : apt.text}
+                dept['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text
+                dept['url'] = url
+                dept['coordenadas'] = coordinates
+                try:
+                    browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option['+str(i)+']')[0].click()
+                except:
+                    browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option')[0].click()
+                browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/button')[0].click()
+                time.sleep(3)
+                html3 = browser.page_source
+                bsObj3 = BeautifulSoup(html3, "html5lib")
+                dept['codigo'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
+                dept[bsObj3.findAll('th', {'class': 'c'})[0].text] = bsObj3.findAll('td', {'class': 'c'})[0].text
+                dept[bsObj3.findAll('th', {'class': 'c'})[1].text] = bsObj3.findAll('td', {'class': 'c'})[1].text
+                dept[bsObj3.findAll('th', {'class': 'c'})[2].text] = bsObj3.findAll('td', {'class': 'c'})[2].text
+                dept[bsObj3.findAll('th', {'class': 'c'})[3].text] = bsObj3.findAll('td', {'class': 'c'})[3].text
+                dept[bsObj3.findAll('th', {'class': 'r'})[0].text] = bsObj3.findAll('td', {'class': 'r'})[0].text
+                dept[bsObj3.findAll('th', {'class': 'r'})[1].text] = bsObj3.findAll('td', {'class': 'r'})[1].text
+                dept[bsObj3.findAll('th', {'class': 'r'})[2].text] = bsObj3.findAll('td', {'class': 'r'})[2].text
+                dept[bsObj3.findAll('th', {'class': 'r'})[3].text] = bsObj3.findAll('td', {'class': 'r'})[3].text
+                dept[bsObj3.findAll('th', {'class': 'r'})[4].text] = bsObj3.findAll('td', {'class': 'r'})[4].text
+                dept['direccion'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
+                dept['comuna'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
+                browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[2]/div/div[4]/button')[0].click()
+                list.append(dept)
+                i += 1
+            n += 1
+        except:
+            continue
+    browser.close()
+    browser.quit()
+    return list
+
+def house_appraisal_data_PI(url ,user, password):
+
+    '''Takes a building project an gets de apartment appraisal data'''
+
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # only fatal error in console
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser.get(url)
+    htmlC = browser.page_source
+    cords = BeautifulSoup(htmlC, "html5lib")
+    coordinates = [cords.find('meta', {'property': 'og:latitude'}).attrs['content'],
+                            cords.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    time.sleep(3)
+    browser.find_elements_by_xpath('//*[@id="show-login-prompt"]')[0].click() #open logging
+    time.sleep(3)
+    alert = browser.find_elements_by_xpath('//*[@id="txtEmail"]')[0] # Finds logging form
+    time.sleep(1)
+    alert.send_keys(user + Keys.TAB + password) # Fills logging form
+    browser.find_elements_by_xpath('//*[@id="linkIngresar"]')[0].click() #logging
+    time.sleep(3)
+    browser.find_elements_by_xpath('//*[@id="prj-show-cotizar"]')[0].click()  # open appraisal
+    time.sleep(3)
+    html = browser.page_source
+    bsObj =  BeautifulSoup(html, "html5lib")
+    n = 1
+    list = []
+
+    for elements in bsObj.find('ul', {'class':'slides clearfix'}):
+        try:
+            i = 1
+            browser.find_elements_by_xpath('// *[ @ id = "prj-cotizacion-dialog"] / div / div / div / div[1] / div[1] / div[3] / div[1] / ul / li['+str(n)+'] / div[2]')[0].click()
+            time.sleep(3)
+            html2 = browser.page_source
+            bsObj2 = BeautifulSoup(html2, "html5lib")
+            for hous in bsObj2.find('select', {'class': 'form-control'}):
+                house  = {'modulo' : hous.text}
+                house['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
+                house['url'] = url
+                house['coordenadas'] = coordinates
+                try:
+                    browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option['+str(i)+']')[0].click()
+                except:
+                    browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option')[0].click()
+                browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/button')[0].click()
+                time.sleep(3)
+                html3 = browser.page_source
+                bsObj3 = BeautifulSoup(html3, "html5lib")
+                house['codigo'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
+                house[bsObj3.findAll('th', {'class': 'c'})[0].text] = bsObj3.findAll('td', {'class': 'c'})[0].text
+                house[bsObj3.findAll('th', {'class': 'c'})[1].text] = bsObj3.findAll('td', {'class': 'c'})[1].text
+                house[bsObj3.findAll('th', {'class': 'r'})[0].text] = bsObj3.findAll('td', {'class': 'r'})[0].text
+                house[bsObj3.findAll('th', {'class': 'r'})[1].text] = bsObj3.findAll('td', {'class': 'r'})[1].text
+                house[bsObj3.findAll('th', {'class': 'r'})[2].text] = bsObj3.findAll('td', {'class': 'r'})[2].text
+                house[bsObj3.findAll('th', {'class': 'r'})[3].text] = bsObj3.findAll('td', {'class': 'r'})[3].text
+                house['direccion'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
+                house['comuna'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
+                browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[2]/div/div[4]/button')[0].click()
+                print(house)
+                list.append(house)
+                i += 1
+            n += 1
+        except:
+            continue
+    browser.close()
+    browser.quit()
+    return list

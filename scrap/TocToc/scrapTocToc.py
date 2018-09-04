@@ -304,7 +304,7 @@ def apartment_value_data(url, user, password, coordinates):
     #browser = webdriver.PhantomJS()
     appraisal_data = {}
     browser.get(url)
-    time.sleep(10)
+    time.sleep(5)
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     bsObj2 = bsObj.find('ul', {'class': 'listado-plantas'}).findAll('li')
