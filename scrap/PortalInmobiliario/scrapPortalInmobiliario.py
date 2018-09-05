@@ -230,7 +230,7 @@ def apartment_appraisal_data_PI(url ,user, password):
     '''Takes a building project an gets de apartment appraisal data'''
 
     options = Options()
-    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument("--headless")  # Runs Chrome with headless mode.
     options.add_argument('--no-sandbox')  # Bypass OS security model
     options.add_argument('--disable-gpu')  # applicable to windows os only
     options.add_argument('start-maximized')  #
@@ -246,7 +246,7 @@ def apartment_appraisal_data_PI(url ,user, password):
                             cords.find('meta', {'property': 'og:longitude'}).attrs['content']]
     time.sleep(3)
     browser.find_elements_by_xpath('//*[@id="show-login-prompt"]')[0].click() #open logging
-    time.sleep(3)
+    time.sleep(5)
     alert = browser.find_elements_by_xpath('//*[@id="txtEmail"]')[0] # Finds logging form
     time.sleep(1)
     alert.send_keys(user + Keys.TAB + password) # Fills logging form
@@ -267,7 +267,7 @@ def apartment_appraisal_data_PI(url ,user, password):
             bsObj2 = BeautifulSoup(html2, "html5lib")
             for apt in bsObj2.find('select', {'class': 'form-control'}):
                 dept  = {'depto' : apt.text}
-                dept['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text
+                dept['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
                 dept['url'] = url
                 dept['coordenadas'] = coordinates
                 try:
@@ -298,6 +298,7 @@ def apartment_appraisal_data_PI(url ,user, password):
             continue
     browser.close()
     browser.quit()
+    print(list)
     return list
 
 def house_appraisal_data_PI(url ,user, password):

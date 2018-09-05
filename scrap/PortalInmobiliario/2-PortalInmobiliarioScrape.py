@@ -1,10 +1,9 @@
 import codecs
-import re
 import json
 import ast
 import os
 import datetime
-from scrapPortalInmobiliario import building_data_PI, apartment_data_PI, apartment_appraisal_data_PI
+from scrapPortalInmobiliario import building_data_PI, apartment_appraisal_data_PI, apartment_data_PI
 from scrapPortalInmobiliario import house_data_PI, house_appraisal_data_PI
 
 ''' Scrape for the actual data of the buildings/houses, using functions on scrapTocToc.py and the basic information
@@ -20,21 +19,28 @@ date = str(datetime.datetime.now().replace(microsecond=0).isoformat().replace(':
 path2 = path + date  #+ '-' + commit
 os.makedirs(path2)
 
-user = 'cove@fefe.cl'
+user = 'covfece@cov.cl'
 password = 'pipass123'
-users = ['cove@fefe.cl','covfece@cov.cl']
+users = ['app@usa.com', 'cove@fefe.cl', 'covfece@cov.cl','Cotiza@cotiza.cl']
 
 
-buildings = codecs.open(path + comuna + '_properties_PI.txt', 'r', "utf-8-sig")
+buildings = codecs.open(path + comuna + '_properties_PI3.txt', 'r', "utf-8-sig")
 
-build_data = codecs.open(path2 + '/' + comuna + '_buildings_data_portali.json', 'w', "utf-8-sig")
-apart_data = codecs.open(path2 + '/' +  comuna +'_aptarment_data_portali.json', 'w', "utf-8-sig")
-apart_appraisal = codecs.open(path2 + '/' +  comuna +'_aptarment_appraisal_data_portali.json', 'w', "utf-8-sig")
-house_info = codecs.open(path2 + '/' +  comuna + '_house_data_portali.json', 'w', "utf-8-sig")
-error_list = codecs.open(path2 + '/' +  comuna +'_error_list_portali.json', 'w', "utf-8-sig")
+build_data = codecs.open(path2 + '/' + comuna + '_building_data_portali.json', 'w', "utf-8-sig")
+apart_data = codecs.open(path2 + '/' + comuna +'_aptarment_data_portali.json', 'w', "utf-8-sig")
+apart_appraisal = codecs.open(path2 + '/' + comuna +'_aptarment_appraisal_data_portali.json', 'w', "utf-8-sig")
+house_data = codecs.open(path2 + '/' + comuna + '_house_data_portali.json', 'w', "utf-8-sig")
+house_appraisal = codecs.open(path2 + '/' + comuna + '_house_appraisal_data_portali.json', 'w', "utf-8-sig")
+error_list = codecs.open(path2 + '/' + comuna +'_error_list_portali.json', 'w', "utf-8-sig")
+
+building = []
+apartment_appraisals = []
+apartment = []
+house = []
+house_appraisals = []
 
 counter = 0
-#buildings= json.loads(buildings)
+
 for prop in buildings:
     prop = ast.literal_eval(prop)
     url = prop[1]
@@ -45,16 +51,42 @@ for prop in buildings:
         print(prop)
         print(url)
         counter += 1
-        json.dump(building_data_PI(url), build_data)
-        if state == 'Proyecto ':
-            json.dump(apartment_appraisal_data_PI(url, user, password),apart_appraisal)
-            print('NUEVO')
+        try:
+            if state == 'Proyecto ':
+                building.append(building_data_PI(url))
+                for i in apartment_appraisal_data_PI(url, user, password):
+                    apartment_appraisals.append(i)
+                print('apt ' + str(counter))
+            else:
+                apartment.append(apartment_data_PI(url))
+                print('apt aprraisal ' + str(counter))
+        except:
+            json.dump(prop, error_list, ensure_ascii=False, indent=1)
+            print('error in ' + str(prop))
     else:
-        continue
+        try:
+            if state == 'Proyecto ':
 
+                for j in house_appraisal_data_PI(url, user, password):
+                    house_appraisals.append(j)
+                print('house aprraisal ' + str(counter))
+            else:
+
+                house.append(house_data_PI(url))
+                print('apt aprraisal ' + str(counter))
+        except:
+            json.dump(prop, error_list, ensure_ascii=False, indent=1)
+            print('error in ' + str(prop))
+
+json.dump(building, build_data, ensure_ascii=False, indent=1)
+json.dump(apartment_appraisals, apart_appraisal, ensure_ascii=False, indent=1)
+json.dump(apartment, apart_data, ensure_ascii=False, indent=1)
+json.dump(house_appraisals, house_appraisal, ensure_ascii=False, indent=1)
+json.dump(house, house_data, ensure_ascii=False, indent=1)
 
 buildings.close()
 build_data.close()
 apart_data.close()
-house_info.close()
+house_data.close()
+house_appraisal.close()
 error_list.close()

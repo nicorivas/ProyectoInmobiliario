@@ -42,10 +42,10 @@ url = 'https://www.portalinmobiliario.com/venta/casa/providencia-metropolitana/4
 print(house_data_PI(url))
 '''
 
-url = 'https://www.portalinmobiliario.com/venta/casa/las-condes-metropolitana/4656-cumbre-las-condes-nva?tp=1&op=1&iug=327&ca=1&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=1'
+url = 'https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana/8022-edificio-galvarino-gallardo-1683-nva?tp=2&op=1&iug=323&ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&i=3'
 user = 'covfece@cov.cl'
 password = 'pipass123'
 building = "ejemplo"
 coordinates = '[-33.09383, -77.76542]'
-print(house_appraisal_data_PI(url, building, coordinates, user, password))
+print(apartment_appraisal_data_PI(url, user, password))
 
