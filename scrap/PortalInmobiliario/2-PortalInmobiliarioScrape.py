@@ -24,7 +24,7 @@ password = 'pipass123'
 users = ['app@usa.com', 'cove@fefe.cl', 'covfece@cov.cl','Cotiza@cotiza.cl']
 
 
-buildings = codecs.open(path + comuna + '_properties_PI3.txt', 'r', "utf-8-sig")
+buildings = codecs.open(path + comuna + '_properties_PI2.txt', 'r', "utf-8-sig")
 
 build_data = codecs.open(path2 + '/' + comuna + '_building_data_portali.json', 'w', "utf-8-sig")
 apart_data = codecs.open(path2 + '/' + comuna +'_aptarment_data_portali.json', 'w', "utf-8-sig")
@@ -56,10 +56,10 @@ for prop in buildings:
                 building.append(building_data_PI(url))
                 for i in apartment_appraisal_data_PI(url, user, password):
                     apartment_appraisals.append(i)
-                print('apt ' + str(counter))
+                print('apt appraisal' + str(counter))
             else:
                 apartment.append(apartment_data_PI(url))
-                print('apt aprraisal ' + str(counter))
+                print('apt ' + str(counter))
         except:
             json.dump(prop, error_list, ensure_ascii=False, indent=1)
             print('error in ' + str(prop))
@@ -73,7 +73,7 @@ for prop in buildings:
             else:
 
                 house.append(house_data_PI(url))
-                print('apt aprraisal ' + str(counter))
+                print('house ' + str(counter))
         except:
             json.dump(prop, error_list, ensure_ascii=False, indent=1)
             print('error in ' + str(prop))

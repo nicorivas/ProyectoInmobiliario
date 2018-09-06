@@ -12,11 +12,12 @@ mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmo
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/PortalInmobiliario/'
 path = pc_path
 comuna = str(input('Elija comuna: '))
+path2 = pc_path + comuna + '/'
 
 '''
 url = ['https://www.portalinmobiliario.com/venta/departamento/providencia-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1',
        'https://www.portalinmobiliario.com/venta/casa/providencia-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1']
-providencia_search_urls = codecs.open(path + 'providencia_urls_PI.txt', 'w+', "utf-8")
+providencia_search_urls = codecs.open(path2 + comuna + '_urls_PI.txt', 'w+', "utf-8")
 
 for dir in url:
     urls = get_urls_PI(dir)

@@ -19,6 +19,7 @@ def search_parameters_PI(url):
     return final_url
 
 
+
 def get_urls_PI(url):
 
     '''Gets all urls pages from a search. It takes one url, and returns
