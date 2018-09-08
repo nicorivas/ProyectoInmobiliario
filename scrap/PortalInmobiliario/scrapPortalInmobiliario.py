@@ -47,8 +47,11 @@ def get_urls_PI(url):
         time.sleep(2) #Give time to load the page
         html = browser.page_source
         bsObj = BeautifulSoup(html, "html5lib")
-        end = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[-1]
-        begin = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[3]
+        try:
+            end = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[-1]
+            begin = bsObj.find('span', {'class': 'textual-pager text-muted'}).text.split(' ')[3]
+        except:
+            return pages
         try:
             if len(bsObj.find('div', {'class':'products-list'})) == 1 or begin == end:
                 page = False

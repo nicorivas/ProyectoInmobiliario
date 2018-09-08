@@ -25,12 +25,6 @@ users = ['app@usa.com', 'cove@fefe.cl', 'covfece@cov.cl','Cotiza@cotiza.cl']
 
 
 buildings = codecs.open(path + comuna + '_properties_PI2.txt', 'r', "utf-8-sig")
-
-build_data = codecs.open(path2 + '/' + comuna + '_building_data_portali.json', 'w', "utf-8-sig")
-apart_data = codecs.open(path2 + '/' + comuna +'_aptarment_data_portali.json', 'w', "utf-8-sig")
-apart_appraisal = codecs.open(path2 + '/' + comuna +'_aptarment_appraisal_data_portali.json', 'w', "utf-8-sig")
-house_data = codecs.open(path2 + '/' + comuna + '_house_data_portali.json', 'w', "utf-8-sig")
-house_appraisal = codecs.open(path2 + '/' + comuna + '_house_appraisal_data_portali.json', 'w', "utf-8-sig")
 error_list = codecs.open(path2 + '/' + comuna +'_error_list_portali.json', 'w', "utf-8-sig")
 
 building = []
@@ -54,11 +48,21 @@ for prop in buildings:
         try:
             if state == 'Proyecto ':
                 building.append(building_data_PI(url))
+                build_data = codecs.open(path2 + '/' + comuna + '_building_data_portali.json', 'w', "utf-8-sig")
+                json.dump(building, build_data, ensure_ascii=False, indent=1)
+                build_data.close()
                 for i in apartment_appraisal_data_PI(url, user, password):
                     apartment_appraisals.append(i)
+                    apart_appraisal = codecs.open(path2 + '/' + comuna + '_aptarment_appraisal_data_portali.json', 'w',
+                                                  "utf-8-sig")
+                    json.dump(apartment_appraisals, apart_appraisal, ensure_ascii=False, indent=1)
+                    apart_appraisal.close()
                 print('apt appraisal' + str(counter))
             else:
                 apartment.append(apartment_data_PI(url))
+                apart_data = codecs.open(path2 + '/' + comuna + '_aptarment_data_portali.json', 'w', "utf-8-sig")
+                json.dump(apartment, apart_data, ensure_ascii=False, indent=1)
+                apart_data.close()
                 print('apt ' + str(counter))
         except:
             json.dump(prop, error_list, ensure_ascii=False, indent=1)
@@ -66,27 +70,23 @@ for prop in buildings:
     else:
         try:
             if state == 'Proyecto ':
-
                 for j in house_appraisal_data_PI(url, user, password):
                     house_appraisals.append(j)
+                    house_appraisal = codecs.open(path2 + '/' + comuna + '_house_appraisal_data_portali.json', 'w',
+                                                  "utf-8-sig")
+                    json.dump(house_appraisals, house_appraisal, ensure_ascii=False, indent=1)
+                    house_appraisal.close()
                 print('house aprraisal ' + str(counter))
             else:
-
                 house.append(house_data_PI(url))
+                house_data = codecs.open(path2 + '/' + comuna + '_house_data_portali.json', 'w', "utf-8-sig")
+                json.dump(house, house_data, ensure_ascii=False, indent=1)
+                house_data.close()
                 print('house ' + str(counter))
         except:
             json.dump(prop, error_list, ensure_ascii=False, indent=1)
             print('error in ' + str(prop))
 
-json.dump(building, build_data, ensure_ascii=False, indent=1)
-json.dump(apartment_appraisals, apart_appraisal, ensure_ascii=False, indent=1)
-json.dump(apartment, apart_data, ensure_ascii=False, indent=1)
-json.dump(house_appraisals, house_appraisal, ensure_ascii=False, indent=1)
-json.dump(house, house_data, ensure_ascii=False, indent=1)
 
 buildings.close()
-build_data.close()
-apart_data.close()
-house_data.close()
-house_appraisal.close()
 error_list.close()
