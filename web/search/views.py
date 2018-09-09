@@ -8,6 +8,10 @@ from django.utils.text import slugify
 from .forms import LocationSearchForm
 from .forms import AppraisalCreateForm
 
+from region.models import Region
+from commune.models import Commune
+
+from house.models import House
 from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal
@@ -46,7 +50,10 @@ def search(request):
                     addressStreet=_addressStreet,
                     addressNumber=_addressNumber)
                 # save to database
-                buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
+                if len(Building.objects.all()) > 0:
+                    buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
+                else:
+                    buildingId = 1
                 # get lat lon
 
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?'
@@ -56,7 +63,6 @@ def search(request):
                 response_results = response_json['results'][0]['geometry']['location']
                 building.lat = response_results['lat']
                 building.lon = response_results['lng']
-                print(response_results)
 
                 building.id = buildingId
                 building.save()
@@ -121,60 +127,79 @@ def search(request):
         # SEARCH FORM
 
         form_search = LocationSearchForm
+
+        # IF WE HAVE AN ADDRESS
+
         address = request.GET.get('address', '')
 
-        url = 'https://maps.googleapis.com/maps/api/geocode/json?'
-        url_address = 'address={}'.format(address)
-        response = requests.get(url+''+url_address)
-        response_json = response.json()
-        response_results = response_json['results']
-
-        addressNumber = ''
         addressStreet = ''
-        addressCommune = ''
-        addressRegion = ''
-        addressCountry = ''
+        addressNumber = 0
+        addressRegion = 13
 
-        # CREATE APPRAISAL FORM
+        if address != '':
 
-        for address_component in response_results[0]['address_components']:
-            types = address_component['types']
-            if 'street_number' in types:
-                addressNumber = address_component['long_name']
-            if 'route' in types:
-                addressStreet = address_component['short_name']
-            if 'locality' in types:
-                addressCommune = address_component['long_name']
-            if 'administrative_area_level_1' in types:
-                addressRegion = address_component['long_name']
-            if 'country' in types:
-                addressCountry = address_component['long_name']
+            # GET DATA FROM GOOGLE API
 
-        #print(resp_json_payload['results'][0]['formatted_address'])
+            url = 'https://maps.googleapis.com/maps/api/geocode/json?'
+            url_address = 'address={}'.format(address)
+            url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+            url_language = '&language=es'
+            response = requests.get(url+''+url_address+''+url_key+''+url_language)
+            response_json = response.json()
+            response_results = response_json['results']
 
-        region_name = ''
-        region_id = 0
+            addressNumber = ''
+            addressStreet = ''
+            addressCommune = ''
+            addressRegion = ''
+            addressCountry = ''
 
-        for region in comunas_regiones.regiones:
-            if region[0].find(addressRegion) >= 0:
-                region = region[0]
+            for address_component in response_results[0]['address_components']:
+                types = address_component['types']
+                if 'street_number' in types:
+                    addressNumber = address_component['long_name']
+                if 'route' in types:
+                    addressStreet = address_component['short_name']
+                if 'locality' in types:
+                    addressCommune = address_component['long_name']
+                if 'administrative_area_level_1' in types:
+                    addressRegion = address_component['long_name']
+                if 'country' in types:
+                    addressCountry = address_component['long_name']
+
+            region_name = (addressRegion.split('Región')[1]).strip()
+            region = Region.objects.get(name__icontains=region_name)
+            commune = Commune.objects.get(name__icontains=addressCommune)
+
+        else:
+
+            region = Region.objects.get(code=addressRegion)
+            commune = Commune.objects.get(name__icontains='Providencia')
 
         form_create = AppraisalCreateForm(
             initial={
                 'addressStreet_create':addressStreet,
                 'addressNumber_create':addressNumber,
                 'addressRegion_create':region,
-                })
-        form_create.fields['addressCommune_create'].choices = [(a,a) for a in comunas_regiones.regiones_comunas[region]]
-        form_create.fields['addressCommune_create'].initial = addressCommune
+                },label_suffix='')
+
+        communes = Commune.objects.filter(region=region.code).order_by('name')
+
+        form_create.fields['addressCommune_create'].queryset = communes
+        form_create.fields['addressCommune_create'].initial = commune
 
         # Get buildings to be displayed on map
         buildings = Building.objects.all()
         buildings_json = serializers.serialize("json", Building.objects.all())
 
+        # Get houses to be displayed on map
+        houses = House.objects.all()
+        houses_json = serializers.serialize("json", House.objects.all())
+
         context = {
-            'buildings':buildings,
+            #'buildings':buildings,
             'buildings_json':buildings_json,
+            'houses_json':houses_json,
             'form_search':form_search,
             'form_create':form_create}
 
@@ -182,8 +207,8 @@ def search(request):
 
 def load_communes(request):
     region_id = int(request.GET.get('region'))
-    region = comunas_regiones.regiones[region_id]
-    communes = comunas_regiones.regiones_comunas[region[1]]
+    region = Region.objects.get(pk=region_id)
+    communes = list(Commune.objects.filter(region=region.code).order_by('name'))
     return render(request,
         'hr/commune_dropdown_list_options.html',
-        {'communes': enumerate(communes)})
+        {'communes': communes})

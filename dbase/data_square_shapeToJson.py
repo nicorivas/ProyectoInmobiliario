@@ -66,7 +66,10 @@ def with_ogr2ogr(source='INE2016',do_simplify=1,do_convert=1):
                 geojson_o['geometry'] = feature['geometry']
                 geojson_o['geometry']['crs'] = {"type":"name","properties":{"name":"EPSG:4326"}}
 
-                file = open('../data/geo/chile/squares/json/'+slugify(name)+'.geojson','w')
+                path = '../data/geo/chile/manzanas/json/{}/'.format(slugify(code_to_region_name[region]))
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                file = open(path+'{}_{}.geojson'.format(slugify(code_to_commune_name[comuna]),code),'w')
                 file.write(geojson.dumps(geojson_o, sort_keys=True))
                 file.write('\n')
 
@@ -94,6 +97,6 @@ def with_ogr2ogr(source='INE2016',do_simplify=1,do_convert=1):
 
     # Convert shape files to GeoJSON (and convert coordinate system)
     if do_convert:
-        convert(filepath_in[0],filepath_out[0])
+        convert(filepath_in,filepath_out)
 
 with_ogr2ogr(do_simplify=0,do_convert=1)

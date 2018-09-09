@@ -3,228 +3,858 @@
 
 {% block head %}
   {% load static %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <!--<script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/js/gijgo.min.js" type="text/javascript"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.css">
   <link rel="stylesheet" href="{% static 'appraisal/css/appraisal.css' %}">
 {% endblock head %}
 
 {% block content %}
 <h1>Tasación departamento</h1>
 
-
-<form action="" method="post" id="form">
+<form action="" method="post" id="form" ajax_computeValuationsUrl="{% url 'ajax_computeValuations' %}">
   {% csrf_token %}
 
   <div id="menu" class="section">
-    <input type="submit" value="Guardar" name="save">
-    <input type="submit" value="Exportar" name="export">
-    <input type="submit" value="Borrar" name="delete">
+    <button class="btn btn-outline-primary" name="save">Guardar</button>
+    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modalExport">Exportar</button>
+    <button class="btn btn-outline-primary" name="delete">Borrar</button>
   </div>
+
+  <div class="modal fade" id="modalExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Exportar tasación</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            Elija un formato:
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+              <label class="form-check-label" for="exampleRadios1">
+                Excel (Santander)
+              </label>
+            </div>
+            <div class="form-check disabled">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+              <label class="form-check-label" for="exampleRadios2">
+                Excel (BBVA)
+              </label>
+            </div>
+            <div class="form-check disabled">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3" disabled>
+              <label class="form-check-label" for="exampleRadios3">
+                Otros
+              </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" name="export">Exportar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+  <div id="surroundings" class="section">
+
+    <div class="section-title">
+      <h2> Tasación </h2>
+    </div>
+
+    <div class="subsection">
+
+      <label>Solicitante</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Nombre
+        </span>
+        </div>
+          {{form_appraisal.solicitante}}
+        </div>
+        </div>
+
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Sucursal
+        </span>
+        </div>
+          {{form_appraisal.solicitanteSucursal}}
+        </div>
+        </div>
+
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Ejecutivo
+        </span>
+        </div>
+          {{form_appraisal.solicitanteEjecutivo}}
+        </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="subsection">
+
+      <label>Cliente</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Nombre
+        </span>
+        </div>
+          {{form_appraisal.cliente}}
+        </div>
+        </div>
+
+        <div class="col-2">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Rut
+        </span>
+        </div>
+          {{form_appraisal.clienteRut}}
+        </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="subsection">
+
+      <label>Propietario</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Nombre
+        </span>
+        </div>
+          {{form_appraisal.propietario}}
+        </div>
+        </div>
+
+        <div class="col-2">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Rut
+        </span>
+        </div>
+          {{form_appraisal.propietarioRut}}
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+
+      <label>Tasador</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Nombre
+        </span>
+        </div>
+          {{form_appraisal.tasadorNombre}}
+        </div>
+        </div>
+
+        <div class="col-2">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Rut
+        </span>
+        </div>
+          {{form_appraisal.tasadorRut}}
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+
+      <label>Visador</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Nombre
+        </span>
+        </div>
+          {{form_appraisal.visadorEmpresa}}
+        </div>
+        </div>
+
+        <div class="col-2">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          Mail
+        </span>
+        </div>
+          {{form_appraisal.visadorEmpresaMail}}
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+
+      <label>Roles</label>
+
+      <div class="form-row">
+        <div class="col-4">
+        <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          {{form_appraisal.rolAvaluo.label}}
+        </span>
+        </div>
+          {{form_appraisal.rolAvaluo}}
+        </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  </section>
 
   <div id="property" class="section">
   <section>
-    <h2>Propiedad</h2>
-    <div class="field">
-    <div class="field_label"><p>Dirección:</p></div>
-    <div class="field_input"><p><input type="text" value="{{ building.addressStreet }} {{building.addressNumber}}" disabled></p></div>
+
+    <div class="section-title">
+      <h2> Propiedad </h2>
     </div>
-    <div class="field">
-    <div class="field_label"><p>Departamento:</p></div>
-    <div class="field_input"><p><input type="text" value="{{ apartment.number }}" disabled></p></div>
+
+    <div class="form-group">
+    <div class="form-row">
+      <div class="col-4">
+      <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        Calle
+      </span>
+      </div>
+        <input type="text" class="form-control form-control-sm" value="{{ building.addressStreet }}" disabled>
+      </div>
+      </div>
+
+      <div class="col-2">
+      <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        No.
+      </span>
+      </div>
+        <input type="text" class="form-control form-control-sm" value="{{building.addressNumber}}" disabled>
+      </div>
+      </div>
+
+      <div class="col-2">
+      <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        Dpto.
+      </span>
+      </div>
+        <input type="text" class="form-control form-control-sm" value="{{ apartment.number }}" disabled>
+      </div>
+      </div>
     </div>
-    <div class="field">
-    <div class="field_label"><p>Comuna:</p></div>
-    <div class="field_input"><p><input type="text" value="{{ building.addressCommune }}" disabled></p></div>
     </div>
-    <div class="field">
-    <div class="field_label"><p>Region:</p></div>
-    <div class="field_input"><p><input type="text" value="{{ building.addressRegion }}" disabled></p></div>
+
+    <div class="form-group">
+    <div class="form-row">
+      <div class="col-4">
+      <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        Comuna
+      </span>
+      </div>
+        <input type="text" class="form-control form-control-sm" value="{{ building.addressCommune }}" disabled>
+      </div>
+      </div>
+
+      <div class="col-4">
+      <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        Región
+      </span>
+      </div>
+        <input type="text" class="form-control form-control-sm" value="{{ building.addressRegion }}" disabled>
+      </div>
+      </div>
     </div>
-    <div class="field">
-    <div class="field_label"><p>Numero:</p></div>
-    <div class="field_input"><p><input type="text" value="{{ building.addressStreet }} {{building.addressNumber}}" disabled></p></div>
     </div>
+
   </section>
 
     <div id="general" class="subsection">
-    <section>
-      <h3>Características generales</h3>
-      <div class="columns">
-      <div class="field">
-      <div class="field_label"><p>{{form.general_floor.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_floor}}</p></div>
+
+      <label>Características generales</label>
+
+      <div class="form-row">
+      <div class="col-md-3">
+
+      <div class="row">
+      <div class="col-md-7">
+      <div class="input-group input-group-sm mb-3">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        {{form_apartment.floor.label}}
+      </span>
       </div>
-      <div class="field">
-      <div class="field_label"><p>{{form.general_bedrooms.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_bedrooms}}</p></div>
-      </div>
-      <div class="field">
-      <div class="field_label"><p>{{form.general_bathrooms.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_bathrooms}}</p></div>
-      </div>
-      <div class="field">
-      <div class="field_label"><p>{{form.general_totalSquareMeters.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_totalSquareMeters}} mts2</p></div>
-      </div>
-      <div class="field">
-      <div class="field_label"><p>{{form.general_usefulSquareMeters.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_usefulSquareMeters}} mts2</p></div>
-      </div>
-      <div class="field">
-      <div class="field_label"><p>{{form.general_orientation.label_tag}}</p></div>
-      <div class="field_input"><p>{{form.general_orientation}}</p></div>
+        {{form_apartment.floor}}
       </div>
       </div>
-      <div class="columns">
-      <div class="field">
-      <div class="field_label"><p>{{form.general_generalDescription.label_tag}}</p></div>
-      <p>{{form.general_generalDescription}}</p>
+      </div>
+
+      <div class="row">
+      <div class="col-md-7">
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_apartment.bedrooms.label}}
+          </span>
+        </div>
+        {{form_apartment.bedrooms}}
       </div>
       </div>
-    </section>
+      </div>
+
+      <div class="row">
+      <div class="col-md-7">
+      <div class="input-group input-group-sm mb-3">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        {{form_apartment.bathrooms.label}}
+      </span>
+      </div>
+        {{form_apartment.bathrooms}}
+      </div>
+      </div>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        {{form_apartment.builtSquareMeters.label}}
+      </span>
+      </div>
+      {{form_apartment.builtSquareMeters}}
+      <div class="input-group-append">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          m<sup>2</sup>
+        </span>
+      </div>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        {{form_apartment.usefulSquareMeters.label}}
+      </span>
+      </div>
+      {{form_apartment.usefulSquareMeters}}
+      <div class="input-group-append">
+        <span class="input-group-text" id="inputGroup-sizing-sm">
+          m<sup>2</sup>
+        </span>
+      </div>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+      <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-sm">
+        {{form_apartment.orientation.label}}
+      </span>
+      </div>
+        {{form_apartment.orientation}}
+      </div>
+
+      </div>
+
+      <div class="col-md-8">
+
+        {{form_apartment.generalDescription.label_tag}}
+        {{form_apartment.generalDescription}}
+
+      </div>
+      </div>
     </div>
 
     <section>
     <div id="technical_legal" class="subsection">
-      <h3> Antecedentes tecnico legales</h3>
-    </div>
-    </section>
 
-    <section>
-    <div id="price" class="subsection">
-      <h3>Precio</h3>
-      <p> UF/Metro cuadrado en comuna </p>
+      <label>Antecedentes técnico-legales</label>
+
+      <div class="row">
+      <div class="col-6">
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.anoConstruccion.label}}
+          </span>
+        </div>
+        {{form_building.anoConstruccion}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.vidaUtilRemanente.label}}
+          </span>
+        </div>
+        {{form_building.vidaUtilRemanente}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.avaluoFiscal.label}}
+          </span>
+        </div>
+        {{form_building.avaluoFiscal}}
+        <div class="input-group-append">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            UF
+          </span>
+        </div>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.dfl2.label}}
+          </span>
+        </div>
+        {{form_building.dfl2}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.selloVerde.label}}
+          </span>
+        </div>
+        {{form_building.selloVerde}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.copropiedadInmobiliaria.label}}
+          </span>
+        </div>
+        {{form_building.copropiedadInmobiliaria}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.ocupante.label}}
+          </span>
+        </div>
+        {{form_building.ocupante}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.tipoBien.label}}
+          </span>
+        </div>
+        {{form_building.tipoBien}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.destinoSII.label}}
+          </span>
+        </div>
+        {{form_building.destinoSII}}
+      </div>
+
     </div>
-    </section>
+    <div class="col-6">
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.usoActual.label}}
+          </span>
+        </div>
+        {{form_building.usoActual}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.usoFuturo.label}}
+          </span>
+        </div>
+        {{form_building.usoFuturo}}
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm">
+                {{form_building.permisoEdificacion.label}}
+              </span>
+            </div>
+            {{form_building.permisoEdificacion}}
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm">
+                Fecha
+              </span>
+            </div>
+            {{form_building.permisoEdificacionDate}}
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm">
+                {{form_building.recepcionFinal.label}}
+              </span>
+            </div>
+            {{form_building.recepcionFinal}}
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm">
+                Fecha
+              </span>
+            </div>
+            {{form_building.recepcionFinalDate}}
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.expropiacion.label}}
+          </span>
+        </div>
+        {{form_building.expropiacion}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.viviendaSocial.label}}
+          </span>
+        </div>
+        {{form_building.viviendaSocial}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.adobe.label}}
+          </span>
+        </div>
+        {{form_building.adobe}}
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            {{form_building.desmontable.label}}
+          </span>
+        </div>
+        {{form_building.desmontable}}
+      </div>
+
+      </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="value" class="section">
+
+    <div class="section-title">
+      <h2> Valorización </h2>
+    </div>
+
+    <div class="row">
+    <div class="col-6">
+    <table class="table table-sm table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Valores de tasación</th>
+          <th scope="col">$</th>
+          <th scope="col">UF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="col" style="vertical-align: middle;">Valor comercial</td>
+          <td scope="col"><input type="number" name="valor" id="id_valor" class="form-control form-control-sm" disabled></td>
+          <td scope="col">{{form_appraisal.valorUF}}</td>
+        </tr>
+        <tr>
+          <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
+          <td scope="col"><input type="number" name="valor_liquidez" id="id_valor_liquidez" class="form-control form-control-sm" disabled></td>
+          <td scope="col"><input type="number" name="valor_liquidez_uf" id="id_valor_liquidez_uf" class="form-control form-control-sm" disabled></td>
+        </tr>
+        <tr>
+          <td scope="col" style="vertical-align: middle;">Monto seguro</td>
+          <td scope="col"><input type="number" name="valor_monto_seguro" id="id_valor_monto_seguro" class="form-control form-control-sm" disabled></td>
+          <td scope="col"><input type="number" name="valor_monto_seguro_uf" id="id_valor_monto_seguro_uf" class="form-control form-control-sm" disabled></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
 
   </div>
 
-  <section>
+  <script>
+    $("#id_valorUF").change(function () {
+      var url = $("#form").attr("ajax_computeValuationsUrl");
+      var valor = $(this).val();
+      $.ajax({
+        url: url,
+        data: {
+          'valor': valor
+        },
+        success: function (data) {
+          data = JSON.parse(data)
+          $("#id_valor").val(parseFloat(data.valorComercialPesos));
+          $("#id_valor_liquidez").val(parseFloat(data.valorLiquidezPesos));
+          $("#id_valor_liquidez_uf").val(parseFloat(data.valorLiquidezUF));
+          $("#id_valor_monto_seguro").val(parseFloat(data.montoSeguroPesos));
+          $("#id_valor_monto_seguro_uf").val(parseFloat(data.montoSeguroUF));
+        }
+      });
+    });
+  </script>
+
+  <div id="value" class="section">
+
+    <div class="section-title">
+      <h2> Muestras comparativas </h2>
+    </div>
+
+    <table class="table table-sm table-striped">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Propiedad</th>
+          <th scope="col">Tipología</th>
+          <th scope="col">Fuente</th>
+          <th scope="col">Área construida (m<sup>2</sup>)</th>
+          <th scope="col">Área útil (m<sup>2</sup>)</th>
+          <th scope="col">Valor comercial (UF)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in references %}
+        <tr>
+          <td scope="row">{{o.building.addressStreet}} {{o.building.addressNumber}}</td>
+          <td>{{ o.propertyType | title }}</td>
+          <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
+          <td>{{ o.builtSquareMeters }}</td>
+          <td>{{ o.usefulSquareMeters }}</td>
+          <td>{{ o.marketPrice }}</td>
+        </tr>
+        {% endfor %}
+
+        <tr class="table-warning">
+          <th scope="row">Promedios</th>
+          <td></td>
+          <td></td>
+          <td>{{ averages.builtSquareMeters__avg }}
+          &plusmn; {{ stds.builtSquareMeters__stddev | floatformat:1 }}</td>
+          <td>{{ averages.usefulSquareMeters__avg }}
+          &plusmn; {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</td>
+          <td>{{ averages.marketPrice__avg }}
+          &plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div id="surroundings" class="section">
-    <h2> Entorno </h2>
 
-    <h3> Plano de ubicación </h3>
-
-    <img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=800x300&maptype=roadmap
-&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E
-&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}">
-
-    <h3> Manzana </h3>
-
-    <div class="field">
-    <div class="field_label"><p>Población: </p></div>
-    <div class="field_input"><p><input type="text" value="" disabled></p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>Superficie promedio: </p></div>
-    <div class="field_input"><p><input type="text" value="" disabled></p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>Año promedio: </p></div>
-    <div class="field_input"><p><input type="text" value="" disabled></p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>Estado veredas: </p></div>
-    <div class="field_input"><p><input type="text" value="" disabled></p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>Estado calles: </p></div>
-    <div class="field_input"><p><input type="text" value="" disabled></p></div>
+    <div class="section-title">
+      <h2> Entorno </h2>
     </div>
 
-    <div class="columns">
-      <h3> Educación </h3>
+    <div class="row">
+    <div class="col-md-12">
+      <label for="id_sectorDescription">
+        Descripcion del sector
+      </label>
+      <textarea class="form-control" id="id_sectorDescription" cols="80" rows="5"></textarea>
+    </div>
     </div>
 
-    <div class="columns">
-      <h3> Salud </h3>
+    <div class="row">
+    <div class="col-md-12">
+      <label for="id_map">
+        Plano de ubicación
+      </label>
+      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}"></p>
+    </div>
     </div>
 
-    <div class="columns">
-      <h3> Otros servicios </h3>
-      <p> Farmacias: Más cercana a 5 min caminando. 5 a 10min. </p>
-      <p> Bicicletas: Más cercana a 5 min caminando. 3 a 10min. </p>
-      <p> Supermercados: Más cercano a 5 min caminando. 2 a 10min. </p>
-      <p> Mall: Más cercano a 20 min caminando. </p>
-      <p> Restaurantes: Más cercano a 5 min caminando. 5 a 10min. </p>
-      <p> Bancos: Más cercano a 5 min caminando. 5 a 10min. </p>
+    <div class="row">
+    <div class="col-md-12">
+    <label for="id_planoRegulador">
+      Plano regulador
+    </label>
+      <textarea class="form-control" id="id_planoRegulador" cols="80" rows="5"></textarea>
+    </div>
     </div>
 
-    <div class="columns">
-      <h3> Transporte </h3>
-      <p> Metro: Estación Los Leones a 13 minutos caminando </p>
-      <p> Micro: Líneas 345, 124, 154, 453 a 5 minutos caminando </p>
+    <div id="surroundings_square" class="subsection">
+
+      <label>Manzana</label>
+
+      <div class="row">
+      <div class="col-6">
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            Población
+          </span>
+        </div>
+        <input type="text" value="" class="form-control" disabled>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            Superficie útil promedio
+          </span>
+        </div>
+        <input type="text" value="" class="form-control" disabled>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            Año promedio
+          </span>
+        </div>
+        <input type="text" value="" class="form-control" disabled>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            Estado veredas
+          </span>
+        </div>
+        <input type="text" value="" class="form-control" disabled>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">
+            Estado calles
+          </span>
+        </div>
+        <input type="text" value="" class="form-control" disabled>
+      </div>
+
+      </div>
+      </div>
+
     </div>
 
-    <div class="columns">
-      <h3> Áreas verdes </h3>
+    <div id="surroundings_education" class="subsection">
+      <label>Educación</label>
     </div>
 
-    <div class="columns">
-      <h3> Seguridad </h3>
-      <p> Índice de delincuencia: </p>
-      <p> Índice de seguridad: </p>
-      <p> Comisaría más cercana: NOMBRE, DIRECCION </p>
-      <p> Plan cuadrante zona: </p>
+    <div id="surroundings_health" class="subsection">
+      <label>Salud</label>
     </div>
+
+    <div id="surroundings_transport" class="subsection">
+      <label>Transporte</label>
+    </div>
+
+    <div id="surroundings_services" class="subsection">
+      <label>Otros servicios</label>
+    </div>
+
+    <div id="surroundings_green_spaces" class="subsection">
+      <label>Áreas verdes</label>
+    </div>
+
+    <div id="surroundings_safety" class="subsection">
+      <label>Seguridad</label>
+    </div>
+
   </div>
   </section>
 
-  <section>
-  <div id="surroundings" class="section">
-    <h2> Tasación </h2>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_solicitante.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_solicitante}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_solicitanteSucursal.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_solicitanteSucursal}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_solicitanteEjecutivo.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_solicitanteEjecutivo}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_cliente.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_cliente}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_clienteRut.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_clienteRut}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_propietario.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_propietario}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_propietarioRut.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_propietarioRut}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_rolAvaluo.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_rolAvaluo}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_tasadorNombre.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_tasadorNombre}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_tasadorRut.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_tasadorRut}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_visadorEmpresa.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_visadorEmpresa}}</p></div>
-    </div>
-    <div class="field">
-    <div class="field_label"><p>{{form.app_visadorEmpresaMail.label_tag}}</p></div>
-    <div class="field_input"><p>{{form.app_visadorEmpresaMail}}</p></div>
-    </div>
-  </div>
-  </section>
-  <!---
-  <input type="submit" value="Guardar">
-  <input type="submit" value="Exportar">
-  --->
   </form>
+
+  <script>
+      $('.datepicker_year').datepicker({
+        format: "yyyy",
+        minViewMode: 2,
+        maxViewMode: 2,
+        autoclose: true});
+  </script>
+
+  <script>
+      $('.datepicker_month').datepicker({
+        format: "mm/yyyy",
+        minViewMode: 1,
+        maxViewMode: 2,
+        autoclose: true});
+  </script>
 
 {% endblock %}

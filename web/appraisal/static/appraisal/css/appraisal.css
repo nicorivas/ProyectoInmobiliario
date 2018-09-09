@@ -1,133 +1,55 @@
-.section {
-  border: 1px solid #ddd;
+#value_samples .value_table {
+  display: block;
+  width: 1000px;
+  border: 1px solid #aaa;
   border-radius: 3px;
-  padding: 1em;
-  margin-bottom: 0.5em;
-  background: #fafafa;
+}
+
+#value_samples .value_table_row p {
+  font-size: 14px;
+  margin-right: 1em;
+  margin-left : 1em;
+}
+
+#value_final .value_table {
+  display: block;
+  width: 600px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+.value_table_row_title {
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+  margin: 0px;
+  padding: 0px;
   overflow: hidden;
+  background-color: #0C4B33;
 }
 
-.subsection {
-  border: 1px solid #ddd;
-  padding: 1em;
-  margin-left: -0.5em;
-  margin-right: -0.5em;
-  margin-bottom: 0.5em;
-  margin-top: 0.5em;
-  background: #fafafa;
+.value_table_row {
+  display: flex;
+  justify-content: space-between;
   overflow: hidden;
+  height: 40px;
 }
 
-.subsection h3 {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0em;
-}
-
-.columns {
-  width: 45%;
+.value_table_cell {
+  width: 30%;
   float: left;
-  border-right: 1px solid #ddd;
-  padding-left: 0;
-  margin-bottom: 0.0em;
-  margin-left: 0.0em;
-  margin-right: 1.0em;
-  margin-top: 1.0em;
-  background: #fafafa;
+  padding: 5px;
 }
 
-#form p {
-  font-size: 16;
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 2em;
+.value_table_cell p {
+  margin: 0px;
+  padding: 0px;
 }
 
-#form input[type=text] {
-	font-size: 14;
-  height: 2em;
-  background: #ddd;
-  /*margin-right: 0.5em;
-  margin-top: 0.2em;*/
-  border: 0px solid #ddd;
-  border-radius: 10px;
+.value_table_cell input[type=number] {
+  width: 100%;
 }
 
-#form input[type=number] {
-	font-size: 14;
-  height: 2em;
-  background: #ddd;
-  /*margin-right: 0.5em;
-  margin-top: 0.2em;*/
-  border: 0px solid #ddd;
-  border-radius: 10px;
-}
-
-#form select {
-	font-size: 14;
-  height: 2em;
-  background: #ddd;
-  /*margin-right: 0.5em;
-  margin-top: 0.2em;*/
-  border: 0px solid #ddd;
-  border-radius: 10px;
-}
-
-#form textarea {
-	font-size: 12;
-  height: 13em;
-  background: #ddd;
-  /*margin-right: 0.5em;
-  margin-top: 0.2em;*/
-  padding: 1em;
-  border: 0px solid #ddd;
-  border-radius: 10px;
-}
-
-.field {
-  overflow: hidden;
-}
-
-.field p {
-  line-height: 1em;
-  padding: 0;
-  margin: 0;
-}
-
-.field_label {
-  float: left;
-  width: 165px;
-  text-align: left;
-  padding-right: 0.5em;
-}
-
-.field_input {
-  width: 40%;
-  float: left;
-}
-
-.field_input input {
-  width: 20em;
-}
-
-#id_general_floor,
-#id_general_bedrooms,
-#id_general_bathrooms {
-  width: 40px;
-  padding: 0 0 0 0.5em;
-}
-
-#id_general_totalSquareMeters,
-#id_general_usefulSquareMeters {
-  width: 60px;
-  padding: 0 0 0 0.5em;
-}
-
-#id_general_generalDescription {
-  width: 400px;
-  height: 100px;
-  padding: 0 0 0 0.5em;
-}
-
-#form label {
-  font-family: Arial, Helvetica, sans-serif;
-	font-size: 16;
+.table-sm {
+  font-size: 0.9rem;
 }

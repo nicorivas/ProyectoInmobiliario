@@ -2,13 +2,14 @@
 {% load static %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'search/css/search.css' %}">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
   {% load static %}
   {{form_search.media}}
   <!--
   Here we should import all data from django
   -->
   {{ buildings_json|json_script:"buildings-data" }}
+  {{ houses_json|json_script:"houses-data" }}
   <!--
   Load external libraries
   -->
@@ -22,64 +23,81 @@
 {% endblock head %}
 
 {% block content %}
-  <div id="search">
-    <form action="" method="post">
-      {{form_search}}
-      <input type="submit" value="Buscar">
-    </form>
 
-    <div class="map_canvas_wrapper">
-      <div id="map_canvas">
+<div class="section">
+  <form action="/search/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
+    {% csrf_token %}
+    <div class="form-row">
+    <div class="form-group col-md-3">
+      {{form_create.addressRegion_create.label_tag}}
+      {{form_create.addressRegion_create}}
+    </div>
+    <div class="form-group col-md-3">
+      {{form_create.addressCommune_create.label_tag}}
+      {{form_create.addressCommune_create}}
+    </div>
+    <div class="form-group col-md-3">
+      {{form_create.addressStreet_create.label_tag}}
+      {{form_create.addressStreet_create}}
+    </div>
+    <div class="form-group col-md-1">
+      {{form_create.addressNumber_create.label_tag}}
+      {{form_create.addressNumber_create}}
+    </div>
+    <div class="form-group col-md-1">
+      {{form_create.addressNumberFlat_create.label_tag}}
+      {{form_create.addressNumberFlat_create}}
+    </div>
+    <div class="form-group col-md-1">
+      <label style="visibility:hidden;">a</label>
+      <button class="btn btn-primary btn-block align-bottom">Crear</button>
+    </div>
+    </div>
+  </form>
+</div>
+
+<div class="section">
+  <form action="" method="post">
+    <div class="row">
+    <div class="col-8">
+    <div class="input-group mb-3">
+      {% csrf_token %}
+      {{form_search}}
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary">Buscar</button>
       </div>
     </div>
-  </div>
+    </div>
+    </div>
+  </form>
 
-  <div id="new_appraisal">
-    <h2>Nueva tasación</h2>
-    <form action="/search/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
-      {% csrf_token %}
-      <!--{{form_create}}-->
-      <section>
-        <div style="float:left;">
-          {{form_create.addressRegion_create.label_tag}}
-          {{form_create.addressRegion_create}}
-        </div>
-        <div style="float:left;">
-          {{form_create.addressCommune_create.label_tag}}
-          {{form_create.addressCommune_create}}
-        </div>
-        <div style="float:left;">
-          {{form_create.addressStreet_create.label_tag}}
-          {{form_create.addressStreet_create}}
-        </div>
-        <div style="float:left;">
-          {{form_create.addressNumber_create.label_tag}}
-          {{form_create.addressNumber_create}}
-        </div>
-        <div style="float:left;">
-          {{form_create.addressNumberFlat_create.label_tag}}
-          {{form_create.addressNumberFlat_create}}
-        </div>
-      </section>
-      <input type="submit" value="Nueva tasación">
-    </form>
+  <div class="map_canvas_wrapper">
+    <div id="map_canvas">
+    </div>
   </div>
+</div>
 
   <script>
       $("#id_addressRegion_create").change(function () {
-        var url = $("#form_create").attr("data-commune-url");  // get the url of the `load_cities` view
-        var regionId = $(this).val();  // get the selected country ID from the HTML input
+        // get the url of the `load_cities` view
+        var url = $("#form_create").attr("data-commune-url");
+        // get the selected country ID from the HTML input
+        var regionId = $(this).val();
 
-        $.ajax({                       // initialize an AJAX request
-          url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        // initialize an AJAX request
+        $.ajax({
+          // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+          url: url,
+          // add the country id to the GET parameters
           data: {
-            'region': regionId       // add the country id to the GET parameters
+            'region': regionId
           },
-          success: function (data) {   // `data` is the return of the `load_cities` view function
-            $("#id_addressCommune_create").html(data);  // replace the contents of the city input with the data that came from the server
+          success: function (data) {
+            // `data` is the return of the `load_cities` view function
+            // replace the contents of the city input with the data that came from the server
+            $("#id_addressCommune_create").html($.trim(data));
           }
         });
-
       });
     </script>
 

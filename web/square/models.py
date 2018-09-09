@@ -4,8 +4,7 @@ from province.models import Province
 from commune.models import Commune
 
 class Square(models.Model):
-    name = models.CharField("Nombre",max_length=100)
-    code = models.PositiveSmallIntegerField("Code",
+    code = models.BigIntegerField("Code",
         null=False,
         blank=False,
         unique=True)

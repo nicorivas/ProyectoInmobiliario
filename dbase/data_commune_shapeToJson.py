@@ -58,7 +58,7 @@ def with_ogr2ogr(source='INE2016',do_simplify=1,do_convert=1):
                 name = feature['properties']['NOM_COMUNA']
                 provincia = int(feature['properties']['PROVINCIA'])
                 code = int(feature['properties']['COMUNA'])
-                region = i+1
+                region = int(feature['properties']['REGION'])
                 geojson_o['properties']['name'] = name.title()
                 geojson_o['properties']['code'] = code
                 geojson_o['properties']['region'] = region

@@ -14,3 +14,6 @@ class Province(models.Model):
         null=False,
         to_field='code')
     mpoly = models.MultiPolygonField(null=True)
+
+    def __str__(self):
+        return self.name

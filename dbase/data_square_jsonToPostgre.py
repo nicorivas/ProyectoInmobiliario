@@ -7,21 +7,21 @@ import glob
 
 engine = create_engine('postgresql://nico:@localhost:5432/data', echo=True)
 
-path_in = '../data/geo/chile/comunas/json/'
+path_in = '../data/geo/chile/manzanas/json/'
 
-regions = glob.glob(path_in+'*.geojson')
-for region in regions:
-    file_in = open('{}'.format(region),'r')
+squares = glob.glob(path_in+'*.geojson')
+for square in squares:
+    file_in = open('{}'.format(square),'r')
     str = file_in.read()
-    region_geojson = geojson.loads(str)
-    region_geojson_geometry = region_geojson['geometry']
-    if region_geojson_geometry['type'] == "Polygon":
-        region_geojson_geometry['type'] = "MultiPolygon"
-        region_geojson_geometry['coordinates'] = [region_geojson_geometry['coordinates']]
-    region_geojson_geometry_str = json.dumps(region_geojson_geometry)
-    engine.execute('INSERT INTO commune_commune (code, region_id, province_id, commune_id, mpoly) VALUES (%s,%s,%s,%s,ST_GeomFromGeoJSON(%s));',(
-         region_geojson['properties']['code'],
-         region_geojson['properties']['region'],
-         region_geojson['properties']['province'],
-         region_geojson['properties']['commune'],
-         region_geojson_geometry_str))
+    square_geojson = geojson.loads(str)
+    square_geojson_geometry = square_geojson['geometry']
+    if square_geojson_geometry['type'] == "Polygon":
+        square_geojson_geometry['type'] = "MultiPolygon"
+        square_geojson_geometry['coordinates'] = [square_geojson_geometry['coordinates']]
+    square_geojson_geometry_str = json.dumps(square_geojson_geometry)
+    engine.execute('INSERT INTO square_square (code, region_id, province_id, commune_id, mpoly) VALUES (%s,%s,%s,%s,ST_GeomFromGeoJSON(%s));',(
+         square_geojson['properties']['code'],
+         square_geojson['properties']['region'],
+         square_geojson['properties']['province'],
+         square_geojson['properties']['commune'],
+         square_geojson_geometry_str))

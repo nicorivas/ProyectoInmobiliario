@@ -9,6 +9,7 @@ import json
 import collections
 import os
 from data_globals.py import *
+from tools.py import *
 
 # These shall be the official names, used everywhere.
 
@@ -26,21 +27,8 @@ def reg_region_name(record):
     if len(region_name) == 0:
         return None
 
-    # Regularize names of regions (WTF)
-    if region_name.find('Región del') > -1:
-        region_name = region_name[11:]
-    if region_name.find('Región de') > -1:
-        region_name = region_name[10:]
-    if region_name.find('Región') > -1:
-        region_name = region_name[7:]
-    if region_name == "Libertador Bernardo O'Higgins":
-        region_name = "Libertador General Bernardo O'Higgins"
-    if region_name == "Aysén del Gral.Ibañez del Campo":
-        region_name = "Aysén del General Carlos Ibáñez del Campo"
-    if region_name == "Bío-Bío":
-        region_name = "Biobío"
-    if region_name == 'Zona sin demarcar':
-        return None
+    region_name = regularizeRegionName(region_name)
+
     return region_name
 
 def with_python():

@@ -7,4 +7,5 @@ urlpatterns = [
          'departamento/<int:numbera>/<int:id_a>/<int:id_appraisal>/',
         views.appraisal,
         name='views-appraisal'),
+    path('ajax/computeValuations/', views.ajax_computeValuations, name='ajax_computeValuations')
 ]

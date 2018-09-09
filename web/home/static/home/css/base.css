@@ -62,11 +62,6 @@ h2 {
   text-decoration: underline;
 }
 
-#content h2 {
-  margin: 0;
-  padding: 0px 0px 0.5em;
-}
-
 #footer {
   margin: 0;
   background: #222;
@@ -84,42 +79,52 @@ h2 {
   padding: 0;
 }
 
-input[type=text] {
-  width: 400px;
-	height: 50px;
-	border: 2px solid #335577;
-	padding: 0 0 0 16px;
-	font-size: 18;
-	background: #efefff;
-	transition: background .3s ease;
-	color: #111111;
+.section {
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  padding: 1em;
+  margin-bottom: 0.2em;
+  background: #fff;
+  overflow: hidden;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: #224466;
-  opacity: 1.0; /* Firefox */
-  transition: opacity .0s; /* Modern Browsers */
+.section-title {
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  padding-left: 0em;
+  background: #fff;
+  overflow: hidden;
 }
 
-*:focus::placeholder {
-  opacity: 0;
-  transition: opacity .2s;
+.section-title h2 {
+  font-size: 20px;
 }
 
-input[type=submit] {
-  width: 100px;
-	border-radius: 10px;
-	height: 50px;
-	border: 2px solid #112233;
-	padding: 0;
-	font-size: 18;
-	background: #556677;
-	transition: background .3s ease;
-	color: #ffffff;
+.subsection {
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  margin-left: -0.2em;
+  margin-right: -0.2em;
+  margin-bottom: 0.2em;
+  margin-top: 0.2em;
+  background: #fafafa;
+  overflow: hidden;
 }
 
-*:focus {
-    outline: none !important;
-    border: 3px solid #aaaaff;
-    box-shadow: 0 0 0px #719ECE;
+.subsection h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0em;
+  margin-bottom: 0.5em;
+  font-size: 24px;
+}
+
+.subsection h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0em;
+  margin-bottom: 0.5em;
+  font-size: 20px;
+}
+
+.input-group-prepend .input-group-text {
+  min-width: 100px;
 }

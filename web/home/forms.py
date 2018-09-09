@@ -5,3 +5,4 @@ class LocationSearchForm(forms.Form):
 
     address = forms.CharField(max_length=100,label="")
     address.widget.attrs.update({'placeholder':'Dirección / Comuna / Lugar'})
+    address.widget.attrs.update({'class':"form-control"})

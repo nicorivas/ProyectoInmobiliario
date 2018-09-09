@@ -33,6 +33,8 @@ function googleMapAdmin() {
 
     var tmp = JSON.parse(document.getElementById('buildings-data').textContent);
     var dataBuildings = JSON.parse(tmp);
+    var tmp = JSON.parse(document.getElementById('houses-data').textContent);
+    var dataHouses = JSON.parse(tmp);
 
     var self = {
         initialize: function() {
@@ -45,7 +47,12 @@ function googleMapAdmin() {
             map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
             var urlParms = self.parseURLParams(window.location.search);
-            self.centerWithAddress(urlParms["address"][0],marker=1);
+            console.log(urlParms)
+            if (urlParms != undefined) {
+              self.centerWithAddress(urlParms["address"][0],marker=1);
+            } else {
+              self.centerWithAddress("Providencia, Santiago",marker=1);
+            }
 
             /*
             map.data.loadGeoJson('../static/santiago.geojson')
@@ -68,7 +75,7 @@ function googleMapAdmin() {
                 label: {
                     fontFamily: 'Material Icons',
                     fontSize: '32',
-                    text: 'home',
+                    text: 'domain',
                     color: '2244dd'
                 }
               });
@@ -84,6 +91,42 @@ function googleMapAdmin() {
                 street = self.removeAccents(street);
                 number = dataBuildings[i]["fields"]["addressNumber"];
                 id = dataBuildings[i]["pk"];
+                url = '/property/'+region+'/'+commune+'/'+street+'/'+number+'/edificio/'+id
+                console.info(url);
+                window.location.href = url
+              });
+
+            }
+
+            for (i = 0; i < dataHouses.length; i++) {
+
+              var lat = dataHouses[i]["fields"]["lat"];
+              var lon = dataHouses[i]["fields"]["lon"];
+
+              var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat,lon),
+                title: dataHouses[i]["fields"]["name"],
+                map: map,
+                icon: ' ',
+                label: {
+                    fontFamily: 'Material Icons',
+                    fontSize: '32',
+                    text: 'domain',
+                    color: '2244dd'
+                }
+              });
+
+              marker.set("id", i);
+
+              marker.addListener('click', function() {
+                i = this.id
+                region = dataHouses[i]["fields"]["addressRegion"].toLowerCase();
+                commune = dataHouses[i]["fields"]["addressCommune"].toLowerCase();
+                street = dataHouses[i]["fields"]["addressStreet"];
+                street = street.replace(/\s+/g, '-').toLowerCase();
+                street = self.removeAccents(street);
+                number = dataHouses[i]["fields"]["addressNumber"];
+                id = dataHouses[i]["pk"];
                 url = '/property/'+region+'/'+commune+'/'+street+'/'+number+'/edificio/'+id
                 console.info(url);
                 window.location.href = url

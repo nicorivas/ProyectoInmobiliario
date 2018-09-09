@@ -9,12 +9,31 @@
 {% endblock %}
 
 {% block content %}
-  <h2>Buscar propiedad</h2>
+<!--
+<div class="subsection">
+  <h3>Buscar propiedad</h3>
   <form action="/search/" method="get">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Buscar">
+    <div class="row">
+    <div class="col-8">
+    <div class="input-group mb-3">
+      {% csrf_token %}
+      {{ form }}
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary">Buscar</button>
+      </div>
+    </div>
+    </div>
+    </div>
   </form>
+</div>
+-->
+<div class="section">
+  <form action="search">
+    <button class="btn btn-primary">Crear nueva tasación</button>
+  </form>
+</div>
+
+<div class="section">
   <h2>Tasaciones activas</h2>
     <div class="appraisals_current">
     {% for appraisal in appraisals %}
@@ -35,6 +54,11 @@
       </div>
     </div>
     {% endfor %}
-    </div>
+  </div>
+</div>
+
+<div class="section">
   <h2>Tasaciones previas</h2>
+</div>
+
 {% endblock %}
