@@ -1,5 +1,6 @@
 from django.db import models
 from apartment.models import Apartment
+import datetime
 
 class Appraisal(models.Model):
 
@@ -29,6 +30,13 @@ class Appraisal(models.Model):
 
     # valor
     valorUF = models.IntegerField("Valor UF",blank=True,null=True)
+
+    @property
+    def daySinceCreated(self):
+        today = datetime.date.today()
+        diff  = today - self.timeCreated.date()
+        print(diff.days)
+        return diff.days
 
     class Meta:
         app_label = 'appraisal'

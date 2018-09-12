@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.contrib.auth import views as auth_views
+from home.forms import AuthenticationFormB
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +27,8 @@ urlpatterns = [
     path('province/', include('province.urls')),
     path('commune/', include('commune.urls')),
     path('square/', include('square.urls')),
-    path('', include('home.urls'))
+    path('main/', include('main.urls')),
+    #path('', include('home.urls')),
+    path('', auth_views.LoginView.as_view(redirect_field_name='main',form_class=AuthenticationFormB)),
+    path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
 ]

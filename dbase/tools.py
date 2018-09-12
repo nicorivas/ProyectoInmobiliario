@@ -1,14 +1,62 @@
 #!/usr/bin/env python
 import numpy as np
+import glob
+import json
 from shapely.geometry import Polygon
+from shapely.geometry import Point
+from data_globals import *
 
 def polygonArea(points):
     polygon = Polygon(points)
     return float(polygon.area)
 
 def polygonCenter(points):
-    polygon = Polygon(points)
+    try:
+        polygon = Polygon(points)
+    except AssertionError:
+        print('Could not turn coordinates to Polygon: {}'.format(points))
+        return False
     return np.array(polygon.representative_point()).tolist()
+
+def pointToPolygonDistance(point,polygon):
+    polygon = Polygon(polygon)
+    point = Point(point)
+    return float(point.distance(polygon))
+
+def getPolygonCoordinates(entity):
+
+    for coords in entity['geometry']['coordinates']:
+        coords = np.array(coords)
+        if len(coords.shape) == 1:
+            # There are many polygons
+            coords = [np.array(c) for c in coords]
+            return coords
+        elif len(coords.shape) == 3:
+            if coords.shape[0] == 1:
+                return coords
+        else:
+            return [coords]
+
+def loadGreenspaces(commune=''):
+
+    path = '/Users/nico/Code/ProyectoInmobiliario/data/geo/chile/areasverde/json/metropolitana-de-santiago/'
+    filepaths_gs = glob.glob(path+'{}*'.format(commune))
+    greenspaces = []
+    for filepath_gs in filepaths_gs:
+        file = open(filepath_gs,'r')
+        greenspace = json.load(file)
+        greenspaces.append(greenspace)
+        file.close()
+    return greenspaces
+
+def loadCommune(commune=''):
+    '''
+    Given a commune name, return commune JSON data
+    '''
+    filepath = DATA_PATH+'/comunas/json/{}.geojson'.format(commune)
+    file = open(filepath,'r')
+    commune = json.load(file)
+    return commune
 
 def regularizeRegionName(region_name):
     # Regularize names of regions (WTF)

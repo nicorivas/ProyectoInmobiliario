@@ -125,6 +125,10 @@ class Building(models.Model):
         blank=True,
         null=True)
 
+    @property
+    def address(self):
+        # Returns whole address in a nice format
+        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.name
 
     class Meta:
         app_label = 'building'

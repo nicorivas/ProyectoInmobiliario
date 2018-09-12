@@ -4,6 +4,7 @@ from django.core import serializers
 from data.chile import comunas_regiones
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
+from django.contrib.auth.decorators import login_required
 
 from .forms import LocationSearchForm
 from .forms import AppraisalCreateForm
@@ -21,6 +22,7 @@ import datetime
 
 import requests # to call the API of Google to get lat-lon
 
+@login_required(login_url='/')
 def search(request):
 
     # if this is a POST request we need to process the form data

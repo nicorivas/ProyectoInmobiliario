@@ -39,12 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'home',
+    'main',
+    'search',
     'appraisal',
     'house',
     'building',
     'apartment',
-    'home',
-    'search',
     'neighborhood',
     'region',
     'province',
@@ -145,3 +146,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+
+LOGIN_REDIRECT_URL = '/main/'
+
+LOGOUT_REDIRECT_URL = '/'

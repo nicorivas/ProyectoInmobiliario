@@ -7,6 +7,7 @@ from slugify import slugify # for nice filenames
 from subprocess import call
 import json
 import collections
+import itertools
 import os
 import sys
 sys.path.append('.')
@@ -14,17 +15,31 @@ from data_globals import *
 from tools import *
 
 def addCoordinates(filepath):
-    print(filepath[-40:])
+    #print(filepath[-40:])
 
     file = open(filepath,'r')
-    commune = json.load(file)
+    try:
+        commune = json.load(file)
+    except json.decoder.JSONDecodeError:
+        print('empty file?')
+        return False
+
     file.close()
 
     for sections in commune['geometry']['coordinates']:
-        if (len(sections) == 1):
-            print('wut')
-            continue
-        center = polygonCenter(sections)
+        sections = np.array(sections)
+        if len(sections.shape) == 1:
+            center = np.zeros(2)
+            for section in sections:
+                section = np.array(section)
+                center += polygonCenter(section)
+            center = center/len(sections)
+        elif len(sections.shape) == 3:
+            if sections.shape[0] == 1:
+                section = sections[0]
+                center = polygonCenter(section)
+        else:
+            center = polygonCenter(sections)
         commune['properties']['center'] = center
 
     file = open(filepath,'w')
@@ -32,19 +47,22 @@ def addCoordinates(filepath):
     file.close()
 
 def addArea(filepath):
-    print(filepath[-40:])
+    #print(filepath[-40:])
 
     file = open(filepath,'r')
-    commune = json.load(file)
+    try:
+        commune = json.load(file)
+    except json.decoder.JSONDecodeError:
+        print('empty file?')
+        return False
+
     file.close()
 
-    for sections in commune['geometry']['coordinates']:
-        print('sections',sections)
-        if (len(sections) == 1):
-            print('wut')
-            continue
-        center = polygonArea(sections)
-        commune['properties']['area'] = center
+    coords = getPolygonCoordinates(commune)
+    area = 0
+    for c in coords:
+        area += polygonArea(c)
+    commune['properties']['area'] = area
 
     file = open(filepath,'w')
     file.write(geojson.dumps(commune, sort_keys=True))
@@ -53,5 +71,5 @@ def addArea(filepath):
 path = '/Users/nico/Code/ProyectoInmobiliario/data/geo/chile/areasverde/json/metropolitana-de-santiago/'
 files = glob.glob(path+'*')
 for file in files:
-    addCoordinates(file)
+    #addCoordinates(file)
     addArea(file)

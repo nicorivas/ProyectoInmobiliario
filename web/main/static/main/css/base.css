@@ -4,14 +4,6 @@ body {
   background: #000;
 }
 
-h1 {
-  font-family: Lucida Grande, Helvetica, sans-serif;
-}
-
-h2 {
-  font-family: Lucida Grande, Helvetica, sans-serif;
-}
-
 #header {
   height:80px;
   background: #0C4B33;
@@ -50,18 +42,6 @@ h2 {
   padding: 20px;
 }
 
-#content a:link, a:visited, a:active{
-  color: #000;
-  text-decoration: none;
-  outline: 0;
-  border: none;
-  -moz-outline-style: none;
-}
-
-#content a:hover{
-  text-decoration: underline;
-}
-
 #footer {
   margin: 0;
   background: #222;
@@ -72,11 +52,6 @@ h2 {
   margin: 0;
   padding: 10px;
   text-align: right;
-}
-
-h2 {
-  margin: 0;
-  padding: 0;
 }
 
 .section {
@@ -123,8 +98,4 @@ h2 {
   margin: 0em;
   margin-bottom: 0.5em;
   font-size: 20px;
-}
-
-.input-group-prepend .input-group-text {
-  min-width: 100px;
 }

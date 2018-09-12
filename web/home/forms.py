@@ -1,8 +1,8 @@
 from django import forms
-#from django_google_maps.widgets import GoogleMapsAddressAutocomplete
+from django.contrib.auth.forms import AuthenticationForm
 
-class LocationSearchForm(forms.Form):
-
-    address = forms.CharField(max_length=100,label="")
-    address.widget.attrs.update({'placeholder':'Dirección / Comuna / Lugar'})
-    address.widget.attrs.update({'class':"form-control"})
+class AuthenticationFormB(AuthenticationForm):
+    username = forms.CharField(max_length=254,
+        widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label="Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
