@@ -1,6 +1,8 @@
 from django.core import serializers
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -74,7 +76,8 @@ def form_process(
     form_appraisal,
     building,
     apartment,
-    appraisal):
+    appraisal,
+    form_tasador_user):
 
     def form_do_delete(form_building,form_apartment,form_appraisal):
         appraisal.delete()
@@ -85,15 +88,12 @@ def form_process(
         form_building.save()
         form_apartment.save()
         form_appraisal.save()
-        print(form_appraisal)
-        print('a')
         return
 
     def form_do_export(form_building,form_apartment,form_appraisal):
 
         module_dir = os.path.dirname(__file__)  # get current directory
         file_path = os.path.join(module_dir,'static/appraisal/test.xlsx')
-        print(file_path)
 
         def excel_find(workbook,term):
             for sheet in workbook:
@@ -127,6 +127,14 @@ def form_process(
 
         return response
 
+    def form_do_assign_tasador(appraisal,user):
+        print('form_do_assign_tasador',form_tasador_user)
+        print(appraisal.tasadorUser)
+        appraisal.tasadorUser = user
+        print(appraisal.tasadorUser)
+        appraisal.save()
+        return
+
     ret = None
 
     if form_building.is_valid() and \
@@ -138,6 +146,8 @@ def form_process(
             ret = form_do_delete(form_building,form_apartment,form_appraisal)
         elif 'export' in request.POST:
             ret = form_do_export(form_building,form_apartment,form_appraisal)
+        elif 'assign_tasador' in request.POST:
+            ret = form_do_assign_tasador(appraisal,form_tasador_user)
     else:
         print(form_building.errors)
         print(form_apartment.errors)
@@ -173,6 +183,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         form_appraisal = AppraisalApartmentModelForm_Appraisal(
             request.POST,
             instance=appraisal)
+        tasadorUserId = request.POST.dict()['tasador']
+        tasadorUser = User.objects.get(pk=tasadorUserId)
         ret = form_process(
             request,
             form_building,
@@ -180,7 +192,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             form_appraisal,
             building,
             apartment,
-            appraisal
+            appraisal,
+            tasadorUser
             )
         if isinstance(ret,HttpResponse): return ret
 
@@ -228,7 +241,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         averages = []
         stds = []
 
-    print(building.permisoEdificacionDate)
+    tasadores = User.objects.filter(groups__name__in=['tasador'])
+    visadores = User.objects.filter(groups__name__in=['visador'])
 
     context = {
         'building': building,
@@ -236,12 +250,16 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'references': references,
         'averages': averages,
         'stds': stds,
+        'tasadores':tasadores,
+        'visadores':visadores,
         'form_apartment': form_apartment,
         'form_appraisal': form_appraisal,
         'form_building': form_building
         }
 
-    return render(request, 'appraisal/apartment.html',context)
+    a =  render(request, 'appraisal/apartment.html',context)
+    print(a)
+    return a
 
 def ajax_computeValuations(request):
     dict = request.GET.dict()

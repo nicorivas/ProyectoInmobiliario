@@ -1,5 +1,6 @@
 from django.db import models
 from apartment.models import Apartment
+from django.contrib.auth.models import User
 import datetime
 
 class Appraisal(models.Model):
@@ -23,8 +24,8 @@ class Appraisal(models.Model):
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
     propietarioRut = models.IntegerField("Propietario RUT",blank=True,null=True)
     rolAvaluo = models.IntegerField("Rol principal",blank=True,null=True)
-    tasadorNombre = models.CharField("Tasador",max_length=100,blank=True,null=True)
-    tasadorRut = models.IntegerField("Rut rut",blank=True,null=True)
+    tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
+    visadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_visador')
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
 
@@ -40,6 +41,9 @@ class Appraisal(models.Model):
 
     class Meta:
         app_label = 'appraisal'
+        permissions = (
+            ("assign_tasador", "Can assign tasadores"),
+            ("assign_visador", "Can assign visadores"),)
 
     def __str__(self):
         return "{} {}".format(

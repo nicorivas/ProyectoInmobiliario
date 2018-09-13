@@ -7,864 +7,93 @@
 {% endblock head %}
 
 {% block content %}
-<h1>Tasación departamento</h1>
 
 <form action="" method="post" id="form" ajax_computeValuationsUrl="{% url 'ajax_computeValuations' %}">
   {% csrf_token %}
 
-  <ul class="nav nav-tabs">
-    <li class="nav-item">
-      <a class="nav-link active" href="#">Tasación</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" onclick="form.submit();" name="save" href="#">Guardar</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Exportar</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link disabled" href="#">Disabled</a>
-    </li>
-  </ul>
+  <div class="container-fluid">
 
-  <div id="menu" class="section">
-    <button class="btn btn-outline-primary" name="save">Guardar</button>
-    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modalExport">Exportar</button>
-    <button class="btn btn-outline-primary" name="delete">Borrar</button>
-  </div>
-
-  <div class="modal fade" id="modalExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Exportar tasación</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            Elija un formato:
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-              <label class="form-check-label" for="exampleRadios1">
-                Excel (Santander)
-              </label>
-            </div>
-            <div class="form-check disabled">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-              <label class="form-check-label" for="exampleRadios2">
-                Excel (BBVA)
-              </label>
-            </div>
-            <div class="form-check disabled">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3" disabled>
-              <label class="form-check-label" for="exampleRadios3">
-                Otros
-              </label>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" name="export">Exportar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <section>
-  <div class="container-fluid border">
-  <!--<div id="surroundings" class="section">-->
-
-    <div class="section-title">
-      <h2> Tasación </h2>
-    </div>
-
-    <div class="container-fluid border">
-
-      <label>Solicitante</label>
-
-      <div class="form-row">
-        <div class="col-md-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Nombre
-        </span>
-        </div>
-          {{form_appraisal.solicitante}}
-        </div>
-        </div>
-
-        <div class="col-md-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Sucursal
-        </span>
-        </div>
-          {{form_appraisal.solicitanteSucursal}}
-        </div>
-        </div>
-
-        <div class="col-md-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Ejecutivo
-        </span>
-        </div>
-          {{form_appraisal.solicitanteEjecutivo}}
-        </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="subsection">
-
-      <label>Cliente</label>
-
-      <div class="form-row">
-        <div class="col-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Nombre
-        </span>
-        </div>
-          {{form_appraisal.cliente}}
-        </div>
-        </div>
-
-        <div class="col-2">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Rut
-        </span>
-        </div>
-          {{form_appraisal.clienteRut}}
-        </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="subsection">
-
-      <label>Propietario</label>
-
-      <div class="form-row">
-        <div class="col-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Nombre
-        </span>
-        </div>
-          {{form_appraisal.propietario}}
-        </div>
-        </div>
-
-        <div class="col-2">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Rut
-        </span>
-        </div>
-          {{form_appraisal.propietarioRut}}
-        </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="subsection">
-
-      <label>Tasador</label>
-
-      <div class="form-row">
-        <div class="col-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Nombre
-        </span>
-        </div>
-          {{form_appraisal.tasadorNombre}}
-        </div>
-        </div>
-
-        <div class="col-2">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Rut
-        </span>
-        </div>
-          {{form_appraisal.tasadorRut}}
-        </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="subsection">
-
-      <label>Visador</label>
-
-      <div class="form-row">
-        <div class="col-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Nombre
-        </span>
-        </div>
-          {{form_appraisal.visadorEmpresa}}
-        </div>
-        </div>
-
-        <div class="col-2">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          Mail
-        </span>
-        </div>
-          {{form_appraisal.visadorEmpresaMail}}
-        </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="subsection">
-
-      <label>Roles</label>
-
-      <div class="form-row">
-        <div class="col-4">
-        <div class="input-group input-group-sm">
-        <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_appraisal.rolAvaluo.label}}
-        </span>
-        </div>
-          {{form_appraisal.rolAvaluo}}
-        </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-  </section>
-
-  <div id="property" class="section">
-  <section>
-
-    <div class="section-title">
-      <h2> Propiedad </h2>
-    </div>
-
-    <div class="form-group">
-    <div class="form-row">
-      <div class="col-4">
-      <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        Calle
+    <nav class="navbar justify-content-between">
+      <a class="navbar-brand" href="#">Tasación departamento</a>
+      <span class="navbar-text">
+        Hola
       </span>
-      </div>
-        <input type="text" class="form-control form-control-sm" value="{{ building.addressStreet }}" disabled>
-      </div>
-      </div>
+      <ul class="navbar-nav mr-auto">
+      </ul>
+      <button class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+      <button class="btn btn-outline-dark mr-2" name="save" style="font-family:Material Icons;font-size:1em;">save_alt</button>
+      <button class="btn btn-outline-dark" name="delete" style="font-family:Material Icons;font-size:1em;">delete</button>
+    </nav>
 
-      <div class="col-2">
-      <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        No.
-      </span>
-      </div>
-        <input type="text" class="form-control form-control-sm" value="{{building.addressNumber}}" disabled>
-      </div>
-      </div>
+    <div class="card">
 
-      <div class="col-2">
-      <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        Dpto.
-      </span>
-      </div>
-        <input type="text" class="form-control form-control-sm" value="{{ apartment.number }}" disabled>
-      </div>
-      </div>
-    </div>
-    </div>
+      <div class="card-header">
 
-    <div class="form-group">
-    <div class="form-row">
-      <div class="col-4">
-      <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        Comuna
-      </span>
-      </div>
-        <input type="text" class="form-control form-control-sm" value="{{ building.addressCommune }}" disabled>
-      </div>
-      </div>
-
-      <div class="col-4">
-      <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        Región
-      </span>
-      </div>
-        <input type="text" class="form-control form-control-sm" value="{{ building.addressRegion }}" disabled>
-      </div>
-      </div>
-    </div>
-    </div>
-
-  </section>
-
-    <div id="general" class="subsection">
-
-      <label>Características generales</label>
-
-      <div class="form-row">
-      <div class="col-md-3">
-
-      <div class="row">
-      <div class="col-md-7">
-      <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        {{form_apartment.floor.label}}
-      </span>
-      </div>
-        {{form_apartment.floor}}
-      </div>
-      </div>
-      </div>
-
-      <div class="row">
-      <div class="col-md-7">
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_apartment.bedrooms.label}}
-          </span>
-        </div>
-        {{form_apartment.bedrooms}}
-      </div>
-      </div>
-      </div>
-
-      <div class="row">
-      <div class="col-md-7">
-      <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        {{form_apartment.bathrooms.label}}
-      </span>
-      </div>
-        {{form_apartment.bathrooms}}
-      </div>
-      </div>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        {{form_apartment.builtSquareMeters.label}}
-      </span>
-      </div>
-      {{form_apartment.builtSquareMeters}}
-      <div class="input-group-append">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          m<sup>2</sup>
-        </span>
-      </div>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        {{form_apartment.usefulSquareMeters.label}}
-      </span>
-      </div>
-      {{form_apartment.usefulSquareMeters}}
-      <div class="input-group-append">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          m<sup>2</sup>
-        </span>
-      </div>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        {{form_apartment.orientation.label}}
-      </span>
-      </div>
-        {{form_apartment.orientation}}
-      </div>
+        <ul class="nav nav-tabs card-header-tabs" role="tablist" id="myTab" >
+          <li class="nav-item">
+            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">
+              Aspectos generales
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="property-tab" data-toggle="tab" href="#property" role="tab" aria-controls="property" aria-selected="false">
+              Propiedad
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="surroundings-tab" data-toggle="tab" href="#surroundings" role="tab" aria-controls="surroundings" aria-selected="false">
+              Entorno
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="value-tab" data-toggle="tab" href="#value" role="tab" aria-controls="value" aria-selected="false">
+              Valorización
+            </a>
+          </li>
+        </ul>
 
       </div>
 
-      <div class="col-md-8">
+      <div class="tab-content" id="myTabContent">
 
-        {{form_apartment.generalDescription.label_tag}}
-        {{form_apartment.generalDescription}}
-
+      <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        {% include "appraisal/apartment_general.html" %}
       </div>
+      <div class="tab-pane fade" id="property" role="tabpanel" aria-labelledby="property-tab">
+        {% include "appraisal/apartment_property.html" %}
       </div>
-    </div>
-
-    <section>
-    <div id="technical_legal" class="subsection">
-
-      <label>Antecedentes técnico-legales</label>
-
-      <div class="row">
-      <div class="col-6">
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.anoConstruccion.label}}
-          </span>
-        </div>
-        {{form_building.anoConstruccion}}
+      <div class="tab-pane fade" id="surroundings" role="tabpanel" aria-labelledby="surroundings-tab">
+        {% include "appraisal/apartment_surroundings.html" %}
+      </div>
+      <div class="tab-pane fade" id="value" role="tabpanel" aria-labelledby="value-tab">
+        {% include "appraisal/apartment_value.html" %}
       </div>
 
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.vidaUtilRemanente.label}}
-          </span>
-        </div>
-        {{form_building.vidaUtilRemanente}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.avaluoFiscal.label}}
-          </span>
-        </div>
-        {{form_building.avaluoFiscal}}
-        <div class="input-group-append">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            UF
-          </span>
-        </div>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.dfl2.label}}
-          </span>
-        </div>
-        {{form_building.dfl2}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.selloVerde.label}}
-          </span>
-        </div>
-        {{form_building.selloVerde}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.copropiedadInmobiliaria.label}}
-          </span>
-        </div>
-        {{form_building.copropiedadInmobiliaria}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.ocupante.label}}
-          </span>
-        </div>
-        {{form_building.ocupante}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.tipoBien.label}}
-          </span>
-        </div>
-        {{form_building.tipoBien}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.destinoSII.label}}
-          </span>
-        </div>
-        {{form_building.destinoSII}}
-      </div>
-
-    </div>
-    <div class="col-6">
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.usoActual.label}}
-          </span>
-        </div>
-        {{form_building.usoActual}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.usoFuturo.label}}
-          </span>
-        </div>
-        {{form_building.usoFuturo}}
-      </div>
-
-      <div class="row">
-        <div class="col-8">
-          <div class="input-group input-group-sm mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="inputGroup-sizing-sm">
-                {{form_building.permisoEdificacion.label}}
-              </span>
-            </div>
-            {{form_building.permisoEdificacion}}
-          </div>
-        </div>
-        <div class="col-4">
-          <div class="input-group input-group-sm mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="inputGroup-sizing-sm">
-                Fecha
-              </span>
-            </div>
-            {{form_building.permisoEdificacionDate}}
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-8">
-          <div class="input-group input-group-sm mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="inputGroup-sizing-sm">
-                {{form_building.recepcionFinal.label}}
-              </span>
-            </div>
-            {{form_building.recepcionFinal}}
-          </div>
-        </div>
-        <div class="col-4">
-          <div class="input-group input-group-sm mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="inputGroup-sizing-sm">
-                Fecha
-              </span>
-            </div>
-            {{form_building.recepcionFinalDate}}
-          </div>
-        </div>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.expropiacion.label}}
-          </span>
-        </div>
-        {{form_building.expropiacion}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.viviendaSocial.label}}
-          </span>
-        </div>
-        {{form_building.viviendaSocial}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.adobe.label}}
-          </span>
-        </div>
-        {{form_building.adobe}}
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {{form_building.desmontable.label}}
-          </span>
-        </div>
-        {{form_building.desmontable}}
-      </div>
 
       </div>
-      </div>
 
-    </div>
-  </div>
-
-  <div id="value" class="section">
-
-    <div class="section-title">
-      <h2> Valorización </h2>
-    </div>
-
-    <div class="row">
-    <div class="col-6">
-    <table class="table table-sm table-bordered">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Valores de tasación</th>
-          <th scope="col">$</th>
-          <th scope="col">UF</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Valor comercial</td>
-          <td scope="col"><input type="number" name="valor" id="id_valor" class="form-control form-control-sm" disabled></td>
-          <td scope="col">{{form_appraisal.valorUF}}</td>
-        </tr>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
-          <td scope="col"><input type="number" name="valor_liquidez" id="id_valor_liquidez" class="form-control form-control-sm" disabled></td>
-          <td scope="col"><input type="number" name="valor_liquidez_uf" id="id_valor_liquidez_uf" class="form-control form-control-sm" disabled></td>
-        </tr>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Monto seguro</td>
-          <td scope="col"><input type="number" name="valor_monto_seguro" id="id_valor_monto_seguro" class="form-control form-control-sm" disabled></td>
-          <td scope="col"><input type="number" name="valor_monto_seguro_uf" id="id_valor_monto_seguro_uf" class="form-control form-control-sm" disabled></td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
     </div>
 
   </div>
 
-  <script>
-    $("#id_valorUF").change(function () {
-      var url = $("#form").attr("ajax_computeValuationsUrl");
-      var valor = $(this).val();
-      $.ajax({
-        url: url,
-        data: {
-          'valor': valor
-        },
-        success: function (data) {
-          data = JSON.parse(data)
-          $("#id_valor").val(parseFloat(data.valorComercialPesos));
-          $("#id_valor_liquidez").val(parseFloat(data.valorLiquidezPesos));
-          $("#id_valor_liquidez_uf").val(parseFloat(data.valorLiquidezUF));
-          $("#id_valor_monto_seguro").val(parseFloat(data.montoSeguroPesos));
-          $("#id_valor_monto_seguro_uf").val(parseFloat(data.montoSeguroUF));
-        }
-      });
-    });
-  </script>
+{% include "appraisal/modals.html" %}
 
-  <div id="value" class="section">
+</form>
 
-    <div class="section-title">
-      <h2> Muestras comparativas </h2>
-    </div>
+<script>
+    $('.datepicker_year').datepicker({
+      format: "yyyy",
+      minViewMode: 2,
+      maxViewMode: 2,
+      autoclose: true});
+</script>
 
-    <table class="table table-sm table-striped">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Propiedad</th>
-          <th scope="col">Tipología</th>
-          <th scope="col">Fuente</th>
-          <th scope="col">Área construida (m<sup>2</sup>)</th>
-          <th scope="col">Área útil (m<sup>2</sup>)</th>
-          <th scope="col">Valor comercial (UF)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for o in references %}
-        <tr>
-          <td scope="row">{{o.building.addressStreet}} {{o.building.addressNumber}}</td>
-          <td>{{ o.propertyType | title }}</td>
-          <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
-          <td>{{ o.builtSquareMeters }}</td>
-          <td>{{ o.usefulSquareMeters }}</td>
-          <td>{{ o.marketPrice }}</td>
-        </tr>
-        {% endfor %}
+<script>
+    $('.datepicker_month').datepicker({
+      format: "mm/yyyy",
+      minViewMode: 1,
+      maxViewMode: 2,
+      autoclose: true});
+</script>
 
-        <tr class="table-warning">
-          <th scope="row">Promedios</th>
-          <td></td>
-          <td></td>
-          <td>{{ averages.builtSquareMeters__avg }}
-          &plusmn; {{ stds.builtSquareMeters__stddev | floatformat:1 }}</td>
-          <td>{{ averages.usefulSquareMeters__avg }}
-          &plusmn; {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</td>
-          <td>{{ averages.marketPrice__avg }}
-          &plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div id="surroundings" class="section">
-
-    <div class="section-title">
-      <h2> Entorno </h2>
-    </div>
-
-    <div class="row">
-    <div class="col-md-12">
-      <label for="id_sectorDescription">
-        Descripcion del sector
-      </label>
-      <textarea class="form-control" id="id_sectorDescription" cols="80" rows="5"></textarea>
-    </div>
-    </div>
-
-    <div class="row">
-    <div class="col-md-12">
-      <label for="id_map">
-        Plano de ubicación
-      </label>
-      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}"></p>
-    </div>
-    </div>
-
-    <div class="row">
-    <div class="col-md-12">
-    <label for="id_planoRegulador">
-      Plano regulador
-    </label>
-      <textarea class="form-control" id="id_planoRegulador" cols="80" rows="5"></textarea>
-    </div>
-    </div>
-
-    <div id="surroundings_square" class="subsection">
-
-      <label>Manzana</label>
-
-      <div class="row">
-      <div class="col-6">
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Población
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Superficie útil promedio
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Año promedio
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Estado veredas
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Estado calles
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      </div>
-      </div>
-
-    </div>
-
-    <div id="surroundings_education" class="subsection">
-      <label>Educación</label>
-    </div>
-
-    <div id="surroundings_health" class="subsection">
-      <label>Salud</label>
-    </div>
-
-    <div id="surroundings_transport" class="subsection">
-      <label>Transporte</label>
-    </div>
-
-    <div id="surroundings_services" class="subsection">
-      <label>Otros servicios</label>
-    </div>
-
-    <div id="surroundings_green_spaces" class="subsection">
-      <label>Áreas verdes</label>
-    </div>
-
-    <div id="surroundings_safety" class="subsection">
-      <label>Seguridad</label>
-    </div>
-
-  </div>
-  </section>
-
-  </form>
-
-  <script>
-      $('.datepicker_year').datepicker({
-        format: "yyyy",
-        minViewMode: 2,
-        maxViewMode: 2,
-        autoclose: true});
-  </script>
-
-  <script>
-      $('.datepicker_month').datepicker({
-        format: "mm/yyyy",
-        minViewMode: 1,
-        maxViewMode: 2,
-        autoclose: true});
-  </script>
-
-{% endblock %}
+{% endblock content %}

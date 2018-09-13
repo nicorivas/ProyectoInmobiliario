@@ -94,8 +94,6 @@ class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
             'propietario',
             'propietarioRut',
             'rolAvaluo',
-            'tasadorNombre',
-            'tasadorRut',
             'visadorEmpresa',
             'visadorEmpresaMail',
             'valorUF'
@@ -110,8 +108,6 @@ class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
             'propietario': forms.TextInput(attrs=class_bs),
             'propietarioRut': forms.TextInput(attrs=class_bs),
             'rolAvaluo': forms.TextInput(attrs=class_bs),
-            'tasadorNombre': forms.TextInput(attrs=class_bs),
-            'tasadorRut': forms.TextInput(attrs=class_bs),
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
             'valorUF': forms.TextInput(attrs=class_bs)
