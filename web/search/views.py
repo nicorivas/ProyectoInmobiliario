@@ -62,6 +62,7 @@ def search(request):
                 url_address = 'address={} {}, {}, {}'.format(_addressStreet,_addressNumber,_addressCommune,_addressRegion)
                 response = requests.get(url+''+url_address)
                 response_json = response.json()
+                print(response_json)
                 response_results = response_json['results'][0]['geometry']['location']
                 building.lat = response_results['lat']
                 building.lon = response_results['lng']

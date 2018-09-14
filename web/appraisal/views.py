@@ -8,6 +8,9 @@ from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 
+import reversion
+from reversion.models import Version
+
 import os
 import csv
 
@@ -87,7 +90,13 @@ def form_process(
     def form_do_save(form_building,form_apartment,form_appraisal):
         form_building.save()
         form_apartment.save()
-        form_appraisal.save()
+        with reversion.create_revision():
+            print('instance',form_appraisal.instance)
+            for field, val in form_appraisal.instance:
+                print(field, val)
+            #form_appraisal.save()
+            reversion.set_user(request.user)
+            reversion.set_comment("Created revision 1")
         return
 
     def form_do_export(form_building,form_apartment,form_appraisal):
@@ -159,7 +168,6 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
               numbera="",id_a=0,id_appraisal=0):
     '''
     '''
-    print(request.POST.dict())
     # Get current building
     building = get_building(request,id_b)
     if isinstance(building,HttpResponse): return building
@@ -174,6 +182,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
+
+        # Main forms
         form_building = AppraisalApartmentModelForm_Building(
             request.POST,
             instance=building)
@@ -183,8 +193,14 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         form_appraisal = AppraisalApartmentModelForm_Appraisal(
             request.POST,
             instance=appraisal)
-        tasadorUserId = request.POST.dict()['tasador']
-        tasadorUser = User.objects.get(pk=tasadorUserId)
+
+        # Other options of the form:
+        # For assigning tasadores
+        tasadorUser = None
+        if 'tasador' in request.POST.dict().keys():
+            tasadorUserId = request.POST.dict()['tasador']
+            tasadorUser = User.objects.get(pk=tasadorUserId)
+
         ret = form_process(
             request,
             form_building,
@@ -241,8 +257,15 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         averages = []
         stds = []
 
+    # Visadores and tasadores for the Bootstrap modals where you can select
+    # them.
+
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     visadores = User.objects.filter(groups__name__in=['visador'])
+
+
+    # History of changes, for the logbook
+    versions = list(Version.objects.get_for_object(appraisal))
 
     context = {
         'building': building,
@@ -254,7 +277,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'visadores':visadores,
         'form_apartment': form_apartment,
         'form_appraisal': form_appraisal,
-        'form_building': form_building
+        'form_building': form_building,
+        'versions': versions,
         }
 
     a =  render(request, 'appraisal/apartment.html',context)

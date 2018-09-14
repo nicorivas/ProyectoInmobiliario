@@ -1,0 +1,8 @@
+<div class="card-body">
+  <h5>Historial de modificación</h5>
+  {% for version in versions %}
+    {% for key in version.field_dict.keys %}
+      {{ key }}
+    {% endfor %}
+  {% endfor %}
+</div>

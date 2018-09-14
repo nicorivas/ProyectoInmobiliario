@@ -2,7 +2,9 @@ from django.db import models
 from apartment.models import Apartment
 from django.contrib.auth.models import User
 import datetime
+import reversion
 
+@reversion.register()
 class Appraisal(models.Model):
 
     ESTADOS = (
@@ -49,3 +51,8 @@ class Appraisal(models.Model):
         return "{} {}".format(
             self.apartment,
             self.solicitante)
+
+    def __iter__(self):
+        for field_name in self._meta.get_fields():
+            value = getattr(self, field_name.name)
+            yield (field_name.name, value)

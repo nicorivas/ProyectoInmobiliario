@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'reversion',
     'home',
     'main',
     'search',
@@ -98,8 +99,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'data',
-        'USER': 'nico',
-        'PASSWORD': '',
+        'USER': 'postgres',
+        'PASSWORD': 'iCga1kmX',
         'HOST': 'localhost',
         'PORT': '5432',
     }

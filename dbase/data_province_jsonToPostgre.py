@@ -5,7 +5,7 @@ import json
 import glob
 #from geoalchemy.shape import from_shape
 
-engine = create_engine('postgresql://nico:@localhost:5432/data', echo=True)
+engine = create_engine('postgresql://postgres:iCga1kmX@localhost:5432/data', echo=True)
 
 path_in = '../data/geo/chile/provincias/json/'
 

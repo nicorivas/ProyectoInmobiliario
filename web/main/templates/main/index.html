@@ -10,28 +10,28 @@
 
 {% block content %}
 
-<div class="section">
+<div class="card">
 
-  <div class="section-title">
-    <h2>Tasaciones activas</h2>
-  </div>
+  <div class="card-body">
+
+  <h5 class="card-title">Tasaciones activas</h5>
 
   <ul class="list-group">
     {% for appraisal in appraisals %}
     {% if appraisal.daySinceCreated > 3 %}
     <li class="list-group-item list-group-item-danger">
     {% elif appraisal.daySinceCreated > 1 %}
-    <li class="list-group-item align-items-center">
+    <li class="list-group-item">
     {% elif appraisal.daySinceCreated >= 0 %}
     <li class="list-group-item list-group-item-success">
     {% endif %}
       <div class="row">
-      <div class="col-8">
-      <a href='/appraisal/{{appraisal.apartment.building.addressRegion|slugify}}/{{appraisal.apartment.building.addressCommune|slugify}}/{{appraisal.apartment.building.addressStreet|slugify}}/{{appraisal.apartment.building.addressNumber}}/{{appraisal.apartment.building.id}}/departamento/{{appraisal.apartment.number}}/{{appraisal.apartment.id}}/{{appraisal.id}}/'>
+      <div class="col-8 row-height">
+      <a class="text-dark" href='/appraisal/{{appraisal.apartment.building.addressRegion|slugify}}/{{appraisal.apartment.building.addressCommune|slugify}}/{{appraisal.apartment.building.addressStreet|slugify}}/{{appraisal.apartment.building.addressNumber}}/{{appraisal.apartment.building.id}}/departamento/{{appraisal.apartment.number}}/{{appraisal.apartment.id}}/{{appraisal.id}}/'>
         {{ appraisal.apartment.building.address }}
       </a>
       </div>
-      <div class="col-2">
+      <div class="col-2 row-height">
       {% if appraisal.daySinceCreated > 3 %}
       <span class="badge badge-danger">
         Creada hace {{appraisal.daySinceCreated}} dias
@@ -58,11 +58,13 @@
     </li>
     {% endfor %}
   </ul>
+
+  </div>
 </div>
 
-<div class="section">
-  <div class="section-title">
-    <h2>Tasaciones previas</h2>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Tasaciones previas</h5>
   </div>
 </div>
 
