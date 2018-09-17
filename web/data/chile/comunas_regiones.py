@@ -1,5 +1,6 @@
 import json
-json_data = open('data/chile/comunas_regiones.json','r')
+import codecs
+json_data = codecs.open('data/chile/comunas_regiones.json','r', 'utf-8-sig')
 data = json.load(json_data)
 data = data['regiones']
 regiones = []

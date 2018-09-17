@@ -38,9 +38,8 @@ def get_urls_PI(url):
     options.add_argument('disable-infobars')
     options.add_argument("--disable-extensions")
     LOGGER.setLevel(logging.WARNING)
-    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser = webdriver.Chrome(chrome_options = options)
     browser.get(url)
-    #browser = webdriver.PhantomJS()  # PhantomJS must be in path or  .PhantomJS(path/to/chromedriver)
     while page:
         url_1 = url_[0] + 'pg=' + str(pagnum) + url_[1]
         browser.get(url_1)
@@ -61,12 +60,49 @@ def get_urls_PI(url):
                 pagnum += 1
         except:
             counter += 1
-            if counter == 1000:
+            if counter == 800:
                 page = False
         print(pagnum)
     browser.close()
     browser.quit()
     return pages
+
+def clean_appraisals_PI(user, password):
+
+    '''Errases the appraisal list in PortalInmobiliario, so maximum is never reach'''
+
+    url = 'https://www.portalinmobiliario.com'
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # only fatal error in console
+    LOGGER.setLevel(logging.WARNING)
+    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    try:
+        browser.get(url)
+        browser.find_elements_by_xpath('//*[@id="show-login-prompt"]')[0].click()  # open logging
+        time.sleep(2)
+        alert = browser.find_elements_by_xpath('//*[@id="txtEmail"]')[0]  # Finds logging form
+        time.sleep(1)
+        alert.send_keys(user + Keys.TAB + password)  # Fills logging form
+        browser.find_elements_by_xpath('//*[@id="linkIngresar"]')[0].click()  # logging
+        time.sleep(2)
+        url = 'https://www.portalinmobiliario.com/miportal/miscotizaciones'
+        browser.get(url)
+        html = browser.page_source
+        bsObj = BeautifulSoup(html, "html5lib")
+        for i in bsObj.find('table', {'class': 'table cz-list'}).findAll('input', {'type':'checkbox'}):
+            browser.find_elements_by_xpath('//*[@id="' + i.get('id') + '"]')[0].click()
+        browser.find_elements_by_xpath('//*[@id="btnEliminaCotizaciones"]')[0].click()
+        browser.close()
+        browser.quit()
+    except:
+        return
+    return
 
 
 def base_building_search_PI(url):
@@ -82,7 +118,7 @@ def base_building_search_PI(url):
     options.add_argument('disable-infobars')
     options.add_argument("--disable-extensions")
     LOGGER.setLevel(logging.WARNING)
-    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
+    browser = webdriver.Chrome(chrome_options= options)
     browser.get(url)
     time.sleep(5)
     html = browser.page_source
@@ -297,6 +333,9 @@ def apartment_appraisal_data_PI(url ,user, password):
                 browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[2]/div/div[4]/button')[0].click()
                 list.append(dept)
                 i += 1
+
+                clean_appraisals_PI(user, password)
+
             n += 1
         except:
             continue
@@ -372,9 +411,13 @@ def house_appraisal_data_PI(url ,user, password):
                 print(house)
                 list.append(house)
                 i += 1
+                clean_appraisals_PI(user, password)
+
             n += 1
         except:
             continue
     browser.close()
     browser.quit()
     return list
+
+
