@@ -13,7 +13,7 @@ class AppraisalCreateForm(forms.Form):
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
-        choices=[("d","departamento"),("c","casa")])
+        choices=[("d", "Departamento"), ("c", "Casa")])
     propertyType_create.widget.attrs.update({'class':"form-control"})
 
     addressRegion_create = forms.ModelChoiceField(

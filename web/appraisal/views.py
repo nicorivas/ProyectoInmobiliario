@@ -213,11 +213,11 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             appraisal,
             tasadorUser
             )
-        if isinstance(ret,HttpResponse): return ret
+        if isinstance(ret, HttpResponse): return ret
 
-    form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
-    form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
-    form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal,label_suffix='')
+    form_building = AppraisalApartmentModelForm_Building(instance=building, label_suffix='')
+    form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment, label_suffix='')
+    form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal, label_suffix='')
 
     # REFERENCE PROPERTIES
     # Do we have enough data to compare?
@@ -301,7 +301,7 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'appraisal_history': appraisal_history,
         }
 
-    a =  render(request, 'appraisal/apartment.html',context)
+    a = render(request, 'appraisal/apartment.html',context)
     return a
 
 def ajax_computeValuations(request):
