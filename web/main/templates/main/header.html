@@ -9,6 +9,7 @@
       <li class="nav-item">
         <a class="nav-link" href="/main/">Tasaciones <span class="sr-only">(current)</span></a>
       </li>
+      {{ perms.appraisal.can_create }}
       {% if perms.appraisal.can_create %}
       <li class="nav-item">
         <a class="nav-link" href="/search/">Crear tasación</a>
@@ -23,7 +24,7 @@
 
   {% if user.is_authenticated %}
   <div class="navbar-text" style="margin-right:1em">
-    Bienvenido {{user.first_name}}
+    Bienvenido {{user.first_name}} {{user.last_name}}
   </div>
   <div class="navbar-text">
     <a href="/logout/">Logout</a>

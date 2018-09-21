@@ -11,6 +11,11 @@ class LocationSearchForm(forms.Form):
 
 class AppraisalCreateForm(forms.Form):
 
+    propertyType_create = forms.ChoiceField(
+        label="Tipo propiedad",
+        choices=[("d", "Departamento"), ("c", "Casa")])
+    propertyType_create.widget.attrs.update({'class':"form-control"})
+
     addressRegion_create = forms.ModelChoiceField(
         label="Región",
         queryset=Region.objects.all())

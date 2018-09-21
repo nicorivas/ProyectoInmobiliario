@@ -9,6 +9,7 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal
 
 import reversion
+from copy import deepcopy
 from reversion.models import Version
 
 import os
@@ -77,6 +78,7 @@ def form_process(
     form_building,
     form_apartment,
     form_appraisal,
+    appraisal_old,
     building,
     apartment,
     appraisal,
@@ -87,14 +89,11 @@ def form_process(
         context = {}
         return render(request, 'appraisal/deleted.html',context)
 
-    def form_do_save(form_building,form_apartment,form_appraisal):
+    def form_do_save(form_building,form_apartment,form_appraisal,appraisal_old):
         form_building.save()
         form_apartment.save()
         with reversion.create_revision():
-            print('instance',form_appraisal.instance)
-            for field, val in form_appraisal.instance:
-                print(field, val)
-            #form_appraisal.save()
+            form_appraisal.save()
             reversion.set_user(request.user)
             reversion.set_comment("Created revision 1")
         return
@@ -150,7 +149,7 @@ def form_process(
        form_apartment.is_valid() and \
        form_appraisal.is_valid():
         if 'save' in request.POST:
-            ret = form_do_save(form_building,form_apartment,form_appraisal)
+            ret = form_do_save(form_building,form_apartment,form_appraisal,appraisal_old)
         elif 'delete' in request.POST:
             ret = form_do_delete(form_building,form_apartment,form_appraisal)
         elif 'export' in request.POST:
@@ -177,6 +176,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
     # Get current appraisal
     appraisal = get_appraisal(request,id_appraisal)
     if isinstance(appraisal,HttpResponse): return appraisal
+
+    appraisal_old = deepcopy(appraisal)
 
     # DA FORM
 
@@ -206,16 +207,17 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             form_building,
             form_apartment,
             form_appraisal,
+            appraisal_old,
             building,
             apartment,
             appraisal,
             tasadorUser
             )
-        if isinstance(ret,HttpResponse): return ret
+        if isinstance(ret, HttpResponse): return ret
 
-    form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
-    form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
-    form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal,label_suffix='')
+    form_building = AppraisalApartmentModelForm_Building(instance=building, label_suffix='')
+    form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment, label_suffix='')
+    form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal, label_suffix='')
 
     # REFERENCE PROPERTIES
     # Do we have enough data to compare?
@@ -266,6 +268,24 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
+    appraisal_history = []
+    c = 0
+    for i in range(len(versions)):
+        if i == 0: continue
+        version_new = versions[i]
+        version_old = versions[i-1]
+
+        appraisal_history.append({})
+        appraisal_history[c]['user'] = version_new.revision.user
+        appraisal_history[c]['time'] = version_new.revision.date_created
+        appraisal_history[c]['diffs'] = []
+        for key, value in version_new.field_dict.items():
+            if value != version_old.field_dict[key]:
+                appraisal_history[c]['diffs'].append([key,value,version_old.field_dict[key]])
+        if len(appraisal_history[c]['diffs']) == 0:
+            appraisal_history.pop(c)
+        else:
+            c += 1
 
     context = {
         'building': building,
@@ -278,11 +298,10 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'form_apartment': form_apartment,
         'form_appraisal': form_appraisal,
         'form_building': form_building,
-        'versions': versions,
+        'appraisal_history': appraisal_history,
         }
 
-    a =  render(request, 'appraisal/apartment.html',context)
-    print(a)
+    a = render(request, 'appraisal/apartment.html',context)
     return a
 
 def ajax_computeValuations(request):
