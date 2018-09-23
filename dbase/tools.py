@@ -1,12 +1,127 @@
 #!/usr/bin/env python
+import os
+from subprocess import call
 import numpy as np
 import glob
 import json
 from shapely.geometry import Polygon
 from shapely.geometry import Point
-from data_globals import *
+from globals import *
+
+def error(string):
+    print('Error: '+string)
+
+def warning(string):
+    print('Warning: '+string)
+
+def fileToString(filename=""):
+    '''
+    Given a filename, return a list with lines as string
+        @filename: filename
+    '''
+    fileData = []
+    try:
+        file = open(filename,'r',encoding='utf-8-sig')#,encoding="ISO-8859-1")
+        fileData = file.readlines()
+        if len(fileData) == 0:
+            error("Source file is empty!")
+            exit(0)
+    except FileNotFoundError:
+        error("Source file not found: {}".format(filename))
+        exit(0)
+    return fileData
+
+def stringToDictionaries(fileData):
+    '''
+    Given a list with lines as string, return a dictionary
+        @fileData: list with strings, each element a property
+    '''
+    buildings_dict = []
+    for line in fileData:
+        buildings_dict.append(ast.literal_eval(line))
+    return buildings_dict
+
+def dbase_create_engine(echo=False,verbose=True):
+    if verbose:
+        print('Connecting to database')
+    from sqlalchemy import create_engine
+    engine = create_engine('postgresql://postgres:iCga1kmX@localhost:5432/data', echo=echo)
+    return engine
+
+def dbase_setup(verbose=True):
+    from sqlalchemy import MetaData
+    sql_engine = dbase_create_engine()
+    if verbose:
+        print('Downloading database metadata')
+    sql_metadata = MetaData(sql_engine,reflect=True)
+    if verbose:
+        print('Stablishing connection with database')
+    sql_connection = sql_engine.connect()
+    if verbose:
+        print('Database ready')
+    return sql_engine, sql_metadata, sql_connection
+
+def shape_simplify(filepath_in,filepath_out,ref=1000,verbose=False):
+    '''
+    Simplifies a shape geometry so that it contains less points.
+        @filepath_in: path or list of paths for input file
+        @filepath_out: path or list of paths for output files
+        -ref: point proximity distance to count as one
+        -verbose: print things
+        #returns: list of filepaths created
+    '''
+    if not isinstance(filepath_in, list):
+        filepath_in = [filepath_in]
+    if not isinstance(filepath_out, list):
+        filepath_out = [filepath_out]
+
+    if verbose:
+        print('Simplifying geometries ({}):'.format(ref))
+
+    for i, fpi in enumerate(filepath_in):
+        if verbose:
+            print(filepath_in[i][filepath_in[i].find('/',-40):])
+        cmd_simplify = ['ogr2ogr',
+            '{}'.format(filepath_out[i]),
+            '{}'.format(filepath_in[i]),
+            '-simplify',str(ref)]
+        call(cmd_simplify)
+
+    return filepath_out
+
+def shape_to_json(filepath_in,filepath_out,verbose=0):
+    '''
+    Convert shape files to GeoJSON (and convert coordinate system)
+        @filepath_in: path or list of paths for input file
+        @filepath_out: path or list of paths for output files
+        -verbose: print things
+        #returns: list of filepaths created
+    '''
+    if not isinstance(filepath_in, list):
+        filepath_in = [filepath_in]
+    if not isinstance(filepath_out, list):
+        filepath_out = [filepath_out]
+
+    if verbose:
+        print('Converting to GeoJSON')
+
+    for i, fpi in enumerate(filepath_in):
+        if os.path.isfile(filepath_out[i]):
+            os.remove(filepath_out[i])
+        if verbose:
+            print(filepath_in[i][filepath_in[i].rfind('/'):])
+        cmd_convert = ['ogr2ogr',
+            '-f','GeoJSON',
+            '-t_srs','EPSG:4326',
+            '{}'.format(filepath_out[i]),
+            '{}'.format(filepath_in[i])]
+        call(cmd_convert)
+
+    return filepath_out
 
 def polygonArea(points):
+    '''
+    '''
     polygon = Polygon(points)
     return float(polygon.area)
 

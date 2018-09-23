@@ -7,6 +7,7 @@ from house.models import House
 from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal
+from appraisal.models import Comment
 
 import reversion
 from copy import deepcopy
@@ -18,6 +19,7 @@ import csv
 from .forms import AppraisalApartmentModelForm_Building
 from .forms import AppraisalApartmentModelForm_Apartment
 from .forms import AppraisalApartmentModelForm_Appraisal
+from .forms import AppraisalApartmentForm_Comment
 
 from django.db.models import Avg, StdDev
 
@@ -78,24 +80,29 @@ def form_process(
     form_building,
     form_apartment,
     form_appraisal,
+    form_comment,
     appraisal_old,
     building,
     apartment,
     appraisal,
-    form_tasador_user):
+    form_tasador_user,
+    form_visador_user):
 
     def form_do_delete(form_building,form_apartment,form_appraisal):
         appraisal.delete()
         context = {}
         return render(request, 'appraisal/deleted.html',context)
 
-    def form_do_save(form_building,form_apartment,form_appraisal,appraisal_old):
-        form_building.save()
-        form_apartment.save()
+    def form_appraisal_save(comment=""):
         with reversion.create_revision():
             form_appraisal.save()
             reversion.set_user(request.user)
-            reversion.set_comment("Created revision 1")
+            reversion.set_comment(comment)
+
+    def form_do_save(form_building,form_apartment,form_appraisal,appraisal_old):
+        form_building.save()
+        form_apartment.save()
+        form_appraisal_save()
         return
 
     def form_do_export(form_building,form_apartment,form_appraisal):
@@ -136,18 +143,33 @@ def form_process(
         return response
 
     def form_do_assign_tasador(appraisal,user):
-        print('form_do_assign_tasador',form_tasador_user)
-        print(appraisal.tasadorUser)
         appraisal.tasadorUser = user
-        print(appraisal.tasadorUser)
-        appraisal.save()
+        form_appraisal_save('Changed tasador')
         return
+
+    def form_do_assign_visador(appraisal,user):
+        appraisal.visadorUser = user
+        form_appraisal_save('Changed tasador')
+        return
+
+    def form_do_comment(form_comment,appraisal):
+        '''
+        Create comment based on the field commentText of the form.
+        '''
+        text = form_comment.cleaned_data['commentText']
+        comment = Comment(
+            user=request.user,
+            text=text,
+            timeCreated=datetime.datetime.now(),
+            appraisal=appraisal)
+        comment.save()
 
     ret = None
 
     if form_building.is_valid() and \
        form_apartment.is_valid() and \
-       form_appraisal.is_valid():
+       form_appraisal.is_valid() and \
+       form_comment.is_valid():
         if 'save' in request.POST:
             ret = form_do_save(form_building,form_apartment,form_appraisal,appraisal_old)
         elif 'delete' in request.POST:
@@ -156,10 +178,16 @@ def form_process(
             ret = form_do_export(form_building,form_apartment,form_appraisal)
         elif 'assign_tasador' in request.POST:
             ret = form_do_assign_tasador(appraisal,form_tasador_user)
+        elif 'assign_visador' in request.POST:
+            ret = form_do_assign_visador(appraisal,form_visador_user)
+        elif 'comment' in request.POST:
+            ret = form_do_comment(form_comment,appraisal)
+
     else:
         print(form_building.errors)
         print(form_apartment.errors)
         print(form_appraisal.errors)
+        print(form_comment.errors)
 
     return ret
 
@@ -195,29 +223,39 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             request.POST,
             instance=appraisal)
 
+        form_comment = AppraisalApartmentForm_Comment(request.POST)
+
         # Other options of the form:
-        # For assigning tasadores
+        # Assigning tasadores
         tasadorUser = None
         if 'tasador' in request.POST.dict().keys():
             tasadorUserId = request.POST.dict()['tasador']
             tasadorUser = User.objects.get(pk=tasadorUserId)
+
+        visadorUser = None
+        if 'visador' in request.POST.dict().keys():
+            visadorUserId = request.POST.dict()['visador']
+            visadorUser = User.objects.get(pk=visadorUserId)
 
         ret = form_process(
             request,
             form_building,
             form_apartment,
             form_appraisal,
+            form_comment,
             appraisal_old,
             building,
             apartment,
             appraisal,
-            tasadorUser
+            tasadorUser,
+            visadorUser
             )
         if isinstance(ret,HttpResponse): return ret
 
     form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
     form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
     form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal,label_suffix='')
+    form_comment = AppraisalApartmentForm_Comment(label_suffix='')
 
     # REFERENCE PROPERTIES
     # Do we have enough data to compare?
@@ -261,10 +299,8 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
 
     # Visadores and tasadores for the Bootstrap modals where you can select
     # them.
-
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     visadores = User.objects.filter(groups__name__in=['visador'])
-
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
@@ -287,6 +323,9 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         else:
             c += 1
 
+    # Comments, for the logbook
+    comments = Comment.objects.filter(appraisal=appraisal)
+
     context = {
         'building': building,
         'apartment': apartment,
@@ -298,13 +337,18 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'form_apartment': form_apartment,
         'form_appraisal': form_appraisal,
         'form_building': form_building,
+        'form_comment':form_comment,
         'appraisal_history': appraisal_history,
+        'comments': comments,
         }
 
     a =  render(request, 'appraisal/apartment.html',context)
     return a
 
 def ajax_computeValuations(request):
+    '''
+
+    '''
     dict = request.GET.dict()
     UF = 30623
     liquidez = 0.9
