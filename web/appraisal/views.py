@@ -250,7 +250,7 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             tasadorUser,
             visadorUser
             )
-        if isinstance(ret,HttpResponse): return ret
+        if isinstance(ret, HttpResponse): return ret
 
     form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
     form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
@@ -342,7 +342,7 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'comments': comments,
         }
 
-    a =  render(request, 'appraisal/apartment.html',context)
+    a = render(request, 'appraisal/apartment.html',context)
     return a
 
 def ajax_computeValuations(request):

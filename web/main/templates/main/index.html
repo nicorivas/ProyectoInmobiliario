@@ -26,11 +26,14 @@
     <li class="list-group-item list-group-item-success">
     {% endif %}
       <div class="row">
-      <div class="col-8 row-height">
+      <div class="col-6 row-height">
       <a class="text-dark" href='/appraisal/{{appraisal.apartment.building.addressRegion|slugify}}/{{appraisal.apartment.building.addressCommune|slugify}}/{{appraisal.apartment.building.addressStreet|slugify}}/{{appraisal.apartment.building.addressNumber}}/{{appraisal.apartment.building.id}}/departamento/{{appraisal.apartment.number}}/{{appraisal.apartment.id}}/{{appraisal.id}}/'>
         {{ appraisal.apartment.building.address }}
       </a>
       </div>
+        <div class="col-2">
+           {{ appraisal.tasadorUser }}
+        </div>
       <div class="col-2 row-height">
       {% if appraisal.daySinceCreated > 3 %}
       <span class="badge badge-danger">

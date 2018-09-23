@@ -44,6 +44,7 @@ def search(request):
                 addressCommune=_addressCommune,
                 addressStreet=_addressStreet,
                 addressNumber=_addressNumber)
+
             if len(buildings) == 0:
                 # building does not exist, so create it
                 building = Building(

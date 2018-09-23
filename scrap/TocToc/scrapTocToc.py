@@ -168,8 +168,7 @@ def apartment_data(url, building_name, coordinates):
     options.add_argument("--disable-extensions")
     options.add_argument("--log-level=3")  # fatal
     LOGGER.setLevel(logging.WARNING)
-    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
-    #browser = webdriver.PhantomJS()
+    browser = webdriver.Chrome(chrome_options= options)
     browser.get(url)
     time.sleep(5)  #wait for page to be loaded.
     '''
@@ -287,10 +286,11 @@ def house_data(url, house_name, coordinates):
     return house
 
 
-def apartment_value_data(url, user, password, coordinates):
+def apartment_value_data(url, users, password, coordinates):
 
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
-
+    x = 0
+    user = users[x]
     options = Options()
     options.add_argument("--headless")  # Runs Chrome in headless mode.
     options.add_argument('--no-sandbox')  # Bypass OS security model
@@ -300,8 +300,7 @@ def apartment_value_data(url, user, password, coordinates):
     options.add_argument("--disable-extensions")
     options.add_argument("--log-level=3")  # fatal error in console
     LOGGER.setLevel(logging.WARNING) #Suppress console wartnings
-    browser = webdriver.Chrome(chrome_options= options)  # Sacar .exe para mac
-    #browser = webdriver.PhantomJS()
+    browser = webdriver.Chrome(chrome_options= options)
     appraisal_data = {}
     browser.get(url)
     time.sleep(5)
@@ -318,10 +317,11 @@ def apartment_value_data(url, user, password, coordinates):
     for i in bsObj2: #loop to find all building's appraisals
         if i.find('a') is not None:
             try:
-                if n > 10: #max number of appraisals for building
-                    return appraisal_data
-                    browser.close()
-                    browser.quit()
+                if n >= 9: #max number of appraisals for building
+                    n = 0
+                    x += 1
+                    if x == 3:
+                        x = 0
                 else:
                     time.sleep(7)
                     browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[' + str(n) + ']/div[3]/a')[0].click()
@@ -347,7 +347,6 @@ def apartment_value_data(url, user, password, coordinates):
                     webdriver.ActionChains(browser).send_keys(Keys.ESCAPE).perform() #Close current appraisal window
                     browser.execute_script("window.stop();")
                     browser.back()
-                    print(n)
             except:
                 print('error 2')
                 browser.close()
@@ -357,4 +356,78 @@ def apartment_value_data(url, user, password, coordinates):
     browser.close()
     browser.quit()
     return appraisal_data
+
+
+
+def house_value_data(url, users, password, coordinates):
+
+    ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
+    x = 0
+    user = users[x]
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('--disable-gpu')  # applicable to windows os only
+    options.add_argument('start-maximized')
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--log-level=3")  # fatal error in console
+    LOGGER.setLevel(logging.WARNING) #Suppress console wartnings
+    browser = webdriver.Chrome(chrome_options= options)
+    appraisal_data = {}
+    browser.get(url)
+    time.sleep(5)
+    html = browser.page_source
+    bsObj = BeautifulSoup(html, "html5lib")
+    bsObj2 = bsObj.find('ul', {'class': 'listado-plantas'}).findAll('li')
+    n = 1
+    browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li['+ str(n) +']/div[3]/a')[0].click() #open logging
+    alert = browser.find_elements_by_xpath('//*[@id="IngresoUsuario_CorreoElectronico"]')[0] # Finds logging form
+    time.sleep(5)
+    alert.send_keys(user + Keys.TAB + password) # Fills logging form
+    browser.find_elements_by_xpath('//*[@id="btnIngresoUsuarioPop"]')[0].click() #logging
+    time.sleep(5)
+    for i in bsObj2: #loop to find all building's appraisals
+        if i.find('a') is not None:
+            try:
+                if n >= 9: #max number of appraisals for building
+                    n = 0
+                    x += 1
+                    if x == 3:
+                        x = 0
+                else:
+                    time.sleep(7)
+                    browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[' + str(n) + ']/div[3]/a')[0].click()
+                    time.sleep(5)
+                    html = browser.page_source
+                    bsObj3 = BeautifulSoup(html, "html5lib")
+                    head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
+                    apt = {}
+                    apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+                    apt['coordenadas'] = coordinates
+                    apt['url'] = url
+                    apt['n_casa'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
+                    apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
+                    apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
+                    apt['dormitorios'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
+                    apt['banos'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
+                    apt['orientacion'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
+                    apt['m2_utiles'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
+                    apt['m2_terraza'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
+                    apt['m2_totales'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
+                    appraisal_data[str(n)] = apt
+                    n += 1
+                    webdriver.ActionChains(browser).send_keys(Keys.ESCAPE).perform() #Close current appraisal window
+                    browser.execute_script("window.stop();")
+                    browser.back()
+            except:
+                print('error 2')
+                browser.close()
+                browser.quit()
+                return appraisal_data
+
+    browser.close()
+    browser.quit()
+    return appraisal_data
+
 

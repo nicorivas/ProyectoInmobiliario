@@ -14,14 +14,12 @@ class Building(models.Model):
         blank=True,
         null=True,
         to_field='code')
-    #addressCommune = models.CharField("Comuna",max_length=300,default="")
     addressRegion = models.ForeignKey(Region,
         on_delete=models.CASCADE,
         verbose_name="Region",
         blank=True,
         null=True,
         to_field='code')
-    #addressRegion = models.CharField("Region",max_length=300,default="")
     name = models.CharField("Nombre",max_length=200,default="",null=True,blank=True)
     lat = models.FloatField("Latitud",default=0.0)
     lon = models.FloatField("Longitud",default=0.0)
