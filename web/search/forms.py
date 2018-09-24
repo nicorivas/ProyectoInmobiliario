@@ -33,6 +33,8 @@ class AppraisalCreateForm(forms.Form):
     addressNumber_create.widget.attrs.update({'class':"form-control"})
     addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.")
     addressNumberFlat_create.widget.attrs.update({'class':"form-control"})
+    appraisalTimeFrame_create = forms.IntegerField(max_value=900, label="Plazo")
+    appraisalTimeFrame_create.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

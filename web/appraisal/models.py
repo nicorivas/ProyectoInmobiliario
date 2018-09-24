@@ -15,6 +15,7 @@ class Appraisal(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE,verbose_name="Departamento",blank=False,null=False)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
+    timeDue = models.IntegerField("Time Due", blank=True, null=True)
     status = models.CharField("Estado",max_length=10,choices=ESTADOS,default='a')
 
     # generales
@@ -38,7 +39,6 @@ class Appraisal(models.Model):
     def daySinceCreated(self):
         today = datetime.date.today()
         diff  = today - self.timeCreated.date()
-        print(diff.days)
         return diff.days
 
     class Meta:
