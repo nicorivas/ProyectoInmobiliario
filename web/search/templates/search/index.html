@@ -25,7 +25,8 @@
 {% block content %}
 
 <div class="section">
-  <form action="/search/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
+  <form action="/search/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}"
+        house_selected_opt = "{% url 'house_selected_option' %}">
     {% csrf_token %}
     <div class="form-row">
     <div class="form-group col-md-2">
@@ -48,7 +49,7 @@
       {{form_create.addressNumber_create.label_tag}}
       {{form_create.addressNumber_create}}
     </div>
-    <div class="form-group col-md-1">
+    <div class="form-group col-md-1" id="type">
       {{form_create.addressNumberFlat_create.label_tag}}
       {{form_create.addressNumberFlat_create}}
     </div>
@@ -87,6 +88,7 @@
         var url = $("#form_create").attr("data-commune-url");
         // get the selected country ID from the HTML input
         var regionId = $(this).val();
+        console.log(regionId);
 
         // initialize an AJAX request
         $.ajax({
@@ -99,15 +101,39 @@
           success: function (data) {
             // `data` is the return of the `load_cities` view function
             // replace the contents of the city input with the data that came from the server
+            console.log(data)
             $("#id_addressCommune_create").html($.trim(data));
           }
         });
       });
+
     </script>
 
-    <scripts>
 
-    </scripts>
+  <script>
+      $("#id_propertyType_create").change(function () {
+        var type = $(this).val();
+
+        // initialize an AJAX request
+        $.ajax({
+           data: {
+           'type': type
+          },
+          success: function (data) {
+            if (type == "c") {
+              $("#id_addressNumberFlat_create").attr('disabled','disabled');
+              $("#id_addressNumberFlat_create").val('');
+              }
+            else if (type == "d") {
+              $("#id_addressNumberFlat_create").removeAttr('disabled');
+            }
+          }
+        });
+      });
+
+    </script>
+
+
 
   <!--
   <h2> Propiedades </h2>

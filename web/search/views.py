@@ -2,7 +2,7 @@ from django.views.generic import FormView
 from django.shortcuts import render
 from django.core import serializers
 from data.chile import comunas_regiones
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 
@@ -216,3 +216,9 @@ def load_communes(request):
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
+
+def apt_block(request):
+    if str(request.GET.get('type')) == 'c':
+        return render(request, 'hr/house_selected_option.html')
+    else:
+        return HttpResponse('')
