@@ -2,7 +2,7 @@ from django.views.generic import FormView
 from django.shortcuts import render
 from django.core import serializers
 from data.chile import comunas_regiones
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 
@@ -37,6 +37,8 @@ def search(request):
             _addressStreet = form_create.cleaned_data['addressStreet_create']
             _addressNumber = form_create.cleaned_data['addressNumber_create']
             _addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
+            _appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
+
 
             # check if building exists
             buildings = Building.objects.filter(
@@ -105,7 +107,9 @@ def search(request):
             appraisal = Appraisal.objects.filter(
                 apartment=apartment)
             if len(appraisal) == 0:
-                appraisal = Appraisal(apartment=apartment,timeCreated=datetime.datetime.now())
+                timeDue = datetime.now() + timedelta(_appraisalTimeFrame)
+                print(timeDue)
+                appraisal = Appraisal(apartment=apartment,timeCreated=datetime.datetime.now(), timeDue=timeDue)
                 appraisal.save()
             elif len(appraisal) > 1:
                 context = {'error_message': 'More than one appraisal of the same property'}
@@ -216,3 +220,9 @@ def load_communes(request):
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
+
+def apt_block(request):
+    if str(request.GET.get('type')) == 'c':
+        return render(request, 'hr/house_selected_option.html')
+    else:
+        return HttpResponse('')

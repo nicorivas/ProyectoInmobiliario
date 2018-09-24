@@ -19,6 +19,7 @@ class Appraisal(models.Model):
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
+    timeDue = models.IntegerField("Time Due", blank=True, null=True)
     status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
 
     # generales
@@ -73,7 +74,6 @@ class Appraisal(models.Model):
     def daySinceCreated(self):
         today = datetime.date.today()
         diff  = today - self.timeCreated.date()
-        print(diff.days)
         return diff.days
 
     class Meta:
