@@ -56,3 +56,9 @@ class Appraisal(models.Model):
         for field_name in self._meta.get_fields():
             value = getattr(self, field_name.name)
             yield (field_name.name, value)
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    text = models.CharField("Comment",max_length=500)
+    appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
+    timeCreated = models.DateTimeField("Time created",blank=True,null=True)

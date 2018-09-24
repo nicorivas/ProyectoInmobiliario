@@ -1,115 +1,116 @@
 <div class="card-body">
 
-    <div class="section-title">
-      <h2> Entorno </h2>
-    </div>
-
-    <div class="row">
-    <div class="col-md-12">
+    <div class="form-group">
       <label for="id_sectorDescription">
         Descripcion del sector
       </label>
       <textarea class="form-control" id="id_sectorDescription" cols="80" rows="5"></textarea>
     </div>
-    </div>
 
-    <div class="row">
-    <div class="col-md-12">
+    <div class="form-group">
       <label for="id_map">
         Plano de ubicación
       </label>
       <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}"></p>
     </div>
-    </div>
 
-    <div class="row">
-    <div class="col-md-12">
-    <label for="id_planoRegulador">
-      Plano regulador
-    </label>
+    <div class="form-group">
+      <label for="id_planoRegulador">
+        Plano regulador
+      </label>
       <textarea class="form-control" id="id_planoRegulador" cols="80" rows="5"></textarea>
     </div>
-    </div>
 
-    <div id="surroundings_square" class="subsection">
+    <div class="card bg-light mb-1">
+      <div class="card-header">
+        Manzana
+      </div>
 
-      <label>Manzana</label>
+      <div class="card-body">
+        <div class="card-text">
 
-      <div class="row">
-      <div class="col-6">
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Población
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
 
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Población
-          </span>
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Superficie útil promedio
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Año promedio
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Estado veredas
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Estado calles
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
         </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Superficie útil promedio
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Año promedio
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Estado veredas
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            Estado calles
-          </span>
-        </div>
-        <input type="text" value="" class="form-control" disabled>
-      </div>
-
-      </div>
       </div>
 
     </div>
 
-    <div id="surroundings_education" class="subsection">
-      <label>Educación</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Educación</div>
     </div>
 
-    <div id="surroundings_health" class="subsection">
-      <label>Salud</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Salud</div>
     </div>
 
-    <div id="surroundings_transport" class="subsection">
-      <label>Transporte</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Transporte</div>
     </div>
 
-    <div id="surroundings_services" class="subsection">
-      <label>Otros servicios</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Áreas verdes</div>
     </div>
 
-    <div id="surroundings_green_spaces" class="subsection">
-      <label>Áreas verdes</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Seguridad</div>
     </div>
 
-    <div id="surroundings_safety" class="subsection">
-      <label>Seguridad</label>
+    <div class="card bg-light mb-1">
+    <div class="card-header">Otros servicios</div>
     </div>
 
   </div>

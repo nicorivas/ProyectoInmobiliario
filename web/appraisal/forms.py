@@ -112,3 +112,7 @@ class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
             'valorUF': forms.TextInput(attrs=class_bs)
         }
+
+class AppraisalApartmentForm_Comment(forms.Form):
+    commentText = forms.CharField(label='Comment', max_length=500,widget=forms.Textarea)
+    commentText.widget.attrs.update({'class':"form-control",'rows':3})
