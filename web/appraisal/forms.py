@@ -114,5 +114,5 @@ class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
         }
 
 class AppraisalApartmentForm_Comment(forms.Form):
-    commentText = forms.CharField(label='Comment', max_length=500,widget=forms.Textarea)
+    commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
     commentText.widget.attrs.update({'class':"form-control",'rows':3})

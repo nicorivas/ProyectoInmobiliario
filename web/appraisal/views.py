@@ -105,6 +105,15 @@ def form_process(
         form_appraisal_save()
         return
 
+    def form_do_finish(appraisal,form_appraisal):
+        appraisal.timeFinished = datetime.datetime.now()
+        print('form do finish')
+        print(appraisal.status)
+        appraisal.status = 'f'
+        appraisal.save()
+        form_appraisal.save()
+        return
+
     def form_do_export(form_building,form_apartment,form_appraisal):
 
         module_dir = os.path.dirname(__file__)  # get current directory
@@ -164,6 +173,8 @@ def form_process(
             appraisal=appraisal)
         comment.save()
 
+    print('form process')
+
     ret = None
 
     if form_building.is_valid() and \
@@ -176,6 +187,8 @@ def form_process(
             ret = form_do_delete(form_building,form_apartment,form_appraisal)
         elif 'export' in request.POST:
             ret = form_do_export(form_building,form_apartment,form_appraisal)
+        elif 'finish' in request.POST:
+            ret = form_do_finish(appraisal,form_appraisal)
         elif 'assign_tasador' in request.POST:
             ret = form_do_assign_tasador(appraisal,form_tasador_user)
         elif 'assign_visador' in request.POST:
@@ -252,6 +265,9 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             )
         if isinstance(ret, HttpResponse): return ret
 
+    if request.method == 'GET':
+        print(request.GET.get('tab'))
+
     form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
     form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
     form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal,label_suffix='')
@@ -326,7 +342,21 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
     # Comments, for the logbook
     comments = Comment.objects.filter(appraisal=appraisal)
 
+    # Disable fields if appraisal is finished
+    if appraisal.status == appraisal.STATE_FINISHED:
+        for field in form_appraisal.fields:
+            form_appraisal.fields[field].widget.attrs['readonly'] = True
+            form_appraisal.fields[field].widget.attrs['disabled'] = True
+        for field in form_building.fields:
+            form_building.fields[field].widget.attrs['readonly'] = True
+            form_building.fields[field].widget.attrs['disabled'] = True
+        for field in form_apartment.fields:
+            form_apartment.fields[field].widget.attrs['readonly'] = True
+            form_apartment.fields[field].widget.attrs['disabled'] = True
+
+
     context = {
+        'appraisal': appraisal,
         'building': building,
         'apartment': apartment,
         'references': references,
@@ -334,15 +364,15 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
         'stds': stds,
         'tasadores':tasadores,
         'visadores':visadores,
-        'form_apartment': form_apartment,
         'form_appraisal': form_appraisal,
         'form_building': form_building,
+        'form_apartment': form_apartment,
         'form_comment':form_comment,
         'appraisal_history': appraisal_history,
         'comments': comments,
         }
 
-    a = render(request, 'appraisal/apartment.html',context)
+    a = render(request, 'appraisal/apartment.html', context)
     return a
 
 def ajax_computeValuations(request):

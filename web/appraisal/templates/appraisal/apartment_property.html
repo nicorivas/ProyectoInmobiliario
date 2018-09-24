@@ -1,152 +1,116 @@
 <div class="card-body">
-  
-  <div class="form-group">
-  <div class="form-row">
-    <div class="col-4">
-    <div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      Calle
-    </span>
+
+  <div class="form-group row align-middle">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Calle
+      </label>
     </div>
+    <div class="col-lg-3">
       <input type="text" class="form-control form-control-sm" value="{{ building.addressStreet }}" disabled>
     </div>
-    </div>
 
-    <div class="col-2">
-    <div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
       No.
-    </span>
+      </label>
     </div>
+    <div class="col-lg-3">
       <input type="text" class="form-control form-control-sm" value="{{building.addressNumber}}" disabled>
     </div>
-    </div>
 
-    <div class="col-2">
-    <div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
       Dpto.
-    </span>
+      </label>
     </div>
+    <div>
       <input type="text" class="form-control form-control-sm" value="{{ apartment.number }}" disabled>
     </div>
-    </div>
-  </div>
   </div>
 
-  <div class="form-group">
-  <div class="form-row">
-    <div class="col-4">
-    <div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      Comuna
-    </span>
+  <div class="form-group row align-middle">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Comuna
+      </label>
     </div>
+    <div class="col-lg-3">
       <input type="text" class="form-control form-control-sm" value="{{ building.addressCommune }}" disabled>
     </div>
-    </div>
 
-    <div class="col-4">
-    <div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      Región
-    </span>
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Región
+      </label>
     </div>
+    <div class="col-lg-3">
       <input type="text" class="form-control form-control-sm" value="{{ building.addressRegion }}" disabled>
     </div>
-    </div>
-  </div>
   </div>
 
-</section>
-
-  <div id="general" class="subsection">
-
-    <label>Características generales</label>
-
-    <div class="form-row">
-    <div class="col-md-3">
+  <div class="card bg-light mb-1">
+  <div class="card-header">
+    Características generales
+  </div>
+  <div class="card-body">
 
     <div class="row">
-    <div class="col-md-7">
-    <div class="input-group input-group-sm mb-3">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      {{form_apartment.floor.label}}
-    </span>
-    </div>
-      {{form_apartment.floor}}
-    </div>
-    </div>
-    </div>
+    <div class="col-md-4">
 
-    <div class="row">
-    <div class="col-md-7">
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_apartment.bedrooms.label}}
-        </span>
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.floor.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.floor}}
+        </div>
       </div>
-      {{form_apartment.bedrooms}}
-    </div>
-    </div>
-    </div>
 
-    <div class="row">
-    <div class="col-md-7">
-    <div class="input-group input-group-sm mb-3">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      {{form_apartment.bathrooms.label}}
-    </span>
-    </div>
-      {{form_apartment.bathrooms}}
-    </div>
-    </div>
-    </div>
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.bedrooms.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.bedrooms}}
+        </div>
+      </div>
 
-    <div class="input-group input-group-sm mb-3">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      {{form_apartment.builtSquareMeters.label}}
-    </span>
-    </div>
-    {{form_apartment.builtSquareMeters}}
-    <div class="input-group-append">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        m<sup>2</sup>
-      </span>
-    </div>
-    </div>
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.bathrooms.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.bathrooms}}
+        </div>
+      </div>
 
-    <div class="input-group input-group-sm mb-3">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      {{form_apartment.usefulSquareMeters.label}}
-    </span>
-    </div>
-    {{form_apartment.usefulSquareMeters}}
-    <div class="input-group-append">
-      <span class="input-group-text" id="inputGroup-sizing-sm">
-        m<sup>2</sup>
-      </span>
-    </div>
-    </div>
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.builtSquareMeters.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.builtSquareMeters}}
+        </div>
+      </div>
 
-    <div class="input-group input-group-sm mb-3">
-    <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroup-sizing-sm">
-      {{form_apartment.orientation.label}}
-    </span>
-    </div>
-      {{form_apartment.orientation}}
-    </div>
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.usefulSquareMeters.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.usefulSquareMeters}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{form_apartment.orientation.label}}
+        </div>
+        <div class="col-lg-3">
+          {{form_apartment.orientation}}
+        </div>
+      </div>
 
     </div>
 
@@ -157,207 +121,209 @@
 
     </div>
     </div>
+
+  </div>
   </div>
 
-  <section>
-  <div id="technical_legal" class="subsection">
-
-    <label>Antecedentes técnico-legales</label>
+  <div class="card bg-light mb-1">
+  <div class="card-header">
+    Antecedentes técnico-legales
+  </div>
+  <div class="card-body">
+  <div class="card-text">
 
     <div class="row">
     <div class="col-6">
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.anoConstruccion.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.anoConstruccion.label}}
       </div>
-      {{form_building.anoConstruccion}}
-    </div>
-
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.vidaUtilRemanente.label}}
-        </span>
-      </div>
-      {{form_building.vidaUtilRemanente}}
-    </div>
-
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.avaluoFiscal.label}}
-        </span>
-      </div>
-      {{form_building.avaluoFiscal}}
-      <div class="input-group-append">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          UF
-        </span>
+      <div class="col-lg-3">
+        {{form_building.anoConstruccion}}
       </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.dfl2.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.vidaUtilRemanente.label}}
       </div>
-      {{form_building.dfl2}}
+      <div class="col-lg-3">
+        {{form_building.vidaUtilRemanente}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.selloVerde.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.avaluoFiscal.label}}
       </div>
-      {{form_building.selloVerde}}
+      <div class="col-lg-3">
+        {{form_building.avaluoFiscal}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.copropiedadInmobiliaria.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.dfl2.label}}
       </div>
-      {{form_building.copropiedadInmobiliaria}}
+      <div class="col-lg-3">
+        {{form_building.dfl2}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.ocupante.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.selloVerde.label}}
       </div>
-      {{form_building.ocupante}}
+      <div class="col-lg-3">
+        {{form_building.selloVerde}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.tipoBien.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.copropiedadInmobiliaria.label}}
       </div>
-      {{form_building.tipoBien}}
+      <div class="col-lg-3">
+        {{form_building.copropiedadInmobiliaria}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.destinoSII.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.ocupante.label}}
       </div>
-      {{form_building.destinoSII}}
+      <div class="col-lg-3">
+        {{form_building.ocupante}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.tipoBien.label}}
+      </div>
+      <div class="col-lg-3">
+        {{form_building.tipoBien}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.destinoSII.label}}
+      </div>
+      <div class="col-lg-3">
+        {{form_building.destinoSII}}
+      </div>
     </div>
 
   </div>
   <div class="col-6">
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.usoActual.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.usoActual.label}}
       </div>
-      {{form_building.usoActual}}
+      <div class="col-lg-3">
+        {{form_building.usoActual}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.usoFuturo.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.usoFuturo.label}}
       </div>
-      {{form_building.usoFuturo}}
-    </div>
-
-    <div class="row">
-      <div class="col-8">
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">
-              {{form_building.permisoEdificacion.label}}
-            </span>
-          </div>
-          {{form_building.permisoEdificacion}}
-        </div>
-      </div>
-      <div class="col-4">
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">
-              Fecha
-            </span>
-          </div>
-          {{form_building.permisoEdificacionDate}}
-        </div>
+      <div class="col-lg-3">
+        {{form_building.usoFuturo}}
       </div>
     </div>
 
     <div class="row">
       <div class="col-8">
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">
-              {{form_building.recepcionFinal.label}}
-            </span>
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            {{form_building.permisoEdificacion.label}}
           </div>
-          {{form_building.recepcionFinal}}
+          <div class="col-lg-3">
+            {{form_building.permisoEdificacion}}
+          </div>
         </div>
       </div>
       <div class="col-4">
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">
-              Fecha
-            </span>
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            Fecha
           </div>
-          {{form_building.recepcionFinalDate}}
+          <div class="col-lg-3">
+            {{form_building.permisoEdificacionDate}}
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.expropiacion.label}}
-        </span>
+    <div class="row">
+      <div class="col-8">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            {{form_building.recepcionFinal.label}}
+          </div>
+          <div class="col-lg-3">
+            {{form_building.recepcionFinal}}
+          </div>
+        </div>
       </div>
-      {{form_building.expropiacion}}
+      <div class="col-4">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            Fecha
+          </div>
+          <div class="col-lg-3">
+            {{form_building.recepcionFinalDate}}
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.viviendaSocial.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.expropiacion.label}}
       </div>
-      {{form_building.viviendaSocial}}
+      <div class="col-lg-3">
+        {{form_building.expropiacion}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.adobe.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.viviendaSocial.label}}
       </div>
-      {{form_building.adobe}}
+      <div class="col-lg-3">
+        {{form_building.viviendaSocial}}
+      </div>
     </div>
 
-    <div class="input-group input-group-sm mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-sm">
-          {{form_building.desmontable.label}}
-        </span>
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.adobe.label}}
       </div>
-      {{form_building.desmontable}}
+      <div class="col-lg-3">
+        {{form_building.adobe}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{form_building.desmontable.label}}
+      </div>
+      <div class="col-lg-3">
+        {{form_building.desmontable}}
+      </div>
     </div>
 
     </div>
     </div>
 
   </div>
+  </div>
+  </div>
+
 </div>

@@ -20,13 +20,15 @@
       <div class="col-lg-2">
         <input type="text" class="form-control form-control-sm" value="" disabled>
       </div>
-      {%if perms.appraisal.assign_visador%}
+      {% if perms.appraisal.assign_visador %}
+      {% if appraisal.active %}
       <div class="col-auto">
         <button type="button" class="btn-sm btn-secondary" data-toggle="modal" data-target="#asignarVisador">
           Asignar visador
         </button>
       </div>
-      {%endif%}
+      {% endif %}
+      {% endif %}
     </span>
 
     <span class="form-group row align-middle">
@@ -49,13 +51,15 @@
       <div class="col-lg-2">
         <input type="text" class="form-control form-control-sm" value="" disabled>
       </div>
-      {%if perms.appraisal.assign_tasador%}
+      {% if perms.appraisal.assign_tasador %}
+      {% if appraisal.active %}
       <div class="col-auto">
         <button type="button" class="btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
           Asignar tasador
         </button>
       </div>
-      {%endif%}
+      {% endif %}
+      {% endif %}
     </span>
 
     <span class="form-group row align-middle">

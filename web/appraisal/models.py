@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from apartment.models import Apartment
 from django.contrib.auth.models import User
 import datetime
@@ -7,15 +8,18 @@ import reversion
 @reversion.register()
 class Appraisal(models.Model):
 
-    ESTADOS = (
-        ('a','activa'),
-        ('t','terminada')
+    STATE_ACTIVE = 1
+    STATE_FINISHED = 2
+    STATES = (
+        (STATE_ACTIVE,'active'),
+        (STATE_FINISHED,'finished')
     )
 
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE,verbose_name="Departamento",blank=False,null=False)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
-    status = models.CharField("Estado",max_length=10,choices=ESTADOS,default='a')
+    timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
+    status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
 
     # generales
     solicitante = models.CharField("Solicitante",max_length=100,blank=True,null=True)
@@ -33,6 +37,37 @@ class Appraisal(models.Model):
 
     # valor
     valorUF = models.IntegerField("Valor UF",blank=True,null=True)
+
+    @property
+    def status_verbose(self):
+        return str(self.status)
+
+    @property
+    def finished(self):
+        if self.status == self.STATE_FINISHED:
+            return True
+        else:
+            return False
+
+    @property
+    def active(self):
+        if self.status == self.STATE_ACTIVE:
+            return True
+        else:
+            return False
+
+    @property
+    def url(self):
+        return "/appraisal/{}/{}/{}/{}/{}/departamento/{}/{}/{}/".format(
+            slugify(self.apartment.building.addressRegion),
+            slugify(self.apartment.building.addressCommune),
+            slugify(self.apartment.building.addressStreet),
+            self.apartment.building.addressNumber,
+            self.apartment.building.id,
+            self.apartment.number,
+            self.apartment.id,
+            self.id
+        )
 
     @property
     def daySinceCreated(self):
