@@ -2,6 +2,7 @@ from django import forms
 from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
+from property.models import Property
 
 class LocationSearchForm(forms.Form):
 
@@ -13,8 +14,8 @@ class AppraisalCreateForm(forms.Form):
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
-        choices=[("d", "Departamento"), ("c", "Casa")],
-        initial='d')
+        choices=Property.propertyType_choices,
+        initial=Property.PROPERTY_TYPE_APARTMENT)
     propertyType_create.widget.attrs.update({'class':"form-control"})
 
     addressRegion_create = forms.ModelChoiceField(
@@ -31,7 +32,7 @@ class AppraisalCreateForm(forms.Form):
     addressStreet_create.widget.attrs.update({'class':"form-control"})
     addressNumber_create = forms.CharField(max_length=6,label="Número")
     addressNumber_create.widget.attrs.update({'class':"form-control"})
-    addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.")
+    addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
     addressNumberFlat_create.widget.attrs.update({'class':"form-control"})
     appraisalTimeFrame_create = forms.IntegerField(max_value=900, label="Plazo")
     appraisalTimeFrame_create.widget.attrs.update({'class': "form-control"})

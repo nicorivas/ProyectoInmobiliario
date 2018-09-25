@@ -5,6 +5,8 @@ from data.chile import comunas_regiones
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import MultipleObjectsReturned
+
 
 from .forms import LocationSearchForm
 from .forms import AppraisalCreateForm
@@ -12,6 +14,7 @@ from .forms import AppraisalCreateForm
 from region.models import Region
 from commune.models import Commune
 
+from property.models import Property
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -21,6 +24,69 @@ import datetime
 
 
 import requests # to call the API of Google to get lat-lon
+
+def appraisal_create(apartment):
+    '''
+    Create appraisal, given a ...?
+    '''
+    timeDue = datetime.datetime.now()# + timedelta(_appraisalTimeFrame)
+    print(timeDue)
+    appraisal = Appraisal(
+        apartment=apartment,
+        timeCreated=datetime.datetime.now(),
+        timeDue=timeDue)
+    appraisal.save()
+    return appraisal
+
+def apartment_create(building,addressNumberFlat):
+    '''
+    Given a building and a flat numnber, create an apartment.
+    '''
+    apartment = Apartment(
+        building=building,
+        number=addressNumberFlat)
+    apartments = Apartment.objects.all()
+    if len(apartments) == 0:
+        apartmentId = 1
+    else:
+        apartmentId = int(apartments.order_by('-id')[0].id)+1
+    apartment.id = apartmentId
+    apartment.save()
+    return apartment
+
+def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
+    '''
+    Given an address, create a building
+    '''
+    building = Building(
+        addressRegion=addressRegion,
+        addressCommune=addressCommune,
+        addressStreet=addressStreet,
+        addressNumber=addressNumber)
+
+    # get id
+    if len(Building.objects.all()) > 0:
+        buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
+    else:
+        buildingId = 1
+    building.id = buildingId
+
+    # get lat lon
+    url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    url_address = '?address={} {}, {}, {}'.format(
+        addressStreet,
+        addressNumber,
+        addressCommune,
+        addressRegion)
+    url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+    response = requests.get(url+''+url_address+''+url_key)
+    response_json = response.json()
+    response_results = response_json['results'][0]['geometry']['location']
+    building.lat = response_results['lat']
+    building.lon = response_results['lng']
+
+    building.save()
+    return building
 
 @login_required(login_url='/')
 def search(request):
@@ -32,6 +98,7 @@ def search(request):
         # check whether it's valid:
         if form_create.is_valid():
 
+            _propertyType = int(form_create.cleaned_data['propertyType_create'])
             _addressRegion = form_create.cleaned_data['addressRegion_create']
             _addressCommune = form_create.cleaned_data['addressCommune_create']
             _addressStreet = form_create.cleaned_data['addressStreet_create']
@@ -39,92 +106,56 @@ def search(request):
             _addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
             _appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
 
+            print(_propertyType,Property.PROPERTY_TYPE_APARTMENT)
 
-            # check if building exists
-            buildings = Building.objects.filter(
-                addressRegion=_addressRegion,
-                addressCommune=_addressCommune,
-                addressStreet=_addressStreet,
-                addressNumber=_addressNumber)
-
-            if len(buildings) == 0:
-                # building does not exist, so create it
-                building = Building(
-                    addressRegion=_addressRegion,
-                    addressCommune=_addressCommune,
-                    addressStreet=_addressStreet,
-                    addressNumber=_addressNumber)
-                # save to database
-                if len(Building.objects.all()) > 0:
-                    buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
-                else:
-                    buildingId = 1
-                # get lat lon
-
-                url = 'https://maps.googleapis.com/maps/api/geocode/json?'
-                url_address = 'address={} {}, {}, {}'.format(_addressStreet,_addressNumber,_addressCommune,_addressRegion)
-                response = requests.get(url+''+url_address)
-                response_json = response.json()
-                print(response_json)
-                response_results = response_json['results'][0]['geometry']['location']
-                building.lat = response_results['lat']
-                building.lon = response_results['lng']
-
-                building.id = buildingId
-                building.save()
-            elif len(buildings) > 1:
-                # there is more than one building, error
-                context = {'error_message': 'Building is repeated'}
+            if _propertyType == Property.PROPERTY_TYPE_HOUSE:
+                context = {'error_message': 'Cannot create houses yet'}
                 return render(request, 'search/error.html',context)
-            else:
-                building = buildings[0]
-                buildingId = building.id
-
-            # check if flat exists
-            apartment = Apartment.objects.filter(
-                building=building,
-                number=_addressNumberFlat)
-            if len(apartment) == 0:
-                apartment = Apartment(
-                    building=building,
-                    number=_addressNumberFlat)
-                apartments = Apartment.objects.all()
-                if len(apartments) == 0:
-                    apartmentId = 1
-                else:
-                    apartmentId = int(apartments.order_by('-id')[0].id)+1
-                apartment.id = apartmentId
-                apartment.save()
-            elif len(apartment) > 1:
-                # error
-                context = {'error_message': 'Apartment is repeated'}
+            elif _propertyType == Property.PROPERTY_TYPE_BUILDING:
+                context = {'error_message': 'Cannot create buildings yet'}
                 return render(request, 'search/error.html',context)
-            else:
-                apartment = apartment[0]
-                apartmentId = apartment.id
+            elif _propertyType == Property.PROPERTY_TYPE_APARTMENT:
+                print('a')
+                # check if building exists
+                building = None
+                try:
+                    building = Building.objects.get(
+                        addressRegion=_addressRegion,
+                        addressCommune=_addressCommune,
+                        addressStreet=_addressStreet,
+                        addressNumber=_addressNumber)
+                except Building.DoesNotExist:
+                    # building does not exist, so create it
+                    building = building_create(_addressRegion,_addressCommune,_addressStreet,_addressNumber)
+                except MultipleObjectsReturned:
+                    context = {'error_message': 'Building is repeated'}
+                    return render(request, 'search/error.html',context)
 
-            # create new appraisal
-            appraisal = Appraisal.objects.filter(
-                apartment=apartment)
-            if len(appraisal) == 0:
-                timeDue = datetime.now() + timedelta(_appraisalTimeFrame)
-                print(timeDue)
-                appraisal = Appraisal(apartment=apartment,timeCreated=datetime.datetime.now(), timeDue=timeDue)
-                appraisal.save()
-            elif len(appraisal) > 1:
-                context = {'error_message': 'More than one appraisal of the same property'}
-                return render(request, 'search/error.html',context)
-            else:
-                appraisal = appraisal[0]
-            appraisalId = appraisal.id
+                # check if flat exists
+                apartment = None
+                try:
+                    apartment = Apartment.objects.get(
+                        building=building,
+                        number=_addressNumberFlat)
+                except Apartment.DoesNotExist:
+                    # flat does not exist, so create it
+                    apartment = apartment_create(building,_addressNumberFlat)
+                except MultipleObjectsReturned:
+                    # error
+                    context = {'error_message': 'Apartment is repeated'}
+                    return render(request, 'search/error.html',context)
 
-            # go to appraisal url
-            return HttpResponseRedirect('/appraisal/{}/{}/{}/{}/{}/departamento/{}/{}/{}/'.format(
-                slugify(_addressRegion),slugify(_addressCommune),
-                slugify(_addressStreet),slugify(_addressNumber),
-                slugify(buildingId),slugify(_addressNumberFlat),
-                slugify(apartmentId),slugify(appraisalId)
-            ))
+                # create new appraisal
+                try:
+                    appraisal = Appraisal.objects.get(apartment=apartment)
+                except Appraisal.DoesNotExist:
+                    appraisal = appraisal_create(apartment)
+                except MultipleObjectsReturned:
+                    context = {'error_message': 'More than one appraisal of the same property'}
+                    return render(request, 'search/error.html',context)
+
+                # go to appraisal url
+                return HttpResponseRedirect(appraisal.url)
         else:
             print(form_create.errors)
 

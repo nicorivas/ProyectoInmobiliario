@@ -1,7 +1,8 @@
 from django.db import models
+from property.models import Property
 from building.models import Building
 
-class Apartment(models.Model):
+class Apartment(Property):
     ORIENTATIONS = (
         ('N', 'Norte'),
         ('NE', 'Norponiente'),

@@ -1,10 +1,11 @@
 from django.db import models
 import datetime
+from property.models import Property
 from neighborhood.models import Neighborhood
 from commune.models import Commune
 from region.models import Region
 
-class Building(models.Model):
+class Building(Property):
 
     addressStreet = models.CharField("Calle",max_length=300,default="")
     addressNumber = models.PositiveSmallIntegerField("Numero",default=0)
