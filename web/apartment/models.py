@@ -1,8 +1,8 @@
 from django.db import models
-from property.models import Property
+from realestate.models import RealEstate
 from building.models import Building
 
-class Apartment(Property):
+class Apartment(RealEstate):
     ORIENTATIONS = (
         ('N', 'Norte'),
         ('NE', 'Norponiente'),
@@ -53,11 +53,6 @@ class Apartment(Property):
             return 'P.I.'
         else:
             return self.sourceName
-
-    @property
-    def propertyType(self):
-        "Return name of type."
-        return "departamento"
 
     class Meta:
         app_label = 'apartment'
