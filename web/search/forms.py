@@ -2,7 +2,7 @@ from django import forms
 from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
-from property.models import Property
+from realestate.models import RealEstate
 
 class LocationSearchForm(forms.Form):
 
@@ -14,8 +14,8 @@ class AppraisalCreateForm(forms.Form):
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
-        choices=Property.propertyType_choices,
-        initial=Property.PROPERTY_TYPE_APARTMENT)
+        choices=RealEstate.propertyType_choices,
+        initial=RealEstate.TYPE_APARTMENT)
     propertyType_create.widget.attrs.update({'class':"form-control"})
 
     addressRegion_create = forms.ModelChoiceField(

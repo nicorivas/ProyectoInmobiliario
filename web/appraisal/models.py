@@ -53,17 +53,19 @@ class Appraisal(models.Model):
     @property
     def active(self):
         if self.status == self.STATE_ACTIVE:
+            print('goli')
             return True
         else:
             return False
 
     @property
     def url(self):
-        return "/appraisal/{}/{}/{}/{}/{}/departamento/{}/{}/{}/".format(
+        return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
             slugify(self.apartment.building.addressRegion),
             slugify(self.apartment.building.addressCommune),
             slugify(self.apartment.building.addressStreet),
             self.apartment.building.addressNumber,
+            self.apartment.propertyType,
             self.apartment.building.id,
             self.apartment.number,
             self.apartment.id,

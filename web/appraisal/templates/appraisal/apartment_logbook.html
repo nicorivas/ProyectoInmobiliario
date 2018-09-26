@@ -63,18 +63,17 @@
       {% for comment in comments %}
       <div class="card mb-1">
         <div class="card-body">
-          <p class="card-title">{{comment.user.first_name}} {{comment.user.last_name}}           <small class="card-subtitle mb-2 text-muted">{{comment.timeCreated}}</small></p>
+          <p class="card-title">{{comment.user.first_name}} {{comment.user.last_name}} <small class="card-subtitle mb-2 text-muted">{{comment.timeCreated}}</small></p>
           <small>{{comment.text}}</small>
         </div>
       </div>
       {% endfor %}
-
-      {% if appraisal.finished == False %}
+      {% if appraisal.active %}
       <div class="card mb-1">
         <div class="card-body">
           <h5 class="card-title">Agregar comentario</h5>
           <div class="form-group">
-              {{ form_comment.commentText }}
+              {{ forms.comment.commentText }}
           </div>
           <div class="form-group">
               <button class="btn btn-outline-dark" name="comment">Comentar</button>

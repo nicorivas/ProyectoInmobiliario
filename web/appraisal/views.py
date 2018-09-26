@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
+from realestate.models import RealEstate
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -16,10 +17,10 @@ from reversion.models import Version
 import os
 import csv
 
-from .forms import AppraisalApartmentModelForm_Building
-from .forms import AppraisalApartmentModelForm_Apartment
-from .forms import AppraisalApartmentModelForm_Appraisal
-from .forms import AppraisalApartmentForm_Comment
+from .forms import AppraisalModelForm_Building
+from .forms import AppraisalModelForm_Apartment
+from .forms import AppraisalModelForm_Appraisal
+from .forms import AppraisalForm_Comment
 
 from django.db.models import Avg, StdDev
 
@@ -46,6 +47,23 @@ def get_building(request,id):
         return render(request, 'appraisal/error.html',context)
     building = building[0]
     return building
+
+def get_house(request,id):
+    '''
+        Given building id, returns the building object.
+        It checks for some errors and sends to the error page.
+        TODO: Change this to proper try statements
+    '''
+    house = House.objects.filter(id=id)
+    # This must be only one building
+    if len(house) == 0:
+        context = {'error_message': 'House should exist by now'}
+        return render(request, 'appraisal/error.html',context)
+    elif len(house) > 1:
+        context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
+        return render(request, 'appraisal/error.html',context)
+    house = house[0]
+    return house
 
 def get_apartment(request,id):
     '''
@@ -204,19 +222,70 @@ def form_process(
 
     return ret
 
-def appraisal(request,region="",commune="",street="",number="",id_b=0,
-              numbera="",id_a=0,id_appraisal=0):
+def get_similar_realestate(realestate):
+
+    if (realestate.bedrooms != None and
+        realestate.bathrooms != None and
+        realestate.builtSquareMeters != None and
+        realestate.usefulSquareMeters != None):
+
+        apartments = Apartment.objects.filter(
+            bedrooms=apartment.bedrooms,
+            bathrooms=apartment.bathrooms,
+            marketPrice__isnull=False).exclude(marketPrice=0)
+
+        ds = []
+        ni = 0
+        for i, apt in enumerate(apartments):
+            d1 = float(pow(apartment.builtSquareMeters - apt.builtSquareMeters,2))
+            d2 = float(pow(apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
+            ds.append([0,0])
+            ds[i][0] = apt.pk
+            ds[i][1] = d1+d2
+
+        ds = sorted(ds, key=lambda x: x[1])
+        ins = [x[0] for x in ds]
+
+        references = apartments.filter(pk__in=ins[0:5])
+        return references
+    else:
+        return []
+
+def appraisal(request,**kwargs):
     '''
+    General view for appraisals. Gets a variable number of parameters depending
+    on the type of realestate.
     '''
-    # Get current building
-    building = get_building(request,id_b)
-    if isinstance(building,HttpResponse): return building
-    # Get current flat
-    apartment = get_apartment(request,id_a)
-    if isinstance(apartment,HttpResponse): return apartment
+
+    region = kwargs['region']
+    commune = kwargs['commune']
+    street = kwargs['street']
+    number = kwargs['number']
+    res_type = kwargs['res_type']
+    if res_type == RealEstate.TYPE_APARTMENT:
+        building_id = kwargs['building_id']
+        apartment_number  = kwargs['apartment_number']
+        apartment_id = kwargs['apartment_id']
+    elif res_type == RealEstate.TYPE_HOUSE:
+        house_id = kwargs['house_id']
+    appraisal_id = kwargs['appraisal_id']
+
     # Get current appraisal
-    appraisal = get_appraisal(request,id_appraisal)
+    appraisal = get_appraisal(request,appraisal_id)
     if isinstance(appraisal,HttpResponse): return appraisal
+
+    realestate = None
+    if res_type == RealEstate.TYPE_APARTMENT:
+        # Get current flat
+        realestate = get_apartment(request,apartment_id)
+        if isinstance(realestate,HttpResponse): return realestate
+    elif res_type == RealEstate.TYPE_HOUSE:
+        # Get current flat
+        realestate = get_house(request,apartment_id)
+        if isinstance(realestate,HttpResponse): return realestate
+    if realestate == None:
+        context = {'error_message': 'Realestae was not found'}
+        return render(request, 'appraisal/error.html',context)
 
     appraisal_old = deepcopy(appraisal)
 
@@ -226,17 +295,20 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
     if request.method == 'POST':
 
         # Main forms
-        form_building = AppraisalApartmentModelForm_Building(
-            request.POST,
-            instance=building)
-        form_apartment = AppraisalApartmentModelForm_Apartment(
-            request.POST,
-            instance=apartment)
-        form_appraisal = AppraisalApartmentModelForm_Appraisal(
+        form_appraisal = AppraisalModelForm_Appraisal(
             request.POST,
             instance=appraisal)
-
-        form_comment = AppraisalApartmentForm_Comment(request.POST)
+        form_comment = AppraisalForm_Comment(request.POST)
+        if res_type == RealEstate.TYPE_APARTMENT:
+            form_apartment = AppraisalModelForm_Apartment(
+                request.POST,
+                instance=realestate)
+            form_building = AppraisalModelForm_Building(
+                request.POST,
+                instance=realestate.building)
+        elif res_type == RealEstate.TYPE_HOUSE:
+            '''
+            '''
 
         # Other options of the form:
         # Assigning tasadores
@@ -257,48 +329,16 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
             form_appraisal,
             form_comment,
             appraisal_old,
-            building,
-            apartment,
+            realestate.building,
+            realestate,
             appraisal,
             tasadorUser,
-            visadorUser
-            )
+            visadorUser)
+
         if isinstance(ret, HttpResponse): return ret
 
-    if request.method == 'GET':
-        print(request.GET.get('tab'))
-
-    form_building = AppraisalApartmentModelForm_Building(instance=building,label_suffix='')
-    form_apartment = AppraisalApartmentModelForm_Apartment(instance=apartment,label_suffix='')
-    form_appraisal = AppraisalApartmentModelForm_Appraisal(instance=appraisal,label_suffix='')
-    form_comment = AppraisalApartmentForm_Comment(label_suffix='')
-
     # REFERENCE PROPERTIES
-    # Do we have enough data to compare?
-    references = []
-    if (apartment.bedrooms != None and
-        apartment.bathrooms != None and
-        apartment.builtSquareMeters != None and
-        apartment.usefulSquareMeters != None):
-
-        apartments = Apartment.objects.filter(
-            bedrooms=apartment.bedrooms,
-            bathrooms=apartment.bathrooms,
-            marketPrice__isnull=False).exclude(marketPrice=0)
-
-        ds = []
-        ni = 0
-        for i, apt in enumerate(apartments):
-            d1 = float(pow(apartment.builtSquareMeters - apt.builtSquareMeters,2))
-            d2 = float(pow(apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
-            ds.append([0,0])
-            ds[i][0] = apt.pk
-            ds[i][1] = d1+d2
-
-        ds = sorted(ds, key=lambda x: x[1])
-        ins = [x[0] for x in ds]
-
-        references = apartments.filter(pk__in=ins[0:5])
+    references = get_similar_realestate(realestate)
 
     if len(references) > 0:
         averages = references.aggregate(
@@ -341,33 +381,36 @@ def appraisal(request,region="",commune="",street="",number="",id_b=0,
 
     # Comments, for the logbook
     comments = Comment.objects.filter(appraisal=appraisal)
+    print(comments)
+
+    # Forms
+    forms = {
+        'appraisal': AppraisalModelForm_Appraisal(instance=appraisal,label_suffix=''),
+        'comment':AppraisalForm_Comment(label_suffix='')}
+    if res_type == RealEstate.TYPE_APARTMENT:
+        forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
+        forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
+    else:
+        '''forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')'''
+
+    print(forms)
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:
-        for field in form_appraisal.fields:
-            form_appraisal.fields[field].widget.attrs['readonly'] = True
-            form_appraisal.fields[field].widget.attrs['disabled'] = True
-        for field in form_building.fields:
-            form_building.fields[field].widget.attrs['readonly'] = True
-            form_building.fields[field].widget.attrs['disabled'] = True
-        for field in form_apartment.fields:
-            form_apartment.fields[field].widget.attrs['readonly'] = True
-            form_apartment.fields[field].widget.attrs['disabled'] = True
-
+        for form in forms:
+            for field in form.fields:
+                form.fields[field].widget.attrs['readonly'] = True
+                form.fields[field].widget.attrs['disabled'] = True
 
     context = {
-        'appraisal': appraisal,
-        'building': building,
-        'apartment': apartment,
+        'appraisal':appraisal,
+        'forms':forms,
+        'realestate': realestate,
         'references': references,
         'averages': averages,
         'stds': stds,
         'tasadores':tasadores,
         'visadores':visadores,
-        'form_appraisal': form_appraisal,
-        'form_building': form_building,
-        'form_apartment': form_apartment,
-        'form_comment':form_comment,
         'appraisal_history': appraisal_history,
         'comments': comments,
         }

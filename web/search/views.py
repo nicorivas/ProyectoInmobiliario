@@ -14,7 +14,7 @@ from .forms import AppraisalCreateForm
 from region.models import Region
 from commune.models import Commune
 
-from property.models import Property
+from realestate.models import RealEstate
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -43,6 +43,10 @@ def apartment_create(building,addressNumberFlat):
     Given a building and a flat numnber, create an apartment.
     '''
     apartment = Apartment(
+        addressRegion=building.addressRegion,
+        addressCommune=building.addressCommune,
+        addressStreet=building.addressStreet,
+        addressNumber=building.addressNumber,
         building=building,
         number=addressNumberFlat)
     apartments = Apartment.objects.all()
@@ -51,6 +55,7 @@ def apartment_create(building,addressNumberFlat):
     else:
         apartmentId = int(apartments.order_by('-id')[0].id)+1
     apartment.id = apartmentId
+    apartment.propertyType = RealEstate.TYPE_APARTMENT
     apartment.save()
     return apartment
 
@@ -69,6 +74,7 @@ def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
         buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
     else:
         buildingId = 1
+    building.propertyType = RealEstate.TYPE_BUILDING
     building.id = buildingId
 
     # get lat lon
@@ -106,16 +112,15 @@ def search(request):
             _addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
             _appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
 
-            print(_propertyType,Property.PROPERTY_TYPE_APARTMENT)
+            print(_propertyType,RealEstate.TYPE_APARTMENT)
 
-            if _propertyType == Property.PROPERTY_TYPE_HOUSE:
+            if _propertyType == RealEstate.TYPE_HOUSE:
                 context = {'error_message': 'Cannot create houses yet'}
                 return render(request, 'search/error.html',context)
-            elif _propertyType == Property.PROPERTY_TYPE_BUILDING:
+            elif _propertyType == RealEstate.TYPE_BUILDING:
                 context = {'error_message': 'Cannot create buildings yet'}
                 return render(request, 'search/error.html',context)
-            elif _propertyType == Property.PROPERTY_TYPE_APARTMENT:
-                print('a')
+            elif _propertyType == RealEstate.TYPE_APARTMENT:
                 # check if building exists
                 building = None
                 try:

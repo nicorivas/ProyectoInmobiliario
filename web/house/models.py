@@ -2,10 +2,10 @@ from django.db import models
 from neighborhood.models import Neighborhood
 from commune.models import Commune
 from region.models import Region
-from property.models import Property
+from realestate.models import RealEstate
 import datetime
 
-class House(Property):
+class House(RealEstate):
     addressStreet = models.CharField("Calle",max_length=300,default="")
     addressNumber = models.PositiveSmallIntegerField("Numero",default=0)
     addressCommune = models.ForeignKey(Commune,
