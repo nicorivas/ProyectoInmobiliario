@@ -141,6 +141,7 @@ def create(request):
 
             _propertyType = int(form_create.cleaned_data['propertyType_create'])
 
+            realEstate = None
             if _propertyType == RealEstate.TYPE_HOUSE:
 
                 _addressRegion = form_create.cleaned_data['addressRegion_create']
@@ -149,16 +150,15 @@ def create(request):
                 _addressNumber = form_create.cleaned_data['addressNumber_create']
                 _appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
                 # check if house exists
-                house = None
                 try:
-                    house = House.objects.get(
+                    realEstate = House.objects.get(
                         addressCommune=_addressCommune,
                         addressNumber=_addressNumber,
                         addressRegion=_addressRegion,
                         addressStreet=_addressStreet)
                 except House.DoesNotExist:
                     # flat does not exist, so create it
-                    house = house_create(_addressRegion,_addressCommune,_addressStreet,_addressNumber)
+                    realEstate = house_create(_addressRegion,_addressCommune,_addressStreet,_addressNumber)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'House is repeated'}
