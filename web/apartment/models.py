@@ -21,7 +21,7 @@ class Apartment(RealEstate):
         (1,'Nueva')
     )
     #appraisal = GenericRelation(Appraisal)
-    building = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
+    building_in = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     number = models.CharField("Numero",max_length=10,null=True)
 
     floor = models.PositiveSmallIntegerField("Piso",null=True,blank=True)

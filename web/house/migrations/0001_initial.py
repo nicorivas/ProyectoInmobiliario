@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('addressRegion', models.CharField(default='', max_length=300, verbose_name='Region')),
                 ('name', models.CharField(default='', max_length=100, verbose_name='Nombre')),
                 ('lat', models.FloatField(default=0.0, verbose_name='Latitud')),
-                ('lon', models.FloatField(default=0.0, verbose_name='Longitud')),
+                ('lng', models.FloatField(default=0.0, verbose_name='Longitud')),
             ],
         ),
     ]

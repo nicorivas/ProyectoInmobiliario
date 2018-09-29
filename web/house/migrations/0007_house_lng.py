@@ -8,11 +8,3 @@ class Migration(migrations.Migration):
     dependencies = [
         ('house', '0006_house_propertytype'),
     ]
-
-    operations = [
-        migrations.AddField(
-            model_name='house',
-            name='lng',
-            field=models.FloatField(default=0.0, verbose_name='Longitud'),
-        ),
-    ]

@@ -22,21 +22,6 @@ class Appraisal(models.Model):
     )
 
     '''
-    propType = None
-    PropertyModel = None
-    
-    if propType == RealEstate.TYPE_HOUSE:
-        PropertyModel = House
-        type = 'Casa'
-        propertyType = models.ForeignKey(PropertyModel, on_delete=models.CASCADE, verbose_name=type, blank=False,
-                                         null=False)
-    elif propType == RealEstate.TYPE_APARTMENT:
-        PropertyModel = Apartment #Falta terminar logica para otras propiedades
-        type = 'Departamento'
-        propertyType = models.ForeignKey(PropertyModel, on_delete=models.CASCADE, verbose_name=type, blank=False,
-                                         null=False)
-                                         
-
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(default=0)
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -56,10 +41,8 @@ class Appraisal(models.Model):
         choices=propertyType_choices,
         default=TYPE_UNDEFINED)
 
-    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, verbose_name="Departamento", blank=True,
-                                  null=True)
-    house = models.ForeignKey(House, on_delete=models.CASCADE, verbose_name="Casa", blank=True,
-                                  null=True)
+    realestate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
+        verbose_name="Propiedad")
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
