@@ -21,7 +21,7 @@ from home.forms import AuthenticationFormB
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('realestate/', include('realestate.urls')),
-    path('search/', include('search.urls')),
+    path('create/', include('create.urls')),
     path('appraisal/', include('appraisal.urls')),
     path('region/', include('region.urls')),
     path('province/', include('province.urls')),

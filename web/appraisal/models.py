@@ -1,9 +1,15 @@
 from django.db import models
 from django.utils.text import slugify
 from apartment.models import Apartment
+from house.models import House
+from realestate.models import RealEstate
 from django.contrib.auth.models import User
 import datetime
 import reversion
+
+#from django.contrib.contenttypes.fields import GenericForeignKey
+#from django.contrib.contenttypes.models import ContentType
+
 
 @reversion.register()
 class Appraisal(models.Model):
@@ -15,7 +21,45 @@ class Appraisal(models.Model):
         (STATE_FINISHED,'finished')
     )
 
-    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE,verbose_name="Departamento",blank=False,null=False)
+    '''
+    propType = None
+    PropertyModel = None
+    
+    if propType == RealEstate.TYPE_HOUSE:
+        PropertyModel = House
+        type = 'Casa'
+        propertyType = models.ForeignKey(PropertyModel, on_delete=models.CASCADE, verbose_name=type, blank=False,
+                                         null=False)
+    elif propType == RealEstate.TYPE_APARTMENT:
+        PropertyModel = Apartment #Falta terminar logica para otras propiedades
+        type = 'Departamento'
+        propertyType = models.ForeignKey(PropertyModel, on_delete=models.CASCADE, verbose_name=type, blank=False,
+                                         null=False)
+                                         
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.PositiveIntegerField(default=0)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    '''
+
+    TYPE_UNDEFINED = 0
+    TYPE_HOUSE = 1
+    TYPE_APARTMENT = 2
+    TYPE_BUILDING = 3
+
+    propertyType_choices = [
+        (TYPE_UNDEFINED, "Indefinido"),
+        (TYPE_HOUSE, "Casa"),
+        (TYPE_APARTMENT, "Departamento"),
+        (TYPE_BUILDING, "Edificio")]
+    propertyType = models.PositiveIntegerField(
+        choices=propertyType_choices,
+        default=TYPE_UNDEFINED)
+
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, verbose_name="Departamento", blank=True,
+                                  null=True)
+    house = models.ForeignKey(House, on_delete=models.CASCADE, verbose_name="Casa", blank=True,
+                                  null=True)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
@@ -60,7 +104,8 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
-        return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
+        if self.propertyType == RealEstate.TYPE_APARTMENT:
+            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
             slugify(self.apartment.building.addressRegion),
             slugify(self.apartment.building.addressCommune),
             slugify(self.apartment.building.addressStreet),
@@ -70,7 +115,17 @@ class Appraisal(models.Model):
             self.apartment.number,
             self.apartment.id,
             self.id
-        )
+            )
+        elif self.propertyType == RealEstate.TYPE_HOUSE:
+            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
+                slugify(self.house.addressRegion),
+                slugify(self.house.addressCommune),
+                slugify(self.house.addressStreet),
+                self.house.addressNumber,
+                self.house.propertyType,
+                self.house.id,
+                self.id
+            )
 
     @property
     def daySinceCreated(self):

@@ -1,7 +1,7 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% block head %}
-  <link rel="stylesheet" href="{% static 'search/css/search.css' %}">
+  <link rel="stylesheet" href="{% static 'create/css/create.css' %}">
   <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
   {% load static %}
   {{form_search.media}}
@@ -18,15 +18,14 @@
   <!--
   Load own scripts
   -->
-  <script src="{% static 'search/js/google-maps-admin.js' %}"></script>
-  <script src="{% static 'search/js/google-maps-autocomplete.js' %}"></script>
+  <script src="{% static 'create/js/google-maps-admin.js' %}"></script>
+  <script src="{% static 'create/js/google-maps-autocomplete.js' %}"></script>
 {% endblock head %}
 
 {% block content %}
 
 <div class="section">
-  <form action="/search/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}"
-        house_selected_opt = "{% url 'house_selected_option' %}">
+  <form action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
     {% csrf_token %}
     <div class="form-row">
     <div class="form-group col-md-2">
@@ -124,11 +123,11 @@
            'type': type
           },
           success: function (data) {
-            if (type == "c") {
+            if (type == 1) {
               $("#id_addressNumberFlat_create").attr('disabled','disabled');
               $("#id_addressNumberFlat_create").val('');
               }
-            else if (type == "d") {
+            else {
               $("#id_addressNumberFlat_create").removeAttr('disabled');
             }
           }

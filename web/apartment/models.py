@@ -2,6 +2,9 @@ from django.db import models
 from realestate.models import RealEstate
 from building.models import Building
 
+#from appraisal.models import Appraisal
+#from django.contrib.contenttypes.fields import GenericRelation
+
 class Apartment(RealEstate):
     ORIENTATIONS = (
         ('N', 'Norte'),
@@ -17,6 +20,7 @@ class Apartment(RealEstate):
         (0,'Usada'),
         (1,'Nueva')
     )
+    #appraisal = GenericRelation(Appraisal)
     building = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     number = models.CharField("Numero",max_length=10,null=True)
 

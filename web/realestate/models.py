@@ -20,7 +20,6 @@ class RealEstate(models.Model):
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
         default=TYPE_UNDEFINED)
-
     addressStreet = models.CharField("Calle",max_length=300,default="")
     addressNumber = models.CharField("Numero",max_length=10,default=0)
     addressCommune = models.ForeignKey(Commune,

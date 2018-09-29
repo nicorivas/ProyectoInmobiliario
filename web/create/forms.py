@@ -3,6 +3,7 @@ from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
 from realestate.models import RealEstate
+import datetime
 
 class LocationSearchForm(forms.Form):
 
@@ -15,7 +16,7 @@ class AppraisalCreateForm(forms.Form):
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
         choices=RealEstate.propertyType_choices,
-        initial=RealEstate.TYPE_APARTMENT)
+        initial=RealEstate.TYPE_UNDEFINED)
     propertyType_create.widget.attrs.update({'class':"form-control"})
 
     addressRegion_create = forms.ModelChoiceField(
@@ -34,7 +35,7 @@ class AppraisalCreateForm(forms.Form):
     addressNumber_create.widget.attrs.update({'class':"form-control"})
     addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
     addressNumberFlat_create.widget.attrs.update({'class':"form-control"})
-    appraisalTimeFrame_create = forms.IntegerField(max_value=900, label="Plazo")
+    appraisalTimeFrame_create = forms.DateTimeField(initial=datetime.datetime.now().strftime("%Y-%m-%d"), label="Plazo")
     appraisalTimeFrame_create.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):

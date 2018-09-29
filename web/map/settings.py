@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'reversion',
     'home',
     'main',
-    'search',
+    'create',
     'appraisal',
     'house',
     'building',
