@@ -87,26 +87,26 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
-        if self.realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
-            slugify(self.realestate.building.addressRegion),
-            slugify(self.realestate.building.addressCommune),
-            slugify(self.realestate.building.addressStreet),
-            self.realestate.building.addressNumber,
-            self.realestate.propertyType,
-            self.realestate.building.id,
-            self.realestate.number,
-            self.realestate.id,
+            slugify(self.realEstate.apartment.building_in.addressRegion),
+            slugify(self.realEstate.apartment.building_in.addressCommune),
+            slugify(self.realEstate.apartment.building_in.addressStreet),
+            self.realEstate.apartment.building_in.addressNumber,
+            self.realEstate.apartment.propertyType,
+            self.realEstate.apartment.building_in.id,
+            self.realEstate.apartment.number,
+            self.realEstate.apartment.id,
             self.id
             )
-        elif self.realestate.propertyType == RealEstate.TYPE_HOUSE:
+        elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(self.realestate.addressRegion),
-                slugify(self.realstate.addressCommune),
-                slugify(self.realestate.addressStreet),
-                self.realestate.addressNumber,
-                self.realestate.propertyType,
-                self.realestate.id,
+                slugify(self.realEstate.house.addressRegion),
+                slugify(self.realEstate.house.addressCommune),
+                slugify(self.realEstate.house.addressStreet),
+                self.realEstate.house.addressNumber,
+                self.realEstate.house.propertyType,
+                self.realEstate.house.id,
                 self.id
             )
         else:

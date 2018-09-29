@@ -465,7 +465,7 @@ def appraisal(request, **kwargs):
         'comments': comments,
         }
 
-    a = render(request, 'appraisal/apartment.html', context)
+    a = render(request, 'appraisal/realestate_appraisal.html', context)
     return a
 
 def ajax_computeValuations(request):
