@@ -2,6 +2,7 @@ from django.core import serializers
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.core.exceptions import MultipleObjectsReturned
 
 from realestate.models import RealEstate
 from house.models import House
@@ -87,27 +88,34 @@ def get_appraisal(request,id):
         Given an appraisal id, returns the apraisal object.
         It checks for errors and sends to the correct error page.
     '''
-    appraisal = Appraisal.objects.filter(id=id)
-    if len(appraisal) == 0:
+    try:
+        appraisal = Appraisal.objects.get(pk=id)
+        appraisal = appraisal
+        return appraisal
+    except Appraisal.DoesNotExist:
         context = {'error_message': 'Appraisal not found?'}
-        return render(request, 'appraisal/error.html',context)
-    appraisal = appraisal[0]
-    return appraisal
+        return render(request, 'appraisal/error.html', context)
+    except MultipleObjectsReturned:
+        context = {'error_message': 'More than one appraisal of the same property'}
+        return render(request, 'appraisal/error.html', context)
+
 
 def form_process(
     request,
-    form_building,
-    form_apartment,
-    form_appraisal,
     form_comment,
     appraisal_old,
-    building,
-    apartment,
     appraisal,
     form_tasador_user,
-    form_visador_user):
+    form_visador_user,
+    form_building=None,
+    form_apartment=None,
+    form_appraisal=None,
+    form_house=None,
+    building=None,
+    apartment=None,
+    house=None):
 
-    def form_do_delete(form_building,form_apartment,form_appraisal):
+    def form_do_delete(form_building=None,form_apartment=None,form_appraisal=None, form_house=None):
         appraisal.delete()
         context = {}
         return render(request, 'appraisal/deleted.html',context)
@@ -118,10 +126,13 @@ def form_process(
             reversion.set_user(request.user)
             reversion.set_comment(comment)
 
-    def form_do_save(form_building,form_apartment,form_appraisal,appraisal_old):
-        form_building.save()
-        form_apartment.save()
-        form_appraisal_save()
+    def form_do_save(form_appraisal,appraisal_old, form_building=None,form_apartment=None,form_house=None,):
+        if not form_house:
+            form_building.save()
+            form_apartment.save()
+            form_appraisal.save()
+        else:
+            form_house.save()
         return
 
     def form_do_finish(appraisal,form_appraisal):
@@ -133,7 +144,7 @@ def form_process(
         form_appraisal.save()
         return
 
-    def form_do_export(form_building,form_apartment,form_appraisal):
+    def form_do_export(form_building=None,form_apartment=None,form_appraisal=None, form_house=None):
 
         module_dir = os.path.dirname(__file__)  # get current directory
         file_path = os.path.join(module_dir,'static/appraisal/test.xlsx')
@@ -195,31 +206,52 @@ def form_process(
     print('form process')
 
     ret = None
+    if not house:
+        if form_building.is_valid() and \
+           form_apartment.is_valid() and \
+           form_appraisal.is_valid() and \
+           form_comment.is_valid():
+            if 'save' in request.POST:
+                ret = form_do_save(form_building,form_apartment,form_appraisal,appraisal_old)
+            elif 'delete' in request.POST:
+                ret = form_do_delete(form_building,form_apartment,form_appraisal)
+            elif 'export' in request.POST:
+                ret = form_do_export(form_building,form_apartment,form_appraisal)
+            elif 'finish' in request.POST:
+                ret = form_do_finish(appraisal,form_appraisal)
+            elif 'assign_tasador' in request.POST:
+                ret = form_do_assign_tasador(appraisal,form_tasador_user)
+            elif 'assign_visador' in request.POST:
+                ret = form_do_assign_visador(appraisal,form_visador_user)
+            elif 'comment' in request.POST:
+                ret = form_do_comment(form_comment,appraisal)
 
-    if form_building.is_valid() and \
-       form_apartment.is_valid() and \
-       form_appraisal.is_valid() and \
-       form_comment.is_valid():
-        if 'save' in request.POST:
-            ret = form_do_save(form_building,form_apartment,form_appraisal,appraisal_old)
-        elif 'delete' in request.POST:
-            ret = form_do_delete(form_building,form_apartment,form_appraisal)
-        elif 'export' in request.POST:
-            ret = form_do_export(form_building,form_apartment,form_appraisal)
-        elif 'finish' in request.POST:
-            ret = form_do_finish(appraisal,form_appraisal)
-        elif 'assign_tasador' in request.POST:
-            ret = form_do_assign_tasador(appraisal,form_tasador_user)
-        elif 'assign_visador' in request.POST:
-            ret = form_do_assign_visador(appraisal,form_visador_user)
-        elif 'comment' in request.POST:
-            ret = form_do_comment(form_comment,appraisal)
-
+        else:
+            print(form_building.errors)
+            print(form_apartment.errors)
+            print(form_appraisal.errors)
+            print(form_comment.errors)
     else:
-        print(form_building.errors)
-        print(form_apartment.errors)
-        print(form_appraisal.errors)
-        print(form_comment.errors)
+        if form_house.is_valid() and \
+                form_appraisal.is_valid() and \
+                form_comment.is_valid():
+            if 'save' in request.POST:
+                ret = form_do_save(form_house, form_appraisal, appraisal_old)
+            elif 'delete' in request.POST:
+                ret = form_do_delete(form_house)
+            elif 'export' in request.POST:
+                ret = form_do_export(form_house)
+            elif 'finish' in request.POST:
+                ret = form_do_finish(appraisal, form_appraisal)
+            elif 'assign_tasador' in request.POST:
+                ret = form_do_assign_tasador(appraisal, form_tasador_user)
+            elif 'assign_visador' in request.POST:
+                ret = form_do_assign_visador(appraisal, form_visador_user)
+            elif 'comment' in request.POST:
+                ret = form_do_comment(form_comment, appraisal)
+
+        else:
+            print(form_house.errors)
 
     return ret
 
@@ -281,8 +313,8 @@ def appraisal(request, **kwargs):
         realestate = get_apartment(request,apartment_id)
         if isinstance(realestate,HttpResponse): return realestate
     elif res_type == RealEstate.TYPE_HOUSE:
-        # Get current flat
-        realestate = get_house(request,apartment_id)
+        # Get current house
+        realestate = get_house(request,house_id)
         if isinstance(realestate,HttpResponse): return realestate
     if realestate == None:
         context = {'error_message': 'Realestae was not found'}
@@ -327,18 +359,32 @@ def appraisal(request, **kwargs):
             visadorUserId = request.POST.dict()['visador']
             visadorUser = User.objects.get(pk=visadorUserId)
 
-        ret = form_process(
-            request,
-            form_building,
-            form_apartment,
-            form_appraisal,
-            form_comment,
-            appraisal_old,
-            realestate.building,
-            realestate,
-            appraisal,
-            tasadorUser,
-            visadorUser)
+        if not form_house:
+            ret = form_process(
+                request,
+                form_building,
+                form_apartment,
+                form_appraisal,
+                form_comment,
+                appraisal_old,
+                realestate.building,
+                realestate,
+                appraisal,
+                tasadorUser,
+                visadorUser)
+        else:
+            ret = form_process(
+                request,
+                form_house,
+                form_appraisal,
+                form_comment,
+                appraisal_old,
+                realestate.building,
+                realestate,
+                appraisal,
+                tasadorUser,
+                visadorUser)
+
 
         if isinstance(ret, HttpResponse): return ret
 

@@ -87,26 +87,26 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
-        if self.propertyType == RealEstate.TYPE_APARTMENT:
+        if self.realestate.propertyType == RealEstate.TYPE_APARTMENT:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
-            slugify(self.apartment.building.addressRegion),
-            slugify(self.apartment.building.addressCommune),
-            slugify(self.apartment.building.addressStreet),
-            self.apartment.building.addressNumber,
-            self.apartment.propertyType,
-            self.apartment.building.id,
-            self.apartment.number,
-            self.apartment.id,
+            slugify(self.realestate.building.addressRegion),
+            slugify(self.realestate.building.addressCommune),
+            slugify(self.realestate.building.addressStreet),
+            self.realestate.building.addressNumber,
+            self.realestate.propertyType,
+            self.realestate.building.id,
+            self.realestate.number,
+            self.realestate.id,
             self.id
             )
-        elif self.propertyType == RealEstate.TYPE_HOUSE:
+        elif self.realestate.propertyType == RealEstate.TYPE_HOUSE:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(self.house.addressRegion),
-                slugify(self.house.addressCommune),
-                slugify(self.house.addressStreet),
-                self.house.addressNumber,
-                self.house.propertyType,
-                self.house.id,
+                slugify(self.realestate.addressRegion),
+                slugify(self.realstate.addressCommune),
+                slugify(self.realestate.addressStreet),
+                self.realestate.addressNumber,
+                self.realestate.propertyType,
+                self.realestate.id,
                 self.id
             )
         else:
