@@ -340,12 +340,11 @@ def appraisal(request, **kwargs):
                 request.POST,
                 instance=realestate.building)
         elif res_type == RealEstate.TYPE_HOUSE:
-            '''
             form_house = AppraisalModelForm_House(
                 request.POST,
                 instance=realestate
             )
-            '''
+
 
         # Other options of the form:
         # Assigning tasadores
@@ -359,7 +358,7 @@ def appraisal(request, **kwargs):
             visadorUserId = request.POST.dict()['visador']
             visadorUser = User.objects.get(pk=visadorUserId)
 
-        if not form_house:
+        if res_type == RealEstate.TYPE_APARTMENT:
             ret = form_process(
                 request,
                 form_building,
@@ -372,7 +371,7 @@ def appraisal(request, **kwargs):
                 appraisal,
                 tasadorUser,
                 visadorUser)
-        else:
+        elif res_type == RealEstate.TYPE_HOUSE:
             ret = form_process(
                 request,
                 form_house,
@@ -441,9 +440,7 @@ def appraisal(request, **kwargs):
         forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
         forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
     elif res_type == RealEstate.TYPE_HOUSE:
-        '''
         forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')
-        '''
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:
@@ -465,7 +462,7 @@ def appraisal(request, **kwargs):
         'comments': comments,
         }
 
-    a = render(request, 'appraisal/apartment.html', context)
+    a = render(request, 'appraisal/realestate_appraisal.html', context)
     return a
 
 def ajax_computeValuations(request):
