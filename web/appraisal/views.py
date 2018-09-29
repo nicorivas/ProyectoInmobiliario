@@ -284,7 +284,7 @@ def get_similar_realestate(realestate):
     else:
         return []
 
-def appraisal(request,**kwargs):
+def appraisal(request, **kwargs):
     '''
     General view for appraisals. Gets a variable number of parameters depending
     on the type of realestate.
@@ -340,10 +340,12 @@ def appraisal(request,**kwargs):
                 request.POST,
                 instance=realestate.building)
         elif res_type == RealEstate.TYPE_HOUSE:
+            '''
             form_house = AppraisalModelForm_House(
                 request.POST,
                 instance=realestate
             )
+            '''
 
         # Other options of the form:
         # Assigning tasadores
@@ -430,7 +432,6 @@ def appraisal(request,**kwargs):
 
     # Comments, for the logbook
     comments = Comment.objects.filter(appraisal=appraisal)
-    print(comments)
 
     # Forms
     forms = {
@@ -440,9 +441,9 @@ def appraisal(request,**kwargs):
         forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
         forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
     elif res_type == RealEstate.TYPE_HOUSE:
+        '''
         forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')
-
-    print(forms)
+        '''
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:

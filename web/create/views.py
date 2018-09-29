@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned
-#from django.contrib.contenttypes.models import ContentType
 
 
 from .forms import LocationSearchForm
@@ -22,7 +21,6 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal
 
 import datetime
-
 
 import requests # to call the API of Google to get lat-lon
 
@@ -145,7 +143,7 @@ def create(request):
             _propertyType = int(form_create.cleaned_data['propertyType_create'])
 
             if _propertyType == RealEstate.TYPE_HOUSE:
-                
+
                 _addressRegion = form_create.cleaned_data['addressRegion_create']
                 _addressCommune = form_create.cleaned_data['addressCommune_create']
                 _addressStreet = form_create.cleaned_data['addressStreet_create']
@@ -165,15 +163,6 @@ def create(request):
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'House is repeated'}
-                    return render(request, 'create/error.html', context)
-
-                # create new appraisal
-                try:
-                    appraisal = Appraisal.objects.get(house=house) #ver cómo chequear la existencia de un appraisal
-                except Appraisal.DoesNotExist:
-                    appraisal = appraisal_create(house, _appraisalTimeFrame)
-                except MultipleObjectsReturned:
-                    context = {'error_message': 'More than one appraisal of the same property'}
                     return render(request, 'create/error.html', context)
 
                 # go to appraisal url
@@ -208,30 +197,30 @@ def create(request):
                     return render(request, 'create/error.html',context)
 
                 # check if flat exists
-                apartment = None
+                realestate = None
                 try:
-                    apartment = Apartment.objects.get(
+                    realestate = RealEstate.objects.get(
                         building=building,
                         number=_addressNumberFlat)
-                except Apartment.DoesNotExist:
+                except RealEstate.DoesNotExist:
                     # flat does not exist, so create it
-                    apartment = apartment_create(building,_addressNumberFlat)
+                    realestate = realestate_create(building,_addressNumberFlat)
                 except MultipleObjectsReturned:
                     # error
-                    context = {'error_message': 'Apartment is repeated'}
+                    context = {'error_message': 'Real estate is repeated'}
                     return render(request, 'create/error.html',context)
 
-                # create new appraisal
-                try:
-                    appraisal = Appraisal.objects.get(apartment=apartment)
-                except Appraisal.DoesNotExist:
-                    appraisal = appraisal_create(apartment, _appraisalTimeFrame)
-                except MultipleObjectsReturned:
-                    context = {'error_message': 'More than one appraisal of the same property'}
-                    return render(request, 'create/error.html',context)
+            # create new appraisal
+            try:
+                appraisal = Appraisal.objects.get(realestate=realestate) #ver cómo chequear la existencia de un appraisal
+            except Appraisal.DoesNotExist:
+                appraisal = appraisal_create(house, _appraisalTimeFrame)
+            except MultipleObjectsReturned:
+                context = {'error_message': 'More than one appraisal of the same property'}
+                return render(request, 'create/error.html', context)
 
-                # go to appraisal url
-                return HttpResponseRedirect(appraisal.url)
+            # go to appraisal url
+            return HttpResponseRedirect(appraisal.url)
         else:
             print(form_create.errors)
 
