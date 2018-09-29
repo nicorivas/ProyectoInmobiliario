@@ -48,6 +48,3 @@ class RealEstate(models.Model):
     def address(self):
         # Returns whole address in a nice format
         return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.name
-
-    class Meta:
-        abstract = True

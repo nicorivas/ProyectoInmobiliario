@@ -3,7 +3,7 @@ from data.chile import comunas_regiones
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
-from house.model import House
+from house.models import House
 
 class AppraisalModelForm_Building(forms.ModelForm):
 
@@ -90,6 +90,7 @@ class AppraisalModelForm_House(forms.ModelForm):
             'usefulSquareMeters',
             'generalDescription'
         ]
+        class_bs = {'class': "form-control form-control-sm"}
         widgets = {
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),

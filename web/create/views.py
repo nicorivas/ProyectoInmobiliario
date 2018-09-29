@@ -144,9 +144,8 @@ def create(request):
 
             _propertyType = int(form_create.cleaned_data['propertyType_create'])
 
-            print(_propertyType)
-
             if _propertyType == RealEstate.TYPE_HOUSE:
+                
                 _addressRegion = form_create.cleaned_data['addressRegion_create']
                 _addressCommune = form_create.cleaned_data['addressCommune_create']
                 _addressStreet = form_create.cleaned_data['addressStreet_create']
@@ -181,9 +180,12 @@ def create(request):
                 return HttpResponseRedirect(appraisal.url)
 
             elif _propertyType == RealEstate.TYPE_BUILDING:
+
                 context = {'error_message': 'Cannot create buildings yet'}
                 return render(request, 'create/error.html',context)
+
             elif _propertyType == RealEstate.TYPE_APARTMENT:
+
                 _addressRegion = form_create.cleaned_data['addressRegion_create']
                 _addressCommune = form_create.cleaned_data['addressCommune_create']
                 _addressStreet = form_create.cleaned_data['addressStreet_create']
