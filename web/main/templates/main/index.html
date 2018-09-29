@@ -44,7 +44,7 @@
           {{ appraisal.id }}
         </td>
         <td>
-          Dpto
+          {{ appraisal.realEstate.get_propertyType_display }}
         </td>
         <td>
           <a class="text-dark" href="{{appraisal.url}}">
@@ -121,7 +121,7 @@
           {{ appraisal.id }}
         </td>
         <td>
-          Dpto
+          {{ appraisal.realEstate.propertyType_display }}
         </td>
         <td>
           <a class="text-dark" href={{appraisal.url}}>

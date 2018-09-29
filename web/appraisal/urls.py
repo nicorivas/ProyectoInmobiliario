@@ -7,7 +7,7 @@ urlpatterns = [
          '<int:building_id>/<int:apartment_number>/<int:apartment_id>/<int:appraisal_id>/',
         views.appraisal,
         name='views-appraisal'),
-    path('<str:region>/<str:commune>/<str:street>/<int:number>/<int:type>/'
+    path('<str:region>/<str:commune>/<str:street>/<int:number>/<int:res_type>/'
          '<int:house_id>/<int:appraisal_id>/',
         views.appraisal,
         name='views-appraisal'),
