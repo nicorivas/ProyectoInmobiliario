@@ -61,5 +61,6 @@ class Apartment(RealEstate):
     class Meta:
         app_label = 'apartment'
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Apartment, self).__init__(*args, **kwargs)
         self.propertyType=RealEstate.TYPE_APARTMENT

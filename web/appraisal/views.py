@@ -21,6 +21,7 @@ from .forms import AppraisalModelForm_Building
 from .forms import AppraisalModelForm_Apartment
 from .forms import AppraisalModelForm_Appraisal
 from .forms import AppraisalForm_Comment
+from .forms import AppraisalModelForm_House
 
 from django.db.models import Avg, StdDev
 
@@ -307,8 +308,10 @@ def appraisal(request,**kwargs):
                 request.POST,
                 instance=realestate.building)
         elif res_type == RealEstate.TYPE_HOUSE:
-            '''
-            '''
+            form_house = AppraisalModelForm_House(
+                request.POST,
+                instance=realestate
+            )
 
         # Other options of the form:
         # Assigning tasadores
@@ -390,8 +393,8 @@ def appraisal(request,**kwargs):
     if res_type == RealEstate.TYPE_APARTMENT:
         forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
         forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
-    else:
-        '''forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')'''
+    elif res_type == RealEstate.TYPE_HOUSE:
+        forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')
 
     print(forms)
 

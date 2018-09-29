@@ -18,7 +18,7 @@
 
     <nav class="navbar justify-content-between">
 
-      <a class="navbar-brand" href="#">Tasación departamento</a>
+      <a class="navbar-brand" href="#">Tasación de propiedad</a>
       <span class="navbar-text">
         {{ realestate.address }}
       </span>
@@ -71,19 +71,19 @@
       <div class="tab-content" id="myTabContent">
 
       <div class="{{request.GET.tab|tab_pane_class:"general"}}" id="general" role="tabpanel" aria-labelledby="general-tab">
-        {% include "appraisal/apartment_general.html" %}
+        {% include "appraisal/realesate_general.html" %}
       </div>
       <div class="{{request.GET.tab|tab_pane_class:"property"}}" id="property" role="tabpanel" aria-labelledby="property-tab">
-        {% include "appraisal/apartment_property.html" %}
+        {% include "appraisal/realesate_property.html" %}
       </div>
       <div class="{{request.GET.tab|tab_pane_class:"surroundings"}}" id="surroundings" role="tabpanel" aria-labelledby="surroundings-tab">
-        {% include "appraisal/apartment_surroundings.html" %}
+        {% include "appraisal/realesate_surroundings.html" %}
       </div>
       <div class="{{request.GET.tab|tab_pane_class:"value"}}" id="value" role="tabpanel" aria-labelledby="value-tab">
-        {% include "appraisal/apartment_value.html" %}
+        {% include "appraisal/realesate_value.html" %}
       </div>
       <div class="{{request.GET.tab|tab_pane_class:"logbook"}}" id="logbook" role="tabpanel" aria-labelledby="logbook-tab">
-        {% include "appraisal/apartment_logbook.html" %}
+        {% include "appraisal/realesate_logbook.html" %}
       </div>
       <!--
       -->

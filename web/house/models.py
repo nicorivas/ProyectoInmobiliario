@@ -7,6 +7,12 @@ import datetime
 
 class House(RealEstate):
 
+    bedrooms = models.PositiveSmallIntegerField("Dormitorios",null=True,blank=True)
+    bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)
+    builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)
+    usefulSquareMeters = models.DecimalField("Superficie util",max_digits=7,decimal_places=2,null=True,blank=True)
+    generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
+
     # Areas
     areaUtilTerreno = models.IntegerField("Metros cuadrados útiles terreno",
         default=0,
@@ -147,6 +153,6 @@ class House(RealEstate):
             self.addressRegion)
 
     def __init__(self, *args, **kwargs):
-        super(House, self).__init__(self, *args,**kwargs)
+        super(House, self).__init__(*args,**kwargs)
         self.propertyType=RealEstate.TYPE_HOUSE
 
