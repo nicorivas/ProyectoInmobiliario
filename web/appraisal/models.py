@@ -41,7 +41,7 @@ class Appraisal(models.Model):
         choices=propertyType_choices,
         default=TYPE_UNDEFINED)
 
-    realestate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
+    realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
         verbose_name="Propiedad")
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
