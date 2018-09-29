@@ -6,28 +6,6 @@ from realestate.models import RealEstate
 import datetime
 
 class House(RealEstate):
-    addressStreet = models.CharField("Calle",max_length=300,default="")
-    addressNumber = models.PositiveSmallIntegerField("Numero",default=0)
-    addressCommune = models.ForeignKey(Commune,
-        on_delete=models.CASCADE,
-        verbose_name="Comuna",
-        blank=True,
-        null=True,
-        to_field='code')
-    addressRegion = models.ForeignKey(Region,
-        on_delete=models.CASCADE,
-        verbose_name="Region",
-        blank=True,
-        null=True,
-        to_field='code')
-    name = models.CharField("Nombre",max_length=100,default="")
-    lat = models.FloatField("Latitud",default=0.0)
-    lon = models.FloatField("Longitud",default=0.0)
-    neighborhood = models.ForeignKey(Neighborhood,
-        on_delete=models.CASCADE,
-        verbose_name="Barrio",
-        blank=True,
-        null=True)
 
     # Areas
     areaUtilTerreno = models.IntegerField("Metros cuadrados útiles terreno",
@@ -167,3 +145,8 @@ class House(RealEstate):
             self.addressNumber,
             self.addressCommune,
             self.addressRegion)
+
+    def __init__(self, *args, **kwargs):
+        super(House, self).__init__(self, *args,**kwargs)
+        self.propertyType=RealEstate.TYPE_HOUSE
+

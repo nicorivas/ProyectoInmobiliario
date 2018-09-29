@@ -60,3 +60,6 @@ class Apartment(RealEstate):
 
     class Meta:
         app_label = 'apartment'
+
+    def __init__(self):
+        self.propertyType=RealEstate.TYPE_APARTMENT
