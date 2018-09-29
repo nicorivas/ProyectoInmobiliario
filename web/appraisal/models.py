@@ -109,6 +109,8 @@ class Appraisal(models.Model):
                 self.house.id,
                 self.id
             )
+        else:
+            return "error"
 
     @property
     def daySinceCreated(self):
@@ -124,7 +126,7 @@ class Appraisal(models.Model):
 
     def __str__(self):
         return "{} {}".format(
-            self.apartment,
+            self.realEstate,
             self.solicitante)
 
     def __iter__(self):

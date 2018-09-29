@@ -24,29 +24,28 @@ import datetime
 
 import requests # to call the API of Google to get lat-lon
 
-def appraisal_create(property,appraisalTimeFrame):
+def appraisal_create(realEstate,appraisalTimeFrame):
     '''
     Create appraisal, given a ...?
     '''
     timeDue = appraisalTimeFrame
     appraisal = Appraisal(
-        apartment=property,
-        propertyType=property.propertyType,
+        realEstate=realEstate,
         timeCreated=datetime.datetime.now(),
         timeDue=timeDue)
     appraisal.save()
     return appraisal
 
-def apartment_create(building,addressNumberFlat):
+def apartment_create(building_in,addressNumberFlat):
     '''
     Given a building and a flat number, create an apartment.
     '''
     apartment = Apartment(
-        addressRegion=building.addressRegion,
-        addressCommune=building.addressCommune,
-        addressStreet=building.addressStreet,
-        addressNumber=building.addressNumber,
-        building=building,
+        addressRegion=building_in.addressRegion,
+        addressCommune=building_in.addressCommune,
+        addressStreet=building_in.addressStreet,
+        addressNumber=building_in.addressNumber,
+        building_in=building_in,
         number=addressNumberFlat)
     apartments = Apartment.objects.all()
     if len(apartments) == 0:
@@ -165,9 +164,6 @@ def create(request):
                     context = {'error_message': 'House is repeated'}
                     return render(request, 'create/error.html', context)
 
-                # go to appraisal url
-                return HttpResponseRedirect(appraisal.url)
-
             elif _propertyType == RealEstate.TYPE_BUILDING:
 
                 context = {'error_message': 'Cannot create buildings yet'}
@@ -197,24 +193,25 @@ def create(request):
                     return render(request, 'create/error.html',context)
 
                 # check if flat exists
-                realestate = None
+                realEstate = None
                 try:
-                    realestate = RealEstate.objects.get(
-                        building=building,
+                    realEstate = Apartment.objects.get(
+                        building_in=building,
                         number=_addressNumberFlat)
                 except RealEstate.DoesNotExist:
                     # flat does not exist, so create it
-                    realestate = realestate_create(building,_addressNumberFlat)
+                    realEstate = apartment_create(building,_addressNumberFlat)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'Real estate is repeated'}
                     return render(request, 'create/error.html',context)
 
             # create new appraisal
+            appraisal = None
             try:
-                appraisal = Appraisal.objects.get(realestate=realestate) #ver cómo chequear la existencia de un appraisal
+                appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
-                appraisal = appraisal_create(house, _appraisalTimeFrame)
+                appraisal = appraisal_create(realEstate, _appraisalTimeFrame)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)
