@@ -155,4 +155,3 @@ class House(RealEstate):
     def __init__(self, *args, **kwargs):
         super(House, self).__init__(*args,**kwargs)
         self.propertyType=RealEstate.TYPE_HOUSE
-

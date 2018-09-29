@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned
-#from django.contrib.contenttypes.models import ContentType
 
 
 from .forms import LocationSearchForm
@@ -22,7 +21,6 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal
 
 import datetime
-
 
 import requests # to call the API of Google to get lat-lon
 

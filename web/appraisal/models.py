@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from apartment.models import Apartment
-from house.models import House
+#from house.models import House
 from realestate.models import RealEstate
 from django.contrib.auth.models import User
 import datetime
