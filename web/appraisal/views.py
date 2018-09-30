@@ -34,6 +34,22 @@ from openpyxl import load_workbook
 
 import datetime
 
+def get_realestate(request,id):
+    '''
+        Given building id, returns the building object.
+        It checks for some errors and sends to the error page.
+    '''
+    realestate = RealEstate.objects.filter(id=id)
+    # This must be only one building
+    if len(realestate) == 0:
+        context = {'error_message': 'Real estate should exist by now'}
+        return render(request, 'appraisal/error.html',context)
+    elif len(realestate) > 1:
+        context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
+        return render(request, 'appraisal/error.html',context)
+    realestate = realestate[0]
+    return realestate
+
 def get_building(request,id):
     '''
         Given building id, returns the building object.
@@ -100,48 +116,35 @@ def get_appraisal(request,id):
         return render(request, 'appraisal/error.html', context)
 
 
-def form_process(
-    request,
-    form_comment,
-    appraisal_old,
-    appraisal,
-    form_tasador_user,
-    form_visador_user,
-    form_building=None,
-    form_apartment=None,
-    form_appraisal=None,
-    form_house=None,
-    building=None,
-    apartment=None,
-    house=None):
+def form_process(request,forms,realestate,appraisal,appraisal_old,
+    form_tasador_user,form_visador_user):
 
-    def form_do_delete(form_building=None,form_apartment=None,form_appraisal=None, form_house=None):
+    def form_appraisal_save(request,forms,comment=""):
+        with reversion.create_revision():
+            forms['appraisal'].save()
+            reversion.set_user(request.user)
+            reversion.set_comment(comment)
+            return
+
+    def form_do_save(request,forms,appraisal_old):
+        for key, form in forms.items():
+            if key in ['building','apartment','house']:
+                print(key)
+                form.save()
+            if key == 'appraisal':
+                form_appraisal_save(request,forms)
+        return
+
+    def form_do_delete(forms,appraisal):
         appraisal.delete()
         context = {}
         return render(request, 'appraisal/deleted.html',context)
 
-    def form_appraisal_save(comment=""):
-        with reversion.create_revision():
-            form_appraisal.save()
-            reversion.set_user(request.user)
-            reversion.set_comment(comment)
-
-    def form_do_save(form_appraisal,appraisal_old, form_building=None,form_apartment=None,form_house=None,):
-        if not form_house:
-            form_building.save()
-            form_apartment.save()
-            form_appraisal.save()
-        else:
-            form_house.save()
-        return
-
-    def form_do_finish(appraisal,form_appraisal):
+    def form_do_finish(forms,appraisal):
         appraisal.timeFinished = datetime.datetime.now()
-        print('form do finish')
-        print(appraisal.status)
-        appraisal.status = 'f'
+        appraisal.status = Appraisal.STATE_FINISHED
         appraisal.save()
-        form_appraisal.save()
+        forms['appraisal'].save()
         return
 
     def form_do_export(form_building=None,form_apartment=None,form_appraisal=None, form_house=None):
@@ -188,14 +191,14 @@ def form_process(
 
     def form_do_assign_visador(appraisal,user):
         appraisal.visadorUser = user
-        form_appraisal_save('Changed tasador')
+        form_appraisal_save('Changed visador')
         return
 
-    def form_do_comment(form_comment,appraisal):
+    def form_do_comment(request,forms,appraisal):
         '''
         Create comment based on the field commentText of the form.
         '''
-        text = form_comment.cleaned_data['commentText']
+        text = forms['comment'].cleaned_data['commentText']
         comment = Comment(
             user=request.user,
             text=text,
@@ -203,84 +206,55 @@ def form_process(
             appraisal=appraisal)
         comment.save()
 
-    print('form process')
-
     ret = None
-    if not house:
-        if form_building.is_valid() and \
-           form_apartment.is_valid() and \
-           form_appraisal.is_valid() and \
-           form_comment.is_valid():
+    for key, form in forms.items():
+        if form.is_valid():
             if 'save' in request.POST:
-                ret = form_do_save(form_building,form_apartment,form_appraisal,appraisal_old)
+                ret = form_do_save(request,forms,appraisal_old)
             elif 'delete' in request.POST:
-                ret = form_do_delete(form_building,form_apartment,form_appraisal)
-            elif 'export' in request.POST:
-                ret = form_do_export(form_building,form_apartment,form_appraisal)
+                ret = form_do_delete(forms,appraisal)
             elif 'finish' in request.POST:
-                ret = form_do_finish(appraisal,form_appraisal)
-            elif 'assign_tasador' in request.POST:
-                ret = form_do_assign_tasador(appraisal,form_tasador_user)
-            elif 'assign_visador' in request.POST:
-                ret = form_do_assign_visador(appraisal,form_visador_user)
-            elif 'comment' in request.POST:
-                ret = form_do_comment(form_comment,appraisal)
-
-        else:
-            print(form_building.errors)
-            print(form_apartment.errors)
-            print(form_appraisal.errors)
-            print(form_comment.errors)
-    else:
-        if form_house.is_valid() and \
-                form_appraisal.is_valid() and \
-                form_comment.is_valid():
-            if 'save' in request.POST:
-                ret = form_do_save(form_house, form_appraisal, appraisal_old)
-            elif 'delete' in request.POST:
-                ret = form_do_delete(form_house)
+                ret = form_do_finish(forms,appraisal)
             elif 'export' in request.POST:
-                ret = form_do_export(form_house)
-            elif 'finish' in request.POST:
-                ret = form_do_finish(appraisal, form_appraisal)
+                ret = form_do_export(forms)
             elif 'assign_tasador' in request.POST:
-                ret = form_do_assign_tasador(appraisal, form_tasador_user)
+                ret = form_do_assign_tasador(forms,appraisal)
             elif 'assign_visador' in request.POST:
-                ret = form_do_assign_visador(appraisal, form_visador_user)
+                ret = form_do_assign_visador(forms,appraisal)
             elif 'comment' in request.POST:
-                ret = form_do_comment(form_comment, appraisal)
-
-        else:
-            print(form_house.errors)
+                ret = form_do_comment(request,forms,appraisal)
 
     return ret
 
 def get_similar_realestate(realestate):
 
-    if (realestate.bedrooms != None and
-        realestate.bathrooms != None and
-        realestate.builtSquareMeters != None and
-        realestate.usefulSquareMeters != None):
+    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        if (realestate.apartment.bedrooms != None and
+            realestate.apartment.bathrooms != None and
+            realestate.apartment.builtSquareMeters != None and
+            realestate.apartment.usefulSquareMeters != None):
 
-        apartments = Apartment.objects.filter(
-            bedrooms=apartment.bedrooms,
-            bathrooms=apartment.bathrooms,
-            marketPrice__isnull=False).exclude(marketPrice=0)
+            apartments = Apartment.objects.filter(
+                bedrooms=realestate.apartment.bedrooms,
+                bathrooms=realestate.apartment.bathrooms,
+                marketPrice__isnull=False).exclude(marketPrice=0)
 
-        ds = []
-        ni = 0
-        for i, apt in enumerate(apartments):
-            d1 = float(pow(apartment.builtSquareMeters - apt.builtSquareMeters,2))
-            d2 = float(pow(apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
-            ds.append([0,0])
-            ds[i][0] = apt.pk
-            ds[i][1] = d1+d2
+            ds = []
+            ni = 0
+            for i, apt in enumerate(apartments):
+                d1 = float(pow(realestate.apartment.builtSquareMeters - apt.builtSquareMeters,2))
+                d2 = float(pow(realestate.apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
+                ds.append([0,0])
+                ds[i][0] = apt.pk
+                ds[i][1] = d1+d2
 
-        ds = sorted(ds, key=lambda x: x[1])
-        ins = [x[0] for x in ds]
+            ds = sorted(ds, key=lambda x: x[1])
+            ins = [x[0] for x in ds]
 
-        references = apartments.filter(pk__in=ins[0:5])
-        return references
+            references = realestate.apartments.filter(pk__in=ins[0:5])
+            return references
+        else:
+            return []
     else:
         return []
 
@@ -290,53 +264,32 @@ def appraisal(request, **kwargs):
     on the type of realestate.
     '''
 
-    region = kwargs['region']
-    commune = kwargs['commune']
-    street = kwargs['street']
-    number = kwargs['number']
-    res_type = kwargs['res_type']
-    if res_type == RealEstate.TYPE_APARTMENT:
-        building_id = kwargs['building_id']
-        apartment_number  = kwargs['apartment_number']
-        apartment_id = kwargs['apartment_id']
-    elif res_type == RealEstate.TYPE_HOUSE:
-        house_id = kwargs['house_id']
-    appraisal_id = kwargs['appraisal_id']
-
     # Get current appraisal
-    appraisal = get_appraisal(request,appraisal_id)
+    appraisal = get_appraisal(request,kwargs['appraisal_id'])
     if isinstance(appraisal,HttpResponse): return appraisal
+    appraisal_old = deepcopy(appraisal) # done to check differences when saving history
 
-    realestate = None
-    if res_type == RealEstate.TYPE_APARTMENT:
-        # Get current flat
-        realestate = get_apartment(request,apartment_id)
-        if isinstance(realestate,HttpResponse): return realestate
-    elif res_type == RealEstate.TYPE_HOUSE:
-        # Get current house
-        realestate = get_house(request,house_id)
-        if isinstance(realestate,HttpResponse): return realestate
+    # Get realestate
+    realestate = get_realestate(request,appraisal.realEstate.id)
     if realestate == None:
         context = {'error_message': 'Realestae was not found'}
         return render(request, 'appraisal/error.html',context)
 
-    appraisal_old = deepcopy(appraisal)
-
-    # DA FORM
+    # DIE FORMS
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
         # Main forms
+        forms = {}
         form_appraisal = AppraisalModelForm_Appraisal(
-            request.POST,
-            instance=appraisal)
+            request.POST,instance=appraisal)
         form_comment = AppraisalForm_Comment(request.POST)
-        if res_type == RealEstate.TYPE_APARTMENT:
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             form_apartment = AppraisalModelForm_Apartment(
-                request.POST,
-                instance=realestate)
+                request.POST,instance=realestate.apartment)
             form_building = AppraisalModelForm_Building(
+<<<<<<< HEAD
                 request.POST,
                 instance=realestate.building)
         elif res_type == RealEstate.TYPE_HOUSE:
@@ -345,6 +298,19 @@ def appraisal(request, **kwargs):
                 instance=realestate
             )
 
+=======
+                request.POST,instance=realestate.apartment.building_in)
+            forms = {'appraisal':form_appraisal,
+                     'comment':form_comment,
+                     'apartment':form_apartment,
+                     'building':form_building}
+        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+            form_house = AppraisalModelForm_House(
+                request.POST,instance=realestate.house)
+            forms = {'appraisal':form_appraisal,
+                     'comment':form_comment,
+                     'house':form_house}
+>>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
         # Other options of the form:
         # Assigning tasadores
@@ -358,6 +324,7 @@ def appraisal(request, **kwargs):
             visadorUserId = request.POST.dict()['visador']
             visadorUser = User.objects.get(pk=visadorUserId)
 
+<<<<<<< HEAD
         if res_type == RealEstate.TYPE_APARTMENT:
             ret = form_process(
                 request,
@@ -384,6 +351,16 @@ def appraisal(request, **kwargs):
                 tasadorUser,
                 visadorUser)
 
+=======
+        ret = form_process(
+            request,
+            forms,
+            realestate,
+            appraisal,
+            appraisal_old,
+            tasadorUser,
+            visadorUser)
+>>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
         if isinstance(ret, HttpResponse): return ret
 
@@ -436,11 +413,19 @@ def appraisal(request, **kwargs):
     forms = {
         'appraisal': AppraisalModelForm_Appraisal(instance=appraisal,label_suffix=''),
         'comment':AppraisalForm_Comment(label_suffix='')}
+<<<<<<< HEAD
     if res_type == RealEstate.TYPE_APARTMENT:
         forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
         forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
     elif res_type == RealEstate.TYPE_HOUSE:
         forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')
+=======
+    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate.apartment,label_suffix='')
+        forms['building'] = AppraisalModelForm_Building(instance=realestate.apartment.building_in,label_suffix='')
+    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+        forms['house'] = AppraisalModelForm_House(instance=realestate.house,label_suffix='')
+>>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:
