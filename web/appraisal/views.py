@@ -289,16 +289,6 @@ def appraisal(request, **kwargs):
             form_apartment = AppraisalModelForm_Apartment(
                 request.POST,instance=realestate.apartment)
             form_building = AppraisalModelForm_Building(
-<<<<<<< HEAD
-                request.POST,
-                instance=realestate.building)
-        elif res_type == RealEstate.TYPE_HOUSE:
-            form_house = AppraisalModelForm_House(
-                request.POST,
-                instance=realestate
-            )
-
-=======
                 request.POST,instance=realestate.apartment.building_in)
             forms = {'appraisal':form_appraisal,
                      'comment':form_comment,
@@ -310,7 +300,6 @@ def appraisal(request, **kwargs):
             forms = {'appraisal':form_appraisal,
                      'comment':form_comment,
                      'house':form_house}
->>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
         # Other options of the form:
         # Assigning tasadores
@@ -324,34 +313,6 @@ def appraisal(request, **kwargs):
             visadorUserId = request.POST.dict()['visador']
             visadorUser = User.objects.get(pk=visadorUserId)
 
-<<<<<<< HEAD
-        if res_type == RealEstate.TYPE_APARTMENT:
-            ret = form_process(
-                request,
-                form_building,
-                form_apartment,
-                form_appraisal,
-                form_comment,
-                appraisal_old,
-                realestate.building,
-                realestate,
-                appraisal,
-                tasadorUser,
-                visadorUser)
-        elif res_type == RealEstate.TYPE_HOUSE:
-            ret = form_process(
-                request,
-                form_house,
-                form_appraisal,
-                form_comment,
-                appraisal_old,
-                realestate.building,
-                realestate,
-                appraisal,
-                tasadorUser,
-                visadorUser)
-
-=======
         ret = form_process(
             request,
             forms,
@@ -360,7 +321,6 @@ def appraisal(request, **kwargs):
             appraisal_old,
             tasadorUser,
             visadorUser)
->>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
         if isinstance(ret, HttpResponse): return ret
 
@@ -413,19 +373,11 @@ def appraisal(request, **kwargs):
     forms = {
         'appraisal': AppraisalModelForm_Appraisal(instance=appraisal,label_suffix=''),
         'comment':AppraisalForm_Comment(label_suffix='')}
-<<<<<<< HEAD
-    if res_type == RealEstate.TYPE_APARTMENT:
-        forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate,label_suffix='')
-        forms['building'] = AppraisalModelForm_Building(instance=realestate.building,label_suffix='')
-    elif res_type == RealEstate.TYPE_HOUSE:
-        forms['house'] = AppraisalModelForm_House(instance=realestate,label_suffix='')
-=======
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['apartment'] = AppraisalModelForm_Apartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = AppraisalModelForm_Building(instance=realestate.apartment.building_in,label_suffix='')
     elif realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['house'] = AppraisalModelForm_House(instance=realestate.house,label_suffix='')
->>>>>>> 24e7adb57ec744c86e5a6ec44accc51d350a96d5
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:
