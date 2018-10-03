@@ -14,7 +14,7 @@ the 2-PortalInmobiliarioScrape.py script.'''
 region = input('Introduzca numero de region: ')
 pc_base_dir = 'G:/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
 mac_base_dir = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
-base_dir = pc_base_dir
+base_dir = mac_base_dir
 try:
     os.makedirs(base_dir)
 except:
@@ -28,7 +28,7 @@ for com in comunas:
     comuna = com.strip().replace(' ', '-')
     mac_path = mac_base_dir + str(comuna) + '/PortalInmobiliario/'
     pc_path = pc_base_dir + str(comuna) + '/PortalInmobiliario/'
-    path = pc_path
+    path = mac_path
     try:
         os.makedirs(path)
     except:
@@ -36,25 +36,25 @@ for com in comunas:
     url = ['https://www.portalinmobiliario.com/venta/departamento/'+str(comuna)+'-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1',
            'https://www.portalinmobiliario.com/venta/casa/'+str(comuna)+'-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1']
 
-    providencia_search_urls_PI = codecs.open(path + comuna + '_urls_PI.txt', 'w+', "utf-8")
+    search_urls_PI = codecs.open(path + comuna + '_urls_PI.txt', 'w+', "utf-8")
     directory = []
 
     for dir in url:
         urls = get_urls_PI(dir)
         for item in urls:
             directory.append(item)
-            providencia_search_urls_PI.write("%s\n" % item)
-            providencia_search_urls_PI2 = codecs.open(path + comuna + '_urls_PI.json', 'w+', "utf-8")
-            json.dump(directory, providencia_search_urls_PI2,ensure_ascii=False, indent=1)
-            providencia_search_urls_PI2.close()
+            search_urls_PI.write("%s\n" % item)
+            search_urls_PI2 = codecs.open(path + comuna + '_urls_PI.json', 'w+', "utf-8")
+            json.dump(directory, search_urls_PI2,ensure_ascii=False, indent=1)
+            search_urls_PI2.close()
             print(item)
-    providencia_search_urls_PI.close()
+    search_urls_PI.close()
 
     '''Second step, takes the list of urls from the previous search en returns a 
     list of list with building name, url, type.'''
 
 
-    search = codecs.open(path + comuna +'_urls_PI.txt', 'r', "utf-8")
+    search=codecs.open(path+comuna+'_urls_PI.txt', 'r', "utf-8")
     buildings = codecs.open(path + comuna + '_properties_PI.txt', 'w', "utf-8")
 
     index = 0
