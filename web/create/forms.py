@@ -3,7 +3,10 @@ from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
 from realestate.models import RealEstate
+from django.core.exceptions import ValidationError
 import datetime
+
+
 
 class LocationSearchForm(forms.Form):
 
@@ -41,3 +44,11 @@ class AppraisalCreateForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #self.fields['addressCommune_create'].queryset = []
+
+    def clean_appraisalTimeFrame_create(self):
+        data = self.cleaned_data['appraisalTimeFrame_create']
+        # Check date is not in past.
+        if data.replace(tzinfo=None) < datetime.datetime.now().replace(tzinfo=None):
+            raise forms.ValidationError(('Plazo se debe fijar en el futuro'), code='invalid')
+        # Remember to always return the cleaned data.
+        return data
