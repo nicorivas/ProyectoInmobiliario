@@ -35,14 +35,16 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'reset_migrations',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'realestate',
     'reversion',
     'home',
     'main',
-    'search',
+    'create',
     'appraisal',
     'house',
     'building',
@@ -102,7 +104,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'iCga1kmX',
         'HOST': 'localhost',
-        'PORT': '5431',
+        'PORT': '5432',
     }
 }
 
@@ -146,7 +148,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GOOGLE_MAPS_API_KEY = 'AIzaSyAKZ-wutxLGtqlojKj00BwHKFlH5dkr47c' # 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
 
 LOGIN_REDIRECT_URL = '/main/'
 

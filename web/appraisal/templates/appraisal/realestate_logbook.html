@@ -1,0 +1,90 @@
+<div class="card-body">
+
+  <div class="row">
+  <div class="col-6">
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Historial de modificación</h5>
+
+      {% for appraisal_time in appraisal_history %}
+      {% if appraisal_time.user.groups.all.0.name == "visador" %}
+      <div class="card mb-1 border-primary">
+      {% elif appraisal_time.user.groups.all.0.name == "tasador" %}
+      <div class="card mb-1 border-success">
+      {% elif appraisal_time.user.groups.all.0.name == "asignador" %}
+      <div class="card mb-1 border-info">
+      {% else %}
+      <div class="card mb-1 border-secondary">
+      {% endif %}
+        <div class="card-header">
+          {% if appraisal_time.user.groups.all.0.name == "visador" %}
+            <span class="badge badge-secondary">Visador</span>
+          {% elif appraisal_time.user.groups.all.0.name == "tasador" %}
+            <span class="badge badge-success">Tasador</span>
+          {% elif appraisal_time.user.groups.all.0.name == "asignador" %}
+            <span class="badge badge-info">Asignador</span>
+          {% else %}
+            <span class="badge badge-secondary">Otro</span>
+          {% endif %}
+          <small>
+            {{ appraisal_time.user.first_name }} {{ appraisal_time.user.last_name }} ({{ appraisal_time.user }})
+          </small>
+          <small>
+            {{ appraisal_time.time | date:"D d M, H:i"}}
+          </small>
+        </div>
+        <div class="card-body">
+          <small>
+          {% for vars in appraisal_time.diffs %}
+            <div class="row">
+              <div class="col-3">{{ vars.0 }}</div>
+              <div class="col-3">{{ vars.1 }}</div>
+            </div>
+            <div class="row">
+              <div class="col-3"></div>
+              <div class="col-3">{{ vars.2 }}</div>
+            </div>
+          {% endfor %}
+          </small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  </div>
+  <div class="col-6">
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Comentarios/Incidencias</h5>
+
+      {% for comment in comments %}
+      <div class="card mb-1">
+        <div class="card-body">
+          <p class="card-title">{{comment.user.first_name}} {{comment.user.last_name}} <small class="card-subtitle mb-2 text-muted">{{comment.timeCreated}}</small></p>
+          <small>{{comment.text}}</small>
+        </div>
+      </div>
+      {% endfor %}
+      {% if appraisal.active %}
+      <div class="card mb-1">
+        <div class="card-body">
+          <h5 class="card-title">Agregar comentario</h5>
+          <div class="form-group">
+              {{ forms.comment.commentText }}
+          </div>
+          <div class="form-group">
+              <button class="btn btn-outline-dark" name="comment">Comentar</button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  </div>
+  </div>
+
+</div>

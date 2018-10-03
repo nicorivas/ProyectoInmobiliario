@@ -1,0 +1,117 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% load tabs %}
+
+{% block head %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'appraisal/css/appraisal.css' %}">
+{% endblock head %}
+
+{% block content %}
+
+<form action="" method="post" id="form" ajax_computeValuationsUrl="{% url 'ajax_computeValuations' %}">
+
+  {% csrf_token %}
+
+  <div class="container-fluid">
+
+    <nav class="navbar justify-content-between">
+
+      <a class="navbar-brand" href="#">Tasación {{realestate.get_propertyType_display}}</a>
+      <span class="navbar-text">
+        {{ realestate.address }}
+      </span>
+      <ul class="navbar-nav mr-auto">
+      </ul>
+      {% if appraisal.finished %}
+      <button class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+      {% else %}
+      <button class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+      <button class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalFinish">Finalizar</button>
+      <button class="btn btn-outline-dark mr-2" name="save" style="font-family:Material Icons;font-size:1em;">save_alt</button>
+      <button class="btn btn-outline-dark" name="delete" style="font-family:Material Icons;font-size:1em;">delete</button>
+      {% endif %}
+    </nav>
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <ul class="nav nav-tabs card-header-tabs" role="tablist" id="myTab" >
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"general"}}" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"general"}}">
+              Aspectos generales
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"property"}}" id="property-tab" data-toggle="tab" href="#property" role="tab" aria-controls="property" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"property"}}">
+              Propiedad
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"surroundings"}}" id="surroundings-tab" data-toggle="tab" href="#surroundings" role="tab" aria-controls="surroundings" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"surroundings"}}">
+              Entorno
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"value"}}" id="value-tab" data-toggle="tab" href="#value" role="tab" aria-controls="value" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"value"}}">
+              Valorización
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"logbook"}}" id="logbook-tab" data-toggle="tab" href="#logbook" role="tab" aria-controls="logbook" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"logbook"}}">
+              Bitácora
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="tab-content" id="myTabContent">
+
+      <div class="{{request.GET.tab|tab_pane_class:"general"}}" id="general" role="tabpanel" aria-labelledby="general-tab">
+        {% include "appraisal/realestate_general.html" %}
+      </div>
+      <div class="{{request.GET.tab|tab_pane_class:"property"}}" id="property" role="tabpanel" aria-labelledby="property-tab">
+        {% include "appraisal/realestate_property.html" %}
+      </div>
+      <div class="{{request.GET.tab|tab_pane_class:"surroundings"}}" id="surroundings" role="tabpanel" aria-labelledby="surroundings-tab">
+        {% include "appraisal/realestate_surroundings.html" %}
+      </div>
+      <div class="{{request.GET.tab|tab_pane_class:"value"}}" id="value" role="tabpanel" aria-labelledby="value-tab">
+        {% include "appraisal/realestate_value.html" %}
+      </div>
+      <div class="{{request.GET.tab|tab_pane_class:"logbook"}}" id="logbook" role="tabpanel" aria-labelledby="logbook-tab">
+        {% include "appraisal/realestate_logbook.html" %}
+      </div>
+      <!--
+      -->
+
+      </div>
+
+    </div>
+
+  </div>
+
+{% include "appraisal/modals.html" %}
+
+</form>
+
+<script>
+    $('.datepicker_year').datepicker({
+      format: "yyyy",
+      minViewMode: 2,
+      maxViewMode: 2,
+      autoclose: true});
+</script>
+
+<script>
+    $('.datepicker_month').datepicker({
+      format: "mm/yyyy",
+      minViewMode: 1,
+      maxViewMode: 2,
+      autoclose: true});
+</script>
+
+{% endblock content %}

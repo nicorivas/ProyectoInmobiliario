@@ -1,0 +1,332 @@
+<div class="card-body">
+
+  <div class="form-group row align-middle">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Calle
+      </label>
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="form-control form-control-sm" value="{{realestate.addressStreet }}" disabled>
+    </div>
+
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+      No.
+      </label>
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="form-control form-control-sm" value="{{realestate.addressNumber}}" disabled>
+    </div>
+
+    {% if realestate.apartment %}
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+      Dpto.
+      </label>
+    </div>
+    <div>
+      <input type="text" class="form-control form-control-sm" value="{{realestate.apartment.number}}" disabled>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <div class="form-group row align-middle">
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Comuna
+      </label>
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="form-control form-control-sm" value="{{realestate.addressCommune}}" disabled>
+    </div>
+
+    <div class="col-auto">
+      <label for="" class="col-form-label-sm">
+        Región
+      </label>
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="form-control form-control-sm" value="{{realestate.addressRegion}}" disabled>
+    </div>
+  </div>
+
+  <div class="card bg-light mb-1">
+  <div class="card-header">
+    Características generales
+  </div>
+  <div class="card-body">
+
+    <div class="row">
+    <div class="col-md-4">
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.floor.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.floor}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.bedrooms.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.bedrooms}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.bathrooms.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.bathrooms}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.builtSquareMeters.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.builtSquareMeters}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.usefulSquareMeters.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.usefulSquareMeters}}
+        </div>
+      </div>
+
+      <div class="form-group row align-middle">
+        <div class="col-auto">
+          {{forms.apartment.orientation.label}}
+        </div>
+        <div class="col-lg-3">
+          {{forms.apartment.orientation}}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-8">
+
+      {{forms.apartment.generalDescription.label_tag}}
+      {{forms.apartment.generalDescription}}
+
+    </div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="card bg-light mb-1">
+  <div class="card-header">
+    Antecedentes técnico-legales
+  </div>
+  <div class="card-body">
+  <div class="card-text">
+
+    <div class="row">
+    <div class="col-6">
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.anoConstruccion.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.anoConstruccion}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.vidaUtilRemanente.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.vidaUtilRemanente}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.avaluoFiscal.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.avaluoFiscal}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.dfl2.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.dfl2}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.selloVerde.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.selloVerde}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.copropiedadInmobiliaria.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.copropiedadInmobiliaria}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.ocupante.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.ocupante}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.tipoBien.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.tipoBien}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.destinoSII.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.destinoSII}}
+      </div>
+    </div>
+
+  </div>
+  <div class="col-6">
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.usoActual.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.usoActual}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.usoFuturo.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.usoFuturo}}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-8">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            {{forms.building.permisoEdificacion.label}}
+          </div>
+          <div class="col-lg-3">
+            {{forms.building.permisoEdificacion}}
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            Fecha
+          </div>
+          <div class="col-lg-3">
+            {{forms.building.permisoEdificacionDate}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-8">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            {{forms.building.recepcionFinal.label}}
+          </div>
+          <div class="col-lg-3">
+            {{forms.building.recepcionFinal}}
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group row align-middle">
+          <div class="col-auto">
+            Fecha
+          </div>
+          <div class="col-lg-3">
+            {{forms.building.recepcionFinalDate}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.expropiacion.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.expropiacion}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.viviendaSocial.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.viviendaSocial}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.adobe.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.adobe}}
+      </div>
+    </div>
+
+    <div class="form-group row align-middle">
+      <div class="col-auto">
+        {{forms.building.desmontable.label}}
+      </div>
+      <div class="col-lg-3">
+        {{forms.building.desmontable}}
+      </div>
+    </div>
+
+    </div>
+    </div>
+
+  </div>
+  </div>
+  </div>
+
+</div>

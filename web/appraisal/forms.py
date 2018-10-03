@@ -3,8 +3,9 @@ from data.chile import comunas_regiones
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
+from house.models import House
 
-class AppraisalApartmentModelForm_Building(forms.ModelForm):
+class AppraisalModelForm_Building(forms.ModelForm):
 
     class Meta:
         model = Building
@@ -25,9 +26,7 @@ class AppraisalApartmentModelForm_Building(forms.ModelForm):
             'recepcionFinal',
             'recepcionFinalDate',
             'expropiacion',
-            'viviendaSocial',
-            'adobe',
-            'desmontable'
+            'viviendaSocial'
         ]
 
         class_bs = {'class':"form-control form-control-sm"}
@@ -52,12 +51,10 @@ class AppraisalApartmentModelForm_Building(forms.ModelForm):
             'recepcionFinal': forms.TextInput(attrs=class_bs),
             'recepcionFinalDate': forms.DateTimeInput(attrs=class_dp_m_bs),
             'expropiacion': forms.NullBooleanSelect(attrs=class_se_bs),
-            'viviendaSocial': forms.NullBooleanSelect(attrs=class_se_bs),
-            'adobe': forms.NullBooleanSelect(attrs=class_se_bs),
-            'desmontable': forms.NullBooleanSelect(attrs=class_se_bs)
+            'viviendaSocial': forms.NullBooleanSelect(attrs=class_se_bs)
         }
 
-class AppraisalApartmentModelForm_Apartment(forms.ModelForm):
+class AppraisalModelForm_Apartment(forms.ModelForm):
 
     class Meta:
         model = Apartment
@@ -81,7 +78,28 @@ class AppraisalApartmentModelForm_Apartment(forms.ModelForm):
             'generalDescription': forms.Textarea(attrs=class_bs),
         }
 
-class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
+class AppraisalModelForm_House(forms.ModelForm):
+
+    class Meta:
+        model = House
+
+        fields = [
+            'bedrooms',
+            'bathrooms',
+            'builtSquareMeters',
+            'usefulSquareMeters',
+            'generalDescription'
+        ]
+        class_bs = {'class': "form-control form-control-sm"}
+        widgets = {
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
+            'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
+            'generalDescription': forms.Textarea(attrs=class_bs),
+        }
+
+class AppraisalModelForm_Appraisal(forms.ModelForm):
 
     class Meta:
         model = Appraisal
@@ -112,3 +130,7 @@ class AppraisalApartmentModelForm_Appraisal(forms.ModelForm):
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
             'valorUF': forms.TextInput(attrs=class_bs)
         }
+
+class AppraisalForm_Comment(forms.Form):
+    commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
+    commentText.widget.attrs.update({'class':"form-control",'rows':3})

@@ -1,29 +1,14 @@
 from django.db import models
 import datetime
+from realestate.models import RealEstate
 from neighborhood.models import Neighborhood
 from commune.models import Commune
 from region.models import Region
 
-class Building(models.Model):
-
-    addressStreet = models.CharField("Calle",max_length=300,default="")
-    addressNumber = models.PositiveSmallIntegerField("Numero",default=0)
-    addressCommune = models.ForeignKey(Commune,
-        on_delete=models.CASCADE,
-        verbose_name="Comuna",
-        blank=True,
-        null=True,
-        to_field='code')
-    addressRegion = models.ForeignKey(Region,
-        on_delete=models.CASCADE,
-        verbose_name="Region",
-        blank=True,
-        null=True,
-        to_field='code')
-    name = models.CharField("Nombre",max_length=200,default="",null=True,blank=True)
-    lat = models.FloatField("Latitud",default=0.0)
-    lon = models.FloatField("Longitud",default=0.0)
-    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE,verbose_name="Barrio",blank=True,null=True)
+class Building(RealEstate):
+    '''
+    An appartment building
+    '''
 
     sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
     sourceUrl = models.URLField("Source url",null=True,blank=True)
@@ -116,18 +101,7 @@ class Building(models.Model):
     viviendaSocial = models.BooleanField("Vivienda social",
         blank=True,
         null=True)
-    adobe = models.BooleanField("Construccion de adobe",
-        blank=True,
-        null=True)
-    desmontable = models.BooleanField("Construccion desmotanble",
-        blank=True,
-        null=True)
-
-    @property
-    def address(self):
-        # Returns whole address in a nice format
-        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.name
-
+        
     class Meta:
         app_label = 'building'
 

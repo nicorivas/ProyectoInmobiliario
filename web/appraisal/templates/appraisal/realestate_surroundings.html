@@ -1,0 +1,116 @@
+<div class="card-body">
+
+    <div class="form-group">
+      <label for="id_sectorDescription">
+        Descripcion del sector
+      </label>
+      <textarea class="form-control" id="id_sectorDescription" cols="80" rows="5"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="id_map">
+        Plano de ubicación
+      </label>
+      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}"></p>
+    </div>
+
+    <div class="form-group">
+      <label for="id_planoRegulador">
+        Plano regulador
+      </label>
+      <textarea class="form-control" id="id_planoRegulador" cols="80" rows="5"></textarea>
+    </div>
+
+    <div class="card bg-light mb-1">
+      <div class="card-header">
+        Manzana
+      </div>
+
+      <div class="card-body">
+        <div class="card-text">
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Población
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Superficie útil promedio
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Año promedio
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Estado veredas
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-auto">
+              <label for="solicitante" class="col-form-label-sm">
+                Estado calles
+              </label>
+            </div>
+            <div class="col-lg-3">
+              <input type="text" value="" class="form-control form-control-sm" disabled>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Educación</div>
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Salud</div>
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Transporte</div>
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Áreas verdes</div>
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Seguridad</div>
+    </div>
+
+    <div class="card bg-light mb-1">
+    <div class="card-header">Otros servicios</div>
+    </div>
+
+  </div>

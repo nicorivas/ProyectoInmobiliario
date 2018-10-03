@@ -1,7 +1,11 @@
 from django.db import models
+from realestate.models import RealEstate
 from building.models import Building
 
-class Apartment(models.Model):
+#from appraisal.models import Appraisal
+#from django.contrib.contenttypes.fields import GenericRelation
+
+class Apartment(RealEstate):
     ORIENTATIONS = (
         ('N', 'Norte'),
         ('NE', 'Norponiente'),
@@ -16,7 +20,8 @@ class Apartment(models.Model):
         (0,'Usada'),
         (1,'Nueva')
     )
-    building = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
+    #appraisal = GenericRelation(Appraisal)
+    building_in = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     number = models.CharField("Numero",max_length=10,null=True)
 
     floor = models.PositiveSmallIntegerField("Piso",null=True,blank=True)
@@ -53,10 +58,9 @@ class Apartment(models.Model):
         else:
             return self.sourceName
 
-    @property
-    def propertyType(self):
-        "Return name of type."
-        return "departamento"
-
     class Meta:
         app_label = 'apartment'
+
+    def __init__(self, *args, **kwargs):
+        super(Apartment, self).__init__(*args, **kwargs)
+        self.propertyType=RealEstate.TYPE_APARTMENT
