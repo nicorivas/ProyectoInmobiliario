@@ -122,6 +122,12 @@ class Appraisal(models.Model):
         diff  = today - self.timeCreated.date()
         return diff.days
 
+    @property
+    def is_appraisalOverdue(self):
+        if self.timeDue < datetime.date.today():
+            return True
+        return False
+
     class Meta:
         app_label = 'appraisal'
         permissions = (

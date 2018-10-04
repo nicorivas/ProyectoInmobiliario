@@ -28,6 +28,8 @@ urlpatterns = [
     path('commune/', include('commune.urls')),
     path('square/', include('square.urls')),
     path('main/', include('main.urls')),
+    path('user/', include('user.urls')),
+    #path('user/accounts/', include('django.contrib.auth.urls')),
     #path('', include('home.urls')),
     path('', auth_views.LoginView.as_view(redirect_field_name='main',form_class=AuthenticationFormB)),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
