@@ -1,0 +1,152 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block head %}
+        <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+        {% load static %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
+        <script src="{% static 'home/js/google-maps-autocomplete.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="card mb-4">
+
+  <div class="card-body">
+
+  <h5 class="card-title">Tasaciones activas</h5>
+
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Dirección</th>
+        <th scope="col">Tasador</th>
+        <th scope="col">Fecha creación</th>
+        <th scope="col">Tiempo restante</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appraisal in appraisals_active %}
+      {% if appraisal.daySinceCreated > 3 %}
+      <!--<tr class="table-danger">-->
+      <tr>
+      {% elif appraisal.daySinceCreated > 1 %}
+      <!--<tr class="table-warning">-->
+      <tr>
+      {% elif appraisal.daySinceCreated >= 0 %}
+      <!--<tr class="table-success">-->
+      <tr>
+      {% endif %}
+        <td>
+          {{ appraisal.id }}
+        </td>
+        <td>
+          {{ appraisal.realEstate.get_propertyType_display }}
+        </td>
+        <td>
+          <a class="text-dark" href="{{appraisal.url}}">
+            {{ appraisal.realEstate.address }}
+          </a>
+        </td>
+        <td>
+          {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
+        </td>
+        <td>
+          {{appraisal.timeCreated | date:"D d M, H:i"}}
+        </td>
+        <td>
+          {% if appraisal.daySinceCreated > 3 %}
+          <span class="badge badge-danger">
+            Creada hace {{appraisal.daySinceCreated}} dias
+          </span>
+          {% elif appraisal.daySinceCreated > 1 %}
+          <span class="badge badge-light">
+            Creada hace {{appraisal.daySinceCreated}} dias
+          </span>
+          {% elif appraisal.daySinceCreated >= 0 %}
+          <span class="badge badge-success">
+            Nueva
+          </span>
+        {% endif %}
+        </td>
+        <td>
+        <button type="button" id='button_delete' class="btn btn-dark btn-sm">
+          delete
+        </button>
+        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm">
+          comment
+        </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card mb-4">
+
+  <div class="card-body">
+
+  <h5 class="card-title">Tasaciones previas</h5>
+
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Dirección</th>
+        <th scope="col">Tasador</th>
+        <th scope="col">Fecha creación</th>
+        <th scope="col">Fecha término</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appraisal in appraisals_finished %}
+      {% if appraisal.daySinceCreated > 3 %}
+      <!--<tr class="table-danger">-->
+      <tr>
+      {% elif appraisal.daySinceCreated > 1 %}
+      <!--<tr class="table-warning">-->
+      <tr>
+      {% elif appraisal.daySinceCreated >= 0 %}
+      <!--<tr class="table-success">-->
+      <tr>
+      {% endif %}
+        <td>
+          {{ appraisal.id }}
+        </td>
+        <td>
+          {{ appraisal.realEstate.propertyType_display }}
+        </td>
+        <td>
+          <a class="text-dark" href={{appraisal.url}}>
+            {{ appraisal.realEstate.building_in.address }}
+          </a>
+        </td>
+        <td>
+          {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
+        </td>
+        <td>
+          {{appraisal.timeCreated | date:"D d M, H:i"}}
+        </td>
+        <td>
+          {{appraisal.timeFinished | date:"D d M, H:i"}}
+        </td>
+        <td>
+        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm">
+          visibility
+        </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,5 @@
+{% extends "main/base.html" %}
+
 {% load static %}
 <html>
     <head>
@@ -22,7 +24,7 @@
 
       {% if form_create.errors %}
       <h2>Asegurese que:</h2>
-      <p>El plazo debe ser en el futuro.</p>
+      <p>El plazo esté en el futuro.</p>
       <p>Seleccionar un tipo de propiedad.</p>
       <p>Ingresar una dirección válida.</p>
       {% endif %}
