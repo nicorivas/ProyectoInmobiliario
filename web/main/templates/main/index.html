@@ -121,11 +121,11 @@
           {{ appraisal.id }}
         </td>
         <td>
-          {{ appraisal.realEstate.propertyType_display }}
+          {{ appraisal.realEstate.get_propertyType_display }}
         </td>
         <td>
           <a class="text-dark" href={{appraisal.url}}>
-            {{ appraisal.realEstate.building_in.address }}
+            {{ appraisal.realEstate.address }}
           </a>
         </td>
         <td>

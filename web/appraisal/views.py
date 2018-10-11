@@ -381,7 +381,7 @@ def appraisal(request, **kwargs):
 
     # Disable fields if appraisal is finished
     if appraisal.status == appraisal.STATE_FINISHED:
-        for form in forms:
+        for key, form in forms.items():
             for field in form.fields:
                 form.fields[field].widget.attrs['readonly'] = True
                 form.fields[field].widget.attrs['disabled'] = True

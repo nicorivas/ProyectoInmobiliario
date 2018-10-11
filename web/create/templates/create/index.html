@@ -27,43 +27,48 @@
 <div class="section">
   <form action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
     {% csrf_token %}
-    <div class="form-row">
-    <div class="form-group col-md-2">
-      {{form_create.propertyType_create.label_tag}}
-      {{form_create.propertyType_create}}
+    <div class="form-group row">
+      <div class="form-group col-md-2">
+        {{form_create.propertyType_create.label_tag}}
+        {{form_create.propertyType_create}}
+      </div>
     </div>
-    <div class="form-group col-md-1">
-      {{form_create.addressRegion_create.label_tag}}
-      {{form_create.addressRegion_create}}
+    <div class="form-group row">
+      <div class="col-md-1">
+        {{form_create.addressRegion_create.label_tag}}
+        {{form_create.addressRegion_create}}
+      </div>
+      <div class="col-md-2">
+        {{form_create.addressCommune_create.label_tag}}
+        {{form_create.addressCommune_create}}
+      </div>
+      <div class="col-md-2">
+        {{form_create.addressStreet_create.label_tag}}
+        {{form_create.addressStreet_create}}
+      </div>
+      <div class="col-md-1">
+        {{form_create.addressNumber_create.label_tag}}
+        {{form_create.addressNumber_create}}
+      </div>
+      <div class="col-md-1" id="type">
+        {{form_create.addressNumberFlat_create.label_tag}}
+        {{form_create.addressNumberFlat_create}}
+      </div>
     </div>
-    <div class="form-group col-md-2">
-      {{form_create.addressCommune_create.label_tag}}
-      {{form_create.addressCommune_create}}
-    </div>
-    <div class="form-group col-md-2">
-      {{form_create.addressStreet_create.label_tag}}
-      {{form_create.addressStreet_create}}
-    </div>
-    <div class="form-group col-md-1">
-      {{form_create.addressNumber_create.label_tag}}
-      {{form_create.addressNumber_create}}
-    </div>
-    <div class="form-group col-md-1" id="type">
-      {{form_create.addressNumberFlat_create.label_tag}}
-      {{form_create.addressNumberFlat_create}}
-    </div>
-        <div class="form-group col-md-1">
-      {{form_create.appraisalTimeFrame_create.label_tag}}
-      {{form_create.appraisalTimeFrame_create}}
-    </div>
-    <div class="form-group col-md-1">
-      <label style="visibility:hidden;">a</label>
-      <button class="btn btn-primary btn-block align-bottom">Crear</button>
-    </div>
+    <div class="form-group row">
+      <div class="col-md-1">
+        {{form_create.appraisalTimeFrame_create.label_tag}}
+        {{form_create.appraisalTimeFrame_create}}
+      </div>
+      <div class="col-md-1">
+        <label style="visibility:hidden;">a</label>
+        <button class="btn btn-primary btn-block align-bottom">Crear</button>
+      </div>
     </div>
   </form>
 </div>
 
+<!--
 <div class="section">
   <form action="" method="post">
     <div class="row">
@@ -84,70 +89,66 @@
     </div>
   </div>
 </div>
+-->
+<!--
+<h2> Propiedades </h2>
+<ul>
+  {% for building in buildings %}
+  <li>
+    <a href='/property/{{building.addressRegion|slugify}}/{{building.addressCommune|slugify}}/{{building.addressStreet|slugify}}/{{building.addressNumber}}/edificio/{{building.id}}'>
+    {{ building.addressStreet }} {{ building.addressNumber }}
+    </a>
+  </li>
+  {% endfor %}
+<ul>
+-->
 
-  <script>
-      $("#id_addressRegion_create").change(function () {
-        // get the url of the `load_cities` view
-        var url = $("#form_create").attr("data-commune-url");
-        // get the selected country ID from the HTML input
-        var regionId = $(this).val();
-        console.log(regionId);
+<script>
+  $("#id_addressRegion_create").change(function () {
+    // get the url of the `load_cities` view
+    var url = $("#form_create").attr("data-commune-url");
+    // get the selected country ID from the HTML input
+    var regionId = $(this).val();
+    console.log(regionId);
 
-        // initialize an AJAX request
-        $.ajax({
-          // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
-          url: url,
-          // add the country id to the GET parameters
-          data: {
-            'region': regionId
-          },
-          success: function (data) {
-            // `data` is the return of the `load_cities` view function
-            // replace the contents of the city input with the data that came from the server
-            console.log(data)
-            $("#id_addressCommune_create").html($.trim(data));
+    // initialize an AJAX request
+    $.ajax({
+      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+      url: url,
+      // add the country id to the GET parameters
+      data: {
+        'region': regionId
+      },
+      success: function (data) {
+        // `data` is the return of the `load_cities` view function
+        // replace the contents of the city input with the data that came from the server
+        console.log(data)
+        $("#id_addressCommune_create").html($.trim(data));
+      }
+    });
+  });
+</script>
+
+<script>
+  $("#id_propertyType_create").change(function () {
+    var type = $(this).val();
+
+    // initialize an AJAX request
+    $.ajax({
+       data: {
+       'type': type
+      },
+      success: function (data) {
+        if (type == 1) {
+          $("#id_addressNumberFlat_create").attr('disabled','disabled');
+          $("#id_addressNumberFlat_create").val('');
           }
-        });
-      });
+        else {
+          $("#id_addressNumberFlat_create").removeAttr('disabled');
+        }
+      }
+    });
+  });
+</script>
 
-    </script>
-
-
-  <script>
-      $("#id_propertyType_create").change(function () {
-        var type = $(this).val();
-
-        // initialize an AJAX request
-        $.ajax({
-           data: {
-           'type': type
-          },
-          success: function (data) {
-            if (type == 1) {
-              $("#id_addressNumberFlat_create").attr('disabled','disabled');
-              $("#id_addressNumberFlat_create").val('');
-              }
-            else {
-              $("#id_addressNumberFlat_create").removeAttr('disabled');
-            }
-          }
-        });
-      });
-
-    </script>
-
-
-
-  <!--
-  <h2> Propiedades </h2>
-  <ul>
-    {% for building in buildings %}
-    <li>
-      <a href='/property/{{building.addressRegion|slugify}}/{{building.addressCommune|slugify}}/{{building.addressStreet|slugify}}/{{building.addressNumber}}/edificio/{{building.id}}'>
-      {{ building.addressStreet }} {{ building.addressNumber }}
-      </a>
-    </li>
-    {% endfor %}
-  <ul>
-  -->
 {% endblock %}
