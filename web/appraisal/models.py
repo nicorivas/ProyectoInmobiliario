@@ -1,31 +1,22 @@
 from django.db import models
 from django.utils.text import slugify
-from apartment.models import Apartment
-#from house.models import House
 from realestate.models import RealEstate
 from django.contrib.auth.models import User
 import datetime
 import reversion
 
-#from django.contrib.contenttypes.fields import GenericForeignKey
-#from django.contrib.contenttypes.models import ContentType
-
 
 @reversion.register()
 class Appraisal(models.Model):
 
+    STATE_IMPORTED = 0
     STATE_ACTIVE = 1
     STATE_FINISHED = 2
     STATES = (
         (STATE_ACTIVE,'active'),
-        (STATE_FINISHED,'finished')
+        (STATE_FINISHED,'finished'),
+        (STATE_IMPORTED, 'imported')
     )
-
-    '''
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
-    object_id = models.PositiveIntegerField(default=0)
-    content_object = GenericForeignKey('content_type', 'object_id')
-    '''
 
     TYPE_UNDEFINED = 0
     TYPE_HOUSE = 1
@@ -41,6 +32,16 @@ class Appraisal(models.Model):
         choices=propertyType_choices,
         default=TYPE_UNDEFINED)
 
+    APPRAISAL = 1
+    PORTAL = 2
+    TOCTOC = 3
+
+    source_choices = [
+        (APPRAISAL, "Tazación"),
+        (PORTAL, "Portal Inmbiliario"),
+        (TOCTOC, "TocToc")
+    ]
+
     realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
         verbose_name="Propiedad")
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
@@ -48,6 +49,9 @@ class Appraisal(models.Model):
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
     status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
+    source = models.IntegerField("Fuente de Tazación",choices=source_choices,default=APPRAISAL,
+                                 blank=True,null=True)
+
 
     # generales
     solicitante = models.CharField("Solicitante",max_length=100,blank=True,null=True)
@@ -117,6 +121,12 @@ class Appraisal(models.Model):
         today = datetime.date.today()
         diff  = today - self.timeCreated.date()
         return diff.days
+
+    @property
+    def is_appraisalOverdue(self):
+        if self.timeDue < datetime.date.today():
+            return True
+        return False
 
     class Meta:
         app_label = 'appraisal'

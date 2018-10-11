@@ -1,3 +1,5 @@
+{% extends "main/base.html" %}
+
 {% load static %}
 <html>
     <head>
@@ -6,6 +8,27 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     </head>
 
+    {% block content %}
+<div class="section">
+  <form action="/create/" method="get" id="form_create">
+    {% csrf_token %}
     <h1>Error</h1>
-    <p>{{ error_message }}</p>
+
+      {{ form_create.propertyType_create.errors }}
+      {{ form_create.addressRegion_create.errors }}
+      {{ form_create.addressCommune_create.errors }}
+      {{ form_create.addressStreet_create.errors }}
+      {{ form_create.addressNumber_create.errors }}
+      {{ form_create.addressNumberFlat_create.errors }}
+      {{ form_create.appraisalTimeFrame_create.errors }}
+
+      {% if form_create.errors %}
+      <h2>Asegurese que:</h2>
+      <p>El plazo esté en el futuro.</p>
+      <p>Seleccionar un tipo de propiedad.</p>
+      <p>Ingresar una dirección válida.</p>
+      {% endif %}
+  </form>
+</div>
+{% endblock %}
 </html>

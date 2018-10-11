@@ -219,9 +219,10 @@ def create(request):
             # go to appraisal url
             return HttpResponseRedirect(appraisal.url)
         else:
-            print(form_create.errors)
+            print(form_create.errors.as_data()['appraisalTimeFrame_create'])
 
         context = {'form_create':form_create}
+        return render(request, 'create/error.html', context)
 
     else:
 

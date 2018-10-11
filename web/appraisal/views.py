@@ -184,14 +184,14 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
 
         return response
 
-    def form_do_assign_tasador(appraisal,user):
-        appraisal.tasadorUser = user
-        form_appraisal_save('Changed tasador')
+    def form_do_assign_tasador(form_tasador_user,appraisal, forms, request):
+        appraisal.tasadorUser = form_tasador_user
+        form_appraisal_save(request, forms, 'Changed tasador')
         return
 
-    def form_do_assign_visador(appraisal,user):
-        appraisal.visadorUser = user
-        form_appraisal_save('Changed visador')
+    def form_do_assign_visador(form_visador_user, appraisal, forms, request):
+        appraisal.visadorUser = form_visador_user
+        form_appraisal_save(request, forms, 'Changed visador')
         return
 
     def form_do_comment(request,forms,appraisal):
@@ -208,6 +208,9 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
 
     ret = None
     for key, form in forms.items():
+        print(forms.items())
+        #print(form)
+        #print(key)
         if form.is_valid():
             if 'save' in request.POST:
                 ret = form_do_save(request,forms,appraisal_old)
@@ -218,9 +221,9 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
             elif 'export' in request.POST:
                 ret = form_do_export(forms)
             elif 'assign_tasador' in request.POST:
-                ret = form_do_assign_tasador(forms,appraisal)
+                ret = form_do_assign_tasador(form_tasador_user,appraisal, forms, request)
             elif 'assign_visador' in request.POST:
-                ret = form_do_assign_visador(forms,appraisal)
+                ret = form_do_assign_visador(form_visador_user,appraisal, forms, request)
             elif 'comment' in request.POST:
                 ret = form_do_comment(request,forms,appraisal)
 
