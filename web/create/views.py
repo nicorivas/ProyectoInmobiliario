@@ -7,8 +7,6 @@ from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned
 
-
-from .forms import LocationSearchForm
 from .forms import AppraisalCreateForm
 
 from region.models import Region
@@ -127,8 +125,6 @@ def house_create(addressRegion,addressCommune,addressStreet,addressNumber):
     house.save()
     return house
 
-
-
 @login_required(login_url='/')
 def create(request):
 
@@ -226,10 +222,6 @@ def create(request):
 
     else:
 
-        # SEARCH FORM
-
-        form_search = LocationSearchForm
-
         # IF WE HAVE AN ADDRESS
 
         address = request.GET.get('address', '')
@@ -290,20 +282,7 @@ def create(request):
         form_create.fields['addressCommune_create'].queryset = communes
         form_create.fields['addressCommune_create'].initial = commune
 
-        # Get buildings to be displayed on map
-        buildings = Building.objects.all()
-        buildings_json = serializers.serialize("json", Building.objects.all())
-
-        # Get houses to be displayed on map
-        houses = House.objects.all()
-        houses_json = serializers.serialize("json", House.objects.all())
-
-        context = {
-            #'buildings':buildings,
-            'buildings_json':buildings_json,
-            'houses_json':houses_json,
-            'form_search':form_search,
-            'form_create':form_create}
+        context = {'form_create':form_create}
 
     return render(request, 'create/index.html', context)
 
