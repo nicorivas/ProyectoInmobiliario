@@ -6,14 +6,6 @@ from realestate.models import RealEstate
 from django.core.exceptions import ValidationError
 import datetime
 
-
-
-class LocationSearchForm(forms.Form):
-
-    address = forms.CharField(max_length=200,label="")
-    address.widget.attrs.update({'placeholder':'Buscar'})
-    address.widget.attrs.update({'class':"form-control"})
-
 class AppraisalCreateForm(forms.Form):
 
     propertyType_create = forms.ChoiceField(
@@ -26,24 +18,45 @@ class AppraisalCreateForm(forms.Form):
         label="Región",
         queryset=Region.objects.all())
     addressRegion_create.widget.attrs.update({'class':"form-control"})
+
     # We need all possible communes to be there initially, so that when we validate the form,
     # it finds the choice.
     addressCommune_create = forms.ModelChoiceField(
         label="Comuna",
         queryset=Commune.objects.all())
     addressCommune_create.widget.attrs.update({'class':"form-control"})
-    addressStreet_create = forms.CharField(max_length=200,label="Calle")
+
+    addressStreet_create = forms.CharField(
+        max_length=200,
+        label="Calle",
+        error_messages={'required': 'Please enter your name'})
     addressStreet_create.widget.attrs.update({'class':"form-control"})
+
     addressNumber_create = forms.CharField(max_length=6,label="Número")
     addressNumber_create.widget.attrs.update({'class':"form-control"})
+
     addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
     addressNumberFlat_create.widget.attrs.update({'class':"form-control"})
-    appraisalTimeFrame_create = forms.DateTimeField(initial=datetime.datetime.now().strftime("%Y-%m-%d"), label="Plazo")
-    appraisalTimeFrame_create.widget.attrs.update({'class': "form-control"})
+
+    appraisalTimeFrame_create = forms.DateTimeField(
+        initial=datetime.datetime.now().strftime("%Y-%m-%d"),
+        label="Plazo",
+        widget=forms.DateTimeInput(
+            attrs={'class': "form-control datetimepicker-input",
+                   'data-target':"#datetimepicker1"}))
+
+    appraisalPrice_create = forms.FloatField(label="Precio")
+    appraisalPrice_create.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #self.fields['addressCommune_create'].queryset = []
+
+    def clean(self):
+        print('hola')
+        if self.cleaned_data.get('addressStreet_create')=="":
+            raise forms.ValidationError('No name!')
+        return self.cleaned_data
 
     def clean_appraisalTimeFrame_create(self):
         data = self.cleaned_data['appraisalTimeFrame_create']

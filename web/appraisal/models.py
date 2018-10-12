@@ -9,20 +9,10 @@ import reversion
 @reversion.register()
 class Appraisal(models.Model):
 
-    STATE_IMPORTED = 0
-    STATE_ACTIVE = 1
-    STATE_FINISHED = 2
-    STATES = (
-        (STATE_ACTIVE,'active'),
-        (STATE_FINISHED,'finished'),
-        (STATE_IMPORTED, 'imported')
-    )
-
     TYPE_UNDEFINED = 0
     TYPE_HOUSE = 1
     TYPE_APARTMENT = 2
     TYPE_BUILDING = 3
-
     propertyType_choices = [
         (TYPE_UNDEFINED, "Indefinido"),
         (TYPE_HOUSE, "Casa"),
@@ -31,27 +21,32 @@ class Appraisal(models.Model):
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
         default=TYPE_UNDEFINED)
-
-    APPRAISAL = 1
-    PORTAL = 2
-    TOCTOC = 3
-
-    source_choices = [
-        (APPRAISAL, "Tazación"),
-        (PORTAL, "Portal Inmbiliario"),
-        (TOCTOC, "TocToc")
-    ]
-
     realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
         verbose_name="Propiedad")
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
+    STATE_IMPORTED = 0
+    STATE_ACTIVE = 1
+    STATE_FINISHED = 2
+    STATES = (
+        (STATE_ACTIVE,'active'),
+        (STATE_FINISHED,'finished'),
+        (STATE_IMPORTED, 'imported')
+    )
     status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
-    source = models.IntegerField("Fuente de Tazación",choices=source_choices,default=APPRAISAL,
-                                 blank=True,null=True)
-
+    APPRAISAL = 1
+    PORTAL = 2
+    TOCTOC = 3
+    source_choices = [
+        (APPRAISAL, "Tazación"),
+        (PORTAL, "Portal Inmbiliario"),
+        (TOCTOC, "TocToc")
+    ]
+    source = models.IntegerField("Fuente de tasación",choices=source_choices,
+        default=APPRAISAL,blank=True,null=True)
+    price = models.FloatField("Precio tasación",blank=True,null=True)
 
     # generales
     solicitante = models.CharField("Solicitante",max_length=100,blank=True,null=True)

@@ -2,152 +2,135 @@
 {% load static %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'create/css/create.css' %}">
-  <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
-  {% load static %}
-  {{form_search.media}}
-  <!--
-  Here we should import all data from django
-  -->
-  {{ buildings_json|json_script:"buildings-data" }}
-  {{ houses_json|json_script:"houses-data" }}
-  <!--
-  Load external libraries
-  -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
-  <!--
-  Load own scripts
-  -->
-  <script src="{% static 'create/js/google-maps-admin.js' %}"></script>
-  <script src="{% static 'create/js/google-maps-autocomplete.js' %}"></script>
 {% endblock head %}
 
 {% block content %}
 
-<div class="section">
-  <form action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}">
-    {% csrf_token %}
-    <div class="form-row">
-    <div class="form-group col-md-2">
-      {{form_create.propertyType_create.label_tag}}
-      {{form_create.propertyType_create}}
-    </div>
-    <div class="form-group col-md-1">
-      {{form_create.addressRegion_create.label_tag}}
-      {{form_create.addressRegion_create}}
-    </div>
-    <div class="form-group col-md-2">
-      {{form_create.addressCommune_create.label_tag}}
-      {{form_create.addressCommune_create}}
-    </div>
-    <div class="form-group col-md-2">
-      {{form_create.addressStreet_create.label_tag}}
-      {{form_create.addressStreet_create}}
-    </div>
-    <div class="form-group col-md-1">
-      {{form_create.addressNumber_create.label_tag}}
-      {{form_create.addressNumber_create}}
-    </div>
-    <div class="form-group col-md-1" id="type">
-      {{form_create.addressNumberFlat_create.label_tag}}
-      {{form_create.addressNumberFlat_create}}
-    </div>
-        <div class="form-group col-md-1">
-      {{form_create.appraisalTimeFrame_create.label_tag}}
-      {{form_create.appraisalTimeFrame_create}}
-    </div>
-    <div class="form-group col-md-1">
-      <label style="visibility:hidden;">a</label>
-      <button class="btn btn-primary btn-block align-bottom">Crear</button>
-    </div>
-    </div>
-  </form>
-</div>
+<div class="container">
+<div class="card-body">
 
-<div class="section">
-  <form action="" method="post">
-    <div class="row">
-    <div class="col-8">
-    <div class="input-group mb-3">
-      {% csrf_token %}
-      {{form_search}}
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary">Buscar</button>
+  <form action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
+    {% csrf_token %}
+    <div class="form-group row">
+      <div class="col-md-2">
+        {{form_create.propertyType_create.label_tag}}
+        {{form_create.propertyType_create}}
       </div>
     </div>
+
+    <div class="form-group row">
+      <div class="col-md-3">
+        {{form_create.addressRegion_create.label_tag}}
+        {{form_create.addressRegion_create}}
+      </div>
+      <div class="col-md-2">
+        {{form_create.addressCommune_create.label_tag}}
+        {{form_create.addressCommune_create}}
+      </div>
+      <div class="col-md-3">
+        {{form_create.addressStreet_create.errors }}
+        {{form_create.addressStreet_create.label_tag}}
+        {{form_create.addressStreet_create}}
+      </div>
+      <div class="col-md-1">
+        {{form_create.addressNumber_create.label_tag}}
+        {{form_create.addressNumber_create}}
+      </div>
+      <div class="col-md-1" id="type">
+        {{form_create.addressNumberFlat_create.label_tag}}
+        {{form_create.addressNumberFlat_create}}
+      </div>
     </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          {{form_create.appraisalTimeFrame_create.label_tag}}
+          <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            {{form_create.appraisalTimeFrame_create}}
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        $(function () {
+          $('#datetimepicker1').datetimepicker({
+                locale: 'ru',
+                icons: {
+                    time: "far fa-clock",
+                    date: "far fa-calendar-alt",
+                    up: "fas fa-arrow-up",
+                    down: "fas fa-arrow-down"
+                }
+            });
+        });
+      </script>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-md-2">
+        {{form_create.appraisalPrice_create.label_tag}}
+        {{form_create.appraisalPrice_create}}
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-md-2">
+        <button class="btn btn-primary btn-block align-bottom">Crear</button>
+      </div>
     </div>
   </form>
 
-  <div class="map_canvas_wrapper">
-    <div id="map_canvas">
-    </div>
-  </div>
+</div>
 </div>
 
-  <script>
-      $("#id_addressRegion_create").change(function () {
-        // get the url of the `load_cities` view
-        var url = $("#form_create").attr("data-commune-url");
-        // get the selected country ID from the HTML input
-        var regionId = $(this).val();
-        console.log(regionId);
+<script>
+  $("#id_addressRegion_create").change(function () {
+    // get the url of the `load_cities` view
+    var url = $("#form_create").attr("data-commune-url");
+    // get the selected country ID from the HTML input
+    var regionId = $(this).val();
+    console.log(regionId);
 
-        // initialize an AJAX request
-        $.ajax({
-          // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
-          url: url,
-          // add the country id to the GET parameters
-          data: {
-            'region': regionId
-          },
-          success: function (data) {
-            // `data` is the return of the `load_cities` view function
-            // replace the contents of the city input with the data that came from the server
-            console.log(data)
-            $("#id_addressCommune_create").html($.trim(data));
+    // initialize an AJAX request
+    $.ajax({
+      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+      url: url,
+      // add the country id to the GET parameters
+      data: {
+        'region': regionId
+      },
+      success: function (data) {
+        // `data` is the return of the `load_cities` view function
+        // replace the contents of the city input with the data that came from the server
+        console.log(data)
+        $("#id_addressCommune_create").html($.trim(data));
+      }
+    });
+  });
+</script>
+
+<script>
+  $("#id_propertyType_create").change(function () {
+    var type = $(this).val();
+
+    // initialize an AJAX request
+    $.ajax({
+       data: {
+       'type': type
+      },
+      success: function (data) {
+        if (type == 1) {
+          $("#id_addressNumberFlat_create").attr('disabled','disabled');
+          $("#id_addressNumberFlat_create").val('');
           }
-        });
-      });
+        else {
+          $("#id_addressNumberFlat_create").removeAttr('disabled');
+        }
+      }
+    });
+  });
+</script>
 
-    </script>
-
-
-  <script>
-      $("#id_propertyType_create").change(function () {
-        var type = $(this).val();
-
-        // initialize an AJAX request
-        $.ajax({
-           data: {
-           'type': type
-          },
-          success: function (data) {
-            if (type == 1) {
-              $("#id_addressNumberFlat_create").attr('disabled','disabled');
-              $("#id_addressNumberFlat_create").val('');
-              }
-            else {
-              $("#id_addressNumberFlat_create").removeAttr('disabled');
-            }
-          }
-        });
-      });
-
-    </script>
-
-
-
-  <!--
-  <h2> Propiedades </h2>
-  <ul>
-    {% for building in buildings %}
-    <li>
-      <a href='/property/{{building.addressRegion|slugify}}/{{building.addressCommune|slugify}}/{{building.addressStreet|slugify}}/{{building.addressNumber}}/edificio/{{building.id}}'>
-      {{ building.addressStreet }} {{ building.addressNumber }}
-      </a>
-    </li>
-    {% endfor %}
-  <ul>
-  -->
 {% endblock %}
