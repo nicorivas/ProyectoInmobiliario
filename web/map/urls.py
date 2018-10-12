@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from home.forms import AuthenticationFormB
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,8 +30,8 @@ urlpatterns = [
     path('square/', include('square.urls')),
     path('main/', include('main.urls')),
     path('user/', include('user.urls')),
-    #path('user/accounts/', include('django.contrib.auth.urls')),
     #path('', include('home.urls')),
-    path('', auth_views.LoginView.as_view(redirect_field_name='main',form_class=AuthenticationFormB)),
+    path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
+        form_class=AuthenticationFormB), name='login'),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
 ]

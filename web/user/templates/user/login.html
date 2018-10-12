@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<h3>Sistema de Tasación Automático</h3>
+
+{% else %}
+<div class="card">
+  <div class="card-header">
+    Login
+  </div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="">Username</label>
+        {{form.username}}
+      </div>
+      <div class="form-group">
+        <label for="">Password</label>
+        {{form.password}}
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</div>
+<p><a href="{% url 'user:password_reset' %}">Lost password?</a></p>
+{% endif %}
+{% endblock %}
+

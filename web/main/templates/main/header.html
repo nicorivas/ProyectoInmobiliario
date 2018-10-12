@@ -14,9 +14,6 @@
         <a class="nav-link" href="/create/">Crear tasación</a>
       </li>
       {% endif %}
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
     </ul>
     {% endif %}
   </div>
@@ -24,6 +21,12 @@
   {% if user.is_authenticated %}
   <div class="navbar-text" style="margin-right:1em">
     Bienvenido {{user.first_name}} {{user.last_name}}
+  </div>
+    <div class="navbar-text" style="margin-right:1em">
+    <a href="/user/profile/">Perfil</a>
+  </div>
+  <div class="navbar-text" style="margin-right:1em">
+    <a href="/user/password_change/">Cambiar Contraseña</a>
   </div>
   <div class="navbar-text">
     <a href="/logout/">Logout</a>
