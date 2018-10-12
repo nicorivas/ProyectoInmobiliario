@@ -222,13 +222,9 @@ def create(request):
 
     else:
 
-        # IF WE HAVE AN ADDRESS
-
         address = request.GET.get('address', '')
-
-        addressStreet = ''
-        addressNumber = 0
-        addressRegion = 13
+        region = None
+        commune = None
 
         if address != '':
 
@@ -265,20 +261,24 @@ def create(request):
             region = Region.objects.get(name__icontains=region_name)
             commune = Commune.objects.get(name__icontains=addressCommune)
 
-        else:
-
-            region = Region.objects.get(code=addressRegion)
-            commune = Commune.objects.get(name__icontains='Providencia')
-
-        form_create = AppraisalCreateForm(
-            initial={
+            form_create_initial = {
                 'addressStreet_create':addressStreet,
                 'addressNumber_create':addressNumber,
-                'addressRegion_create':region,
-                },label_suffix='')
+                'addressRegion_create':region
+                }
 
+        else:
+            region = Region.objects.get(code=13)
+            form_create_initial = {
+                'addressRegion_create':region
+                }
+
+        # Sort communes
         communes = Commune.objects.filter(region=region.code).order_by('name')
+        commune = Commune.objects.get(name__icontains='Providencia')
 
+        # Set initial values
+        form_create = AppraisalCreateForm(form_create_initial,label_suffix='')
         form_create.fields['addressCommune_create'].queryset = communes
         form_create.fields['addressCommune_create'].initial = commune
 

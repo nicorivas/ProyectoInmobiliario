@@ -17,11 +17,7 @@
   <div class="container-fluid">
 
     <nav class="navbar justify-content-between">
-
       <a class="navbar-brand" href="#">Tasación {{realestate.get_propertyType_display}}</a>
-      <span class="navbar-text">
-        {{ realestate.address }}
-      </span>
       <ul class="navbar-nav mr-auto">
       </ul>
       {% if appraisal.finished %}
@@ -33,6 +29,12 @@
       <button class="btn btn-outline-dark" name="delete" style="font-family:Material Icons;font-size:1em;">delete</button>
       {% endif %}
     </nav>
+
+    <span class="navbar-text">
+      {{ realestate.address }}
+    </span>
+
+    Estado: appraisal.state
 
     <div class="card">
 

@@ -35,7 +35,7 @@ class Appraisal(models.Model):
         (STATE_FINISHED,'finished'),
         (STATE_IMPORTED, 'imported')
     )
-    status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
+    state = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
     APPRAISAL = 1
     PORTAL = 2
     TOCTOC = 3
@@ -67,18 +67,18 @@ class Appraisal(models.Model):
 
     @property
     def status_verbose(self):
-        return str(self.status)
+        return str(self.state)
 
     @property
     def finished(self):
-        if self.status == self.STATE_FINISHED:
+        if self.state == self.STATE_FINISHED:
             return True
         else:
             return False
 
     @property
     def active(self):
-        if self.status == self.STATE_ACTIVE:
+        if self.state == self.STATE_ACTIVE:
             print('goli')
             return True
         else:
