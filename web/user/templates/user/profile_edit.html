@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+
+{% block head %}
+<title>Profile</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        <button type="submit">Guardar</button>
+
+    </form>
+    <br>
+</div>
+<script>
+  $("#id_addressRegion").change(function () {
+    // get the url of the `load_cities` view
+    var url = $("#profile_form").attr("data-commune-url");
+    // get the selected country ID from the HTML input
+    var regionId = $(this).val();
+    console.log(regionId);
+
+    // initialize an AJAX request
+    $.ajax({
+      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+      url: url,
+      // add the country id to the GET parameters
+      data: {
+        'region': regionId
+      },
+      success: function (data) {
+        // `data` is the return of the `load_cities` view function
+        // replace the contents of the city input with the data that came from the server
+        console.log(data)
+        $("#id_addressCommune").html($.trim(data));
+      }
+    });
+  });
+</script>
+{% endblock %}
+
