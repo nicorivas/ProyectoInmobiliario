@@ -36,7 +36,7 @@ class AppraisalCreateForm(forms.Form):
     addressNumber_create.widget.attrs.update({'class':"form-control"})
 
     addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
-    addressNumberFlat_create.widget.attrs.update({'class':"form-control"})
+    addressNumberFlat_create.widget.attrs.update({'class':"form-control",'disabled':''})
 
     appraisalTimeFrame_create = forms.DateTimeField(
         initial=datetime.datetime.now().strftime("%Y-%m-%d"),
@@ -44,6 +44,8 @@ class AppraisalCreateForm(forms.Form):
         widget=forms.DateTimeInput(
             attrs={'class': "form-control datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
+    appraisalTimeFrame_create.input_formats = ['%d/%m/%Y %H:%M']
+
 
     appraisalPrice_create = forms.FloatField(label="Precio")
     appraisalPrice_create.widget.attrs.update({'class': "form-control"})

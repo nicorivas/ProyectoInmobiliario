@@ -129,7 +129,6 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
     def form_do_save(request,forms,appraisal_old):
         for key, form in forms.items():
             if key in ['building','apartment','house']:
-                print(key)
                 form.save()
             if key == 'appraisal':
                 form_appraisal_save(request,forms)
@@ -142,7 +141,7 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
 
     def form_do_finish(forms,appraisal):
         appraisal.timeFinished = datetime.datetime.now()
-        appraisal.status = Appraisal.STATE_FINISHED
+        appraisal.state = Appraisal.STATE_FINISHED
         appraisal.save()
         forms['appraisal'].save()
         return
@@ -198,33 +197,37 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
         '''
         Create comment based on the field commentText of the form.
         '''
-        text = forms['comment'].cleaned_data['commentText']
-        comment = Comment(
-            user=request.user,
-            text=text,
-            timeCreated=datetime.datetime.now(),
-            appraisal=appraisal)
-        comment.save()
+        if forms['comment'].is_valid():
+            text = forms['comment'].cleaned_data['commentText']
+            conflict = forms['comment'].cleaned_data['commentConflict']
+            if conflict:
+                appraisal.state = appraisal.STATE_PAUSED
+                appraisal.timePaused = datetime.datetime.now()
+                appraisal.save()
+            comment = Comment(
+                user=request.user,
+                text=text,
+                timeCreated=datetime.datetime.now(),
+                appraisal=appraisal,
+                conflict=conflict)
+            comment.save()
 
     ret = None
     for key, form in forms.items():
-        print(forms.items())
-        #print(form)
-        #print(key)
         if form.is_valid():
-            if 'save' in request.POST:
+            if key == 'save':
                 ret = form_do_save(request,forms,appraisal_old)
-            elif 'delete' in request.POST:
+            elif key == 'delete':
                 ret = form_do_delete(forms,appraisal)
-            elif 'finish' in request.POST:
+            elif key == 'finish':
                 ret = form_do_finish(forms,appraisal)
-            elif 'export' in request.POST:
+            elif key == 'export':
                 ret = form_do_export(forms)
-            elif 'assign_tasador' in request.POST:
+            elif key == 'assign_tasador':
                 ret = form_do_assign_tasador(form_tasador_user,appraisal, forms, request)
-            elif 'assign_visador' in request.POST:
+            elif key == 'assign_visador':
                 ret = form_do_assign_visador(form_visador_user,appraisal, forms, request)
-            elif 'comment' in request.POST:
+            elif key == 'comment':
                 ret = form_do_comment(request,forms,appraisal)
 
     return ret
@@ -370,7 +373,7 @@ def appraisal(request, **kwargs):
             c += 1
 
     # Comments, for the logbook
-    comments = Comment.objects.filter(appraisal=appraisal)
+    comments = Comment.objects.filter(appraisal=appraisal).order_by('-timeCreated')
 
     # Forms
     forms = {
@@ -383,7 +386,7 @@ def appraisal(request, **kwargs):
         forms['house'] = AppraisalModelForm_House(instance=realestate.house,label_suffix='')
 
     # Disable fields if appraisal is finished
-    if appraisal.status == appraisal.STATE_FINISHED:
+    if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:
         for key, form in forms.items():
             for field in form.fields:
                 form.fields[field].widget.attrs['readonly'] = True

@@ -17,13 +17,15 @@
   <div class="container-fluid">
 
     <nav class="navbar justify-content-between">
-
       <a class="navbar-brand" href="#">Tasación {{realestate.get_propertyType_display}}</a>
       <span class="navbar-text">
         {{ realestate.address }}
       </span>
       <ul class="navbar-nav mr-auto">
       </ul>
+      {% if appraisal.paused %}
+      <button class="btn btn-outline-primary mr-2" type="button" data-toggle="modal" data-target="#modalExport">Resumir</button>
+      {% endif %}
       {% if appraisal.finished %}
       <button class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
       {% else %}
@@ -33,6 +35,36 @@
       <button class="btn btn-outline-dark" name="delete" style="font-family:Material Icons;font-size:1em;">delete</button>
       {% endif %}
     </nav>
+
+    <div class="row">
+
+      <div class="col text-center">
+        {% if appraisal.active %}
+        <div class="alert alert-primary" role="alert">Activa</div>
+        {% elif appraisal.paused %}
+        <div class="alert alert-warning" role="alert">Pausada</div>
+        {% elif appraisal.finished %}
+        <div class="alert alert-secondary" role="alert">Terminada</div>
+        {% endif %}
+      </div>
+
+      <div class="col text-center">
+        {% if appraisal.daysLeft > 3 %}
+        <div class="alert alert-primary" role="alert" id="timeLeft"></div>
+        {% elif appraisal.daysLeft > 1 %}
+        <div class="alert alert-warning" role="alert" id="timeLeft"></div>
+        {% else %}
+        <div class="alert alert-danger" role="alert" id="timeLeft"></div>
+        {% endif %}
+      </div>
+
+      <div class="col text-center">
+        <div class="alert alert-secondary" role="alert">
+          {{appraisal.price}} UF
+        </div>
+      </div>
+
+    </div>
 
     <div class="card">
 
@@ -99,19 +131,31 @@
 </form>
 
 <script>
-    $('.datepicker_year').datepicker({
-      format: "yyyy",
-      minViewMode: 2,
-      maxViewMode: 2,
-      autoclose: true});
-</script>
+  function updateClock() {
+      var now = moment();
+      var due = moment("{{appraisal.timeDueReal.isoformat}}");
+      var diff_cal = moment("{{appraisal.timeDueReal.isoformat}}").calendar();
+      var diff_from = moment("{{appraisal.timeDueReal.isoformat}}").fromNow();
+      console.log(due)
+      console.log(diff_cal)
+      console.log(diff_from)
+      /*
+      var now = new Date(), // current date
+          months = ['January', 'February', '...']; // you get the idea
+          time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(), // again, you get the idea
 
-<script>
-    $('.datepicker_month').datepicker({
-      format: "mm/yyyy",
-      minViewMode: 1,
-      maxViewMode: 2,
-      autoclose: true});
+          // a cleaner way than string concatenation
+          date = [now.getDate(),
+                  months[now.getMonth()],
+                  now.getFullYear()].join(' ');
+      */
+      // set the content of the element with the ID time to the formatted string
+      document.getElementById('timeLeft').innerHTML = 'Entrega: '+diff_cal+' ('+diff_from+')';
+
+      // call this function again in 1000ms
+      setTimeout(updateClock, 1000);
+  }
+  updateClock(); // initial call
 </script>
 
 {% endblock content %}

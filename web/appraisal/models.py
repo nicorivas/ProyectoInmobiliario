@@ -27,15 +27,18 @@ class Appraisal(models.Model):
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
+    timePaused = models.DateTimeField("Time paused",blank=True,null=True)
     STATE_IMPORTED = 0
     STATE_ACTIVE = 1
-    STATE_FINISHED = 2
+    STATE_PAUSED = 2
+    STATE_FINISHED = 3
     STATES = (
         (STATE_ACTIVE,'active'),
         (STATE_FINISHED,'finished'),
+        (STATE_PAUSED,'paused'),
         (STATE_IMPORTED, 'imported')
     )
-    status = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
+    state = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
     APPRAISAL = 1
     PORTAL = 2
     TOCTOC = 3
@@ -67,22 +70,38 @@ class Appraisal(models.Model):
 
     @property
     def status_verbose(self):
-        return str(self.status)
+        return str([state[1] for state in self.STATES if state[0] == self.state][0])
 
     @property
     def finished(self):
-        if self.status == self.STATE_FINISHED:
+        if self.state == self.STATE_FINISHED:
             return True
         else:
             return False
 
     @property
     def active(self):
-        if self.status == self.STATE_ACTIVE:
-            print('goli')
+        if self.state == self.STATE_ACTIVE:
             return True
         else:
             return False
+
+    @property
+    def paused(self):
+        if self.state == self.STATE_PAUSED:
+            return True
+        else:
+            return False
+
+    @property
+    def timeDueReal(self):
+        if self.state == self.STATE_PAUSED:
+            if self.timePaused != None:
+                return self.timeDue+(datetime.datetime.now(datetime.timezone.utc)-self.timePaused)
+            else:
+                return self.timeDue
+        else:
+            return self.timeDue
 
     @property
     def url(self):
@@ -118,10 +137,20 @@ class Appraisal(models.Model):
         return diff.days
 
     @property
+    def daysLeft(self):
+        today = datetime.date.today()
+        diff  = self.timeDue.date()-today
+        return diff.days
+
+    @property
     def is_appraisalOverdue(self):
         if self.timeDue < datetime.date.today():
             return True
         return False
+
+    @property
+    def timeLeft(self):
+        return self.timeDue - self.timeCreated
 
     class Meta:
         app_label = 'appraisal'
@@ -143,4 +172,5 @@ class Comment(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     text = models.CharField("Comment",max_length=500)
     appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
+    conflict = models.BooleanField("Incidencia",default=False)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)

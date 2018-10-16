@@ -47,4 +47,17 @@ class RealEstate(models.Model):
     @property
     def address(self):
         # Returns whole address in a nice format
-        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.name
+        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
+
+    @property
+    def get_propertyTypeIcon(self):
+        if self.propertyType == self.TYPE_UNDEFINED:
+            return "far fa-times-circle"
+        elif self.propertyType == self.TYPE_HOUSE:
+            return "fas fa-home"
+        elif self.propertyType == self.TYPE_APARTMENT:
+            return "fas fa-building"
+        elif self.propertyType == self.TYPE_BUILDING:
+            return "fas fa-building"
+        else:
+            return "far fa-times-circle"
