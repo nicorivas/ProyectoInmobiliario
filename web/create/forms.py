@@ -53,7 +53,6 @@ class AppraisalCreateForm(forms.Form):
         #self.fields['addressCommune_create'].queryset = []
 
     def clean(self):
-        print('hola')
         if self.cleaned_data.get('addressStreet_create')=="":
             raise forms.ValidationError('No name!')
         return self.cleaned_data

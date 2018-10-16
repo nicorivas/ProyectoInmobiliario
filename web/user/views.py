@@ -8,6 +8,9 @@ from .forms import EditProfileForm, UserForm
 from .models import UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 
+from region.models import Region
+from commune.models import Commune
+
 
 @login_required(login_url='user/login')
 def view_profile(request, pk=None):
@@ -43,31 +46,39 @@ def edit_profile(request):
     else:
         user_form = UserForm(instance=request.user)
         profile_form = EditProfileForm(instance=user)
+
     return render(request, 'user/profile_edit.html', {
         'user_form': user_form,
         'profile_form': profile_form
     })
 
 
-
 @login_required(login_url='user/login')
 def userAppraisals(request):
     try:
         if request.user.groups.values_list('name',flat=True)[0]=='tasador':
-            appraisals_active = Appraisal.objects.filter(tasadorUser=request.user).filter(status=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-            appraisals_finished = Appraisal.objects.filter(tasadorUser=request.user).filter(status=Appraisal.STATE_FINISHED).order_by('timeCreated')
+            appraisals_active = Appraisal.objects.filter(tasadorUser=request.user).filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+            appraisals_finished = Appraisal.objects.filter(tasadorUser=request.user).filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
         elif request.user.groups.values_list('name',flat=True)[0]=='visador':
             appraisals_active = Appraisal.objects.filter(visadorUser=request.user).filter(
-                status=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+                state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
             appraisals_finished = Appraisal.objects.filter(visadorUser=request.user).filter(
-                status=Appraisal.STATE_FINISHED).order_by('timeCreated')
+                state=Appraisal.STATE_FINISHED).order_by('timeCreated')
     except IndexError:
-        appraisals_active = Appraisal.objects.filter(status=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-        appraisals_finished = Appraisal.objects.filter(status=Appraisal.STATE_FINISHED).order_by('timeCreated')
+        appraisals_active = Appraisal.objects.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+        appraisals_finished = Appraisal.objects.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
 
     context = {
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished}
     return render(request, 'user/index.html', context)
 
+@login_required(login_url='user/login')
+def load_communes(request):
+    region_id = int(request.GET.get('region'))
+    region = Region.objects.get(pk=region_id)
+    communes = list(Commune.objects.filter(region=region.code).order_by('name'))
+    return render(request,
+        'hr/commune_dropdown_list_options.html',
+        {'communes': communes})
 

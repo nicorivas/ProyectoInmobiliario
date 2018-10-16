@@ -266,7 +266,6 @@ def create(request):
             commune = Commune.objects.get(name__icontains=addressCommune)
 
         else:
-
             region = Region.objects.get(code=addressRegion)
             commune = Commune.objects.get(name__icontains='Providencia')
 
@@ -290,6 +289,7 @@ def load_communes(request):
     region_id = int(request.GET.get('region'))
     region = Region.objects.get(pk=region_id)
     communes = list(Commune.objects.filter(region=region.code).order_by('name'))
+    print('CALL')
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})

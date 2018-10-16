@@ -6,7 +6,8 @@
 
 {% block content %}
 <div class="container">
-    <form method="post" enctype="multipart/form-data">
+<div class="card-body">
+    <form action="/user/" method="post" id="profile_form" enctype="multipart/form-data" data-commune-url="{% url 'user:user_ajax_load_communes' %}" novalidate>
         {% csrf_token %}
         {{ user_form.as_p }}
         {{ profile_form.as_p }}
@@ -14,6 +15,7 @@
 
     </form>
     <br>
+</div>
 </div>
 <script>
   $("#id_addressRegion").change(function () {
