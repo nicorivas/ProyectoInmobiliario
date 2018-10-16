@@ -15,7 +15,8 @@
     <p>Calle: {{ userprofile.addressStreet }}</p>
     <p>Región: {{ userprofile.addressRegion }}</p>
     <p>Comuna: {{ userprofile.addressCommune }}</p>
-
+    <button onclick="location.href='{% url 'user:profile_edit' %}'" type="button" id="button_delete" class="btn btn-dark btn-sm">
+          Editar Perfil
+    </button>
 </div>
-<p><a href="{% url 'user:profile_edit' %}">Editar perfil</a></p>
 {% endblock %}

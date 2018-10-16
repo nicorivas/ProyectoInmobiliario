@@ -7,11 +7,11 @@
 {% block content %}
 <div class="container">
 <div class="card-body">
-    <form action="/user/" method="post" id="profile_form" enctype="multipart/form-data" data-commune-url="{% url 'user:user_ajax_load_communes' %}" novalidate>
+    <form action="/user/profile/edit/" method="post" id="profile_form" enctype="multipart/form-data" data-commune-url="{% url 'user:user_ajax_load_communes' %}" novalidate>
         {% csrf_token %}
         {{ user_form.as_p }}
         {{ profile_form.as_p }}
-        <button type="submit">Guardar</button>
+        <button type="submit" type="button" id="button_delete" class="btn btn-dark btn-sm">Guardar</button>
 
     </form>
     <br>

@@ -38,6 +38,16 @@ def edit_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
+            _first_name = user_form.cleaned_data['first_name']
+            _last_name = user_form.cleaned_data['last_name']
+            _email = user_form.cleaned_data['email']
+            _addressRegion = profile_form.cleaned_data['addressRegion']
+            _addressCommune = profile_form.cleaned_data['addressCommune']
+            _addressStreet = profile_form.cleaned_data['addressStreet']
+            _addressNumber = profile_form.cleaned_data['addressNumber']
+            UserProfile.objects.filter(user=request.user).update(first_name=_first_name, last_name=_last_name, email=_email,
+            addressRegion=_addressRegion, addressCommune=_addressCommune, addressStreet=_addressStreet, addressNumber=_addressNumber)
+
             #messages.success(request, _('Your profile was successfully updated!'))
             return redirect('user:profile')
         else:
