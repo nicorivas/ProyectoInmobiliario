@@ -60,27 +60,40 @@
     <div class="card-body">
       <h5 class="card-title">Comentarios/Incidencias</h5>
 
-      {% for comment in comments %}
-      <div class="card mb-1">
+      {% if appraisal.active or appraisal.paused %}
         <div class="card-body">
-          <p class="card-title">{{comment.user.first_name}} {{comment.user.last_name}} <small class="card-subtitle mb-2 text-muted">{{comment.timeCreated}}</small></p>
-          <small>{{comment.text}}</small>
-        </div>
-      </div>
-      {% endfor %}
-      {% if appraisal.active %}
-      <div class="card mb-1">
-        <div class="card-body">
-          <h5 class="card-title">Agregar comentario</h5>
+          <h6 class="card-title">Agregar comentario</h6>
           <div class="form-group">
               {{ forms.comment.commentText }}
+          </div>
+          <div class="form-check">
+            {{ forms.comment.commentConflict }}
+            <label for="commentConflict">Incidencia (detener el tiempo)</label>
           </div>
           <div class="form-group">
               <button class="btn btn-outline-dark" name="comment">Comentar</button>
           </div>
         </div>
-      </div>
       {% endif %}
+
+      {% for comment in comments %}
+      {% if comment.conflict %}
+      <div class="card mb-1 border-danger">
+      {% else %}
+      <div class="card mb-1">
+      {% endif %}
+        {% if comment.conflict %}
+        <div class="card-header bg-danger">
+        {% else %}
+        <div class="card-header">
+        {% endif %}
+          {{comment.user.first_name}} {{comment.user.last_name}} <small class="card-subtitle mb-2">{{comment.timeCreated}}</small>
+        </div>
+        <div class="card-body">
+          <small>{{comment.text}}</small>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 

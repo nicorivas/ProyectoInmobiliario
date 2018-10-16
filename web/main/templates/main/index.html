@@ -6,6 +6,21 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
         <script src="{% static 'home/js/google-maps-autocomplete.js' %}"></script>
+
+        <script>
+          function timeCreated(string) {
+            var s = moment(string).format("D MMM HH:MM");
+            document.write(s)
+          }
+        </script>
+
+        <script>
+          function timeLeft(string) {
+            var m = moment(string);
+            document.write(m.fromNow());
+          }
+        </script>
+
 {% endblock %}
 
 {% block content %}
@@ -20,31 +35,23 @@
     <thead>
       <tr>
         <th scope="col">ID</th>
-        <th scope="col">Tipo</th>
+        <th scope="col" style="text-align:center;">Tipo</th>
         <th scope="col">Dirección</th>
         <th scope="col">Tasador</th>
-        <th scope="col">Fecha creación</th>
-        <th scope="col">Tiempo restante</th>
+        <th scope="col" style="text-align:center;">Estado</th>
+        <th scope="col">Creada</th>
+        <th scope="col">Entrega</th>
         <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       {% for appraisal in appraisals_active %}
-      {% if appraisal.daySinceCreated > 3 %}
-      <!--<tr class="table-danger">-->
       <tr>
-      {% elif appraisal.daySinceCreated > 1 %}
-      <!--<tr class="table-warning">-->
-      <tr>
-      {% elif appraisal.daySinceCreated >= 0 %}
-      <!--<tr class="table-success">-->
-      <tr>
-      {% endif %}
         <td>
           {{ appraisal.id }}
         </td>
-        <td>
-          {{ appraisal.realEstate.get_propertyType_display }}
+        <td style="text-align:center;">
+          <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
         </td>
         <td>
           <a class="text-dark" href="{{appraisal.url}}">
@@ -54,23 +61,24 @@
         <td>
           {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
         </td>
-        <td>
-          {{appraisal.timeCreated | date:"D d M, H:i"}}
+        <td style="text-align:center;">
+          {% if appraisal.active %}
+          <i class="fas fa-play"></i>
+          {% elif appraisal.paused %}
+          <i class="fas fa-pause"></i>
+          {% endif %}
         </td>
-        <td>
-          {% if appraisal.daySinceCreated > 3 %}
-          <span class="badge badge-danger">
-            Creada hace {{appraisal.daySinceCreated}} dias
-          </span>
-          {% elif appraisal.daySinceCreated > 1 %}
-          <span class="badge badge-light">
-            Creada hace {{appraisal.daySinceCreated}} dias
-          </span>
-          {% elif appraisal.daySinceCreated >= 0 %}
-          <span class="badge badge-success">
-            Nueva
-          </span>
+        <td class="Creada">
+          <script>timeCreated("{{appraisal.timeCreated | date:"c"}}");</script>
+        </td>
+        {% if appraisal.daysLeft > 3 %}
+        <td class="bg-light">
+        {% elif appraisal.daysLeft > 1 %}
+        <td class="bg-warning">
+        {% else %}
+        <td class="bg-danger">
         {% endif %}
+            <script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script>
         </td>
         <td>
         <button type="button" id='button_delete' class="btn btn-dark btn-sm">
@@ -107,16 +115,7 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_finished %}
-      {% if appraisal.daySinceCreated > 3 %}
-      <!--<tr class="table-danger">-->
       <tr>
-      {% elif appraisal.daySinceCreated > 1 %}
-      <!--<tr class="table-warning">-->
-      <tr>
-      {% elif appraisal.daySinceCreated >= 0 %}
-      <!--<tr class="table-success">-->
-      <tr>
-      {% endif %}
         <td>
           {{ appraisal.id }}
         </td>

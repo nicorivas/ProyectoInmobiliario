@@ -133,4 +133,5 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
 
 class AppraisalForm_Comment(forms.Form):
     commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
+    commentConflict = forms.BooleanField(label='Conflict',required=False)
     commentText.widget.attrs.update({'class':"form-control",'rows':3})
