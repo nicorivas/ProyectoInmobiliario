@@ -25,7 +25,9 @@ class EditProfileForm(forms.ModelForm):
     addressCommune.widget.attrs.update({'class':"form-control",  'class':"col-md-4"})
     class Meta:
         model = UserProfile
-        fields = (
+        fields = ('first_name',
+            'last_name',
+            'email',
             'addressStreet',
             'addressNumber',
 

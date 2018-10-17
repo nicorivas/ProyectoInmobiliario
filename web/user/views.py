@@ -33,32 +33,40 @@ def edit_profile(request):
         user = UserProfile.objects.create(user=request.user, first_name=request.user.first_name,
                                           last_name=request.user.last_name, email=request.user.email)
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=request.user)
+        #user_form = UserForm(request.POST, instance=request.user)
         profile_form = EditProfileForm(request.POST, instance=user)
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
+        #if user_form.is_valid() and profile_form.is_valid():
+        if profile_form.is_valid():
+            #user_form.save()
             profile_form.save()
-            _first_name = user_form.cleaned_data['first_name']
-            _last_name = user_form.cleaned_data['last_name']
-            _email = user_form.cleaned_data['email']
+            #_first_name = user_form.cleaned_data['first_name']
+            #_last_name = user_form.cleaned_data['last_name']
+            #_email = user_form.cleaned_data['email']
+            _first_name = profile_form.cleaned_data['first_name']
+            _last_name = profile_form.cleaned_data['last_name']
+            _email = profile_form.cleaned_data['email']
             _addressRegion = profile_form.cleaned_data['addressRegion']
             _addressCommune = profile_form.cleaned_data['addressCommune']
             _addressStreet = profile_form.cleaned_data['addressStreet']
             _addressNumber = profile_form.cleaned_data['addressNumber']
-            UserProfile.objects.filter(user=request.user).update(first_name=_first_name, last_name=_last_name, email=_email,
-            addressRegion=_addressRegion, addressCommune=_addressCommune, addressStreet=_addressStreet, addressNumber=_addressNumber)
-
+            UserProfile.objects.filter(user=request.user).update(first_name=_first_name,
+                                                                 last_name=_last_name,
+                                                                 email=_email,
+                                                                 addressRegion=_addressRegion,
+                                                                 addressCommune=_addressCommune,
+                                                                 addressStreet=_addressStreet,
+                                                                 addressNumber=_addressNumber)
             #messages.success(request, _('Your profile was successfully updated!'))
             return redirect('user:profile')
         else:
             #messages.error(request, _('Please correct the error below.'))
             print('error')
     else:
-        user_form = UserForm(instance=request.user)
+        #user_form = UserForm(instance=request.user)
         profile_form = EditProfileForm(instance=user)
 
     return render(request, 'user/profile_edit.html', {
-        'user_form': user_form,
+        #'user_form': user_form,
         'profile_form': profile_form
     })
 
@@ -74,6 +82,9 @@ def userAppraisals(request):
                 state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
             appraisals_finished = Appraisal.objects.filter(visadorUser=request.user).filter(
                 state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+        else:
+            appraisals_active = Appraisal.objects.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+            appraisals_finished = Appraisal.objects.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
     except IndexError:
         appraisals_active = Appraisal.objects.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
         appraisals_finished = Appraisal.objects.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')

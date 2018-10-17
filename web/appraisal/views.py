@@ -215,19 +215,19 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
     ret = None
     for key, form in forms.items():
         if form.is_valid():
-            if key == 'save':
+            if 'save' in request.POST:
                 ret = form_do_save(request,forms,appraisal_old)
-            elif key == 'delete':
+            elif 'delete' in request.POST:
                 ret = form_do_delete(forms,appraisal)
-            elif key == 'finish':
+            elif 'finish' in request.POST:
                 ret = form_do_finish(forms,appraisal)
-            elif key == 'export':
+            elif 'export' in request.POST:
                 ret = form_do_export(forms)
-            elif key == 'assign_tasador':
+            elif 'assign_tasador' in request.POST:
                 ret = form_do_assign_tasador(form_tasador_user,appraisal, forms, request)
-            elif key == 'assign_visador':
+            elif 'assign_visador' in request.POST:
                 ret = form_do_assign_visador(form_visador_user,appraisal, forms, request)
-            elif key == 'comment':
+            elif 'comment' in request.POST:
                 ret = form_do_comment(request,forms,appraisal)
 
     return ret
@@ -313,6 +313,7 @@ def appraisal(request, **kwargs):
         if 'tasador' in request.POST.dict().keys():
             tasadorUserId = request.POST.dict()['tasador']
             tasadorUser = User.objects.get(pk=tasadorUserId)
+
 
         visadorUser = None
         if 'visador' in request.POST.dict().keys():

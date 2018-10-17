@@ -6,9 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 
-class UserProfileManager(models.Manager):
-    def get_queryset(self):
-        return super(UserProfileManager, self).get_queryset()#.filter(city='Santiago')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', primary_key=True)
