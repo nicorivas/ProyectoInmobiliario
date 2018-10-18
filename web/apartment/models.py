@@ -44,10 +44,6 @@ class Apartment(RealEstate):
 
     marketPrice = models.PositiveSmallIntegerField("Precio mercado UF",null=True,blank=True)
 
-    sourceUrl = models.URLField("Source url",null=True,blank=True)
-    sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
-    sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
-
     @property
     def sourceNameNice(self):
         "Returns source to be printed in a nice way."

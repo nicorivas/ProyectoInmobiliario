@@ -44,6 +44,10 @@ class RealEstate(models.Model):
         blank=True,
         null=True)
 
+    sourceUrl = models.URLField("Source url",null=True,blank=True)
+    sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
+    sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
+
     @property
     def address(self):
         # Returns whole address in a nice format

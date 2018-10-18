@@ -10,9 +10,9 @@ class Building(RealEstate):
     An appartment building
     '''
 
-    sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
-    sourceUrl = models.URLField("Source url",null=True,blank=True)
-
+    fromApartment = models.BooleanField("Creado desde departamento",
+        default=False,
+        null=False)
     anoConstruccion = models.IntegerField("Año construccion",
         blank=True,
         null=True)
@@ -101,7 +101,7 @@ class Building(RealEstate):
     viviendaSocial = models.BooleanField("Vivienda social",
         blank=True,
         null=True)
-        
+
     class Meta:
         app_label = 'building'
 

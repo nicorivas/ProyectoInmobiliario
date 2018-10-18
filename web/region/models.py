@@ -1,26 +1,6 @@
 from django.contrib.gis.db import models
 
 class Region(models.Model):
-    '''
-    Regions of Chile
-    '''
-    REGION_NAME__SHORT_NAME = {
-        u'Arica y Parinacota':'Arica',
-        u'Tarapacá':'Tarapacá',
-        u'Antofagasta':'Antofagasta',
-        u'Atacama':'Atacama',
-        u'Coquimbo':'Coquimbo',
-        u'Valparaíso':'Valparaíso',
-        u"Libertador General Bernardo O'Higgins":"O'Higgins",
-        u'Maule':'Maule',
-        u'Biobío':'Biobío',
-        u'La Araucanía':'La Araucanía',
-        u'Los Ríos':'Los Ríos',
-        u'Los Lagos':'Los Lagos',
-        u'Aysén del General Carlos Ibáñez del Campo':'Aysén',
-        u'Magallanes y Antártica Chilena':'Magallanes',
-        u'Metropolitana de Santiago':'Metropolitana'
-    }
 
     # Name of the region
     name = models.CharField("Nombre",max_length=100)

@@ -96,7 +96,6 @@ def coordinatesToAddress(lat,lng):
 
 #===============================================================================
 
-
 def loadCleanDictionaries(filepaths):
     '''
     Given a filename, load the file, which should be in JSON format,
@@ -113,51 +112,74 @@ def loadCleanDictionaries(filepaths):
     else:
         return properties
 
-def buildingToPostgre(building,sql_engine,sql_metadata,sql_connection):
+def buildingToDatabase(building,sql_engine,sql_metadata,sql_connection):
+
+    status('Inserting building: {} {} {} {}'.format(
+        addressStreet,addressNumber,addressCommune_id,addressRegion_id))
 
     addressNumber = building['addressNumber']
     addressStreet = building['addressStreet']
     addressCommune_id = building['addressCommune_id']
     addressRegion_id = building['addressRegion_id']
 
-    sql_buildings_table = sql_metadata.tables['building_building']
+    # We need to first insert a realestate row
 
-    sql_select = sql_buildings_table.select().where(and_(
-        sql_buildings_table.c.addressNumber == addressNumber,
-        sql_buildings_table.c.addressStreet == addressStreet,
-        sql_buildings_table.c.addressCommune_id == addressCommune_id,
-        sql_buildings_table.c.addressRegion_id == addressRegion_id))
-    sql_buildings = sql_connection.execute(sql_select)
+    sql_realestate_table = sql_metadata.tables['realestate_realestate']
+
+    sql_select = sql_realestate_table.select().where(and_(
+        sql_realestate_table.c.propertyType == 3,
+        sql_realestate_table.c.addressNumber == addressNumber,
+        sql_realestate_table.c.addressStreet == addressStreet,
+        sql_realestate_table.c.addressCommune_id == addressCommune_id,
+        sql_realestate_table.c.addressRegion_id == addressRegion_id))
+    sql_realestate = sql_connection.execute(sql_select)
 
     building_id = -1
 
-    if sql_buildings.rowcount == 0:
-        # Building does not exist. Add.
-        id = sql_engine.execute("SELECT MAX(id) FROM building_building").fetchall()[0][0]
+    if sql_realestate.rowcount == 0:
+        # Realestate does not exist. Add.
+        id = sql_engine.execute("SELECT MAX(id) FROM realestate_realestate").fetchall()[0][0]
         if id == None:
             id = 1
         else:
             id = id+1
-        building['id'] = id
-        sql_insert = sql_buildings_table.insert().values(building)
+        realestate = building.copy()
+        realestate['id'] = id
+        realestate.pop('apartmentRef', None)
+        realestate.pop('fromApartment', None)
+        realestate['propertyType'] = 3
+        sql_insert = sql_realestate_table.insert().values(realestate)
         sql_result = sql_connection.execute(sql_insert)
         building_id = sql_result.inserted_primary_key[0]
     elif sql_buildings.rowcount > 1:
         error("There is more than one building with the same address!")
+        exit(0)
     else:
-        building = sql_buildings.first()
+        building = sql_realestate.first()
         building_id = building[0]
 
-        stmt = sql_buildings_table.update().\
+        stmt = sql_realestate_table.update().\
                 values(sourceUrl=building['sourceUrl']).\
                 where(sql_buildings_table.c.id == building_id)
         sql_connection.execute(stmt)
 
         warning('Tried to insert building that already exists: id={}'.format(building_id))
 
+    # Now we insert all the info we have regarding the building
+
+    sql_realestate_table = sql_metadata.tables['building_building']
+
+    sql_select = sql_realestate_table.select().where(and_(
+        sql_realestate_table.c.propertyType == 3,
+        sql_realestate_table.c.addressNumber == addressNumber,
+        sql_realestate_table.c.addressStreet == addressStreet,
+        sql_realestate_table.c.addressCommune_id == addressCommune_id,
+        sql_realestate_table.c.addressRegion_id == addressRegion_id))
+    sql_realestate = sql_connection.execute(sql_select)
+
     return building_id
 
-def apartmentToPostgre(apartment,sql_engine,sql_metadata,sql_connection):
+def apartmentToDatabase(apartment,sql_engine,sql_metadata,sql_connection):
     '''
     '''
     apartment_id = -1
@@ -195,15 +217,18 @@ def apartmentToPostgre(apartment,sql_engine,sql_metadata,sql_connection):
 
 def apartmentsToDatabase(apartments,buildings):
 
-    sql_engine = create_engine('postgresql://postgres:iCga1kmX@localhost:5432/data')
-    sql_metadata = MetaData(sql_engine,reflect=True)
-    sql_connection = sql_engine.connect()
+    sql_engine, sql_metadata, sql_connection = dbase_setup()
 
     for i, apartment in enumerate(apartments):
-        building_id = buildingToPostgre(buildings[i],
+
+        print(apartment['buildingRef'],buildings[i]['apartmentRef'])
+        if apartment['buildingRef'] == buildings[i]['apartmentRef']:
+            print('fuck yeah')
+
+        building_id = buildingToDatabase(buildings[i],
             sql_engine,sql_metadata,sql_connection)
         apartment['building_id'] = building_id
-        apartmentToPostgre(apartment,sql_engine,sql_metadata,sql_connection)
+        apartmentToDatabase(apartment,sql_engine,sql_metadata,sql_connection)
 
     sql_connection.close()
 
@@ -214,7 +239,7 @@ def buildingsToDatabase(buildings):
     sql_connection = sql_engine.connect()
 
     for i, building in enumerate(buildings):
-        building_id = buildingToPostgre(building,sql_engine,sql_metadata,sql_connection)
+        building_id = buildingToDatabase(building,sql_engine,sql_metadata,sql_connection)
 
     sql_connection.close()
 
@@ -233,13 +258,10 @@ def jsonToDatabase(filepaths,propertyType):
 
 source = ['toctoc','portali'][1]
 propertyType = 'apartment'
-commune = 'providencia'
-date = '2018-09-05T11-15-34'
+commune = 'Providencia'
+date = '20181017220743'
 
-path_i = Path(REALSTATE_DATA_PATH+'/source/{}/{}/'.format(source,date))
-path_o_base = Path(REALSTATE_DATA_PATH)
-#filename_i = '{}_{}s_data_{}.json'.format(commune,propertyType,source)
-filename_i = '{}_aptarment_appraisal_data_{}.json'.format(commune,source)
-filepath_i = path_i / filename_i
+filepaths = [REALSTATE_DATA_PATH+'/{}s/{}-{}-{}.json'.format(propertyType,commune,date,source),
+     REALSTATE_DATA_PATH+'/buildings/{}-{}-{}.json'.format(commune,date,source)]
 
 jsonToDatabase(filepaths,propertyType)

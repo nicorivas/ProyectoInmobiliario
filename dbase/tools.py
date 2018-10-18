@@ -6,13 +6,43 @@ import glob
 import json
 from shapely.geometry import Polygon
 from shapely.geometry import Point
+import ast # to load the file (literal_eval is nicer than eval, they say)
 from globals import *
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def error(string):
-    print('Error: '+string)
+    print(bcolors.FAIL + 'Error: ' + string + '' + bcolors.ENDC)
 
 def warning(string):
-    print('Warning: '+string)
+    print(bcolors.WARNING + 'Warning: ' + string + '' + bcolors.ENDC)
+
+def status(string):
+    print(bcolors.OKBLUE + '' + string + '' + bcolors.ENDC)
+
+def info(string):
+    print(bcolors.OKGREEN + '> ' + string + '' + bcolors.ENDC)
+
+def fileToDictionary(filename=""):
+    '''
+    Given a filename with JSON format, returns a dictionary
+        @filename: filename
+    '''
+    try:
+        file = open(filename,'r',encoding='utf-8-sig')#,encoding="ISO-8859-1")
+        dictionary = json.load(file)
+    except FileNotFoundError:
+        error("Source file not found: {}".format(filename))
+        exit(0)
+    return dictionary
 
 def fileToString(filename=""):
     '''
@@ -43,7 +73,7 @@ def stringToDictionaries(fileData):
 
 def dbase_create_engine(echo=False,verbose=True):
     if verbose:
-        print('Connecting to database')
+        info('Connecting to database')
     from sqlalchemy import create_engine
     engine = create_engine('postgresql://postgres:iCga1kmX@localhost:5432/data', echo=echo)
     return engine
@@ -52,13 +82,13 @@ def dbase_setup(verbose=True):
     from sqlalchemy import MetaData
     sql_engine = dbase_create_engine()
     if verbose:
-        print('Downloading database metadata')
+        info('Downloading database metadata')
     sql_metadata = MetaData(sql_engine,reflect=True)
     if verbose:
-        print('Stablishing connection with database')
+        info('Stablishing connection with database')
     sql_connection = sql_engine.connect()
     if verbose:
-        print('Database ready')
+        info('Database ready')
     return sql_engine, sql_metadata, sql_connection
 
 def shape_simplify(filepath_in,filepath_out,ref=1000,verbose=False):
@@ -235,62 +265,50 @@ pi_b_variables['addressRegion_id'] = {
 
 
 pi_a_variables = {}
-pi_a_variables['number'] = {
-    'name':'depto',
-    'read':1,
-    'strip':1,
-    'type':'int'
-}
-pi_a_variables['floor'] = {
-    'name':'Piso',
-    'read':1,
-    'strip':1,
-    'type':'int'
-}
 pi_a_variables['bedrooms'] = {
-    'name':'Dormitorios',
+    'name':['Dormitorios','Dormitorio'],
     'read':1,
     'strip':1,
     'type':'int'
 }
 pi_a_variables['bathrooms'] = {
-    'name':'Baños',
+    'name':['Baños','Baño'],
     'read':1,
     'strip':1,
     'type':'int'
 }
 pi_a_variables['builtSquareMeters'] = {
-    'name':'Total m²',
+    'name':["m² total"],
     'read':1,
     'strip':1,
     'type':'float'
 }
 pi_a_variables['usefulSquareMeters'] = {
-    'name':'Útil m²',
+    'name':['m² útil'],
     'read':1,
     'strip':1,
     'type':'float'
 }
-pi_a_variables['orientation'] = {
-    'name':'Orientación',
-    'read':1,
-    'strip':1,
-    'type':'char'
-}
 pi_a_variables['marketPrice'] = {
-    'name':'Monto UF',
+    'name':['precio_publicacion2'],
     'read':1,
     'strip':1,
     'type':'float'
 }
 pi_a_variables['sourceId'] = {
-    'name':'codigo',
+    'name':['codigo'],
     'read':1,
     'strip':1,
     'type':'string'
 }
 pi_a_variables['sourceUrl'] = {
-    'name':'url',
+    'name':['url'],
+    'read':1,
+    'strip':1,
+    'type':'string'
+}
+pi_a_variables['sourceDatePublished'] = {
+    'name':['fecha_publicacion'],
     'read':1,
     'strip':1,
     'type':'string'
@@ -298,7 +316,7 @@ pi_a_variables['sourceUrl'] = {
 
 pi_ab_variables = {}
 pi_ab_variables['name'] = {
-    'name':'edificio',
+    'name':'nombre_edificio',
     'read':1,
     'strip':1
 }
@@ -312,7 +330,7 @@ pi_ab_variables['lat'] = {
     'read':1,
     'strip':0
 }
-pi_ab_variables['lon'] = {
+pi_ab_variables['lng'] = {
     'name':'coordenadas',
     'read':1,
     'strip':0
@@ -324,11 +342,6 @@ pi_ab_variables['addressStreet'] = {
 }
 pi_ab_variables['addressNumber'] = {
     'name':'direccion',
-    'read':1,
-    'strip':0
-}
-pi_ab_variables['addressCommune_id'] = {
-    'name':'comuna',
     'read':1,
     'strip':0
 }

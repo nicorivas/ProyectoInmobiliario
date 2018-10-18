@@ -1,8 +1,18 @@
 from slugify import slugify # for nice filenames
 
+from sqlalchemy import create_engine # for pandas dataframes to postgre
+from sqlalchemy import MetaData
+#from sqlalchemy.sql import and_
+#from sqlalchemy import update
+
+
 DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data'
 GEO_DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data/geo/chile'
-REALSTATE_DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data/realstate'
+REALSTATE_DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data/realestate'
+
+'''
+Regions of Chile
+'''
 
 REGION_NAME__ISO_CODE = {
     u'Arica y Parinacota':'CL-AP',
@@ -20,6 +30,24 @@ REGION_NAME__ISO_CODE = {
     u'Aysén del General Carlos Ibáñez del Campo':'CL-AI',
     u'Magallanes y Antártica Chilena':'CL-MA',
     u'Metropolitana de Santiago':'CL-RM'
+}
+
+REGION_NAME__SHORT_NAME = {
+    u'Arica y Parinacota':'Arica',
+    u'Tarapacá':'Tarapacá',
+    u'Antofagasta':'Antofagasta',
+    u'Atacama':'Atacama',
+    u'Coquimbo':'Coquimbo',
+    u'Valparaíso':'Valparaíso',
+    u"Libertador General Bernardo O'Higgins":"O'Higgins",
+    u'Maule':'Maule',
+    u'Biobío':'Biobío',
+    u'La Araucanía':'La Araucanía',
+    u'Los Ríos':'Los Ríos',
+    u'Los Lagos':'Los Lagos',
+    u'Aysén del General Carlos Ibáñez del Campo':'Aysén',
+    u'Magallanes y Antártica Chilena':'Magallanes',
+    u'Metropolitana de Santiago':'Metropolitana'
 }
 
 REGION_NAME__CODE = {
@@ -44,7 +72,9 @@ REGION_CODE__NAME = {v: k for k, v in REGION_NAME__CODE.items()}
 
 REGION_CODE__NAME_SLUG = {v: slugify(k) for k, v in REGION_NAME__CODE.items()}
 
-REGION_NAMES_SLUG = {slugify(k) for k, v in REGION_NAME__CODE.items()}
+REGION_NAME = REGION_NAME__CODE.keys()
+
+REGION_NAME_SLUG = [slugify(k) for k, v in REGION_NAME__CODE.items()]
 
 COMMUNE_NAME__CODE = {'Arica': 15101, 'Camarones': 15102, 'Putre': 15201,
 'General Lagos': 15202, 'Iquique': 1101, 'Alto Hospicio': 1102,
@@ -137,6 +167,10 @@ COMMUNE_NAME__CODE = {'Arica': 15101, 'Camarones': 15102, 'Putre': 15201,
 'María Pinto': 13504, 'San Pedro': 13505, 'Talagante': 13601, 'El Monte': 13602,
 'Isla de Maipo': 13603, 'Padre Hurtado': 13604, 'Peñaflor': 13605}
 
+COMMUNE_NAME = COMMUNE_NAME__CODE.keys()
+
+COMMUNE_NAME_SLUG = [slugify(c) for c in COMMUNE_NAME]
+
 COMMUNE_CODE__NAME = {v: k for k, v in COMMUNE_NAME__CODE.items()}
 
 COMMUNE_NAME_SLUG__CODE = {slugify(k): v for k, v in COMMUNE_NAME__CODE.items()}
@@ -144,3 +178,16 @@ COMMUNE_NAME_SLUG__CODE = {slugify(k): v for k, v in COMMUNE_NAME__CODE.items()}
 COMMUNE_CODE__NAME_SLUG = {v: k for k, v in COMMUNE_NAME_SLUG__CODE.items()}
 
 COMMUNES_NAME_SLUG = [slugify(a) for a in COMMUNE_NAME__CODE.keys()]
+
+def get_regions():
+    sql_engine = create_engine('postgresql://postgres:iCga1kmX@localhost:5432/data')
+    sql_metadata = MetaData(sql_engine,reflect=True)
+    sql_connection = sql_engine.connect()
+    sql_buildings_table = sql_metadata.tables['region_region']
+
+    sql_select = sql_buildings_table.select()
+    result = sql_connection.execute(sql_select)
+    for row in result:
+        print(row)
+
+    sql_connection.close()
