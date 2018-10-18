@@ -17,8 +17,8 @@ password = 'pipass123'
 users = ['app@usa.com', 'cove@fefe.cl', 'covfece@cov.cl','Cotiza@cotiza.cl']
 
 numeroReg = str(input('Region: '))
-mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
-pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/PortalInmobiliario/' + numeroReg + '/'
+mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/PI/Datos/' + numeroReg + '/'
+pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/PI/' + numeroReg + '/'
 base_dir = mac_path
 
 comunas = codecs.open(base_dir + numeroReg +'_comunas.txt', 'r', 'utf-8-sig')
@@ -26,14 +26,14 @@ comunas = codecs.open(base_dir + numeroReg +'_comunas.txt', 'r', 'utf-8-sig')
 for com in comunas:
     com = com.strip().replace(' ', '-')
     date = str(datetime.datetime.now().replace(microsecond=0).isoformat().replace(':', '-'))
-    base_path = base_dir + str(com) + '/PortalInmobiliario/'
+    base_path = base_dir + str(com) + '/PI/'
     path2 = base_path + date
     os.makedirs(path2)
     print(str(com))
 
 
     buildings = codecs.open(base_path + str(com) + '_properties_PI.txt', 'r', "utf-8-sig")
-    error_list = codecs.open(path2 + '/' + str(com) +'_error_list_portali.json', 'w', "utf-8-sig")
+    error_list = codecs.open(path2 + '/' + str(com) +'_error_list_PI.json', 'w', "utf-8-sig")
     done_list = codecs.open(base_dir + 'list_done.json', 'w', 'utf-8-sig')
     building = []
     apartment_appraisals = []
@@ -55,19 +55,19 @@ for com in comunas:
             try:
                 if state == 'Proyecto ':
                     building.append(building_data_PI(url))
-                    build_data = codecs.open(path2 + '/' + str(com) + '_building_data_portali.json', 'w', "utf-8-sig")
+                    build_data = codecs.open(path2 + '/' + str(com) + '_building_data_PI.json', 'w', "utf-8-sig")
                     json.dump(building, build_data, ensure_ascii=False, indent=1)
                     build_data.close()
                     for i in apartment_appraisal_data_PI(url, user, password):
                         apartment_appraisals.append(i)
-                        apart_appraisal = codecs.open(path2 + '/' + str(com) + '_aptarment_appraisal_data_portali.json', 'w',
+                        apart_appraisal = codecs.open(path2 + '/' + str(com) + '_apartment_appraisal_data_PI.json', 'w',
                                                       "utf-8-sig")
                         json.dump(apartment_appraisals, apart_appraisal, ensure_ascii=False, indent=1)
                         apart_appraisal.close()
                     print('apt appraisal ' + str(counter))
                 else:
                     apartment.append(apartment_data_PI(url))
-                    apart_data = codecs.open(path2 + '/' + str(com) + '_aptarment_data_portali.json', 'w', "utf-8-sig")
+                    apart_data = codecs.open(path2 + '/' + str(com) + '_apartment_data_PI.json', 'w', "utf-8-sig")
                     json.dump(apartment, apart_data, ensure_ascii=False, indent=1)
                     apart_data.close()
                     print('apt ' + str(counter))
@@ -79,7 +79,7 @@ for com in comunas:
                 if state == 'Proyecto ':
                     for j in house_appraisal_data_PI(url, user, password):
                         house_appraisals.append(j)
-                        house_appraisal = codecs.open(path2 + '/' + str(com) + '_house_appraisal_data_portali.json', 'w',
+                        house_appraisal = codecs.open(path2 + '/' + str(com) + '_house_appraisal_data_PI.json', 'w',
                                                       "utf-8-sig")
                         json.dump(house_appraisals, house_appraisal, ensure_ascii=False, indent=1)
                         house_appraisal.close()
@@ -87,7 +87,7 @@ for com in comunas:
                     counter += 1
                 else:
                     house.append(house_data_PI(url))
-                    house_data = codecs.open(path2 + '/' + str(com) + '_house_data_portali.json', 'w', "utf-8-sig")
+                    house_data = codecs.open(path2 + '/' + str(com) + '_house_data_PI.json', 'w', "utf-8-sig")
                     json.dump(house, house_data, ensure_ascii=False, indent=1)
                     house_data.close()
                     print('house ' + str(counter))
