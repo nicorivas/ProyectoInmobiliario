@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from dbase.globals import *
 
 class Region(models.Model):
 
@@ -13,7 +14,7 @@ class Region(models.Model):
 
     @property
     def shortName(self):
-        return self.REGION_NAME__SHORT_NAME[self.name]
+        return REGION_NAME__SHORT_NAME[self.name]
 
     def __str__(self):
         return self.name
