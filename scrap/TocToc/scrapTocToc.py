@@ -18,7 +18,7 @@ Another issue is comes with the appartment data that is hidden behind a deployab
 
 
 
-def search_parameters(url):
+def search_parameters_TT(url):
 
     '''Takes some search parameters and returns a url with the search results'''
 
@@ -29,7 +29,7 @@ def search_parameters(url):
     return final_url
 
 
-def get_urls(url):
+def get_urls_TT(url):
 
     '''Gets all urls pages from a search. It takes one url, and returns
     a list of url with different page number'''
@@ -73,7 +73,7 @@ def get_urls(url):
 
 
 
-def base_building_search(url):
+def base_building_search_TT(url):
 
     '''Basic search for buildings, given a parameter it search for building within TocToc's database
     and returns a list with ["name of the building", [Lat, Long], url, house or apartment].'''
@@ -111,7 +111,7 @@ def base_building_search(url):
 
 
 #
-def building_data(url, building_name, coordinates):
+def building_data_TT(url, building_name, coordinates):
 
     '''Takes a building's name and its url and returns a dictionary with basic building data'''
 
@@ -153,7 +153,7 @@ def building_data(url, building_name, coordinates):
 
 
 
-def apartment_data(url, building_name, coordinates):
+def apartment_data_TT(url, building_name, coordinates):
 
     '''Takes a building name and it url (from base_building_search) and returns a nested dictionary of
     the buildings's apartment. The info is hidden in a deployable button that needs to be "open" before loading
@@ -178,11 +178,13 @@ def apartment_data(url, building_name, coordinates):
     main_search = bsObj.find('ul', {'class':'info_ficha'}) #where is data
     build_aps = {}
     build_aps['name'] = building_name
-    build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
+    build_aps['code'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
     build_aps['coordenadas'] = coordinates
+    build_aps['lat'] = coordinates[0]
+    build_aps['lng'] = coordinates[1]
     build_aps['url'] = url
-    build_aps['precio_publicacion'] = head_info.find('div', {'class':'precio-b'}).strong.text
-    build_aps['precio_alternativo2'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
+    build_aps['marketPrice2'] = head_info.find('div', {'class':'precio-b'}).strong.text
+    build_aps['marketPrice'] = head_info.find('em', {'class':'precioAlternativo'}).strong.text
     for i in main_search:  #creates the nested dict.
         try:
             build_aps[i.find('span').text] = i.find('strong').text
@@ -199,7 +201,7 @@ def apartment_data(url, building_name, coordinates):
     return build_aps
 
 
-def house_data(url, house_name, coordinates):
+def house_data_TT(url, house_name, coordinates):
 
     ''' Takes a house url and a house name and returns a dictionary with the house's data.
     The page doesn't give the house's data in the same way for all the cases, so the functions needs a lot
@@ -223,21 +225,23 @@ def house_data(url, house_name, coordinates):
     # head house data
     head_info = bsObj.find('div', {'class': "wrap-hfijo"})
     house = {}
-    house['nombre casa'] = house_name
-    house['tipo de vivienda'] = 'casa'
-    house['nombre'] = head_info.find('h1').text
+    house['nameSearch'] = house_name
+    house['propertyType'] = 'casa'
+    house['name'] = head_info.find('h1').text
     house['url'] = url
-    house['direccion'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
+    house['addressStreet'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip()
     house['coordenadas'] = coordinates
+    house['lat'] = coordinates[0]
+    house['lng'] = coordinates[1]
     try:
-        house['comuna-region'] = head_info.findAll('h2')[1].text.split(',')[-1]
+        house['addressCommune'] = head_info.findAll('h2')[1].text.split(',')[-1]
     except:
-        house['comuna-region'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
+        house['addressCommune'] = head_info.findAll('h2')[0].text.replace(' Ver ubicación', '').strip().split(' ')[-3]
     try:
         house[head_info.find('em').text] = head_info.find('div', {'class':'precio-b'}).find('strong').text
     except:
         house[head_info.find('em').text] = head_info.find('div', {'class': 'precio-ficha'}).find('strong').text
-    house['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+    house['code'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
     for name in nameList.findAll('li'):
         if len(name) ==1:
             house[name.contents[0].text.split(':')[0]] = name.contents[0].text.split(':')[1]
@@ -258,7 +262,7 @@ def house_data(url, house_name, coordinates):
     return house
 
 
-def apartment_value_data(url, users, password, coordinates):
+def apartment_appraisal_data_TT(url, users, password, coordinates):
 
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
     x = 0
@@ -273,7 +277,7 @@ def apartment_value_data(url, users, password, coordinates):
     options.add_argument("--log-level=3")  # fatal error in console
     LOGGER.setLevel(logging.WARNING) #Suppress console wartnings
     browser = webdriver.Chrome(chrome_options= options)
-    appraisal_data = {}
+    appraisal_data = []
     browser.get(url)
     time.sleep(5)
     html = browser.page_source
@@ -302,19 +306,21 @@ def apartment_value_data(url, users, password, coordinates):
                     bsObj3 = BeautifulSoup(html, "html5lib")
                     head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
                     apt = {}
-                    apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+                    apt['code'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
                     apt['coordenadas'] = coordinates
+                    apt['lat'] = coordinates[0]
+                    apt['lng'] = coordinates[1]
                     apt['url'] = url
-                    apt['depto'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
-                    apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
-                    apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
-                    apt['dormitorios'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
-                    apt['banos'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
-                    apt['orientacion'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
-                    apt['m2_utiles'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
-                    apt['m2_terraza'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
-                    apt['m2_totales'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
-                    appraisal_data[str(n)] = apt
+                    apt['number'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
+                    apt['marketPrice'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
+                    apt['floor'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
+                    apt['bedrooms'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
+                    apt['bathrooms'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
+                    apt['orientation'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
+                    apt['usefulSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
+                    apt['terraceSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
+                    apt['builtSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
+                    appraisal_data.append(apt)
                     n += 1
                     webdriver.ActionChains(browser).send_keys(Keys.ESCAPE).perform() #Close current appraisal window
                     browser.execute_script("window.stop();")
@@ -331,7 +337,7 @@ def apartment_value_data(url, users, password, coordinates):
 
 
 
-def house_value_data(url, users, password, coordinates):
+def house_appraisal_data_TT(url, users, password, coordinates):
 
     ''' takes a url of a apartment, an email/user and password and returns a dictionary with TocToc's appraisal'''
     x = 0
@@ -346,7 +352,7 @@ def house_value_data(url, users, password, coordinates):
     options.add_argument("--log-level=3")  # fatal error in console
     LOGGER.setLevel(logging.WARNING) #Suppress console wartnings
     browser = webdriver.Chrome(chrome_options= options)
-    appraisal_data = {}
+    appraisal_data = []
     browser.get(url)
     time.sleep(5)
     html = browser.page_source
@@ -374,20 +380,22 @@ def house_value_data(url, users, password, coordinates):
                     html = browser.page_source
                     bsObj3 = BeautifulSoup(html, "html5lib")
                     head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
-                    apt = {}
-                    apt['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
-                    apt['coordenadas'] = coordinates
-                    apt['url'] = url
-                    apt['n_casa'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
-                    apt['precio_referencia'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
-                    apt['piso'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
-                    apt['dormitorios'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
-                    apt['banos'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
-                    apt['orientacion'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
-                    apt['m2_utiles'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
-                    apt['m2_terraza'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
-                    apt['m2_totales'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
-                    appraisal_data[str(n)] = apt
+                    house = {}
+                    house['code'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
+                    house['coordenadas'] = coordinates
+                    house['lat'] = coordinates[0]
+                    house['lng'] =coordinates[1]
+                    house['url'] = url
+                    house['number'] = bsObj3.findAll('td', {'class': 'cifra'})[0].text
+                    house['marketPrice'] = bsObj3.find('div', {'class': 'cotiz-precio-ref'}).strong.text
+                    house['floor'] = bsObj3.findAll('td', {'class': 'cifra'})[1].text
+                    house['bedrooms'] = bsObj3.findAll('td', {'class': 'cifra'})[2].text
+                    house['bathrooms'] = bsObj3.findAll('td', {'class': 'cifra'})[3].text
+                    house['orientation'] = bsObj3.findAll('td', {'class': 'plantaOrientacion centrado'})[0].text
+                    house['builtSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[4].text
+                    house['terraceSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[5].text
+                    house['usefulSquareMeters'] = bsObj3.findAll('td', {'class': 'cifra'})[6].text
+                    appraisal_data.append(house)
                     n += 1
                     webdriver.ActionChains(browser).send_keys(Keys.ESCAPE).perform() #Close current appraisal window
                     browser.execute_script("window.stop();")

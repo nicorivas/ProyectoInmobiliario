@@ -10,10 +10,11 @@ from scrapTocToc import house_data, base_building_search, building_data, apartme
 #print(apartment_data(url, 'prueba'))
 
 
-url = 'https://www.toctoc.com/propiedades/compranuevo/casa/las-condes/townhouse-las-condes/1006358#'
+#url = 'https://www.toctoc.com/propiedades/compranuevo/casa/las-condes/townhouse-las-condes/1006358#'
+url = 'https://www.toctoc.com/propiedades/compracorredorasr/casa/talagante/camino-carampangue-colegio-t/873418'
 user = ['covfefe2@cov.cl']
 #user = 'the_big_lebowsky@hotmail.com'
 password = 'toctocpass12'
-
-print(house_value_data(url, user, password, "coordenadas"))
+print(house_data(url, 'casa',  [-30.090, -70.543]))
+#print(house_appraisal_data(url, user, password, [-30.090, -70.543]))
 
