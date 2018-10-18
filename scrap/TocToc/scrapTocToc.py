@@ -171,35 +171,7 @@ def apartment_data(url, building_name, coordinates):
     browser = webdriver.Chrome(chrome_options= options)
     browser.get(url)
     time.sleep(5)  #wait for page to be loaded.
-    '''
-    try:
-        browser.find_elements_by_xpath('//*[@id="btnVerPlantasCabecera"]')[0].click()  #looks for button with info and clicks it
-        html = browser.page_source
-        bsObj = BeautifulSoup(html, "html5lib")
-        head_info = bsObj.find('div', {'class': "wrap-hfijo"})
-        main_search = bsObj.findAll('div', {'class': 'info-modelo'})  # where is data
-        build_aps = {}
-        build_aps['nombre_edificio'] = building_name
-        build_aps['codigo'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
-        build_aps['coordenadas'] = coordinates
-        build_aps['url'] = url
-        build_aps['precio_publicacion'] = head_info.find('div', {'class': 'precio-b'}).strong.text
-        build_aps['precio_publicacion2'] = head_info.find('em', {'class': 'precioAlternativo'}).strong.text
 
-        n = 1
-        for i in main_search:  # creates the nested dict.
-            aux = {}
-            for j in i.findAll('li'):
-                if len(j.contents) == 3:
-                    aux[j.contents[0].text] = j.contents[2].text
-                else:
-                    aux[j.contents[0].text] = j.contents[1]
-            build_aps[building_name][str(n)] = aux
-            n += 1
-        browser.close()
-        browser.quit()
-        return build_aps
-    '''
     html = browser.page_source
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class':"wrap-hfijo"})
