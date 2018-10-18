@@ -177,7 +177,7 @@ def apartment_data(url, building_name, coordinates):
     head_info = bsObj.find('div', {'class':"wrap-hfijo"})
     main_search = bsObj.find('ul', {'class':'info_ficha'}) #where is data
     build_aps = {}
-    build_aps['nombre_edificio'] = building_name
+    build_aps['name'] = building_name
     build_aps['codigo'] = head_info.find('li', {'class':'cod'}).text.split(': ')[1]
     build_aps['coordenadas'] = coordinates
     build_aps['url'] = url
