@@ -19,17 +19,29 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def error(string):
-    print(bcolors.FAIL + 'Error: ' + string + '' + bcolors.ENDC)
+def error(string,f=None):
+    msg =  'Error: ' + string
+    print(bcolors.FAIL+''+msg+''+bcolors.ENDC)
+    if f != None:
+        f.write(msg+'\n')
 
-def warning(string):
-    print(bcolors.WARNING + 'Warning: ' + string + '' + bcolors.ENDC)
+def warning(string,f=None):
+    msg = 'Warning: ' + string
+    print(bcolors.WARNING+''+msg+''+bcolors.ENDC)
+    if f != None:
+        f.write(msg+'\n')
 
-def status(string):
-    print(bcolors.OKBLUE + '' + string + '' + bcolors.ENDC)
+def status(string,f=None):
+    msg = '* ' + string + ' *'
+    print(bcolors.OKBLUE+''+msg +''+bcolors.ENDC)
+    if f != None:
+        f.write(msg+'\n')
 
-def info(string):
-    print(bcolors.OKGREEN + '> ' + string + '' + bcolors.ENDC)
+def info(string,f=None):
+    msg = '> ' + string
+    print(bcolors.OKFREEN+''+msg+''+bcolors.ENDC)
+    if f != None:
+        f.write(msg+'\n')
 
 def fileToDictionary(filename=""):
     '''

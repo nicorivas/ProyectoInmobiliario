@@ -4,11 +4,14 @@ import requests # to call the API of Google to get lat-lon
 from pathlib import Path # nice way to manage paths
 import json # to save nice dictionaries
 import codecs
-import datetime
-from tools import *
-from globals import *
 import os.path
 import random
+# Datetime and timezones
+import datetime
+from pytz import timezone
+import pytz
+from tools import *
+from globals import *
 
 # Importing DJANGO things
 import sys
@@ -20,6 +23,8 @@ django.setup()
 
 # Models
 from realestate.models import RealEstate
+from building.models import Building
+from apartment.models import Apartment
 
 def addressToCoordinates(address):
     '''
@@ -38,6 +43,9 @@ def coordinatesToAddress(lat,lng):
     '''
     Given a lat-long pair, return an address
     '''
+
+    global logfile
+
     url = 'https://maps.googleapis.com/maps/api/geocode/json?'
     url_latlng = 'latlng={},{}'.format(lat,lng)
     url_key='&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
@@ -58,180 +66,153 @@ def coordinatesToAddress(lat,lng):
         if 'administrative_area_level_1' in ac['types']:
             region = ac['long_name']
     if number == None:
-        error('Address number not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        error('Address number not found from lat={} lng={}: {}'.format(
+            lat,lng,resp_json_payload['results'][0]),logfile)
         return None
     if street == None:
-        error('Address street not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        error('Address street not found from lat={} lng={}: {}'.format(
+            lat,lng,resp_json_payload['results'][0]),logfile)
         return None
     if commune == None:
-        error('Commune not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        error('Commune not found from lat={} lng={}: {}'.format(
+            lat,lng,resp_json_payload['results'][0]),logfile)
         return None
     if region == None:
-        error('Region not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        error('Region not found from lat={} lng={}: {}'.format(
+            lat,lng,resp_json_payload['results'][0]),logfile)
         return None
     return [number,street,commune,region]
 
-def createRealEstate(re,re_dict):
+def createRealEstate(re,re_dict,propertyType):
+    '''
+    Populates the real esatte variable of any real estate
+    '''
 
-    print(re_dict)
+    global logfile
 
+    # Automatic fields
     translation = [
         ('nombre_edificio','name'),
         ('codigo','sourceId'),
         ('fecha_publicacion','sourceDatePublished'),
         ('url','sourceUrl'),
         ('direccion','address')]
-
     for v_sc, v_db in translation:
-        re_dict[v_db] = re_dict.pop(v_sc)
-
-    re_dict['lat'] = float(re_dict['coordenadas'][0])
-    re_dict['lng'] = float(re_dict['coordenadas'][1])
-    re_dict.pop('coordenadas')
-
-    number,street,commune,region = coordinatesToAddress(re_dict['lat'],re_dict['lng'])
-    print(number,street,commune,region)
-
+        re_dict[v_db] = re_dict[v_sc]
     variables = re._meta.get_fields()
     for var in variables:
-        if not var.name in re_dict.keys():
-            error("Variable '{}' not found in dictionary keys".format(var.name))
-        else:
+        if var.name in re_dict.keys():
             setattr(re,var.name,re_dict[var.name])
 
-    setattr(re,'propertyType',RealEstate.TYPE_APARTMENT)
+    # Coordinates
+    setattr(re,'lat',float(re_dict['coordenadas'][0]))
+    setattr(re,'lng',float(re_dict['coordenadas'][1]))
+
+    # Address from coordinate
+    address = coordinatesToAddress(re.lat,re.lng)
+    if address == None:
+        error('Coordinate to address failed, skipping real estate')
+        return False
+    else:
+        number = address[0]
+        street = address[1]
+        commune = address[2]
+        region = address[3]
+        if len(number) > RealEstate._meta.get_field('addressNumber').max_length:
+            error('Number is too long, something is weird: {}'.format(number))
+            return False
+        else:
+            setattr(re,'addressNumber',number)
+        if len(street) > RealEstate._meta.get_field('addressStreet').max_length:
+            error('Street is too long: {}'.format(street))
+            return False
+        else:
+            setattr(re,'addressStreet',street)
+        if commune not in COMMUNE_NAME__CODE.keys():
+            error('Commune {}, as given by Google, does not exist in our names'.format(commune))
+            return False
+        else:
+            setattr(re,'addressCommune_id',COMMUNE_NAME__CODE[commune])
+        if region not in REGION_NAME__CODE.keys():
+            error('Region {}, as given by Google, does not exist in our names'.format(region))
+            return False
+        else:
+            setattr(re,'addressRegion_id',REGION_NAME__CODE[region])
+        setattr(re,'addressFromCoords',True)
+
+    # Others
+    tz_santiago = timezone('America/Santiago')
+    setattr(re,'propertyType',propertyType)
     setattr(re,'sourceName','portali')
+    setattr(re,'sourceDatePublished',
+        tz_santiago.localize(
+            datetime.datetime.strptime(re.sourceDatePublished,'%d-%m-%Y')
+        ).isoformat())
 
-    print(re.__dict__)
-    exit(0)
-    #for var in variables:
+    return True
 
+def createBuilding(bd_dict):
+    '''
+    Creates a Building object, populated with the values of a dictionary
+    '''
 
-def createBuilding(source,realestate,variables,debug=0):
+    global logfile
 
     status('Creating building')
 
-    building = {}
+    bd = Building()
 
-    for vname, vdict in variables.items():
-        if not vdict['name'] in realestate.keys():
-            error("Variable '{}' not found in dictionary keys".format(vdict['name']))
-        value = realestate[vdict['name']]
-        if vdict['strip']:
-            value.strip()
-        if vname == 'lat':
-            value = float(value[0])
-        if vname == 'lng':
-            value = float(value[1])
-        if vname == 'addressStreet' or vname == 'addressNumber':
-            if source == 'toctoc':
-                if direccion.find(',') >= 0:
-                    # Most probably commune was added at the end
-                    warning("We're ignoring everything after the ',' in direccion: {}".format(direccion))
-                    direccion = direccion[0:direccion.find(',')]
-            elif source == 'portali':
-                value = value.split(',')[0]
-                value = value.strip()
+    ret = createRealEstate(bd,bd_dict,propertyType=RealEstate.TYPE_BUILDING)
+    if ret == False:
+        error('Creating real estate failed, returning')
+        return False
 
-            # split address street from number
-            reSearch = re.search("\d+$",value)
-            if reSearch == None:
-                warning('Direccion no tiene un número: {}'.format(value))
-                continue
+    setattr(bd,'fromApartment',True)
 
-            if vname == 'addressStreet':
-                value = value[0:reSearch.start()].strip()
-            elif vname == 'addressNumber':
-                value = reSearch.group().strip()
-        if vname == 'addressCommune_id' or vname == 'addressRegion_id':
-            # assuming format of TocToc 'Commune - Region'
-            value = value.split('-')
-            if vname == 'addressCommune_id':
-                value = value[0].strip()
-                value = communeStringToId(value)
-                if value == None: continue
-            if vname == 'addressRegion_id':
-                value = value[1].strip()
-                value = regularizeRegionName(value)
-                value = regionStringToId(value)
-                if value == None: continue
+    return bd
 
-        building[vname] = value
-        if debug:
-            if len(str(value)) > 80:
-                print('{} = {}...'.format(vname,str(value)[0:77]))
-            else:
-                print('{} = {}'.format(vname,value))
+def createApartment(apt_dict,bd):
 
-    building['sourceName'] = source
-    building['addressCommune_id'] = COMMUNE_NAME__CODE[commune]
-    building['addressRegion_id'] = REGION_NAME__CODE[region]
-    building['fromApartment'] = True
-    building['apartmentRef'] = random.randint(1,100000000)
-    building['addressRegion_id'] = 13
-
-    return building
-
-def createApartment(source, realestate, variables, debug=0):
+    global logfile
 
     status('Creating apartment')
 
-    apartment = {}
+    apt = Apartment()
 
-    for vname, vdict in variables.items():
+    ret = createRealEstate(apt,apt_dict,propertyType=RealEstate.TYPE_APARTMENT)
+    if ret == False:
+        error('Creating real estate failed, returning')
+        return False
 
-        exists = False
-        vnamesource = ""
-        for vnametmp in vdict['name']:
-            if vnametmp in realestate.keys():
-                vnamesource = vnametmp
-                exists = True
-        if not exists:
-            error("Variable '{}' not found in dictionary keys = {}".format(
-                vdict['name'],
-                realestate.keys()))
-            continue
+    v = apt_dict['precio_publicacion2'].replace('UF','').strip()
+    v = v.replace('.','')
+    v = v.replace(',','.')
+    setattr(apt,'marketPrice',v)
 
-        value = realestate[vnamesource]
+    if 'Dormitorio' in apt_dict.keys():
+        setattr(apt,'bedrooms',int(apt_dict['Dormitorio']))
+    elif 'Dormitorios' in apt_dict.keys():
+        setattr(apt,'bedrooms',int(apt_dict['Dormitorios']))
+    else:
+        warning("'Dormitorio(s)' not found in source dictionary",logfile)
+    if 'Baño' in apt_dict.keys():
+        setattr(apt,'bathrooms',int(apt_dict['Baño']))
+    elif 'Baños' in apt_dict.keys():
+        setattr(apt,'bathrooms',int(apt_dict['Baños']))
+    else:
+        warning("'Baño(s)' not found in source dictionary",logfile)
+    if 'm² útil' in apt_dict.keys():
+        setattr(apt,'usefulSquareMeters',float(apt_dict['m² útil']))
+    else:
+        warning("'m² útil' not found in source dictionary",logfile)
+    if 'm² total' in apt_dict.keys():
+        setattr(apt,'builtSquareMeters',float(apt_dict['m² total']))
+    else:
+        warning("'m² total' not found in source dictionary",logfile)
 
-        if vdict['strip']:
-            value.strip()
-        if vname == 'lat':
-            value = float(value[0])
-        if vname == 'lng':
-            value = float(value[1])
-        if vname == 'marketPrice':
-            value = value.replace('UF','').strip()
-        if vname == 'sourceDatePublished':
-            value = datetime.datetime.strptime(value,'%d-%m-%Y')
-            value = value.isoformat()
-        if vdict['type'] == 'int':
-            try:
-                bedrooms = int(value)
-            except (ValueError, TypeError):
-                error('{} is not an int: {}'.format(vname,str(value)))
-                continue
-        elif vdict['type'] == 'float':
-            value = value.replace('.','')
-            value = value.replace(',','.')
-            value = value.replace('/m²','') # some had this at the end
-            try:
-                bedrooms = float(value)
-            except (ValueError, TypeError):
-                error('{} is not a float: {}'.format(vname,str(value)))
-                exit(0)
+    setattr(apt,'building_in_id',bd.id)
 
-        apartment[vname] = value
-
-        if debug:
-            if len(str(value)) > 80:
-                print('{} = {}...'.format(vname,str(value)[0:77]))
-            else:
-                print('{} = {}'.format(vname,value))
-
-    apartment['sourceName'] = source
-
-    return apartment
+    return apt
 
 def createCleanDictionaries_Building(source, realestate, debug=0, from_apartment=0):
     '''
@@ -252,59 +233,111 @@ def createCleanDictionaries_Building(source, realestate, debug=0, from_apartment
 
     return buildings
 
-def createCleanDictionaries_Apartment(source, apartments, debug=0):
+def realEstateExists(re):
     '''
-    Create dictionaries of buildings with the variables names and styles of DB,
-    taking as input the dictionaries read from the source files.
+    Given any realestate object, it checks if it already exists, considering
+    the two cases of the address created by coords or manually. If by coords,
+    then the building exists if it has the same coords, if by hand, if it has
+    the same address.
+    '''
+    if re.propertyType == RealEstate.TYPE_BUILDING:
+        if re.addressFromCoords:
+            try:
+                tmp = RealEstate.objects.get(
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp
+            except RealEstate.DoesNotExist:
+                return None
+        else:
+            try:
+                tmp = RealEstate.objects.get(
+                    propertyType=re.propertyType,
+                    addressRegion_id=re.addressRegion_id,
+                    addressCommune_id=re.addressCommune_id,
+                    addressSreet=re.addressStreet,
+                    addressNumber=re.addressNumber)
+                return tmp
+            except RealEstate.DoesNotExist:
+                return None
+    elif re.propertyType == RealEstate.TYPE_APARTMENT:
+        if isinstance(re.number,type(None)):
+            warning('Apartment doesnt have a number. Checking if duplicate by other means might be dangerous')
+            try:
+                tmp = Apartment.objects.get(
+                    bedrooms=re.bedrooms,
+                    bathrooms=re.bathrooms,
+                    builtSquareMeters=re.builtSquareMeters,
+                    usefulSquareMeters=re.usefulSquareMeters,
+                    marketPrice=re.marketPrice,
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp
+            except RealEstate.DoesNotExist:
+                return None
+        else:
+            try:
+                tmp = Apartment.objects.get(
+                    number=re.number,
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp
+            except RealEstate.DoesNotExist:
+                return None
 
+def dictionariesToDatabase_Apartment(re_dicts, ci=0, cf=None, debug=0):
+    '''
+    Generate the objects from dictionaries.
     This is just a wrapper function, to be able to create buildings associated
     to flats easily
     '''
 
-    apartments_clean = []
-    buildings_clean = []
+    global logfile
 
-    realestate = RealEstate(propertyType=1,id=10)
+    objects = []
 
-    for i in range(len(apartments)):
-        createRealEstate(realestate,apartments[i])
-        print(i)
-        bld = createBuilding(source,apartments[i],pi_ab_variables,debug=debug)
-        buildings_clean.append(bld)
-        apt = createApartment(source,apartments[i],pi_a_variables,debug=debug)
-        apt['buildingRef'] = bld['apartmentRef']
-        apartments_clean.append(apt)
+    if isinstance(cf,type(None)):
+        cf = len(re_dicts)
 
-    return apartments_clean, buildings_clean
+    for c, re_dict in enumerate(re_dicts):
 
-def createCleanDictionaries(source,propertyType,properties_i,path_out_base,debug=0):
-    '''
-    Given a list of dictionaries, where every dictionary has the info
-    of buildings, then clean the data.
-        @buildingDicts: list of building dictionaries
-        #save: option to save the dictionaries to JSON
-        #debug: print shit
-    '''
+        if c < ci or c > cf:
+            continue
 
-    global commune
+        print('{} {}'.format(c,re_dict['nombre_edificio']))
+        building = createBuilding(re_dict)
+        if isinstance(building,bool):
+            if not building:
+                continue
+        re = realEstateExists(building)
+        if isinstance(re,type(None)):
+            building.save()
+        else:
+            warning('Building already existed',logfile)
+            building = re # building is now the one that existed
 
-    debug = 1
+        apartment = createApartment(re_dict,building)
+        if isinstance(building,bool):
+            if not apartment:
+                continue
+        re = realEstateExists(apartment)
+        if isinstance(re,type(None)):
+            apartment.save()
+        else:
+            warning('Apartment already existed',logfile)
 
-    if propertyType == 'building':
-        properties_o = createCleanDictionaries_Building(source,properties_i,debug=debug)
-    elif propertyType == 'apartment':
-        properties_o, buildings_o = createCleanDictionaries_Apartment(source,properties_i,debug=debug)
-    else:
-        error("Property type not recognized")
+        objects.append(building)
+        objects.append(apartment)
 
-    if path_out_base == None:
-        error("Give 'path_out_base' argument if you want ot save")
+    return objects
 
-    filepaths = []
-    dictionaries = []
+def objectsToJson(objs):
 
     filename_o = '{}-{}-{}.json'.format(
-        commune,datetime.datetime.now().strftime("%Y%m%d%H%M%S"),source)
+    commune,datetime.datetime.now().strftime("%Y%m%d%H%M%S"),source)
     path_o = path_out_base / '{}s/'.format(propertyType)
     filepath_o = path_o / filename_o
     file_o = open(filepath_o,'w')
@@ -324,9 +357,25 @@ def createCleanDictionaries(source,propertyType,properties_i,path_out_base,debug
         fp_o.append(filepath_o)
         filepath_o = fp_o
 
-    return [filepath_o,properties_o]
+def dictionariesToDatabase(re_dicts,property_type,ci=0,cf=None,debug=1):
+    '''
+    Given a list of dictionaries, where every dictionary has the info
+    of a real estate, then create proper objects, as defined in the models.
+        @re_dict: list of real estate dictionaries
+        @property_type: type of property the dictionary comes from
+        #debug: bananas pijamas
+    '''
 
-def sourceToJson(source,propertyType,filepath_i,path_o):
+    if property_type == 'building':
+        objects = dictionariesToDatabase_Building(re_dicts,ci=ci,cf=cf,debug=debug)
+    elif property_type == 'apartment':
+        objects = dictionariesToDatabase_Apartment(re_dicts,ci=ci,cf=cf,debug=debug)
+    else:
+        error("Property type not recognized")
+
+    return objects
+
+def sourceToDictionaries(filepath_i):
     '''
     Converts raw data from source, as saved by scrappers, into a JSON that has
     the format, field names and structure of our database.
@@ -340,21 +389,20 @@ def sourceToJson(source,propertyType,filepath_i,path_o):
 
     if filetype == 'txt':
         fileData = fileToString(filepath_i)
-        properties = stringToDictionaries(fileData)
+        re_dict = stringToDictionaries(fileData)
     elif filetype == 'json':
-        properties = fileToDictionary(filepath_i)
+        re_dict = fileToDictionary(filepath_i)
     else:
         error("File format not supported: {}".format(filetype))
         exit(0)
 
-    [filepath, properties] = createCleanDictionaries(source,propertyType,properties,path_o)
-    return [filepath, properties]
+    return re_dict
 
 # Parameters
 
 source1 = ['toctoc','portali'][1]
 source2 = ['TocToc','PortalInmobiliario'][1]
-propertyType = 'apartment'
+property_type = 'apartment'
 region = 'Metropolitana de Santiago'
 commune = 'Providencia'
 date = '2018-09-21T21-22-40'
@@ -372,4 +420,8 @@ path_o_base = Path(REALSTATE_DATA_PATH)
 filename_i = '{}_aptarment_data_{}.json'.format(commune,source1)
 filepath_i = path_i / filename_i
 
-filepaths, dictionaries = sourceToJson(source1,propertyType,filepath_i,path_o_base)
+logfile = open('log_{}'.format(datetime.datetime.now().isoformat()),'w')
+
+re_dict = sourceToDictionaries(filepath_i)
+objs = dictionariesToDatabase(re_dict,property_type,ci=1103)
+#objectsToJson(objs)

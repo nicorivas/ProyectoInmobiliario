@@ -34,7 +34,7 @@ class RealEstate(models.Model):
         blank=True,
         null=True,
         to_field='code')
-    addressFromCoords = models.BooleanField("Direccion por coordenadas",blank=True,null=True)
+    addressFromCoords = models.BooleanField("Direccion por coordenadas",default=False)
 
     name = models.CharField("Nombre",max_length=200,default="",null=True,blank=True)
     lat = models.FloatField("Latitud",default=0.0)
