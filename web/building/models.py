@@ -104,11 +104,3 @@ class Building(RealEstate):
 
     class Meta:
         app_label = 'building'
-
-    def __str__(self):
-        return "{}, {} {}, {}, {}".format(
-            self.name,
-            self.addressStreet,
-            self.addressNumber,
-            self.addressCommune,
-            self.addressRegion)

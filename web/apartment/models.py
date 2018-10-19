@@ -43,7 +43,7 @@ class Apartment(RealEstate):
     permisoEdificacionFecha = models.DateField("Fecha permiso edificacion",default='2006-10-25',null=True)
     permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificacion",max_digits=7,decimal_places=2,default=0,null=True)
 
-    marketPrice = models.PositiveSmallIntegerField("Precio mercado UF",null=True,blank=True)
+    marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
 
     @property
     def sourceNameNice(self):

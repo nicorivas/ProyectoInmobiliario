@@ -6,9 +6,9 @@ from sqlalchemy import MetaData
 #from sqlalchemy import update
 
 
-DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data'
-GEO_DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data/geo/chile'
-REALSTATE_DATA_PATH = '/Users/nico/Code/ProyectoInmobiliario/data/realestate'
+DATA_PATH = '/Users/nico/Code/tasador/data'
+GEO_DATA_PATH = '/Users/nico/Code/tasador/data/geo/chile'
+REALSTATE_DATA_PATH = '/Users/nico/Code/tasador/data/realestate'
 
 '''
 Regions of Chile
