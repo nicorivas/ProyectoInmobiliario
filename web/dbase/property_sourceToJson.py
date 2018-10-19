@@ -1,19 +1,111 @@
 #!/usr/bin/env python
 import re # regular expressions
 import requests # to call the API of Google to get lat-lon
-import pandas as pd # are cute
 from pathlib import Path # nice way to manage paths
 import json # to save nice dictionaries
 import codecs
-from sqlalchemy import create_engine # for pandas dataframes to postgre
-from sqlalchemy import MetaData
-from sqlalchemy.sql import and_
-from sqlalchemy import update
 import datetime
 from tools import *
 from globals import *
 import os.path
 import random
+
+# Importing DJANGO things
+import sys
+import os
+import django
+sys.path.append('/Users/nico/Code/tasador/web/')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
+django.setup()
+
+# Models
+from realestate.models import RealEstate
+
+def addressToCoordinates(address):
+    '''
+    Given an address (string that Google would understand)
+    return coordinates in lat long
+    '''
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?'
+    url_address = 'address={}'.format(address)
+    url_key='&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+    response = requests.get(url+''+url_address+url_key)
+    resp_json_payload = response.json()
+    return resp_json_payload['results'][0]['geometry']['location']
+
+
+def coordinatesToAddress(lat,lng):
+    '''
+    Given a lat-long pair, return an address
+    '''
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?'
+    url_latlng = 'latlng={},{}'.format(lat,lng)
+    url_key='&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+    response = requests.get(url+''+url_latlng+url_key)
+    resp_json_payload = response.json()
+    resp_json_payload['results'][0]['address_components']
+    number = None
+    street = None
+    commune = None
+    region = None
+    for ac in resp_json_payload['results'][0]['address_components']:
+        if 'street_number' in ac['types']:
+            number = ac['long_name']
+        if 'route' in ac['types']:
+            street = ac['short_name']
+        if 'locality' in ac['types']:
+            commune = ac['long_name']
+        if 'administrative_area_level_1' in ac['types']:
+            region = ac['long_name']
+    if number == None:
+        error('Address number not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        return None
+    if street == None:
+        error('Address street not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        return None
+    if commune == None:
+        error('Commune not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        return None
+    if region == None:
+        error('Region not found from lat lng: {}'.format(resp_json_payload['results'][0]))
+        return None
+    return [number,street,commune,region]
+
+def createRealEstate(re,re_dict):
+
+    print(re_dict)
+
+    translation = [
+        ('nombre_edificio','name'),
+        ('codigo','sourceId'),
+        ('fecha_publicacion','sourceDatePublished'),
+        ('url','sourceUrl'),
+        ('direccion','address')]
+
+    for v_sc, v_db in translation:
+        re_dict[v_db] = re_dict.pop(v_sc)
+
+    re_dict['lat'] = float(re_dict['coordenadas'][0])
+    re_dict['lng'] = float(re_dict['coordenadas'][1])
+    re_dict.pop('coordenadas')
+
+    number,street,commune,region = coordinatesToAddress(re_dict['lat'],re_dict['lng'])
+    print(number,street,commune,region)
+
+    variables = re._meta.get_fields()
+    for var in variables:
+        if not var.name in re_dict.keys():
+            error("Variable '{}' not found in dictionary keys".format(var.name))
+        else:
+            setattr(re,var.name,re_dict[var.name])
+
+    setattr(re,'propertyType',RealEstate.TYPE_APARTMENT)
+    setattr(re,'sourceName','portali')
+
+    print(re.__dict__)
+    exit(0)
+    #for var in variables:
+
 
 def createBuilding(source,realestate,variables,debug=0):
 
@@ -172,7 +264,10 @@ def createCleanDictionaries_Apartment(source, apartments, debug=0):
     apartments_clean = []
     buildings_clean = []
 
+    realestate = RealEstate(propertyType=1,id=10)
+
     for i in range(len(apartments)):
+        createRealEstate(realestate,apartments[i])
         print(i)
         bld = createBuilding(source,apartments[i],pi_ab_variables,debug=debug)
         buildings_clean.append(bld)
@@ -236,6 +331,7 @@ def sourceToJson(source,propertyType,filepath_i,path_o):
     Converts raw data from source, as saved by scrappers, into a JSON that has
     the format, field names and structure of our database.
     '''
+
     if not os.path.isfile(filepath_i):
         error("Input file doesn't exist: {}".format(filepath_i))
         exit(0)
