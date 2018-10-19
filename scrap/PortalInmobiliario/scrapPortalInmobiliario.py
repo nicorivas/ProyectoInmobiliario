@@ -163,21 +163,24 @@ def building_data_PI(url):
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class':"col-sm-10 col-md-8"})
     #head data of building
-    building = {'nombre_proyecto': head_info.find('h1', {'role':'heading'}).text}
-    building['direccion'] = bsObj.find('section',
+    building = {'name': head_info.find('h1', {'role':'heading'}).text}
+    building['addressStreet'] = bsObj.find('section',
                                        {'class':'project-location-section'}).find('p', {'class':'prj-map-addr-obj'}).text
-    building['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+    building['coordinates'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
                                bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    building['lat'] =bsObj.find('meta', {'property': 'og:latitude'}).attrs['content']
+    building['lat'] =bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']
     building['url'] = url
     comunareg = head_info.find('div', {'class':'bcrumbs prj-bcrumbs'}).findAll('span', {'itemprop':'title'})
-    building['comuna-region'] = comunareg[-1].text + '-' + comunareg[-2].text
-    building['Precio_desde'] = head_info.find('span', {'class':'prj-price-range-lower'}).text
-    building['codigo'] = head_info.find('span', {'class':'prj-code'}).text.split(' ')[1]
+    building['addressCommune'] = comunareg[-1].text
+    building['addressRegion'] = comunareg[-2].text
+    building['marketPrice'] = head_info.find('span', {'class':'prj-price-range-lower'}).text
+    building['code'] = head_info.find('span', {'class':'prj-code'}).text.split(' ')[1]
     nameList = bsObj.findAll('div', {'class': 'project-feature-item'}) #Tags with building data
     # building data
-    building['tipo_proyecto'] = nameList[0].text.strip()
-    building['dormitorios'] = nameList[1].text.strip()
-    building['baños'] = nameList[2].text.strip()
+    building['propertyType'] = nameList[0].text.strip()
+    building['bedrooms'] = nameList[1].text.strip()
+    building['bathrooms'] = nameList[2].text.strip()
     browser.close()
     browser.quit()
     return building
@@ -204,25 +207,27 @@ def apartment_data_PI(url):
     bsObj = BeautifulSoup(html, "html5lib")
     head_info = bsObj.find('div', {'class': "media-block"})
     #main_search = bsObj.findAll('div', {'class': 'property-data-sheet clearfix'})  # where is data
-    build_aps = {}
-    build_aps['nombre_edificio'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
-    build_aps['codigo'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
-    build_aps['tipo_vivienda'] = 'departamento'
-    build_aps['fecha_publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
-    build_aps['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+    apt = {}
+    apt['name'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
+    apt['code'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
+    apt['propertyType'] = 'departamento'
+    apt['fecha_publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
+    apt['coordinates'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
                                bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
-    build_aps['url'] = url
-    build_aps['precio_publicacion'] = head_info.find('p', {'class': 'price'}).text
-    build_aps['precio_publicacion2'] = head_info.find('p', {'class': 'price-ref'}).text
-    build_aps['direccion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
+    apt['lat'] = bsObj.find('meta', {'property': 'og:latitude'}).attrs['content']
+    apt['lat'] = bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']
+    apt['url'] = url
+    apt['marketPrice2'] = head_info.find('p', {'class': 'price'}).text
+    apt['marketPrice'] = head_info.find('p', {'class': 'price-ref'}).text
+    apt['addressStreet'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-programm'}).p.stripped_strings:
-        build_aps[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
+        apt[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-area'}).p.stripped_strings:
-        build_aps[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
+        apt[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
 
     browser.close()
     browser.quit()
-    return build_aps
+    return apt
 
 def house_data_PI(url):
 
@@ -247,15 +252,17 @@ def house_data_PI(url):
     # head house data
     head_info = bsObj.find('div', {'class': "media-block"})
     house = {}
-    house['nombre_casa'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
-    house['codigo'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
+    house['name'] = head_info.find('h4', {'class':'media-block-title'}).text.strip()
+    house['code'] = bsObj.find('p', {'class': 'operation-internal-code'}).text.split(': ')[1]
     house['fecha-publicacion'] = bsObj.findAll('p', {'class': 'operation-internal-code'})[1].text.split(': ')[1]
-    house['coordenadas'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
+    house['coordinates'] = [bsObj.find('meta', {'property': 'og:latitude'}).attrs['content'],
                                bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']]
+    house['lat'] = bsObj.find('meta', {'property': 'og:latitude'}).attrs['content']
+    house['lat'] = bsObj.find('meta', {'property': 'og:longitude'}).attrs['content']
     house['url'] = url
-    house['precio_publicacion'] = head_info.find('p', {'class': 'price'}).text
-    house['precio_publicacion2'] = head_info.find('p', {'class': 'price-ref'}).text
-    house['direccion'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
+    house['marketPrice2'] = head_info.find('p', {'class': 'price'}).text
+    house['marketPrice'] = head_info.find('p', {'class': 'price-ref'}).text
+    house['addressStreet'] = bsObj.find('div', {'class':'data-sheet-column data-sheet-column-address'}).p.text.strip()
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-programm'}).p.stripped_strings:
         house[str(i).split('\xa0')[1]] = str(i).split('\xa0')[0]
     for i in bsObj.find('div', {'class':'data-sheet-column data-sheet-column-area'}).p.stripped_strings:
@@ -305,11 +312,13 @@ def apartment_appraisal_data_PI(url ,user, password):
             time.sleep(3)
             html2 = browser.page_source
             bsObj2 = BeautifulSoup(html2, "html5lib")
-            for apt in bsObj2.find('select', {'class': 'form-control'}):
-                dept  = {'depto' : apt.text}
-                dept['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
-                dept['url'] = url
-                dept['coordenadas'] = coordinates
+            for ap in bsObj2.find('select', {'class': 'form-control'}):
+                apt  = {'number' : ap.text}
+                apt['building_in'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
+                apt['url'] = url
+                apt['coordinates'] = coordinates
+                apt['lat'] = coordinates[0]
+                apt['lng'] = coordinates[1]
                 try:
                     browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option['+str(i)+']')[0].click()
                 except:
@@ -318,20 +327,20 @@ def apartment_appraisal_data_PI(url ,user, password):
                 time.sleep(3)
                 html3 = browser.page_source
                 bsObj3 = BeautifulSoup(html3, "html5lib")
-                dept['codigo'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
-                dept[bsObj3.findAll('th', {'class': 'c'})[0].text] = bsObj3.findAll('td', {'class': 'c'})[0].text
-                dept[bsObj3.findAll('th', {'class': 'c'})[1].text] = bsObj3.findAll('td', {'class': 'c'})[1].text
-                dept[bsObj3.findAll('th', {'class': 'c'})[2].text] = bsObj3.findAll('td', {'class': 'c'})[2].text
-                dept[bsObj3.findAll('th', {'class': 'c'})[3].text] = bsObj3.findAll('td', {'class': 'c'})[3].text
-                dept[bsObj3.findAll('th', {'class': 'r'})[0].text] = bsObj3.findAll('td', {'class': 'r'})[0].text
-                dept[bsObj3.findAll('th', {'class': 'r'})[1].text] = bsObj3.findAll('td', {'class': 'r'})[1].text
-                dept[bsObj3.findAll('th', {'class': 'r'})[2].text] = bsObj3.findAll('td', {'class': 'r'})[2].text
-                dept[bsObj3.findAll('th', {'class': 'r'})[3].text] = bsObj3.findAll('td', {'class': 'r'})[3].text
-                dept[bsObj3.findAll('th', {'class': 'r'})[4].text] = bsObj3.findAll('td', {'class': 'r'})[4].text
-                dept['direccion'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
-                dept['comuna'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
+                apt['code'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
+                apt[bsObj3.findAll('th', {'class': 'c'})[0].text] = bsObj3.findAll('td', {'class': 'c'})[0].text
+                apt[bsObj3.findAll('th', {'class': 'c'})[1].text] = bsObj3.findAll('td', {'class': 'c'})[1].text
+                apt[bsObj3.findAll('th', {'class': 'c'})[2].text] = bsObj3.findAll('td', {'class': 'c'})[2].text
+                apt[bsObj3.findAll('th', {'class': 'c'})[3].text] = bsObj3.findAll('td', {'class': 'c'})[3].text
+                apt[bsObj3.findAll('th', {'class': 'r'})[0].text] = bsObj3.findAll('td', {'class': 'r'})[0].text
+                apt[bsObj3.findAll('th', {'class': 'r'})[1].text] = bsObj3.findAll('td', {'class': 'r'})[1].text
+                apt[bsObj3.findAll('th', {'class': 'r'})[2].text] = bsObj3.findAll('td', {'class': 'r'})[2].text
+                apt[bsObj3.findAll('th', {'class': 'r'})[3].text] = bsObj3.findAll('td', {'class': 'r'})[3].text
+                apt[bsObj3.findAll('th', {'class': 'r'})[4].text] = bsObj3.findAll('td', {'class': 'r'})[4].text
+                apt['addressStreet'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
+                apt['addressCommune'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
                 browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[2]/div/div[4]/button')[0].click()
-                list.append(dept)
+                list.append(apt)
                 i += 1
 
                 clean_appraisals_PI(user, password)
@@ -386,10 +395,12 @@ def house_appraisal_data_PI(url ,user, password):
             html2 = browser.page_source
             bsObj2 = BeautifulSoup(html2, "html5lib")
             for hous in bsObj2.find('select', {'class': 'form-control'}):
-                house  = {'modulo' : hous.text}
-                house['edificio'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
+                house  = {'number' : hous.text}
+                house['name'] = bsObj2.find('div', {'class': 'prj-name'}).text.split('Cód')[0].strip()
                 house['url'] = url
-                house['coordenadas'] = coordinates
+                house['coordinates'] = coordinates
+                house['lat'] = coordinates[0]
+                house['lng'] = coordinates[1]
                 try:
                     browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[3]/div[2]/div/div[2]/div/div/div/select/option['+str(i)+']')[0].click()
                 except:
@@ -398,15 +409,15 @@ def house_appraisal_data_PI(url ,user, password):
                 time.sleep(3)
                 html3 = browser.page_source
                 bsObj3 = BeautifulSoup(html3, "html5lib")
-                house['codigo'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
+                house['code'] = bsObj3.find('span', {'class': 'prj-code'}).text.split(' ')[1]
                 house[bsObj3.findAll('th', {'class': 'c'})[0].text] = bsObj3.findAll('td', {'class': 'c'})[0].text
                 house[bsObj3.findAll('th', {'class': 'c'})[1].text] = bsObj3.findAll('td', {'class': 'c'})[1].text
                 house[bsObj3.findAll('th', {'class': 'r'})[0].text] = bsObj3.findAll('td', {'class': 'r'})[0].text
                 house[bsObj3.findAll('th', {'class': 'r'})[1].text] = bsObj3.findAll('td', {'class': 'r'})[1].text
                 house[bsObj3.findAll('th', {'class': 'r'})[2].text] = bsObj3.findAll('td', {'class': 'r'})[2].text
                 house[bsObj3.findAll('th', {'class': 'r'})[3].text] = bsObj3.findAll('td', {'class': 'r'})[3].text
-                house['direccion'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
-                house['comuna'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
+                house['addressStreet'] = bsObj3.find('span', {'class': 'bcrumb-current'}).text
+                house['addressCommune'] = bsObj3.findAll('span', {'class': 'bcrumb-current'})[1].text.split(',')[1]
                 browser.find_elements_by_xpath('//*[@id="prj-cotizacion-dialog"]/div/div/div/div[1]/div[1]/div[2]/div/div[4]/button')[0].click()
                 print(house)
                 list.append(house)

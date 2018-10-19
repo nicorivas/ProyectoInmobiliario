@@ -29,6 +29,7 @@ class Apartment(RealEstate):
     bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)
     builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)
     usefulSquareMeters = models.DecimalField("Superficie util",max_digits=7,decimal_places=2,null=True,blank=True)
+    terraceSquareMeters = models.DecimalField("Superficie terraza", max_digits=7, decimal_places=2, null=True, blank=True)
     orientation = models.CharField("Orientacion",max_length=2,choices=ORIENTATIONS,null=True,blank=True)
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
 

@@ -1,4 +1,4 @@
-from scrapTocToc import apartment_value_data, building_data, apartment_data, house_data, house_value_data
+from scrapTocToc import apartment_appraisal_data_TT, building_data_TT, apartment_data_TT, house_data_TT, house_appraisal_data_TT
 import codecs
 import re
 import json
@@ -13,13 +13,14 @@ The script run through the entire list of buildings and registers all properties
 numeroReg = str(input('Region: '))
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
-base_dir = mac_path
+base_dir = pc_path
 
-comunas = codecs.open(base_dir + numeroReg +'_comunas.txt', 'r', 'utf-8-sig')
+n_archivo = str(input('Numero de archivo: '))
+comunas = codecs.open(base_dir + numeroReg + '_comunas' + n_archivo + '.txt', 'r', 'utf-8-sig')
 
 
 password = 'toctocpass123'
-users = ['the_big_lebowsky@hotmail.com', 'palpo@nad.cl', 'covfefe@cove.cl', 'papi@damefunk.cl']
+users = ['palpo@nad.cl', 'covfefe@cove.cl', 'papi@damefunk.cl', 'the_big_lebowsky@hotmail.com' ]
 
 
 
@@ -55,31 +56,33 @@ for com in comunas:
             counter += 1
             try:
                 if state == 'Nuevo':
-                    building.append(building_data(url, name, coordinates))
+                    building.append(building_data_TT(url, name, coordinates))
                     build_data = codecs.open(path2 + '/' + str(com) + '_building_data_TT.json', 'w', "utf-8-sig")
                     json.dump(building, build_data, ensure_ascii=False, indent=1)
                     build_data.close()
-                    for i in apartment_value_data(url, users, password, coordinates):
+                    for i in apartment_appraisal_data_TT(url, users, password, coordinates):
                         apartment_appraisals.append(i)
-                        apart_appraisal = codecs.open(path2 + '/' + str(com) + '_aptarment_appraisal_data_TT.json',
+                        print(i)
+                        apart_appraisal = codecs.open(path2 + '/' + str(com) + '_apartment_appraisal_data_TT.json',
                                                       'w', "utf-8-sig")
                         json.dump(apartment_appraisals, apart_appraisal, ensure_ascii=False, indent=1)
                         apart_appraisal.close()
                     print('apt appraisal ' + str(counter))
                 else:
-                    apartment.append(apartment_data(url, name, coordinates))
-                    apart_data = codecs.open(path2 + '/' + str(com) + '_aptarment_data_TT.json', 'w', "utf-8-sig")
+                    apartment.append(apartment_data_TT(url, name, coordinates))
+                    apart_data = codecs.open(path2 + '/' + str(com) + '_apartment_data_TT.json', 'w', "utf-8-sig")
                     json.dump(apartment, apart_data, ensure_ascii=False, indent=1)
                     apart_data.close()
                     print('apt ' + str(counter))
             except:
                 json.dump(prop, error_list, ensure_ascii=False, indent=1)
-                print('error in ' + str(prop))
+                print('error in apartment ' + str(prop))
         else:
             try:
                 if state == 'Nuevo':
-                    for j in house_value_data(url, users, password, coordinates):
+                    for j in house_appraisal_data_TT(url, users, password, coordinates):
                         house_appraisals.append(j)
+                        print(j)
                         house_appraisal = codecs.open(path2 + '/' + str(com) + '_house_appraisal_data_TT.json',
                                                       'w',
                                                       "utf-8-sig")
@@ -88,7 +91,7 @@ for com in comunas:
                     print('house aprraisal ' + str(counter))
                     counter += 1
                 else:
-                    house.append(house_data(url, name, coordinates))
+                    house.append(house_data_TT(url, name, coordinates))
                     house_data = codecs.open(path2 + '/' + str(com) + '_house_data_TT.json', 'w', "utf-8-sig")
                     json.dump(house, house_data, ensure_ascii=False, indent=1)
                     house_data.close()
@@ -96,7 +99,7 @@ for com in comunas:
                     counter += 1
             except:
                 json.dump(prop, error_list, ensure_ascii=False, indent=1)
-                print('error in ' + str(prop))
+                print('error in house ' + str(prop))
     json.dump(str(com), done_list, ensure_ascii=False, indent=1)
 
     buildings.close()

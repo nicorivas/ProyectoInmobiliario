@@ -33,15 +33,9 @@ def edit_profile(request):
         user = UserProfile.objects.create(user=request.user, first_name=request.user.first_name,
                                           last_name=request.user.last_name, email=request.user.email)
     if request.method == 'POST':
-        #user_form = UserForm(request.POST, instance=request.user)
         profile_form = EditProfileForm(request.POST, instance=user)
-        #if user_form.is_valid() and profile_form.is_valid():
         if profile_form.is_valid():
-            #user_form.save()
             profile_form.save()
-            #_first_name = user_form.cleaned_data['first_name']
-            #_last_name = user_form.cleaned_data['last_name']
-            #_email = user_form.cleaned_data['email']
             _first_name = profile_form.cleaned_data['first_name']
             _last_name = profile_form.cleaned_data['last_name']
             _email = profile_form.cleaned_data['email']
@@ -62,11 +56,9 @@ def edit_profile(request):
             #messages.error(request, _('Please correct the error below.'))
             print('error')
     else:
-        #user_form = UserForm(instance=request.user)
         profile_form = EditProfileForm(instance=user)
 
     return render(request, 'user/profile_edit.html', {
-        #'user_form': user_form,
         'profile_form': profile_form
     })
 
