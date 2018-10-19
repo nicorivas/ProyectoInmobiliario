@@ -13,7 +13,7 @@ The script run through the entire list of buildings and registers all properties
 numeroReg = str(input('Region: '))
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
-base_dir = pc_path
+base_dir = mac_path
 
 n_archivo = str(input('Numero de archivo: '))
 comunas = codecs.open(base_dir + numeroReg + '_comunas' + n_archivo + '.txt', 'r', 'utf-8-sig')
