@@ -213,22 +213,28 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
             comment.save()
 
     ret = None
-    for key, form in forms.items():
-        if form.is_valid():
-            if 'save' in request.POST:
-                ret = form_do_save(request,forms,appraisal_old)
-            elif 'delete' in request.POST:
-                ret = form_do_delete(forms,appraisal)
-            elif 'finish' in request.POST:
-                ret = form_do_finish(forms,appraisal)
-            elif 'export' in request.POST:
-                ret = form_do_export(forms)
-            elif 'assign_tasador' in request.POST:
-                ret = form_do_assign_tasador(form_tasador_user,appraisal, forms, request)
-            elif 'assign_visador' in request.POST:
-                ret = form_do_assign_visador(form_visador_user,appraisal, forms, request)
-            elif 'comment' in request.POST:
-                ret = form_do_comment(request,forms,appraisal)
+    print('a')
+    if 'save' in request.POST:
+        if forms['appraisal'].is_valid() and \
+            forms['apartment'].is_valid() and \
+            forms['building'].is_valid():
+            ret = form_do_save(request,forms,appraisal_old)
+    elif 'delete' in request.POST:
+        ret = form_do_delete(forms,appraisal)
+    elif 'finish' in request.POST:
+        if forms['appraisal'].is_valid() and \
+            forms['apartment'].is_valid() and \
+            forms['building'].is_valid():
+            ret = form_do_finish(forms,appraisal)
+    elif 'export' in request.POST:
+        ret = form_do_export(forms)
+    elif 'assign_tasador' in request.POST:
+        ret = form_do_assign_tasador(form_tasador_user,appraisal, forms, request)
+    elif 'assign_visador' in request.POST:
+        ret = form_do_assign_visador(form_visador_user,appraisal, forms, request)
+    elif 'comment' in request.POST:
+        if forms['comment'].is_valid():
+            ret = form_do_comment(request,forms,appraisal)
 
     return ret
 
@@ -286,6 +292,8 @@ def appraisal(request, **kwargs):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
+        print('k')
+
         # Main forms
         forms = {}
         form_appraisal = AppraisalModelForm_Appraisal(
@@ -332,7 +340,7 @@ def appraisal(request, **kwargs):
         if isinstance(ret, HttpResponse): return ret
 
     # REFERENCE PROPERTIES
-    references = get_similar_realestate(realestate)
+    references = []#get_similar_realestate(realestate)
 
     if len(references) > 0:
         averages = references.aggregate(
@@ -354,6 +362,7 @@ def appraisal(request, **kwargs):
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
+    print(versions)
     appraisal_history = []
     c = 0
     for i in range(len(versions)):
