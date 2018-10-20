@@ -81,10 +81,7 @@ def userAppraisals(request):
         appraisals_active = Appraisal.objects.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
         appraisals_finished = Appraisal.objects.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
 
-    context = {
-        'appraisals_active': appraisals_active,
-        'appraisals_finished': appraisals_finished}
-    return render(request, 'user/index.html', context)
+    return [appraisals_active,appraisals_finished]
 
 @login_required(login_url='user/login')
 def load_communes(request):
@@ -94,4 +91,3 @@ def load_communes(request):
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
-

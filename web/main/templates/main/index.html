@@ -3,10 +3,6 @@
 {% block head %}
         <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
         {% load static %}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
-        <script src="{% static 'home/js/google-maps-autocomplete.js' %}"></script>
-
         <script>
           function timeCreated(string) {
             var s = moment(string).format("D MMM HH:MM");
@@ -58,9 +54,15 @@
             {{ appraisal.realEstate.address }}
           </a>
         </td>
+        {% if appraisal.tasadorUser %}
         <td>
           {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
         </td>
+        {% else %}
+        <td class="bg-warning">
+          No asignado
+        </td>
+        {% endif %}
         <td style="text-align:center;">
           {% if appraisal.active %}
           <i class="fas fa-play"></i>
@@ -81,10 +83,10 @@
             <script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script>
         </td>
         <td>
-        <button type="button" id='button_delete' class="btn btn-dark btn-sm">
+        <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-top:-1.0em;margin-bottom:-1.0em;">
           delete
         </button>
-        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm">
+        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-top:-1.0em;margin-bottom:-1.0em;">
           comment
         </button>
         </td>
@@ -147,5 +149,29 @@
   </table>
   </div>
 </div>
+
+{% include "main/modals.html" %}
+
+<script>
+  $(document).on('click','.delete_appraisal',function(){
+      var id = $(this).data('id');
+      console.log('press')
+      $.ajax({
+          url:'',
+          type:'POST',
+          data:{
+              'id':id,
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success:function(data){
+              $('#appraisal_id').val(id);
+              $('#modalDelete').modal('show');
+          },
+          error:function(){
+              console.log('error')
+          },
+      });
+  });
+</script>
 
 {% endblock %}

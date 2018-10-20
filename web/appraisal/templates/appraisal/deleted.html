@@ -7,7 +7,18 @@
 {% endblock head %}
 
 {% block content %}
+<div class="container">
+<div class="alert alert-info" role="alert">
+  <h4 class="alert-heading text-center mt-5 mb-5">La tasación ha sido eliminada</h4>
+</div>
+<p class="text-center">En un momento será redirigido a la lista de tasaciones.</p>
+</div>
 
-<h1>La tasación ha sido eliminada</h1>
+<script>
+  function redirect(){
+     window.location.href = "/main/";
+  }
+  setTimeout(redirect, 3000); //2000 is equivalent to 2 seconds
+</script>
 
 {% endblock %}

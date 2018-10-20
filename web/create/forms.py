@@ -57,8 +57,9 @@ class AppraisalCreateForm(forms.Form):
     def clean(self):
         if self.cleaned_data.get('addressStreet_create')=="":
             raise forms.ValidationError('No name!')
-        if self.cleaned_data.get('addressNumberFlat_create').strip()=="":
-            raise forms.ValidationError('No hay número de departamento (quizás puso sólo un espacio)')
+        if self.cleaned_data.get('propertyType_create') == RealEstate.TYPE_APARTMENT:
+            if self.cleaned_data.get('addressNumberFlat_create').strip()=="":
+                raise forms.ValidationError('No hay número de departamento (quizás puso sólo un espacio)')
         return self.cleaned_data
 
     def clean_appraisalTimeFrame_create(self):

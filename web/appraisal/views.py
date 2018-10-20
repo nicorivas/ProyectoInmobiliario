@@ -292,8 +292,6 @@ def appraisal(request, **kwargs):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
-        print('k')
-
         # Main forms
         forms = {}
         form_appraisal = AppraisalModelForm_Appraisal(
