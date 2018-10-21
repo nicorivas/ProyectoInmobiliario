@@ -30,6 +30,7 @@ urlpatterns = [
     path('square/', include('square.urls')),
     path('main/', include('main.urls')),
     path('user/', include('user.urls')),
+    path('vis/', include('vis.urls')),
     #path('', include('home.urls')),
     path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
         form_class=AuthenticationFormB), name='login'),
