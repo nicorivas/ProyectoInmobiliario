@@ -1,34 +1,36 @@
 {% extends "main/base.html" %}
-
 {% load static %}
-<html>
-    <head>
-        <link rel="stylesheet" href="{% static 'property/css/property.css' %}">
-        {% load static %}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    </head>
+{% block head %}
+  <link rel="stylesheet" href="{% static 'create/css/create.css' %}">
+{% endblock head %}
 
-    {% block content %}
-<div class="section">
-  <form action="/create/" method="get" id="form_create">
+{% block content %}
+  <div class="container">
     {% csrf_token %}
-    <h1>Error</h1>
 
-      {{ form_create.propertyType_create.errors }}
-      {{ form_create.addressRegion_create.errors }}
-      {{ form_create.addressCommune_create.errors }}
-      {{ form_create.addressStreet_create.errors }}
-      {{ form_create.addressNumber_create.errors }}
-      {{ form_create.addressNumberFlat_create.errors }}
-      {{ form_create.appraisalTimeFrame_create.errors }}
+    <div class="alert alert-danger" role="alert">
+    <h4>Error!</h4>
+    <h5 class="text-center">{{ message }}</h5>
 
-      {% if form_create.errors %}
-      <h2>Asegurese que:</h2>
-      <p>El plazo esté en el futuro.</p>
-      <p>Seleccionar un tipo de propiedad.</p>
-      <p>Ingresar una dirección válida.</p>
-      {% endif %}
-  </form>
-</div>
+    {{ form_create.propertyType_create.errors }}
+    {{ form_create.addressRegion_create.errors }}
+    {{ form_create.addressCommune_create.errors }}
+    {{ form_create.addressStreet_create.errors }}
+    {{ form_create.addressNumber_create.errors }}
+    {{ form_create.addressNumberFlat_create.errors }}
+    {{ form_create.appraisalTimeFrame_create.errors }}
+
+    </div>
+
+    {% if form_create.errors %}
+      <h5>Asegurese de que:</h5>
+      <ul>
+        <li>El plazo esté en el futuro.</li>
+        <li>Seleccionar un tipo de propiedad.</li>
+        <li>Ingresar una dirección válida.</li>
+      </ul>
+    {% endif %}
+
+  </div>
 {% endblock %}
 </html>

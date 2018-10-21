@@ -73,6 +73,10 @@ class Appraisal(models.Model):
         return str([state[1] for state in self.STATES if state[0] == self.state][0])
 
     @property
+    def hasTasador(self):
+        print(self.tasadorUser)
+
+    @property
     def finished(self):
         if self.state == self.STATE_FINISHED:
             return True

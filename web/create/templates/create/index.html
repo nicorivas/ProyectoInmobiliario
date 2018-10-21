@@ -153,6 +153,7 @@
       },
       success: function (data) {
         if (type == 1) {
+          $("#id_addressNumberFlat_create").removeAttr('required');
           $("#id_addressNumberFlat_create").attr('disabled','disabled');
           $("#id_addressNumberFlat_create").val('');
           }
