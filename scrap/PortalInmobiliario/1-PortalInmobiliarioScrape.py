@@ -14,7 +14,7 @@ the 2-PortalInmobiliarioScrape.py script.'''
 region = input('Introduzca numero de region: ')
 pc_base_dir = 'G:/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
 mac_base_dir = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
-base_dir = mac_base_dir
+base_dir = pc_base_dir
 try:
     os.makedirs(base_dir)
 except:

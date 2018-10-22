@@ -299,10 +299,11 @@ def apartment_appraisal_data_TT(url, users, password, coordinates):
                     if x == 3:
                         x = 0
                 else:
-                    time.sleep(7)
+                    time.sleep(9)
                     browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[' + str(n) + ']/div[3]/a')[0].click()
-                    time.sleep(5)
+                    time.sleep(7)
                     html = browser.page_source
+                    time.sleep(4)
                     bsObj3 = BeautifulSoup(html, "html5lib")
                     head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
                     apt = {}
@@ -376,9 +377,10 @@ def house_appraisal_data_TT(url, users, password, coordinates):
                 else:
                     time.sleep(7)
                     browser.find_elements_by_xpath('//*[@id="listado-plantas"]/li[' + str(n) + ']/div[3]/a')[0].click()
-                    time.sleep(5)
+                    time.sleep(7)
                     html = browser.page_source
                     bsObj3 = BeautifulSoup(html, "html5lib")
+                    time.sleep(4)
                     head_info = bsObj3.find('div', {'class': "wrap-hfijo"})
                     house = {}
                     house['code'] = head_info.find('li', {'class': 'cod'}).text.split(': ')[1]
