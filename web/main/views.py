@@ -7,12 +7,17 @@ from appraisal.models import Appraisal
 
 @login_required(login_url='/')
 def main(request):
-    appraisals_active = Appraisal.objects.filter(Q(state=Appraisal.STATE_ACTIVE)|Q(state=Appraisal.STATE_PAUSED)).order_by('timeCreated')
-    '''
-    appraisals_finished = Appraisal.objects.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            id = int(request.POST['appraisal_id'])
+            appraisal = Appraisal.objects.get(pk=id)
+            appraisal.delete()
+
+    appraisals_active, appraisals_finished = userAppraisals(request)
 
     context = {
-        'appraisals_active':appraisals_active,
-        'appraisals_finished':appraisals_finished}
-    '''
-    return userAppraisals(request)
+        'appraisals_active': appraisals_active,
+        'appraisals_finished': appraisals_finished}
+
+    return render(request, 'main/index.html', context)

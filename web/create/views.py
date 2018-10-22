@@ -21,8 +21,9 @@ from appraisal.models import Appraisal
 import datetime
 
 import requests # to call the API of Google to get lat-lon
+import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,price):
+def appraisal_create(realEstate,timeFrame,price,user):
     '''
     Create appraisal, given a ...?
     '''
@@ -32,7 +33,10 @@ def appraisal_create(realEstate,timeFrame,price):
         timeCreated=datetime.datetime.now(),
         timeDue=timeDue,
         price=price)
-    appraisal.save()
+    with reversion.create_revision():
+        appraisal.save()
+        reversion.set_user(user)
+        reversion.set_comment('Created')
     return appraisal
 
 def apartment_create(building_in,addressNumberFlat):
@@ -208,7 +212,7 @@ def create(request):
             try:
                 appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
-                appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice)
+                appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice, request.user)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)
@@ -216,10 +220,11 @@ def create(request):
             # go to appraisal url
             return HttpResponseRedirect(appraisal.url)
         else:
-            print(form_create.errors.as_data()['appraisalTimeFrame_create'])
-
-        context = {'form_create':form_create}
-        return render(request, 'create/error.html', context)
+            errordata = form_create.errors.as_data()
+            if '__all__' in errordata.keys():
+                message = errordata['__all__'][0].message
+            context = {'form_create':form_create,'message':message}
+            return render(request, 'create/error.html', context)
 
     else:
 
