@@ -1,0 +1,66 @@
+
+{% extends "main/base.html" %}
+
+{% block content %}
+<div class='container'>
+
+<h5>Departamentos {{commune.name}}</h5>
+
+<table class="table table-sm table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Dirección</th>
+      <th scope="col">lat/lng</th>
+      <th scope="col">Dpto.</th>
+      <th scope="col">Piso</th>
+      <th scope="col">Piesas</th>
+      <th scope="col">Baños</th>
+      <th scope="col">m2 const.</th>
+      <th scope="col">m2 útiles</th>
+      <th scope="col">m2 terraza</th>
+      <th scope="col">Or.</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for apt in apts %}
+    <tr>
+      <td>
+        {{ forloop.counter }}
+      </td>
+      <td>
+        {{ apt.addressShort }}
+      </td>
+      <td>
+        <small><a target="_blank" rel="noopener noreferrer" href="{{apt.mapsUrl}}">{{ apt.latlng }}</a></small>
+      </td>
+      <td>
+        {{ apt.number }}
+      </td>
+      <td>
+        {{ apt.floor }}
+      </td>
+      <td>
+        {{ apt.bedrooms }}
+      </td>
+      <td>
+        {{ apt.bathrooms }}
+      </td>
+      <td>
+        {{ apt.builtSquareMeters }}
+      </td>
+      <td>
+        {{ apt.usefulSquareMeters }}
+      </td>
+      <td>
+        {{ apt.terraceSquareMeters }}
+      </td>
+      <td>
+        {{ apt.orientation }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
