@@ -29,10 +29,16 @@
         {{ forloop.counter }}
       </td>
       <td>
-        {{ apt.addressShort }}
+        <a target="_blank" rel="noopener noreferrer" href="{{apt.sourceUrl}}">
+          {{ apt.addressShort }}
+        </a>
       </td>
       <td>
-        <small><a target="_blank" rel="noopener noreferrer" href="{{apt.mapsUrl}}">{{ apt.latlng }}</a></small>
+        <small>
+          <a target="_blank" rel="noopener noreferrer" href="{{apt.mapsUrl}}">
+            {{ apt.latlng }}
+          </a>
+        </small>
       </td>
       <td>
         {{ apt.number }}
