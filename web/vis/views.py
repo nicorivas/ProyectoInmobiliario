@@ -55,7 +55,6 @@ def summary_commune(request,region_id,commune_id):
     commune = Commune.objects.get(code=commune_id)
     apts = Apartment.objects.filter(addressCommune=commune)
     apts = list(apts)
-    print(apts)
     apts = sorted(apts, key=lambda t: t.addressShort)
     context = {'commune':commune,'apts':apts}
 
