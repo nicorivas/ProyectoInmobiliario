@@ -32,7 +32,7 @@ for com in comunas:
     print(str(com))
 
 
-    buildings = codecs.open(base_path + str(com) + '_properties_PI.txt', 'r', "utf-8-sig")
+    buildings = codecs.open(base_path + str(com) + '_properties_PI.json', 'r', "utf-8-sig")
     error_list = codecs.open(path2 + '/' + str(com) +'_error_list_PI.json', 'w', "utf-8-sig")
     done_list = codecs.open(base_dir + 'list_done.json', 'w', 'utf-8-sig')
     building = []

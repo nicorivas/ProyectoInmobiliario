@@ -15,6 +15,7 @@ region = input('Introduzca numero de region: ')
 pc_base_dir = 'G:/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
 mac_base_dir = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/'+region+'/'
 base_dir = mac_base_dir
+date = str(datetime.datetime.now().replace(microsecond=0).isoformat().replace(':', '-'))
 try:
     os.makedirs(base_dir)
 except:
@@ -54,8 +55,8 @@ for com in comunas:
     list of list with building name, url, type.'''
 
 
-    search=codecs.open(path+comuna+'_urls_PI.txt', 'r', "utf-8")
-    buildings = codecs.open(path + comuna + '_properties_PI.txt', 'w', "utf-8")
+    search=codecs.open(path+comuna+'_urls_PI.json', 'r', "utf-8")
+    buildings = codecs.open(path + date + '_properties_PI.json', 'w', "utf-8")
 
     index = 0
     b_directory = []

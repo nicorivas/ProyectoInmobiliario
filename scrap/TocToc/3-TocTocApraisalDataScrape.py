@@ -34,8 +34,8 @@ for com in comunas:
     os.makedirs(path2)
     print(str(com))
     done_list = codecs.open(base_dir + 'list_doneTT.json', 'w', 'utf-8-sig')
-    buildings = codecs.open(base_path + com + '_properties_TT.txt', 'r', "utf-8-sig")
-    error_list = codecs.open(path2 + '/' + com +'_error_list_TT.txt', 'w', "utf-8-sig")
+    buildings = codecs.open(base_path + com + '_properties_TT.json', 'r', "utf-8-sig")
+    error_list = codecs.open(path2 + '/' + com +'_error_list_TT.json', 'w', "utf-8-sig")
 
     building = []
     apartment_appraisals = []
