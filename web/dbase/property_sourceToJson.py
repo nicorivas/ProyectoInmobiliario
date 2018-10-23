@@ -51,7 +51,14 @@ def coordinatesToAddress(lat,lng):
     url_key='&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
     response = requests.get(url+''+url_latlng+url_key)
     resp_json_payload = response.json()
-    resp_json_payload['results'][0]['address_components']
+    if 'results' not in resp_json_payload.keys():
+        error('Google returned something weird: {}'.format(resp_json_payload),logfile)
+        return None
+    try:
+        resp_json_payload['results'][0]['address_components']
+    except IndexError:
+        error('Google returned something weird: {}'.format(resp_json_payload),logfile)
+        return None
     number = None
     street = None
     commune = None
@@ -77,38 +84,15 @@ def coordinatesToAddress(lat,lng):
         error('Commune not found from lat={} lng={}: {}'.format(
             lat,lng,resp_json_payload['results'][0]),logfile)
         return None
+    if commune == 'Los Cerrillos':
+        commune = 'Cerrillos'
     if region == None:
         error('Region not found from lat={} lng={}: {}'.format(
             lat,lng,resp_json_payload['results'][0]),logfile)
         return None
     return [number,street,commune,region]
 
-def createRealEstate(re,re_dict,propertyType):
-    '''
-    Populates the real esatte variable of any real estate
-    '''
-
-    global logfile
-
-    # Automatic fields
-    translation = [
-        ('nombre_edificio','name'),
-        ('codigo','sourceId'),
-        ('fecha_publicacion','sourceDatePublished'),
-        ('url','sourceUrl'),
-        ('direccion','address')]
-    for v_sc, v_db in translation:
-        re_dict[v_db] = re_dict[v_sc]
-    variables = re._meta.get_fields()
-    for var in variables:
-        if var.name in re_dict.keys():
-            setattr(re,var.name,re_dict[var.name])
-
-    # Coordinates
-    setattr(re,'lat',float(re_dict['coordenadas'][0]))
-    setattr(re,'lng',float(re_dict['coordenadas'][1]))
-
-    # Address from coordinate
+def setAddressFromCoords(re):
     address = coordinatesToAddress(re.lat,re.lng)
     if address == None:
         error('Coordinate to address failed, skipping real estate')
@@ -140,6 +124,32 @@ def createRealEstate(re,re_dict,propertyType):
             setattr(re,'addressRegion_id',REGION_NAME__CODE[region])
         setattr(re,'addressFromCoords',True)
 
+def createRealEstate(re,re_dict,propertyType):
+    '''
+    Populates the real esatte variable of any real estate
+    '''
+
+    global logfile
+
+    # Automatic fields
+    translation = [
+        ('nombre_edificio','name'),
+        ('codigo','sourceId'),
+        ('fecha_publicacion','sourceDatePublished'),
+        ('url','sourceUrl'),
+        ('direccion','address')]
+    for v_sc, v_db in translation:
+        re_dict[v_db] = re_dict[v_sc]
+    variables = re._meta.get_fields()
+    for var in variables:
+        if var.name in re_dict.keys():
+            setattr(re,var.name,re_dict[var.name])
+
+    # Coordinates
+    setattr(re,'lat',float(re_dict['coordenadas'][0]))
+    setattr(re,'lng',float(re_dict['coordenadas'][1]))
+    re.addressFromCoords = True
+
     # Others
     tz_santiago = timezone('America/Santiago')
     setattr(re,'propertyType',propertyType)
@@ -164,7 +174,7 @@ def createBuilding(bd_dict):
 
     ret = createRealEstate(bd,bd_dict,propertyType=RealEstate.TYPE_BUILDING)
     if ret == False:
-        error('Creating real estate failed, returning')
+        error('Creating building failed, returning')
         return False
 
     setattr(bd,'fromApartment',True)
@@ -181,32 +191,62 @@ def createApartment(apt_dict,bd):
 
     ret = createRealEstate(apt,apt_dict,propertyType=RealEstate.TYPE_APARTMENT)
     if ret == False:
-        error('Creating real estate failed, returning')
+        error('Creating apartment failed, returning')
         return False
 
     v = apt_dict['precio_publicacion2'].replace('UF','').strip()
     v = v.replace('.','')
     v = v.replace(',','.')
+    v = v.replace('/m²','') # strange cases
+    try:
+        float(v)
+    except ValueError:
+        error("Failed converting 'precio_publicacion2' = {} to float".format(v))
+        return False
     setattr(apt,'marketPrice',v)
 
     if 'Dormitorio' in apt_dict.keys():
-        setattr(apt,'bedrooms',int(apt_dict['Dormitorio']))
+        try:
+            setattr(apt,'bedrooms',int(apt_dict['Dormitorio']))
+        except ValueError:
+            error("Failed converting 'Dormitorio' = {} to int".format(apt_dict['Dormitorio']))
+            return False
     elif 'Dormitorios' in apt_dict.keys():
-        setattr(apt,'bedrooms',int(apt_dict['Dormitorios']))
+        try:
+            setattr(apt,'bedrooms',int(apt_dict['Dormitorios']))
+        except ValueError:
+            error("Failed converting 'Dormitorios' = {} to int".format(apt_dict['Dormitorios']))
+            return False
     else:
         warning("'Dormitorio(s)' not found in source dictionary",logfile)
     if 'Baño' in apt_dict.keys():
-        setattr(apt,'bathrooms',int(apt_dict['Baño']))
+        try:
+            setattr(apt,'bathrooms',int(apt_dict['Baño']))
+        except ValueError:
+            error("Failed converting 'Baño' = {} to int".format(apt_dict['Baño']))
+            return False
     elif 'Baños' in apt_dict.keys():
-        setattr(apt,'bathrooms',int(apt_dict['Baños']))
+        try:
+            setattr(apt,'bathrooms',int(apt_dict['Baños']))
+        except ValueError:
+            error("Failed converting 'Baños' = {} to int".format(apt_dict['Baños']))
+            return False
     else:
         warning("'Baño(s)' not found in source dictionary",logfile)
     if 'm² útil' in apt_dict.keys():
-        setattr(apt,'usefulSquareMeters',float(apt_dict['m² útil']))
+        try:
+            setattr(apt,'usefulSquareMeters',float(apt_dict['m² útil']))
+        except ValueError:
+            error("Failed converting 'm² útil' = {} to float".format(apt_dict['m² útil']))
+            return False
     else:
         warning("'m² útil' not found in source dictionary",logfile)
     if 'm² total' in apt_dict.keys():
-        setattr(apt,'builtSquareMeters',float(apt_dict['m² total']))
+        try:
+            setattr(apt,'builtSquareMeters',float(apt_dict['m² total']))
+        except ValueError:
+            error("Failed converting 'm² total' = {} to float".format(apt_dict['m² total']))
+            return False
     else:
         warning("'m² total' not found in source dictionary",logfile)
 
@@ -299,6 +339,10 @@ def dictionariesToDatabase_Apartment(re_dicts, ci=0, cf=None, debug=0):
 
     objects = []
 
+    re_id = RealEstate.objects.latest('id').id + 1
+    bd_id = Building.objects.latest('id').id + 1
+    apt_id = Apartment.objects.latest('id').id + 1
+
     if isinstance(cf,type(None)):
         cf = len(re_dicts)
 
@@ -314,17 +358,23 @@ def dictionariesToDatabase_Apartment(re_dicts, ci=0, cf=None, debug=0):
                 continue
         re = realEstateExists(building)
         if isinstance(re,type(None)):
+            # We assign address from coords here to avoid doing it if it is not
+            # necessary (the RE already exists)
+            if building.addressFromCoords:
+                setAddressFromCoords(building)
             building.save()
         else:
             warning('Building already existed',logfile)
             building = re # building is now the one that existed
 
         apartment = createApartment(re_dict,building)
-        if isinstance(building,bool):
+        if isinstance(apartment,bool):
             if not apartment:
                 continue
         re = realEstateExists(apartment)
         if isinstance(re,type(None)):
+            if apartment.addressFromCoords:
+                setAddressFromCoords(apartment)
             apartment.save()
         else:
             warning('Apartment already existed',logfile)
@@ -366,6 +416,8 @@ def dictionariesToDatabase(re_dicts,property_type,ci=0,cf=None,debug=1):
         #debug: bananas pijamas
     '''
 
+    global logfile, logfile_runs
+
     if property_type == 'building':
         objects = dictionariesToDatabase_Building(re_dicts,ci=ci,cf=cf,debug=debug)
     elif property_type == 'apartment':
@@ -383,7 +435,7 @@ def sourceToDictionaries(filepath_i):
 
     if not os.path.isfile(filepath_i):
         error("Input file doesn't exist: {}".format(filepath_i))
-        exit(0)
+        return False
 
     filetype = str(filepath_i)[-10:].split('.')[1].strip()
 
@@ -404,24 +456,55 @@ source1 = ['toctoc','portali'][1]
 source2 = ['TocToc','PortalInmobiliario'][1]
 property_type = 'apartment'
 region = 'Metropolitana de Santiago'
-commune = 'Providencia'
-date = '2018-09-21T21-22-40'
-
 # Check parameters
 if region not in REGION_NAME:
     print('region not found')
     exit(0)
-if commune not in COMMUNE_NAME:
-    print('commune not found')
-    exit(0)
 
-path_i = Path(REALSTATE_DATA_PATH+'/source/{}/{}/{}/{}/'.format(slugify(region),commune,source2,date))
-path_o_base = Path(REALSTATE_DATA_PATH)
-filename_i = '{}_aptarment_data_{}.json'.format(commune,source1)
-filepath_i = path_i / filename_i
+logfile = open('logs/log_{}'.format(datetime.datetime.now().isoformat()),'w')
+logfile_runs = open('logs/log_runs','a')
 
-logfile = open('log_{}'.format(datetime.datetime.now().isoformat()),'w')
+i_c = 0
+ci = 266
+#commune = 'Puente Alto'
+commune_skip = ['Santiago','Cerrillos','Conchalí','Estación Central',
+'Huechuraba','Independencia','La Cisterna','La Florida','La Reina','Las Condes',
+'Macul','Maipú','Lo Barnechea','Providencia']
+for commune in COMMUNE_NAME:
+    if COMMUNE_NAME__CODE[commune] > REGION_NAME__CODE[region]*1000 and \
+        COMMUNE_NAME__CODE[commune] < (REGION_NAME__CODE[region]+1)*1000:
+        if commune in commune_skip:
+            info('{} skipped'.format(commune))
+            continue
+        info(commune)
+        basepath = Path(REALSTATE_DATA_PATH+'/source/{}/{}/{}'.format(
+            slugify(region),
+            slugify(commune),
+            source2))
+        dates = [a for a in glob.glob(str(basepath / '*/')) if os.path.isdir(a)]
+        if len(dates) == 0:
+            warning('{} does not have any data files'.format(commune))
+            continue
+        dates.sort(key=lambda x: os.path.getmtime(x))
+        path_i = Path(dates[0])
 
-re_dict = sourceToDictionaries(filepath_i)
-objs = dictionariesToDatabase(re_dict,property_type,ci=1103)
-#objectsToJson(objs)
+        path_o_base = Path(REALSTATE_DATA_PATH)
+        filename_i = '{}_aptarment_data_{}.json'.format(slugify(commune),source1)
+        filepath_i = path_i / filename_i
+
+        re_dict = sourceToDictionaries(filepath_i)
+        if isinstance(re_dict,bool):
+            continue
+
+        logfile_runs.write('{} {} {} {} {}\n'.format(
+            datetime.datetime.now().isoformat(),region,commune,len(re_dict),filepath_i))
+
+        if i_c == 0:
+            objs = dictionariesToDatabase(re_dict,property_type,ci=ci)
+        else:
+            objs = dictionariesToDatabase(re_dict,property_type,ci=0)
+
+        logfile_runs.write('finished {}\n'.format(len(re_dict)))
+
+        i_c += 1
+        #objectsToJson(objs)

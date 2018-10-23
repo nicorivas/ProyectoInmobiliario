@@ -39,7 +39,7 @@ def status(string,f=None):
 
 def info(string,f=None):
     msg = '> ' + string
-    print(bcolors.OKFREEN+''+msg+''+bcolors.ENDC)
+    print(bcolors.OKGREEN+''+msg+''+bcolors.ENDC)
     if f != None:
         f.write(msg+'\n')
 

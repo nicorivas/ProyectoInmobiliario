@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import geojson # write geojson
 import glob
 import json
 import matplotlib.pyplot as plt
@@ -73,12 +72,12 @@ def vis_areasverde_distribution(ax,commune=""):
     plt.hist(areas)
     plt.yscale('log')
 
-fig = plt.figure()
-ax = fig.gca()
+#fig = plt.figure()
+#ax = fig.gca()
 
-vis_manzana(ax,commune="providencia")
-vis_areasverde(ax,commune="providencia")
+#vis_manzana(ax,commune="providencia")
+#vis_areasverde(ax,commune="providencia")
 #vis_areasverde_distribution(ax)
 #vis_areasverde(ax,commune="providencia")
 
-plt.show()
+#plt.show()
