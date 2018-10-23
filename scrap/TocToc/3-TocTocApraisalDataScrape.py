@@ -20,7 +20,9 @@ comunas = codecs.open(base_dir + numeroReg + '_comunas' + n_archivo + '.txt', 'r
 
 
 password = 'toctocpass123'
-users = ['papi@damefunk.cl', 'the_big_lebowsky@hotmail.com', 'palpo@nad.cl', 'covfefe@cove.cl']
+
+#CORREGIR USUARIOS
+users = ['covfefe@cove.cl', 'papi@damefunk.cl', 'the_big_lebowsky@hotmail.com', 'palpo@nad.cl']
 
 
 

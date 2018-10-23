@@ -32,7 +32,7 @@ for com in comunas:
     try:
         os.makedirs(path)
     except:
-        continue
+        print('Continue')
     url = ['https://www.portalinmobiliario.com/venta/departamento/'+str(comuna)+'-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1',
            'https://www.portalinmobiliario.com/venta/casa/'+str(comuna)+'-metropolitana?ca=3&ts=1&mn=2&or=&sf=1&sp=0&at=0&pg=1']
 
