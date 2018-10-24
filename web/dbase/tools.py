@@ -9,46 +9,6 @@ from shapely.geometry import Point
 import ast # to load the file (literal_eval is nicer than eval, they say)
 from globals import *
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-def error(string,f=None):
-    msg =  'Error: ' + string
-    print(bcolors.FAIL+''+msg+''+bcolors.ENDC)
-    if f != None:
-        f.write(msg+'\n')
-
-def warning(string,f=None):
-    msg = 'Warning: ' + string
-    print(bcolors.WARNING+''+msg+''+bcolors.ENDC)
-    if f != None:
-        f.write(msg+'\n')
-
-def status(string,f=None):
-    msg = '* ' + string + ' *'
-    print(bcolors.OKBLUE+''+msg +''+bcolors.ENDC)
-    if f != None:
-        f.write(msg+'\n')
-
-def info(string,f=None):
-    msg = '> ' + string
-    print(bcolors.OKGREEN+''+msg+''+bcolors.ENDC)
-    if f != None:
-        f.write(msg+'\n')
-
-def say(string,f=None):
-    msg = string
-    print(msg)
-    if f != None:
-        f.write(msg+'\n')
-
 def fileToDictionary(filename=""):
     '''
     Given a filename with JSON format, returns a dictionary

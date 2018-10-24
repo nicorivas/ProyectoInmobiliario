@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+'''
+Script to add summary variables to geografic places, such as the number of
+real estate in each sector.
+'''
 from tools import *
 from globals import *
 
@@ -9,7 +13,6 @@ import django
 sys.path.append('/Users/nico/Code/tasador/web/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
-
 
 # Models
 from region.models import Region
