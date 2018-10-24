@@ -11,7 +11,8 @@ import codecs
 import sys
 import os
 import django
-sys.path.append('/Users/nico/Code/tasador/web/')
+#sys.path.append('/Users/nico/Code/tasador/web/')
+sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -25,8 +26,8 @@ from commune.models import Commune
 
 regions = Region.objects.filter(code=13) # por ahora solo R.M.
 communes = Commune.objects.all()
-datapath = REALSTATE_DATA_PATH
-
+#datapath = REALSTATE_DATA_PATH
+datapath = ' G:/Mi unidad/ProyectoInmobiliario/Datos/'
 log = open('log','w')
 
 for region in regions:
@@ -38,7 +39,8 @@ for region in regions:
 
     communes_region = communes.filter(region=region)
     for commune in communes_region:
-        basepath = datapath+'/source/{}/{}/'.format(
+        #basepath = datapath+'/source/{}/{}/'.format(
+        basepath=datapath + '/{}/'.format(slugify(region.name))
             slugify(region.name),
             slugify(commune.name))
         if not os.path.isdir(basepath):
