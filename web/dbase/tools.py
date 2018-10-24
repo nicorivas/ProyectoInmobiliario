@@ -43,6 +43,12 @@ def info(string,f=None):
     if f != None:
         f.write(msg+'\n')
 
+def say(string,f=None):
+    msg = string
+    print(msg)
+    if f != None:
+        f.write(msg+'\n')
+
 def fileToDictionary(filename=""):
     '''
     Given a filename with JSON format, returns a dictionary

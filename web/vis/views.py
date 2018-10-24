@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.db.models import Q
 
+from region.models import Region
+from commune.models import Commune
 from collections import OrderedDict
 from realestate.models import RealEstate
 from apartment.models import Apartment
-from commune.models import Commune
 
 import plotly.offline as opy
 import plotly.graph_objs as go
@@ -35,18 +36,25 @@ def vis(request):
 
     return render(request, 'vis/graph.html', context)
 
+def summary_country(request):
+
+    regions = Region.objects.all()
+
+    total = {}
+    total['apartment'] = 0
+    for region in regions:
+        total['apartment'] += region.dataApartmentCount
+
+    context = {'regions':regions,'total':total}
+
+    return render(request, 'vis/summary_country.html', context)
+
 def summary_region(request,region_id):
 
-    communes = Commune.objects.filter(region=13)
+    region = Region.objects.get(code=region_id)
+    communes = Commune.objects.filter(region=region)
 
-    apts = Apartment.objects.all()
-    commune_apts = {}
-    for commune in communes:
-        commune_apts[commune] = apts.filter(addressCommune=commune)
-
-    commune_apts = OrderedDict(sorted(commune_apts.items(), key=lambda t: t[0].name))
-
-    context = {'apts':apts, 'commune_apts':commune_apts}
+    context = {'region':region, 'communes':communes}
 
     return render(request, 'vis/summary_region.html', context)
 

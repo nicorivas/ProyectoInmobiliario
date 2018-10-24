@@ -12,6 +12,13 @@ class Region(models.Model):
     # Polygon or set of polygons that specify the shape of the region
     mpoly = models.MultiPolygonField(null=True)
 
+    # Number of apartments that are stored in this region
+    dataApartmentCount = models.PositiveIntegerField("Departamentos",null=True,blank=True,default=0)
+    # Number of houses that are stored in this region
+    dataHouseCount = models.PositiveIntegerField("Casas",null=True,blank=True,default=0)
+    # Number of buildings that are stored in this region
+    dataBuildingCount = models.PositiveIntegerField("Edificios",null=True,blank=True,default=0)
+    
     @property
     def shortName(self):
         return REGION_NAME__SHORT_NAME[self.name]

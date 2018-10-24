@@ -4,12 +4,12 @@
 {% block content %}
 <div class='container'>
 
-<h5>Resumen {{region.name}}</h5>
+<h5>Resumen Chile</h5>
 
 <table class="table table-sm table-borderless">
   <thead>
     <tr>
-      <th scope="col">Comuna</th>
+      <th scope="col">Región</th>
       <th scope="col">Departamentos</th>
       <th scope="col">Casas</th>
     </tr>
@@ -17,16 +17,16 @@
   <tbody>
     <tr>
       <th scope="col">Total</th>
-      <th scope="col">{{region.dataApartmentCount}}</th>
+      <th scope="col">{{total.apartment}}</th>
       <th scope="col">0</th>
     </tr>
-    {% for commune in communes %}
+    {% for region in regions %}
     <tr>
       <td>
-        <a href="{{commune.code}}">{{ commune.name }}</a>
+        <a href="{{region.code}}">{{ region.name }}</a>
       </td>
       <td>
-        {{ commune.dataApartmentCount }}
+        {{ region.dataApartmentCount }}
       </td>
       <td>
         0
