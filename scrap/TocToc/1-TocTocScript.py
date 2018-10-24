@@ -41,7 +41,7 @@ for com in comunas:
           +'&tipoVista=lista&viewport=-34.2878148%2C-71.70881020000002%2C-32.919451%2C-69.76899430000003&comuna='+ str(comuna) + '&region=Regi%C3%B3n%20Metropolitana&atributos=&idle=false&zoom=14&buscando=true&vuelveBuscar=false&dibujaPoligono=true&resetMapa=true&animacion=false&idZonaHomogenea=0&esPrimeraBusqueda=false'
     urls = get_urls(url)
     directory = []
-    search_urls = codecs.open(path + comuna + '_urls_TT.txt', 'w+', "utf-8")
+    search_urls = codecs.open(path + comuna + '_urls_TT.json', 'w+', "utf-8")
 
     for item in urls:
         directory.append(item)

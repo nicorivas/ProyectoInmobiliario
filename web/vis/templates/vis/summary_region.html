@@ -1,0 +1,39 @@
+
+{% extends "main/base.html" %}
+
+{% block content %}
+<div class='container'>
+
+<h5>Resumen {{region.name}}</h5>
+
+<table class="table table-sm table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">Comuna</th>
+      <th scope="col">Departamentos</th>
+      <th scope="col">Casas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="col">Total</th>
+      <th scope="col">{{region.dataApartmentCount}}</th>
+      <th scope="col">0</th>
+    </tr>
+    {% for commune in communes %}
+    <tr>
+      <td>
+        <a href="{{commune.code}}">{{ commune.name }}</a>
+      </td>
+      <td>
+        {{ commune.dataApartmentCount }}
+      </td>
+      <td>
+        0
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

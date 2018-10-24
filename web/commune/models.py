@@ -22,5 +22,12 @@ class Commune(models.Model):
         to_field='code')
     mpoly = models.MultiPolygonField(null=True)
 
+    # Number of apartments that are stored in this region
+    dataApartmentCount = models.PositiveIntegerField("Departamentos",null=True,blank=True,default=0)
+    # Number of houses that are stored in this region
+    dataHouseCount = models.PositiveIntegerField("Casas",null=True,blank=True,default=0)
+    # Number of buildings that are stored in this region
+    dataBuildingCount = models.PositiveIntegerField("Edificios",null=True,blank=True,default=0)
+
     def __str__(self):
         return self.name

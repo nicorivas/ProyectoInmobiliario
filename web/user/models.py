@@ -38,7 +38,7 @@ class UserProfile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        userprofile=UserProfile.objects.create(user=instance, first_name=instance.first_name,
+        userprofile = UserProfile.objects.create(user=instance, first_name=instance.first_name,
                                                  last_name=instance.first_name, email=instance.email)
         userprofile.save()
 

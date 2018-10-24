@@ -8,18 +8,18 @@ class RealEstate(models.Model):
     ''' Bien raíz '''
 
     # more to be added
-    TYPE_UNDEFINED = 0
+    TYPE_OTHER = 0
     TYPE_HOUSE = 1
     TYPE_APARTMENT = 2
     TYPE_BUILDING = 3
     propertyType_choices = [
-        (TYPE_UNDEFINED, "Indefinido"),
         (TYPE_HOUSE, "Casa"),
         (TYPE_APARTMENT, "Departamento"),
-        (TYPE_BUILDING, "Edificio")]
+        (TYPE_BUILDING, "Edificio"),
+        (TYPE_OTHER, "Otro"),]
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
-        default=TYPE_UNDEFINED)
+        default=TYPE_OTHER)
     addressStreet = models.CharField("Calle",max_length=300,default="")
     addressNumber = models.CharField("Numero",max_length=10,default=0)
     addressCommune = models.ForeignKey(Commune,
@@ -54,6 +54,20 @@ class RealEstate(models.Model):
     def address(self):
         # Returns whole address in a nice format
         return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
+
+    @property
+    def addressShort(self):
+        # Returns whole address in a nice format
+        return self.addressStreet+' '+str(self.addressNumber)
+
+    @property
+    def latlng(self):
+        # Returns whole address in a nice format
+        return str(self.lat+33)[2:7]+', '+str(self.lng+70)[2:7]
+
+    @ property
+    def mapsUrl(self):
+        return 'http://maps.google.com/maps?q='+str(self.lat)+','+str(self.lng)
 
     @property
     def get_propertyTypeIcon(self):

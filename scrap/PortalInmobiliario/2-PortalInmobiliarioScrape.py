@@ -17,11 +17,11 @@ password = 'pipass123'
 users = ['app@usa.com', 'cove@fefe.cl', 'covfece@cov.cl','Cotiza@cotiza.cl']
 
 numeroReg = str(input('Region: '))
-mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/PI/Datos/' + numeroReg + '/'
+mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/PI/' + numeroReg + '/'
 base_dir = mac_path
 
-comunas = codecs.open(base_dir + numeroReg +'_comunas.txt', 'r', 'utf-8-sig')
+comunas = codecs.open(base_dir + numeroReg + '_comunas.txt', 'r', 'utf-8-sig')
 
 for com in comunas:
     com = com.strip().replace(' ', '-')
@@ -32,7 +32,7 @@ for com in comunas:
     print(str(com))
 
 
-    buildings = codecs.open(base_path + str(com) + '_properties_PI.txt', 'r', "utf-8-sig")
+    buildings = codecs.open(base_path + str(com) + '_properties_PI.json', 'r', "utf-8-sig")
     error_list = codecs.open(path2 + '/' + str(com) +'_error_list_PI.json', 'w', "utf-8-sig")
     done_list = codecs.open(base_dir + 'list_done.json', 'w', 'utf-8-sig')
     building = []

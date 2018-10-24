@@ -11,7 +11,7 @@ class AppraisalCreateForm(forms.Form):
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
         choices=RealEstate.propertyType_choices,
-        initial=RealEstate.TYPE_UNDEFINED)
+        initial=RealEstate.TYPE_HOUSE)
     propertyType_create.widget.attrs.update({'class':"form-control"})
 
     addressRegion_create = forms.ModelChoiceField(
