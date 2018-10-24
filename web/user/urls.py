@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from home.forms import AuthenticationFormB
 from django.conf.urls import url
 from django.views.generic import RedirectView
-app_name='user'
+app_name = 'user'
 
 urlpatterns = [
     path('ajax/load-communes/', views.load_communes, name='user_ajax_load_communes'),

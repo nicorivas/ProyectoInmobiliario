@@ -13,14 +13,16 @@ The script run through the entire list of buildings and registers all properties
 numeroReg = str(input('Region: '))
 mac_path = '/Users/pabloferreiro/Google Drive File Stream/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
 pc_path = 'G:/Mi unidad/ProyectoInmobiliario/Datos/' + numeroReg + '/'
-base_dir = pc_path
+base_dir = mac_path
 
 n_archivo = str(input('Numero de archivo: '))
 comunas = codecs.open(base_dir + numeroReg + '_comunas' + n_archivo + '.txt', 'r', 'utf-8-sig')
 
 
 password = 'toctocpass123'
-users = ['palpo@nad.cl', 'covfefe@cove.cl', 'papi@damefunk.cl', 'the_big_lebowsky@hotmail.com' ]
+
+#CORREGIR USUARIOS
+users = ['covfefe@cove.cl', 'papi@damefunk.cl', 'the_big_lebowsky@hotmail.com', 'palpo@nad.cl']
 
 
 
@@ -32,8 +34,8 @@ for com in comunas:
     os.makedirs(path2)
     print(str(com))
     done_list = codecs.open(base_dir + 'list_doneTT.json', 'w', 'utf-8-sig')
-    buildings = codecs.open(base_path + com + '_properties_TT.txt', 'r', "utf-8-sig")
-    error_list = codecs.open(path2 + '/' + com +'_error_list_TT.txt', 'w', "utf-8-sig")
+    buildings = codecs.open(base_path + com + '_properties_TT.json', 'r', "utf-8-sig")
+    error_list = codecs.open(path2 + '/' + com +'_error_list_TT.json', 'w', "utf-8-sig")
 
     building = []
     apartment_appraisals = []
