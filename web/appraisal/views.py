@@ -156,8 +156,6 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
                 for row in range(1,100):
                     for col in range(1,100):
                        cv = sheet.cell(row=row,column=col).value
-                       if cv == term:
-                           print(row,col)
 
         def excel_find_replace(workbook,term,rep):
             for sheet in workbook:
@@ -296,8 +294,11 @@ def appraisal(request, **kwargs):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
+        print('request',request.POST)
+
         # Main forms
         forms = {}
+        form_upload_image = ImageUploadForm(request.POST, request.FILES)
         form_appraisal = AppraisalModelForm_Appraisal(
             request.POST,instance=appraisal)
         form_comment = AppraisalForm_Comment(request.POST)
@@ -364,7 +365,6 @@ def appraisal(request, **kwargs):
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
-    print(versions)
     appraisal_history = []
     c = 0
 

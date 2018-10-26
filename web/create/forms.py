@@ -14,6 +14,7 @@ class AppraisalCreateForm(forms.Form):
         choices=Appraisal.petitioner_choices,
         initial=Appraisal.SANTANDER)
     solicitante_create.widget.attrs.update({'class': "form-control"})
+
     solicitanteOther_create =  forms.CharField(max_length=100, label="Otro", required=False)
 
     propertyType_create = forms.ChoiceField(

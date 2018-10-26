@@ -86,6 +86,8 @@ class Appraisal(models.Model):
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
 
+    photo = models.ImageField(upload_to = 'pic_folder/', default = 'pic_folder/None/no-img.jpg')
+
     # valor
     valorUF = models.IntegerField("Valor UF",blank=True,null=True)
 

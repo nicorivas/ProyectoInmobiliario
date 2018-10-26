@@ -135,3 +135,7 @@ class AppraisalForm_Comment(forms.Form):
     commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
     commentConflict = forms.BooleanField(label='Conflict',required=False)
     commentText.widget.attrs.update({'class':"form-control",'rows':3})
+
+class ImageUploadForm(forms.Form):
+    """Image upload form."""
+    image = forms.ImageField()
