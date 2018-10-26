@@ -105,7 +105,7 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
         model = Appraisal
         fields = [
             'solicitante',
-            'solicitanteCodigo'
+            'solicitanteCodigo',
             'solicitanteSucursal',
             'solicitanteEjecutivo',
             'cliente',
@@ -120,6 +120,7 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
             'solicitante': forms.TextInput(attrs=class_bs),
+            'solicitanteCodigo': forms.TextInput(attrs=class_bs),
             'solicitanteSucursal': forms.TextInput(attrs=class_bs),
             'solicitanteEjecutivo': forms.TextInput(attrs=class_bs),
             'cliente': forms.TextInput(attrs=class_bs),
