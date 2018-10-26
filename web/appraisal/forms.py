@@ -105,7 +105,7 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
         model = Appraisal
         fields = [
             'solicitante',
-            'solicitanteCodigo'
+            'solicitanteCodigo',
             'solicitanteSucursal',
             'solicitanteEjecutivo',
             'cliente',
@@ -115,7 +115,8 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
             'rolAvaluo',
             'visadorEmpresa',
             'visadorEmpresaMail',
-            'valorUF'
+            'valorUF',
+            'photo'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
@@ -129,14 +130,11 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
             'rolAvaluo': forms.TextInput(attrs=class_bs),
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
-            'valorUF': forms.TextInput(attrs=class_bs)
+            'valorUF': forms.TextInput(attrs=class_bs),
+            'photo': forms.FileInput()
         }
 
 class AppraisalForm_Comment(forms.Form):
     commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
     commentConflict = forms.BooleanField(label='Conflict',required=False)
     commentText.widget.attrs.update({'class':"form-control",'rows':3})
-
-class ImageUploadForm(forms.Form):
-    """Image upload form."""
-    image = forms.ImageField()

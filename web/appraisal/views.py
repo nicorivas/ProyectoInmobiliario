@@ -272,6 +272,12 @@ def get_similar_realestate(realestate):
     else:
         return []
 
+def form_process_upload_image(forms):
+    #print(forms['appraisal'])
+    if forms['appraisal'].is_valid():
+        print(forms['appraisal'].cleaned_data)
+        forms['appraisal'].save()
+
 def appraisal(request, **kwargs):
     '''
     General view for appraisals. Gets a variable number of parameters depending
@@ -294,29 +300,32 @@ def appraisal(request, **kwargs):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
-        print('request',request.POST)
-
-        # Main forms
-        forms = {}
-        form_upload_image = ImageUploadForm(request.POST, request.FILES)
-        form_appraisal = AppraisalModelForm_Appraisal(
-            request.POST,instance=appraisal)
-        form_comment = AppraisalForm_Comment(request.POST)
-        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-            form_apartment = AppraisalModelForm_Apartment(
-                request.POST,instance=realestate.apartment)
-            form_building = AppraisalModelForm_Building(
-                request.POST,instance=realestate.apartment.building_in)
-            forms = {'appraisal':form_appraisal,
-                     'comment':form_comment,
-                     'apartment':form_apartment,
-                     'building':form_building}
-        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
-            form_house = AppraisalModelForm_House(
-                request.POST,instance=realestate.house)
-            forms = {'appraisal':form_appraisal,
-                     'comment':form_comment,
-                     'house':form_house}
+        if 'button_annex_files' in request.POST.keys():
+            form_appraisal = AppraisalModelForm_Appraisal(
+                request.POST,
+                request.FILES,
+                instance=appraisal)
+            forms = {'appraisal':form_appraisal}
+            form_process_upload_image(forms)
+        else:
+            form_appraisal = AppraisalModelForm_Appraisal(
+                request.POST,instance=appraisal)
+            form_comment = AppraisalForm_Comment(request.POST)
+            if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+                form_apartment = AppraisalModelForm_Apartment(
+                    request.POST,instance=realestate.apartment)
+                form_building = AppraisalModelForm_Building(
+                    request.POST,instance=realestate.apartment.building_in)
+                forms = {'appraisal':form_appraisal,
+                         'comment':form_comment,
+                         'apartment':form_apartment,
+                         'building':form_building}
+            elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+                form_house = AppraisalModelForm_House(
+                    request.POST,instance=realestate.house)
+                forms = {'appraisal':form_appraisal,
+                         'comment':form_comment,
+                         'house':form_house}
 
         # Other options of the form:
         # Assigning tasadores
