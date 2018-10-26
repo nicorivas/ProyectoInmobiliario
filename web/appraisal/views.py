@@ -213,12 +213,16 @@ def form_process(request,forms,realestate,appraisal,appraisal_old,
             comment.save()
 
     ret = None
-    print('a')
     if 'save' in request.POST:
-        if forms['appraisal'].is_valid() and \
-            forms['apartment'].is_valid() and \
-            forms['building'].is_valid():
-            ret = form_do_save(request,forms,appraisal_old)
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+            if forms['appraisal'].is_valid() and \
+                forms['apartment'].is_valid() and \
+                forms['building'].is_valid():
+                ret = form_do_save(request,forms,appraisal_old)
+        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+            if forms['appraisal'].is_valid() and \
+                forms['house'].is_valid():
+                ret = form_do_save(request,forms,appraisal_old)
     elif 'delete' in request.POST:
         ret = form_do_delete(forms,appraisal)
     elif 'finish' in request.POST:
@@ -363,6 +367,7 @@ def appraisal(request, **kwargs):
     print(versions)
     appraisal_history = []
     c = 0
+
     for i in range(len(versions)):
         if i == 0: continue
         version_new = versions[i]
@@ -374,7 +379,11 @@ def appraisal(request, **kwargs):
         appraisal_history[c]['diffs'] = []
         for key, value in version_new.field_dict.items():
             if value != version_old.field_dict[key]:
-                appraisal_history[c]['diffs'].append([key,value,version_old.field_dict[key]])
+                appraisal_history[c]['diffs'].append({
+                    'verbose_name':Appraisal._meta.get_field(key).verbose_name,
+                    'name':key,
+                    'value':version_old.field_dict[key],
+                    'value_old':value})
         if len(appraisal_history[c]['diffs']) == 0:
             appraisal_history.pop(c)
         else:

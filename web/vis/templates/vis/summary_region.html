@@ -18,7 +18,7 @@
     <tr>
       <th scope="col">Total</th>
       <th scope="col">{{region.dataApartmentCount}}</th>
-      <th scope="col">0</th>
+      <th scope="col">{{region.dataHouseCount}}</th>
     </tr>
     {% for commune in communes %}
     <tr>
@@ -29,7 +29,7 @@
         {{ commune.dataApartmentCount }}
       </td>
       <td>
-        0
+        {{ commune.dataHouseCount }}
       </td>
     </tr>
     {% endfor %}

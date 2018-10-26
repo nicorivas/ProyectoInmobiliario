@@ -90,25 +90,28 @@ WSGI_APPLICATION = 'map.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'data',
-        'USER': 'postgres',
-        'PASSWORD': 'iCga1kmX',
-        'HOST': 'localhost',
-        'PORT': '5432',
+if os.getenv('GAE_APPLICATION', None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'HOST': '/cloudsql/proyectoinmobiliario-212003:southamerica-east1:protasa',
+            'PORT': '5432',
+            'NAME': 'data',
+            'USER': 'postgres',
+            'PASSWORD': 'iCga1kmX',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+            'NAME': 'data',
+            'USER': 'postgres',
+            'PASSWORD': 'iCga1kmX',
+        }
+    }
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 

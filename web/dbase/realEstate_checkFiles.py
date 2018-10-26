@@ -30,7 +30,7 @@ datapath = REALSTATE_DATA_PATH+'/source'
 regions = Region.objects.filter(code=13) # por ahora solo R.M.
 communes = Commune.objects.all()
 
-out = messenger(open('logs/datafiles','w'))
+out = Messenger(open('logs/datafiles','w'))
 
 for region in regions:
     basepath = datapath+'/{}/'.format(slugify(region.name))

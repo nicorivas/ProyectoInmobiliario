@@ -70,8 +70,20 @@ class RealEstate(models.Model):
         return 'http://maps.google.com/maps?q='+str(self.lat)+','+str(self.lng)
 
     @property
+    def get_propertyTypeName(self):
+        if self.propertyType == self.TYPE_OTHER:
+            return "other"
+        elif self.propertyType == self.TYPE_HOUSE:
+            return "house"
+        elif self.propertyType == self.TYPE_APARTMENT:
+            return "apartment"
+        elif self.propertyType == self.TYPE_BUILDING:
+            return "building"
+        else:
+            return None
+
     def get_propertyTypeIcon(self):
-        if self.propertyType == self.TYPE_UNDEFINED:
+        if self.propertyType == self.TYPE_OTHER:
             return "far fa-times-circle"
         elif self.propertyType == self.TYPE_HOUSE:
             return "fas fa-home"
