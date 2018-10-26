@@ -11,18 +11,26 @@
 
   <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
     {% csrf_token %}
-    <div class="form-group row">
+    <div class="form-group row" id="propertyType">
       <div class="col-md-2">
         {{form_create.propertyType_create.label_tag}}
         {{form_create.propertyType_create}}
       </div>
     </div>
     <div class="form-group row">
+       <div class="col-md-3">
+          {{form_create.cliente_create.label_tag}}
+          {{form_create.cliente_create}}
+      </div>
+       <div class="col-md-3">
+          {{form_create.clienteRut_create.label_tag}}
+          {{form_create.clienteRut_create}}
+      </div>
       <div class="col-md-2" id="petitioner">
         {{form_create.solicitante_create.label_tag}}
         {{form_create.solicitante_create}}
       </div>
-      <div class="col-md-3" id="other" hidden>
+      <div class="col-md-2" id="other" hidden>
         {{form_create.solicitanteOther_create.label_tag}}
         <div class="input-group">
           {{form_create.solicitanteOther_create}}
@@ -66,7 +74,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-1" id="type">
+      <div class="col-md-1" id="type" hidden>
         {{form_create.addressNumberFlat_create.label_tag}}
         <div class="input-group">
           {{form_create.addressNumberFlat_create}}
@@ -158,26 +166,21 @@
 </script>
 
 <script>
-  $("#id_propertyType_create").change(function () {
-    var type = $(this).val();
-
-    // initialize an AJAX request
-    $.ajax({
-       data: {
-       'type': type
-      },
-      success: function (data) {
-        if (type == 1) {
-          $("#id_addressNumberFlat_create").removeAttr('required');
-          $("#id_addressNumberFlat_create").attr('disabled','disabled');
-          $("#id_addressNumberFlat_create").val('');
+  jQuery('#propertyType').on('change', function() {
+    var type = $("#propertyType option:selected");
+    console.log(type.val())
+        if (type.val() == 2) {
+          $("#type").removeAttr('hidden');
+          $("#type").show();
+          $("#type").val('');
+          $("#type").attr('required','required');
+          $("#type").removeAttr('disabled');
+          $("#id_addressNumberFlat_create").removeAttr('disabled');
           }
         else {
-          $("#id_addressNumberFlat_create").removeAttr('disabled');
-          $("#id_addressNumberFlat_create").attr('required','required');
+          $("#type").hide();
+          $("#type").removeAttr('required','required');
         }
-      }
-    });
   });
 </script>
 
@@ -207,15 +210,15 @@
     var object = $("#petitioner option:selected");
     console.log(object.val());
     if (object.val() == 0 ) {
-        $('#other').removeAttr('hidden');
+        jQuery('#other').removeAttr('hidden');
         jQuery('#other').show();
         jQuery('#other').attr('required','required');
 
     }
     else {
         jQuery('#other').hide();
-        $('#other').removeAttr('required');
-        $('#other').val('');
+        jQuery('#other').removeAttr('required');
+        jQuery('#other').val('');
     }
 });
 </script>

@@ -16,6 +16,17 @@ class AppraisalCreateForm(forms.Form):
     solicitante_create.widget.attrs.update({'class': "form-control"})
 
     solicitanteOther_create =  forms.CharField(max_length=100, label="Otro", required=False)
+    solicitanteOther_create.widget.attrs.update({'class': "form-control"})
+
+    cliente_create = forms.CharField(
+        max_length=100,
+        label="Nombre Cliente", required=False)
+    cliente_create.widget.attrs.update({'class': "form-control"})
+
+    clienteRut_create = forms.CharField(
+        max_length=100,
+        label="Rut Cliente", required=False)
+    clienteRut_create.widget.attrs.update({'class': "form-control"})
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
