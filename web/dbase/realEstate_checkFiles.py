@@ -30,9 +30,6 @@ datapath = REALSTATE_DATA_PATH+'/source'
 
 regions = Region.objects.filter(code=13) # por ahora solo R.M.
 communes = Commune.objects.all()
-#datapath = REALSTATE_DATA_PATH
-datapath = ' G:/Mi unidad/ProyectoInmobiliario/Datos/'
-log = open('log','w')
 
 out = messenger(open('logs/datafiles','w'))
 
@@ -93,7 +90,7 @@ for region in regions:
             if len(dirs) == 0:
                 out.warning('{} {} NO DATA DIRECTORY'.format(commune.name,source))
             for d in dirs:
-                date = datetime.datetime.strptime(d[d.rfind('/')+1:],"%Y-%m-%dT%H-%M-%S")
+                date = datetime.datetime.strptime(d[d.rfind('\\')+1:],"%Y-%m-%dT%H-%M-%S")
                 out.say('{} {} {} OK'.format(commune.name,source,date))
 
                 file_suffixs = ['aptarment_appraisal_data_{}.json'.format('portali'),

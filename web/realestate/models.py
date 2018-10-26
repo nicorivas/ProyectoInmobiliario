@@ -71,7 +71,7 @@ class RealEstate(models.Model):
 
     @property
     def get_propertyTypeIcon(self):
-        if self.propertyType == self.TYPE_UNDEFINED:
+        if self.propertyType == self.TYPE_OTHER:
             return "far fa-times-circle"
         elif self.propertyType == self.TYPE_HOUSE:
             return "fas fa-home"

@@ -8,7 +8,8 @@ from sqlalchemy import MetaData
 
 DATA_PATH = '/Users/nico/Code/tasador/data'
 GEO_DATA_PATH = '/Users/nico/Code/tasador/data/geo/chile'
-REALSTATE_DATA_PATH = '/Users/nico/Code/tasador/data/realestate'
+#REALSTATE_DATA_PATH = '/Users/nico/Code/tasador/data/realestate'
+REALSTATE_DATA_PATH = 'G:/Mi unidad/ProyectoInmobiliario/Datos/realestate'
 
 '''
 Regions of Chile
