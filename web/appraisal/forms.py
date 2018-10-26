@@ -105,6 +105,7 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
         model = Appraisal
         fields = [
             'solicitante',
+            'solicitanteCodigo'
             'solicitanteSucursal',
             'solicitanteEjecutivo',
             'cliente',

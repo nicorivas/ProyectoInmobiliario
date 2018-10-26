@@ -76,6 +76,7 @@ class Appraisal(models.Model):
     solicitante = models.CharField("Solicitante", choices=petitioner_choices,max_length=100,blank=True,null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
+    solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
     clienteRut = models.IntegerField("Cliente RUT",blank=True,null=True)
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
