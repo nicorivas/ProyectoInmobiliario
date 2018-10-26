@@ -23,7 +23,7 @@ import datetime
 import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,price,user):
+def appraisal_create(realEstate,timeFrame,price,user, solicitante):
     '''
     Create appraisal, given a ...?
     '''
@@ -32,7 +32,8 @@ def appraisal_create(realEstate,timeFrame,price,user):
         realEstate=realEstate,
         timeCreated=datetime.datetime.now(),
         timeDue=timeDue,
-        price=price)
+        price=price,
+        solicitante=solicitante)
     with reversion.create_revision():
         appraisal.save()
         reversion.set_user(user)
@@ -142,9 +143,14 @@ def create(request):
 
             _propertyType = int(form_create.cleaned_data['propertyType_create'])
 
+            if  form_create.cleaned_data['solicitante_create'] == "0":
+                _solicitante = form_create.cleaned_data['solicitanteOther_create']
+            else:
+                _solicitante = form_create.cleaned_data['solicitante_create']
+
+
             realEstate = None
             if _propertyType == RealEstate.TYPE_HOUSE:
-
                 _addressRegion = form_create.cleaned_data['addressRegion_create']
                 _addressCommune = form_create.cleaned_data['addressCommune_create']
                 _addressStreet = form_create.cleaned_data['addressStreet_create']
@@ -212,7 +218,7 @@ def create(request):
             try:
                 appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
-                appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice, request.user)
+                appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice, request.user, _solicitante)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)

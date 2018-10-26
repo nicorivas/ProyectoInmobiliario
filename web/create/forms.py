@@ -3,10 +3,18 @@ from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
 from realestate.models import RealEstate
+from appraisal.models import Appraisal
 from django.core.exceptions import ValidationError
 import datetime
 
+
 class AppraisalCreateForm(forms.Form):
+    solicitante_create = forms.ChoiceField(
+        label="Solicitante",
+        choices=Appraisal.petitioner_choices,
+        initial=Appraisal.SANTANDER)
+    solicitante_create.widget.attrs.update({'class': "form-control"})
+    solicitanteOther_create =  forms.CharField(max_length=100, label="Otro", required=False)
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
@@ -45,7 +53,6 @@ class AppraisalCreateForm(forms.Form):
             attrs={'class': "form-control datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
     appraisalTimeFrame_create.input_formats = ['%d/%m/%Y %H:%M']
-
 
     appraisalPrice_create = forms.FloatField(label="Precio")
     appraisalPrice_create.widget.attrs.update({'class': "form-control"})

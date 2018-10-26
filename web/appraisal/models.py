@@ -39,6 +39,7 @@ class Appraisal(models.Model):
         (STATE_IMPORTED, 'imported')
     )
     state = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
+
     APPRAISAL = 1
     PORTAL = 2
     TOCTOC = 3
@@ -52,7 +53,27 @@ class Appraisal(models.Model):
     price = models.FloatField("Precio tasación",blank=True,null=True)
 
     # generales
-    solicitante = models.CharField("Solicitante",max_length=100,blank=True,null=True)
+    OTHER = 0
+    BCI = "BCI"
+    SANTANDER = "SANTANDER"
+    ITAU = "ITAÚ"
+    INTERNACIONAL = "INTERNACIONAL"
+    CHILE = "BANCO DE CHILE"
+    CORPBANCA = "CORPBANCA"
+    SCOTIABANK = "SOCTIABANK"
+    BICE = "BICE"
+    petitioner_choices = [
+        (BCI, "BCI"),
+        (SANTANDER, "SANTANDER"),
+        (ITAU, "ITAU"),
+        (INTERNACIONAL, "BANCO INTERNACIONAL"),
+        (CHILE, "BANCO DE CHILE"),
+        (CORPBANCA, "CORPBANCA"),
+        (SCOTIABANK, "SCOTIOABANK"),
+        (BICE, "BICE"),
+        (OTHER, "OTRO")
+    ]
+    solicitante = models.CharField("Solicitante", choices=petitioner_choices,max_length=100,blank=True,null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)

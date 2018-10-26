@@ -17,6 +17,21 @@
         {{form_create.propertyType_create}}
       </div>
     </div>
+    <div class="form-group row">
+      <div class="col-md-2" id="petitioner">
+        {{form_create.solicitante_create.label_tag}}
+        {{form_create.solicitante_create}}
+      </div>
+            <div class="col-md-3" id="other" hidden>
+        {{form_create.solicitanteOther_create.label_tag}}
+        <div class="input-group">
+          {{form_create.solicitanteOther_create}}
+          <div class="invalid-feedback">
+            Falta Solicitante
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="form-group row">
       <div class="col-md-3">
@@ -185,6 +200,24 @@
     });
   }, false);
 })();
+</script>
+
+<script>
+  jQuery('#petitioner').on('change', function() {
+    var object = $("#petitioner option:selected");
+    console.log(object.val());
+    if (object.val() == 0 ) {
+        $('#other').removeAttr('hidden');
+        jQuery('#other').show();
+        jQuery('#other').attr('required','required');
+
+    }
+    else {
+        jQuery('#other').hide();
+        $('#other').removeAttr('required');
+        $('#other').val('');
+    }
+});
 </script>
 
 {% endblock %}
