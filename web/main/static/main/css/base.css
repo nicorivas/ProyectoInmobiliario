@@ -4,37 +4,6 @@ html, body {
   background: #000;
 }
 
-#header {
-  height:80px;
-  background: #0C4B33;
-  margin: 0;
-}
-
-#header h1 {
-  margin: 0;
-  padding: 10px;
-  padding-top: 20px;
-  color: #fff;
-}
-
-#header a:link {
-  color: #fff;
-  text-decoration: none;
-}
-
-#header a:visited {
-  color: #fff;
-  text-decoration: none;
-}
-
-#header a:hover, a:active {
-  color: #eee;
-  outline: 0;
-  border: none;
-  -moz-outline-style: none;
-  text-decoration: none;
-}
-
 #content {
   font-family: Lucida Grande, Helvetica, sans-serif;
   background: #fff;

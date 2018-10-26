@@ -1,3 +1,10 @@
+<script>
+  function timeCreated(string) {
+    var s = moment(string).format("D MMM HH:MM");
+    document.write(s)
+  }
+</script>
+
 <div class="card-body">
 
   <div class="row">
@@ -8,6 +15,7 @@
       <h5 class="card-title">Historial de modificación</h5>
 
       {% for appraisal_time in appraisal_history %}
+      <div id="accordion">
       {% if appraisal_time.user.groups.all.0.name == "visador" %}
       <div class="card mb-1 border-primary">
       {% elif appraisal_time.user.groups.all.0.name == "tasador" %}
@@ -17,39 +25,81 @@
       {% else %}
       <div class="card mb-1 border-secondary">
       {% endif %}
-        <div class="card-header">
-          {% if appraisal_time.user.groups.all.0.name == "visador" %}
-            <span class="badge badge-secondary">Visador</span>
-          {% elif appraisal_time.user.groups.all.0.name == "tasador" %}
-            <span class="badge badge-success">Tasador</span>
-          {% elif appraisal_time.user.groups.all.0.name == "asignador" %}
-            <span class="badge badge-info">Asignador</span>
-          {% else %}
-            <span class="badge badge-secondary">Otro</span>
-          {% endif %}
-          <small>
-            {{ appraisal_time.user.first_name }} {{ appraisal_time.user.last_name }} ({{ appraisal_time.user }})
-          </small>
-          <small>
-            {{ appraisal_time.time | date:"D d M, H:i"}}
-          </small>
+        <div class="card-header" id="heading{{forloop.counter}}">
+          <div class="row">
+          <div class="col-3">
+            <small><script>timeCreated("{{appraisal_time.time | date:"c"}}");</script></small>
+          </div>
+          <div class="col-7">
+            <span class="align-middle">
+            {% if appraisal_time.user.groups.all.0.name == "visador" %}
+              <span class="badge badge-secondary">Visador</span>
+            {% elif appraisal_time.user.groups.all.0.name == "tasador" %}
+              <span class="badge badge-success">Tasador</span>
+            {% elif appraisal_time.user.groups.all.0.name == "asignador" %}
+              <span class="badge badge-info">Asignador</span>
+            {% else %}
+              <span class="badge badge-secondary">Otro</span>
+            {% endif %}
+            {{ appraisal_time.user.first_name }} {{ appraisal_time.user.last_name }}
+            {% if appraisal_time.diffs|length > 1%}
+            hizo {{appraisal_time.diffs|length}} cambios
+            {% else %}
+            hizo {{appraisal_time.diffs|length}} cambio
+            {% endif %}
+            </span>
+          </div>
+          <div class="col text-right">
+            <a class="btn btn-outline-dark" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#collapse{{forloop.counter}}" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+              more_vert
+            </a>
+          </div>
+          </div>
         </div>
+        <div id="collapse{{forloop.counter}}" class="collapse" aria-labelledby="heading{{forloop.counter}}" data-parent="#accordion">
         <div class="card-body">
           <small>
           {% for vars in appraisal_time.diffs %}
+            {% if vars.value_old == None %}
             <div class="row">
-              <div class="col-3">{{ vars.0 }}</div>
-              <div class="col-3">{{ vars.1 }}</div>
+              <div class="col-4">{{vars.verbose_name }}</div>
+              <div class="col"><span style="font-family:Material Icons;">arrow_forward</span> {{ vars.value }}</div>
+            </div>
+            {% else %}
+            <div class="row">
+              <div class="col-4">{{vars.verbose_name }}</div>
+              <div class="col"><span style="font-family:Material Icons;">arrow_back</span> {{ vars.value_old }}</div>
             </div>
             <div class="row">
-              <div class="col-3"></div>
-              <div class="col-3">{{ vars.2 }}</div>
+              <div class="col-4"></div>
+              <div class="col"><span style="font-family:Material Icons;">arrow_forward</span> {{ vars.value }}</div>
             </div>
+            {% endif %}
           {% endfor %}
           </small>
         </div>
+        </div>
+      </div>
       </div>
       {% endfor %}
+
+      <div class="card mb-1 border-primary">
+        <div class="card-header">
+          <div class="row">
+          <div class="col-3">
+            <small>
+              <script>
+              timeCreated("{{appraisal.timeCreated | date:"c"}}");
+              </script>
+            </small>
+          </div>
+          <div class="col">
+             Creada
+          </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 

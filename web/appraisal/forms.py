@@ -87,7 +87,7 @@ class AppraisalModelForm_House(forms.ModelForm):
             'bedrooms',
             'bathrooms',
             'builtSquareMeters',
-            'usefulSquareMeters',
+            'terrainSquareMeters',
             'generalDescription'
         ]
         class_bs = {'class': "form-control form-control-sm"}
@@ -95,7 +95,7 @@ class AppraisalModelForm_House(forms.ModelForm):
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
             'builtSquareMeters': forms.NumberInput(attrs=class_bs),
-            'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
             'generalDescription': forms.Textarea(attrs=class_bs),
         }
 
