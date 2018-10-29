@@ -19,6 +19,9 @@ from django.contrib.auth import views as auth_views
 from home.forms import AuthenticationFormB
 from django.views.generic import RedirectView
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('realestate/', include('realestate.urls')),
@@ -35,4 +38,4 @@ urlpatterns = [
     path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
         form_class=AuthenticationFormB), name='login'),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

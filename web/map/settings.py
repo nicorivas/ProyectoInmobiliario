@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'imagekit',
     'user',
     'realestate',
     'reversion',
@@ -115,6 +116,7 @@ else:
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 MEDIA_ROOT = PROJECT_ROOT + '/../uploads'
+MEDIA_URL = '/uploads/'
 
 
 # Password validation

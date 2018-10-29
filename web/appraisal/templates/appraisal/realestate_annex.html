@@ -1,0 +1,96 @@
+<div class="card-body">
+
+    <div class="card mb-2">
+      <div class="card-body">
+        <h5 class="card-title">Fotografías</h5>
+        <div class="form-group row mb-4">
+          <div class="col-md-4">
+            <div class="custom-file">
+              {{forms.photos.photos}}
+              <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+              <div class="invalid-feedback">
+                Debe seleccionar un archivo
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            {{forms.photos.description}}
+            <div class="invalid-feedback">
+              Debe ingresar una descripción
+            </div>
+          </div>
+          <div class="col-md">
+            <button name='btn_upload_photo' class="btn btn-primary">Agregar foto</button>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            {% for photo in appraisal.photos.all %}
+            <div class="card mr-2 mb-2" style="width: 12rem;">
+              <a class="photo_show" data-url="{{photo.photo.url}}" data-id="{{photo.id}}">
+              <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{photo.thumbnail.url}}"/>
+              </a>
+              <div class="card-body">
+                <p class="card-text">{{photo.description}}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Documentos adjuntos</h5>
+        <button class="btn btn-primary">Adjuntar documento</button>
+      </div>
+    </div>
+
+</div>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+<script>
+  $(document).on('click','.photo_show',function(){
+      var url = $(this).data('url');
+      var id = $(this).data('id');
+      $.ajax({
+          url:'',
+          type:'POST',
+          data:{
+              'url':url,
+              'id':id,
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success:function(data){
+              console.log(id)
+              $('#photo').attr("src",url);
+              $('#photo_id').val(id);
+              $('#modalPhoto').modal('show');
+          },
+          error:function(){
+              console.log('error')
+          },
+      });
+  });
+</script>

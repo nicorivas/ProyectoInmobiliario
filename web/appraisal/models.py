@@ -2,9 +2,24 @@ from django.db import models
 from django.utils.text import slugify
 from realestate.models import RealEstate
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
+
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+
 import datetime
 import reversion
 
+class Photo(models.Model):
+    photo = models.ImageField(upload_to='test/',default='no-img.jpg')
+    description = models.CharField("Descripción",
+        max_length=200,
+        blank=True,
+        null=True)
+    thumbnail = ImageSpecField(source='photo',
+        processors=[ResizeToFill(400, 400)],
+        format='JPEG',
+        options={'quality': 60})
 
 @reversion.register()
 class Appraisal(models.Model):
@@ -87,7 +102,7 @@ class Appraisal(models.Model):
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
 
-    photo = models.ImageField(upload_to='test/', default='no-img.jpg')
+    photos = models.ManyToManyField(Photo)
 
     # valor
     valorUF = models.IntegerField("Valor UF",blank=True,null=True)

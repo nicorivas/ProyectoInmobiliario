@@ -30,7 +30,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" name="export">Exportar</button>
+        <button name="btn_export" class="btn btn-primary">Exportar</button>
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" name="finish">Finalizar</button>
+        <button name="btn_finish" class="btn btn-primary">Finalizar</button>
       </div>
     </div>
   </div>
@@ -75,7 +75,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" name="delete">Eliminar</button>
+        <button name="btn_delete" class="btn btn-primary">Eliminar</button>
       </div>
     </div>
   </div>
@@ -120,7 +120,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" name="assign_visador">Asignar</button>
+        <button name="btn_assign_visador" class="btn btn-primary">Asignar</button>
       </div>
     </div>
   </div>
@@ -167,7 +167,30 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" name="assign_tasador">Asignar</button>
+        <button name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="modalPhoto" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Photo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img id="photo" class="img-fluid rounded" src=""/>
+      </div>
+      <div class="modal-footer">
+        <input id="photo_id" name="photo_id" type="hidden" value="0">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button class="btn btn-danger" name="btn_delete_photo">Borrar</button>
       </div>
     </div>
   </div>

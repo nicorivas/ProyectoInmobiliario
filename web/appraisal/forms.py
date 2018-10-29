@@ -4,8 +4,9 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
 from house.models import House
+from multiupload.fields import MultiImageField
 
-class AppraisalModelForm_Building(forms.ModelForm):
+class FormBuilding(forms.ModelForm):
 
     class Meta:
         model = Building
@@ -54,7 +55,7 @@ class AppraisalModelForm_Building(forms.ModelForm):
             'viviendaSocial': forms.NullBooleanSelect(attrs=class_se_bs)
         }
 
-class AppraisalModelForm_Apartment(forms.ModelForm):
+class FormApartment(forms.ModelForm):
 
     class Meta:
         model = Apartment
@@ -78,7 +79,7 @@ class AppraisalModelForm_Apartment(forms.ModelForm):
             'generalDescription': forms.Textarea(attrs=class_bs),
         }
 
-class AppraisalModelForm_House(forms.ModelForm):
+class FormHouse(forms.ModelForm):
 
     class Meta:
         model = House
@@ -99,7 +100,7 @@ class AppraisalModelForm_House(forms.ModelForm):
             'generalDescription': forms.Textarea(attrs=class_bs),
         }
 
-class AppraisalModelForm_Appraisal(forms.ModelForm):
+class FormAppraisal(forms.ModelForm):
 
     class Meta:
         model = Appraisal
@@ -115,8 +116,7 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
             'rolAvaluo',
             'visadorEmpresa',
             'visadorEmpresaMail',
-            'valorUF',
-            'photo'
+            'valorUF'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
@@ -130,11 +130,20 @@ class AppraisalModelForm_Appraisal(forms.ModelForm):
             'rolAvaluo': forms.TextInput(attrs=class_bs),
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
-            'valorUF': forms.TextInput(attrs=class_bs),
-            'photo': forms.FileInput()
+            'valorUF': forms.TextInput(attrs=class_bs)
         }
 
-class AppraisalForm_Comment(forms.Form):
+class FormPhotos(forms.Form):
+    class_bs = {'class':"form-control form-control-sm"}
+    photos = forms.FileField(widget=forms.ClearableFileInput(
+        attrs={'class':"custom-file-input",'multiple': True}))
+    description = forms.CharField(
+        label='Descripción',
+        max_length=60,
+        required=True,
+        widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
+
+class FormComment(forms.Form):
     commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
     commentConflict = forms.BooleanField(label='Conflict',required=False)
     commentText.widget.attrs.update({'class':"form-control",'rows':3})
