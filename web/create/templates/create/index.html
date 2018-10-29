@@ -5,155 +5,171 @@
 {% block content %}
 
 <div class="container" style="max-width:100%">
-  <div class="card-body">
-    <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
-     {% csrf_token %}
-     <div class="form-group row">
-      <div class="col-md-2 text-right">
-        <p class="font-weight-bold">Solicitud</p>
-      </div>
-      <div class="col-md-6" id="petitioner">
-        <label>Institución</label>
-        {{form_create.solicitante_create}}
-      </div>
+
+   <div class="row">
       <div class="col-md-2">
-        <label>Código</label>
-        {{form_create.solicitanteCodigo_create}}
       </div>
-    </div>
-    <div class="form-group row">
-      <div class="col-md-2 text-right">
-        <p class="font-weight-bold">Cliente</p>
+      <div class="col-md-10">
+         <h5 class="mb-4">Crear tasación</h5>
       </div>
-      <div class="col-md-6">
-        <label>Nombre</label>
-        {{form_create.cliente_create}}
-      </div>
-      <div class="col-md-2">
-        <label>Rut</label>
-        {{form_create.clienteRut_create}}
-      </div>
-      <div class="col-md-2" id="other" hidden>
-        {{form_create.solicitanteOther_create.label_tag}}
-        <div class="input-group">
-          {{form_create.solicitanteOther_create}}
-          <div class="invalid-feedback">
-            Falta Solicitante
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group row" id="propertyType">
-      <div class="col-md-2 text-right">
-        <p class="font-weight-bold">Propiedad</p>
-      </div>
-      <div class="col-md-2">
-        <label>Tipo</label>
-        {{form_create.propertyType_create}}
-      </div>
-      <div class="col-md-2">
-        <label>Tasación</label>
-        {{form_create.tipoTasacion_create}}
-      </div>
-    </div>
-
-    <div class="form-group row">
-     <div class="col-md-3">
-      {{form_create.addressRegion_create.label_tag}}
-      {{form_create.addressRegion_create}}
-      <div class="invalid-feedback">
-       Elija región.
-     </div>
    </div>
-   <div class="col-md-2">
-     {{form_create.addressCommune_create.label_tag}}
-     {{form_create.addressCommune_create}}
-     <div class="invalid-feedback">
-      Elija comuna.
-    </div>
-  </div>
-  <div class="col-md-3">
-   {{form_create.addressStreet_create.label_tag}}
-   <div class="input-group">
-    {{form_create.addressStreet_create}}
-    <div class="invalid-feedback">
-     Por favor, ingrese una calle.
-   </div>
- </div>
-</div>
-<div class="col-md-1">
- {{form_create.addressNumber_create.label_tag}}
- <div class="input-group">
-  {{form_create.addressNumber_create}}
-  <div class="invalid-feedback">
-   Falta #
- </div>
-</div>
-</div>
-<div class="col-md-1" id="type" hidden>
- {{form_create.addressNumberFlat_create.label_tag}}
- <div class="input-group">
-  {{form_create.addressNumberFlat_create}}
-  <div class="invalid-feedback">
-   Falta #
- </div>
-</div>
-</div>
-</div>
+      <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
+        {% csrf_token %}
 
-<div class="row">
- <div class="col-md-3">
-  <div class="form-group">
-   {{form_create.appraisalTimeFrame_create.label_tag}}
-   <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-    {{form_create.appraisalTimeFrame_create}}
-    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-   </div>
-   <div class="invalid-feedback">
-     Ingresar fecha de envio
-   </div>
- </div>
-</div>
-</div>
-<script type="text/javascript">
- $(function () {
-  $('#datetimepicker1').datetimepicker({
-   locale: 'es',
-   icons: {
-     time: "far fa-clock",
-     date: "far fa-calendar-alt",
-     up: "fas fa-arrow-up",
-     down: "fas fa-arrow-down"
-   }
- });
-});
-</script>
-</div>
+         <div class="form-group row">
+            <div class="col-md-2 text-right">
+               <p class="font-weight-bold">Solicitud</p>
+            </div>
+            <div class="col-md-4" id="petitioner">
+               <label>Institución</label>
+               {{form_create.solicitante_create}}
+            </div>
+            <div class="col-md-2">
+               <label>Código</label>
+               {{form_create.solicitanteCodigo_create}}
+            </div>
 
-<div class="form-group row">
- <div class="col-md-2">
-  {{form_create.appraisalPrice_create.label_tag}}
-  <div class="input-group">
-   {{form_create.appraisalPrice_create}}
-   <div class="input-group-append">
-    <div class="input-group-text">UF</div>
-  </div>
-  <div class="invalid-feedback">
-    Ingresar precio
-  </div>
-</div>
-</div>
-</div>
-<div class="form-group row">
- <div class="col-md-2">
-  <button class="btn btn-primary btn-block align-bottom">Crear</button>
-</div>
-</div>
-</form>
+            <div class="col-md-2">
+               <div class="form-group">
+                  {{form_create.appraisalTimeFrame_create.label_tag}}
+                  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                     {{form_create.appraisalTimeFrame_create}}
+                     <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                     </div>
+                     <div class="invalid-feedback">
+                        Ingresar fecha de envio
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <script type="text/javascript">
+               $(function () {
+                  $('#datetimepicker1').datetimepicker({
+                     locale: 'es',
+                     icons: {
+                        time: "far fa-clock",
+                        date: "far fa-calendar-alt",
+                        up: "fas fa-arrow-up",
+                        down: "fas fa-arrow-down"
+                     }
+                  });
+               });
+            </script>
+         </div>
 
-</div>
+         <div class="form-group row">
+            <div class="col-md-2 text-right">
+               <p class="font-weight-bold">Cliente</p>
+            </div>
+            <div class="col-md-4">
+               <label>Nombre</label>
+               {{form_create.cliente_create}}
+            </div>
+            <div class="col-md-2">
+               <label>Rut</label>
+               {{form_create.clienteRut_create}}
+            </div>
+            <div class="col-md-2" id="other" hidden>
+               {{form_create.solicitanteOther_create.label_tag}}
+               <div class="input-group">
+                  {{form_create.solicitanteOther_create}}
+                  <div class="invalid-feedback">
+                     Falta Solicitante
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <div class="form-group row" id="propertyType">
+            <div class="col-md-2 text-right">
+               <p class="font-weight-bold">Propiedad</p>
+            </div>
+            <div class="col-md-2">
+               <label>Tipo</label>
+               {{form_create.propertyType_create}}
+            </div>
+            <div class="col-md-2">
+               <label>Tasación</label>
+               {{form_create.tipoTasacion_create}}
+            </div>
+         </div>
+
+      <div class="form-group row">
+         <div class="col-md-2 text-right">
+         </div>
+         <div class="col-md-2">
+            {{form_create.addressRegion_create.label_tag}}
+            {{form_create.addressRegion_create}}
+            <div class="invalid-feedback">
+               Elija región.
+            </div>
+         </div>
+         <div class="col-md-2">
+            {{form_create.addressCommune_create.label_tag}}
+            {{form_create.addressCommune_create}}
+            <div class="invalid-feedback">
+               Elija comuna.
+            </div>
+         </div>
+      
+         <div class="col-md-3">
+            {{form_create.addressStreet_create.label_tag}}
+            <div class="input-group">
+               {{form_create.addressStreet_create}}
+               <div class="invalid-feedback">
+                  Por favor, ingrese una calle.
+               </div>
+            </div>
+         </div>
+
+         <div class="col-md-1">
+            {{form_create.addressNumber_create.label_tag}}
+            <div class="input-group">
+               {{form_create.addressNumber_create}}
+               <div class="invalid-feedback">
+                  Falta #
+               </div>
+            </div>
+         </div>
+
+         <div class="col-md-1" id="type" hidden>
+            {{form_create.addressNumberFlat_create.label_tag}}
+            <div class="input-group">
+               {{form_create.addressNumberFlat_create}}
+               <div class="invalid-feedback">
+                  Falta #
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!--
+      <div class="form-group row">
+         <div class="col-md-2">
+            {{form_create.appraisalPrice_create.label_tag}}
+            <div class="input-group">
+               {{form_create.appraisalPrice_create}}
+               <div class="input-group-append">
+                  <div class="input-group-text">UF</div>
+               </div>
+               <div class="invalid-feedback">
+                  Ingresar precio
+               </div>
+            </div>
+         </div>
+      </div>
+      -->
+      
+      <div class="form-group row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-8">
+               <button class="btn btn-dark btn-block align-bottom">Crear</button>
+            </div>
+      </div>
+
+   </form>
 </div>
 
 <script>
@@ -171,15 +187,15 @@
       // add the country id to the GET parameters
       data: {
        'region': regionId
-     },
-     success: function (data) {
+    },
+    success: function (data) {
         // `data` is the return of the `load_cities` view function
         // replace the contents of the city input with the data that came from the server
         console.log(data)
         $("#id_addressCommune_create").html($.trim(data));
-      }
-    });
+     }
   });
+ });
 </script>
 
 <script>
@@ -193,11 +209,11 @@
    $("#type").attr('required','required');
    $("#type").removeAttr('disabled');
    $("#id_addressNumberFlat_create").removeAttr('disabled');
- }
- else {
+}
+else {
    $("#type").hide();
    $("#type").removeAttr('required','required');
- }
+}
 });
 </script>
 
@@ -214,11 +230,11 @@
        if (form.checkValidity() === false) {
         event.preventDefault();
         event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-    }, false);
-    });
+     }
+     form.classList.add('was-validated');
   }, false);
+   });
+ }, false);
 })();
 </script>
 
@@ -231,12 +247,12 @@
     jQuery('#other').show();
     jQuery('#other').attr('required','required');
 
-  }
-  else {
+ }
+ else {
     jQuery('#other').hide();
     jQuery('#other').removeAttr('required');
     jQuery('#other').val('');
-  }
+ }
 });
 </script>
 
