@@ -21,6 +21,8 @@
 
 {% block content %}
 
+<div class="container" style="max-width:100%">
+
 <div class="card mb-4">
 
   <div class="card-body">
@@ -59,8 +61,8 @@
           {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
         </td>
         {% else %}
-        <td class="bg-warning">
-          No asignado
+        <td>
+          <p class="font-weight-bold text-warning">No asignado</p>
         </td>
         {% endif %}
         <td style="text-align:center;">
@@ -73,14 +75,14 @@
         <td class="Creada">
           <script>timeCreated("{{appraisal.timeCreated | date:"c"}}");</script>
         </td>
+        <td>
         {% if appraisal.daysLeft > 3 %}
-        <td class="bg-light">
+          <p class="font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% elif appraisal.daysLeft > 1 %}
-        <td class="bg-warning">
+          <p class="text-warning font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% else %}
-        <td class="bg-danger">
+          <p class="text-danger font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% endif %}
-            <script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script>
         </td>
         <td>
         <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-top:-1.0em;margin-bottom:-1.0em;">
@@ -148,6 +150,8 @@
     </tbody>
   </table>
   </div>
+</div>
+
 </div>
 
 {% include "main/modals.html" %}

@@ -164,28 +164,27 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
+        address = self.realEstate.address_dict
         if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
-            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
-            slugify(self.realEstate.apartment.building_in.addressRegion),
-            slugify(self.realEstate.apartment.building_in.addressCommune),
-            slugify(self.realEstate.apartment.building_in.addressStreet),
-            self.realEstate.apartment.building_in.addressNumber,
-            self.realEstate.apartment.propertyType,
-            self.realEstate.apartment.building_in.id,
-            self.realEstate.apartment.number,
-            self.realEstate.apartment.id,
-            self.id
-            )
+            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
+                slugify(address['region']),
+                slugify(address['commune']),
+                slugify(address['street']),
+                slugify(address['number']),
+                self.realEstate.propertyType,
+                self.realEstate.apartment.building_in.id,
+                self.realEstate.apartment.number,
+                self.realEstate.apartment.id,
+                self.id)
         elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(self.realEstate.house.addressRegion),
-                slugify(self.realEstate.house.addressCommune),
-                slugify(self.realEstate.house.addressStreet),
-                self.realEstate.house.addressNumber,
-                self.realEstate.house.propertyType,
+                slugify(address['region']),
+                slugify(address['commune']),
+                slugify(address['street']),
+                slugify(address['number']),
+                self.realEstate.propertyType,
                 self.realEstate.house.id,
-                self.id
-            )
+                self.id)
         else:
             return "error"
 

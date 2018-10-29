@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from region.models import Region
 from province.models import Province
+from dbase.globals import *
 
 class Commune(models.Model):
     name = models.CharField("Nombre",max_length=100)
@@ -28,6 +29,10 @@ class Commune(models.Model):
     dataHouseCount = models.PositiveIntegerField("Casas",null=True,blank=True,default=0)
     # Number of buildings that are stored in this region
     dataBuildingCount = models.PositiveIntegerField("Edificios",null=True,blank=True,default=0)
+
+    @property
+    def shortName(self):
+        return self.name
 
     def __str__(self):
         return self.name

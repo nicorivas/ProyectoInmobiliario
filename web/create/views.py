@@ -1,7 +1,6 @@
 from django.views.generic import FormView
 from django.shortcuts import render
 from django.core import serializers
-from data.chile import comunas_regiones
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
@@ -134,7 +133,7 @@ def house_create(addressRegion,addressCommune,addressStreet,addressNumber):
     house.save()
     return house
 
-@login_required(login_url='/')
+@login_required(login_url='/user/login')
 def create(request):
 
     # if this is a POST request we need to process the form data
@@ -243,62 +242,16 @@ def create(request):
     else:
 
         address = request.GET.get('address', '')
-        region = None
-        commune = None
 
-        if address != '':
-
-            # GET DATA FROM GOOGLE API
-
-            url = 'https://maps.googleapis.com/maps/api/geocode/json?'
-            url_address = 'address={}'.format(address)
-            url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
-            url_language = '&language=es'
-            response = requests.get(url+''+url_address+''+url_key+''+url_language)
-            response_json = response.json()
-            response_results = response_json['results']
-
-            addressNumber = ''
-            addressStreet = ''
-            addressCommune = ''
-            addressRegion = ''
-            addressCountry = ''
-
-            for address_component in response_results[0]['address_components']:
-                types = address_component['types']
-                if 'street_number' in types:
-                    addressNumber = address_component['long_name']
-                if 'route' in types:
-                    addressStreet = address_component['short_name']
-                if 'locality' in types:
-                    addressCommune = address_component['long_name']
-                if 'administrative_area_level_1' in types:
-                    addressRegion = address_component['long_name']
-                if 'country' in types:
-                    addressCountry = address_component['long_name']
-
-            region_name = (addressRegion.split('Región')[1]).strip()
-            region = Region.objects.get(name__icontains=region_name)
-            commune = Commune.objects.get(name__icontains=addressCommune)
-
-            form_create_initial = {
-                'addressStreet_create':addressStreet,
-                'addressNumber_create':addressNumber,
-                'addressRegion_create':region
-                }
-
-        else:
-            region = Region.objects.get(code=13)
-            form_create_initial = {
-                'addressRegion_create':region
-                }
+        region = Region.objects.only('name','code').get(code=13)
 
         # Sort communes
-        communes = Commune.objects.filter(region=region.code).order_by('name')
-        commune = Commune.objects.get(name__icontains='Providencia')
+        communes = Commune.objects.only('name').filter(region=13).order_by('name')
+        commune = Commune.objects.only('name').get(name__icontains='Providencia')
 
         # Set initial values
-        form_create = AppraisalCreateForm(form_create_initial,label_suffix='')
+        form_create_initial = {'addressRegion_create':region}
+        form_create = AppraisalCreateForm({'addressRegion_create':13},label_suffix='')
         form_create.fields['addressCommune_create'].queryset = communes
         form_create.fields['addressCommune_create'].initial = commune
 

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='user:appraisals'), name='user'),
     path('profile/', views.view_profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='profile_edit'),
+    path('login/', views.login, name='login'),
     path('tasaciones/', views.userAppraisals, name='appraisals'),
     #path('login/', auth_views.LoginView.as_view(redirect_field_name='user:tasasciones-usuario',
      #       form_class=AuthenticationFormB, template_name='user/login.html'), name='login'),

@@ -7,16 +7,29 @@
 {% block content %}
 
 <div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ userprofile.first_name }} {{ userprofile.last_name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ userprofile.user }}</h6>
+                    {{ userprofile.badge | safe }}
+                    <p class="pt-4"><span style="font-family: Material Icons;font-size:1.2em;vertical-align: middle;">mail_outline</span> {{ userprofile.email }}</p>
+                    {% if userprofile.has_address %}
+                    <p class="pt-0"><span style="font-family: Material Icons;font-size:1.2em;vertical-align: middle;">location_on</span>{{ userprofile.address }}</p>
+                    {% endif %}
 
-    <p>Usuario:   {{ userprofile.user }}</p>
-    <p>Nombre: {{ userprofile.first_name }}</p>
-    <p>Apellido:  {{ userprofile.last_name }}</p>
-    <p>Email:  {{ userprofile.email }}</p>
-    <p>Calle: {{ userprofile.addressStreet }}</p>
-    <p>Región: {{ userprofile.addressRegion }}</p>
-    <p>Comuna: {{ userprofile.addressCommune }}</p>
-    <button onclick="location.href='{% url 'user:profile_edit' %}'" type="button" id="button_delete" class="btn btn-dark btn-sm">
-          Editar Perfil
-    </button>
+                    <button onclick="location.href='{% url 'user:profile_edit' %}'" type="button" id="button_delete" class="btn btn-dark btn-sm btn-block">
+                        Editar Perfil
+                    </button>
+                    <a class="btn btn-dark btn-sm btn-block" href="/user/password_change/">Cambiar Contraseña</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <h5 class="pt-3">Tasaciones activas</h5>
+            <h5 class="pt-3">Tasaciones pasadas</h5>
+        </div>
+    </div>
 </div>
 {% endblock %}

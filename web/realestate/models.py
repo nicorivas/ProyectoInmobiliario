@@ -51,6 +51,11 @@ class RealEstate(models.Model):
     sourceDatePublished = models.DateTimeField("Fecha publicacion",blank=True,null=True)
 
     @property
+    def address_dict(self):
+        # Returns address fields as dictionary
+        return {'street':self.addressStreet,'number':self.addressNumber,'commune':self.addressCommune.name,'region':self.addressRegion.shortName}
+
+    @property
     def address(self):
         # Returns whole address in a nice format
         return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName

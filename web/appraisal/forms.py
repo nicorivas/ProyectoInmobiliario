@@ -1,5 +1,4 @@
 from django import forms
-from data.chile import comunas_regiones
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building

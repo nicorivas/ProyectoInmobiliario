@@ -1,5 +1,4 @@
 from django import forms
-from data.chile import comunas_regiones
 from region.models import Region
 from commune.models import Commune
 from realestate.models import RealEstate
@@ -42,14 +41,14 @@ class AppraisalCreateForm(forms.Form):
 
     addressRegion_create = forms.ModelChoiceField(
         label="Región",
-        queryset=Region.objects.all())
+        queryset=Region.objects.only('name').all())
     addressRegion_create.widget.attrs.update({'class':"form-control"})
 
     # We need all possible communes to be there initially, so that when we validate the form,
     # it finds the choice.
     addressCommune_create = forms.ModelChoiceField(
         label="Comuna",
-        queryset=Commune.objects.all())
+        queryset=Commune.objects.only('name').all())
     addressCommune_create.widget.attrs.update({'class':"form-control"})
 
     addressStreet_create = forms.CharField(
