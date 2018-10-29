@@ -34,6 +34,7 @@ def appraisal_create(realEstate,timeFrame,price,user, solicitante, cliente, clie
         timeDue=timeDue,
         price=price,
         solicitante=solicitante,
+        solicitanteCodigo=solicitanteCodigo,
         cliente=cliente,
         clienteRut=clienteRut)
     with reversion.create_revision():
@@ -146,6 +147,8 @@ def create(request):
             _propertyType = int(form_create.cleaned_data['propertyType_create'])
             _cliente = form_create.cleaned_data['cliente_create']
             _clienteRut = form_create.cleaned_data['clienteRut_create']
+            _solicitanteCodigo = form_create.cleaned_data['solicitanteCodigo_create']
+            _tipoTasacion =form_create.cleaned_data['tipoTasacion_create']
 
             if form_create.cleaned_data['solicitante_create'] == "0":
                 _solicitante = form_create.cleaned_data['solicitanteOther_create']
@@ -223,7 +226,7 @@ def create(request):
                 appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
                 appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice, request.user, _solicitante,
-                                             _cliente, _clienteRut)
+                                             _solicitanteCodigo, _cliente, _clienteRut)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)

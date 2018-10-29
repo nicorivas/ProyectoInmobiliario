@@ -59,7 +59,7 @@ class Appraisal(models.Model):
     PORTAL = 2
     TOCTOC = 3
     source_choices = [
-        (APPRAISAL, "Tazación"),
+        (APPRAISAL, "Tasación"),
         (PORTAL, "Portal Inmbiliario"),
         (TOCTOC, "TocToc")
     ]
@@ -88,6 +88,22 @@ class Appraisal(models.Model):
         (BICE, "BICE"),
         (OTHER, "OTRO")
     ]
+    OTRA = 0
+    INMOBILIARIA = 1
+    REVISION = 2
+    ESCRITORIO = 3
+    PILOTO = 4
+    TERRENO = 5
+    request_choices = [
+        (INMOBILIARIA, 'Hipotecaria'),
+        (REVISION, 'Revisión'),
+        (ESCRITORIO, 'Escritorio'),
+        (PILOTO, 'Piloto'),
+        (TERRENO, 'Terreno'),
+        (OTRA, 'Otra')
+    ]
+    tipoTasacion = models.CharField("Tipo Pedido", choices=request_choices,max_length=100,blank=True,null=True)
+
     solicitante = models.CharField("Solicitante", choices=petitioner_choices,max_length=100,blank=True,null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)

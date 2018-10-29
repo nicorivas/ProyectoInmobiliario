@@ -9,14 +9,20 @@ import datetime
 
 
 class AppraisalCreateForm(forms.Form):
+    tipoTasacion_create = forms.ChoiceField(
+        label="Tipo Pedido",
+        choices=Appraisal.request_choices)
+    tipoTasacion_create.widget.attrs.update({'class': "form-control"})
+
     solicitante_create = forms.ChoiceField(
         label="Solicitante",
-        choices=Appraisal.petitioner_choices,
-        initial=Appraisal.SANTANDER)
+        choices=Appraisal.petitioner_choices)
     solicitante_create.widget.attrs.update({'class': "form-control"})
 
     solicitanteOther_create =  forms.CharField(max_length=100, label="Otro", required=False)
     solicitanteOther_create.widget.attrs.update({'class': "form-control"})
+    solicitanteCodigo_create = forms.CharField(max_length=100, label="Solicitante Código", required=False)
+    solicitanteCodigo_create.widget.attrs.update({'class': "form-control"})
 
     cliente_create = forms.CharField(
         max_length=100,
