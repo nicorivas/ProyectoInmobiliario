@@ -13,15 +13,13 @@
   <form class="needs-validation" action="" method="post" id="form" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
 
-  <div class="container-fluid">
-
     <nav class="navbar justify-content-between">
-      <a class="navbar-brand" href="#">Tasación {{realestate.get_propertyType_display}}</a>
-      <span class="navbar-text">
-        {{ realestate.address }}
-      </span>
-      <ul class="navbar-nav mr-auto">
-      </ul>
+      <!--<a class="navbar-brand" href="#">-->
+      <h4>
+        <span class="badge badge-secondary">{{realestate.get_propertyType_display}}</span> {{ realestate.address }}
+      </h4>
+      <!--</a>-->
+      <ul class="navbar-nav mr-auto"> </ul>
       {% if appraisal.paused %}
       <button class="btn btn-outline-primary mr-2" type="button" data-toggle="modal" data-target="#modalExport">Resumir</button>
       {% endif %}
@@ -31,9 +29,11 @@
       <button name="btn_export" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
       <button name="btn_finish" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalFinish">Finalizar</button>
       <button name="btn_save" class="btn btn-outline-dark mr-2" name="save" style="font-family:Material Icons;font-size:1em;">save_alt</button>
-      <button name="btn_delete" class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalDelete" style="font-family:Material Icons;font-size:1em;">delete</button>
+      <button name="btn_delete" class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalDelete" style="font-family:Material Icons;font-size:1em;padding:0.2em;">delete</button>
       {% endif %}
     </nav>
+
+      <div class="container-fluid">
 
     <div class="row">
 

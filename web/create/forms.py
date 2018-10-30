@@ -71,7 +71,7 @@ class AppraisalCreateForm(forms.Form):
                    'data-target':"#datetimepicker1"}))
     appraisalTimeFrame_create.input_formats = ['%d/%m/%Y %H:%M']
 
-    appraisalPrice_create = forms.FloatField(label="Precio")
+    appraisalPrice_create = forms.FloatField(label="Precio",required=False)
     appraisalPrice_create.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):

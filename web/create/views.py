@@ -22,7 +22,7 @@ import datetime
 import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,price,user, solicitante, cliente, clienteRut):
+def appraisal_create(realEstate,timeFrame,price,user, solicitante, solicitanteCodigo, cliente, clienteRut):
     '''
     Create appraisal, given a ...?
     '''
@@ -236,7 +236,13 @@ def create(request):
             errordata = form_create.errors.as_data()
             if '__all__' in errordata.keys():
                 message = errordata['__all__'][0].message
+            else:
+                message = ""
+
+            print(form_create.errors)
+            
             context = {'form_create':form_create,'message':message}
+            
             return render(request, 'create/error.html', context)
 
     else:
@@ -257,7 +263,7 @@ def create(request):
 
         context = {'form_create':form_create}
 
-    return render(request, 'create/index.html', context)
+        return render(request, 'create/index.html', context)
 
 def load_communes(request):
     region_id = int(request.GET.get('region'))
