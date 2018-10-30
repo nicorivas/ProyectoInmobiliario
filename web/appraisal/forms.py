@@ -115,7 +115,9 @@ class FormAppraisal(forms.ModelForm):
             'rolAvaluo',
             'visadorEmpresa',
             'visadorEmpresaMail',
-            'valorUF'
+            'valorUF',
+            'tipoTasacion',
+            'objetivo'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
@@ -130,7 +132,10 @@ class FormAppraisal(forms.ModelForm):
             'rolAvaluo': forms.TextInput(attrs=class_bs),
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
-            'valorUF': forms.TextInput(attrs=class_bs)
+            'valorUF': forms.TextInput(attrs=class_bs),
+            'tipoTasacion':forms.TextInput(attrs=class_bs),
+            'objetivo':forms.TextInput(attrs=class_bs),
+
         }
 
 class FormPhotos(forms.Form):
