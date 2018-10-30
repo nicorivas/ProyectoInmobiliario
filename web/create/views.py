@@ -22,7 +22,7 @@ import datetime
 import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,price,user, solicitante, cliente, clienteRut):
+def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, cliente, clienteRut, price):
     '''
     Create appraisal, given a ...?
     '''
@@ -218,14 +218,15 @@ def create(request):
                     return render(request, 'create/error.html',context)
 
             # create new appraisal
-            appraisalPrice = form_create.cleaned_data['appraisalPrice_create']
+            #appraisalPrice = form_create.cleaned_data['appraisalPrice_create']
+            appraisalPrice = None
             appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
             appraisal = None
             try:
                 appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
-                appraisal = appraisal_create(realEstate, appraisalTimeFrame, appraisalPrice, request.user, _solicitante,
-                                             _solicitanteCodigo, _cliente, _clienteRut)
+                appraisal = appraisal_create(realEstate, appraisalTimeFrame, request.user, _solicitante,
+                                             _solicitanteCodigo, _cliente, _clienteRut, appraisalPrice)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)
@@ -234,9 +235,12 @@ def create(request):
             return HttpResponseRedirect(appraisal.url)
         else:
             errordata = form_create.errors.as_data()
+            print(errordata)
+            message = {'error_message':'Validation Error, for now is price appraisal'}
+            context = {'form_create': form_create, 'message': message}
             if '__all__' in errordata.keys():
                 message = errordata['__all__'][0].message
-            context = {'form_create':form_create,'message':message}
+                context = {'form_create':form_create,'message':message}
             return render(request, 'create/error.html', context)
 
     else:
@@ -255,7 +259,7 @@ def create(request):
         form_create.fields['addressCommune_create'].queryset = communes
         form_create.fields['addressCommune_create'].initial = commune
 
-        context = {'form_create':form_create}
+        context = {'form_create': form_create}
 
     return render(request, 'create/index.html', context)
 
