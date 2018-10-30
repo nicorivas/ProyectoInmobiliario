@@ -148,7 +148,7 @@ def create(request):
             _cliente = form_create.cleaned_data['cliente_create']
             _clienteRut = form_create.cleaned_data['clienteRut_create']
             _solicitanteCodigo = form_create.cleaned_data['solicitanteCodigo_create']
-            _tipoTasacion =form_create.cleaned_data['tipoTasacion_create']
+            _tipoTasacion = form_create.cleaned_data['tipoTasacion_create']
 
             if form_create.cleaned_data['solicitante_create'] == "0":
                 _solicitante = form_create.cleaned_data['solicitanteOther_create']
