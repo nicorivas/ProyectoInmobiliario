@@ -13,6 +13,11 @@ class AppraisalCreateForm(forms.Form):
         choices=Appraisal.request_choices)
     tipoTasacion_create.widget.attrs.update({'class': "form-control"})
 
+    objetivo_create = forms.ChoiceField(
+        label="Objetivo",
+        choices=Appraisal.objective_choices)
+    objetivo_create.widget.attrs.update({'class': "form-control"})
+
     solicitante_create = forms.ChoiceField(
         label="Solicitante",
         choices=Appraisal.petitioner_choices)

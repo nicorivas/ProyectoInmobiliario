@@ -22,7 +22,8 @@ import datetime
 import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, cliente, clienteRut, price):
+def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, cliente, clienteRut, tipoTasacion,
+                     objetivo,  price):
     '''
     Create appraisal, given a ...?
     '''
@@ -35,7 +36,9 @@ def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, 
         solicitante=solicitante,
         solicitanteCodigo=solicitanteCodigo,
         cliente=cliente,
-        clienteRut=clienteRut)
+        clienteRut=clienteRut,
+        tipoTasacion=tipoTasacion,
+        objetivo=objetivo)
     with reversion.create_revision():
         appraisal.save()
         reversion.set_user(user)
@@ -148,6 +151,7 @@ def create(request):
             _clienteRut = form_create.cleaned_data['clienteRut_create']
             _solicitanteCodigo = form_create.cleaned_data['solicitanteCodigo_create']
             _tipoTasacion = form_create.cleaned_data['tipoTasacion_create']
+            _objetivo = form_create.cleaned_data['objetivo_create']
 
             if form_create.cleaned_data['solicitante_create'] == "0":
                 _solicitante = form_create.cleaned_data['solicitanteOther_create']
@@ -226,7 +230,7 @@ def create(request):
                 appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
             except Appraisal.DoesNotExist:
                 appraisal = appraisal_create(realEstate, appraisalTimeFrame, request.user, _solicitante,
-                                             _solicitanteCodigo, _cliente, _clienteRut, appraisalPrice)
+                        _solicitanteCodigo, _cliente, _clienteRut, _tipoTasacion, _objetivo, appraisalPrice)
             except MultipleObjectsReturned:
                 context = {'error_message': 'More than one appraisal of the same property'}
                 return render(request, 'create/error.html', context)

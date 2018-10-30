@@ -104,6 +104,22 @@ class Appraisal(models.Model):
     ]
     tipoTasacion = models.CharField("Tipo Pedido", choices=request_choices,max_length=100,blank=True,null=True)
 
+    OTRO = 0
+    GARANTIA = 1
+    CREDITO = 2
+    REMATE = 3
+    VENTA = 4
+    LIQUIDACION = 5
+
+    objective_choices = [
+        (OTRO, 'Otro'),
+        (GARANTIA, 'Garantía'),
+        (CREDITO, 'Crédito'),
+        (REMATE, 'Remate'),
+        (VENTA, 'Venta'),
+        (LIQUIDACION, 'Liquidación' ),
+    ]
+    objetivo = models.CharField("Objetivo", choices=objective_choices,max_length=100,blank=True,null=True)
     solicitante = models.CharField("Solicitante", choices=petitioner_choices,max_length=100,blank=True,null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)

@@ -347,6 +347,10 @@ def appraisal(request, **kwargs):
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     visadores = User.objects.filter(groups__name__in=['visador'])
 
+    #Data from de creation form
+    tipoTasacion = appraisal.tipoTasacion
+    objetivo = appraisal.objetivo
+
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
     appraisal_history = []
@@ -405,6 +409,8 @@ def appraisal(request, **kwargs):
         'visadores':visadores,
         'appraisal_history': appraisal_history,
         'comments': comments,
+        'tipoTasacion': tipoTasacion,
+        'objetivo': objetivo
         }
 
     a = render(request, 'appraisal/realestate_appraisal.html', context)
