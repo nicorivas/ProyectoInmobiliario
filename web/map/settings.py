@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django_google_maps',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -159,7 +158,7 @@ STATIC_URL = '/static/'
 
 GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
 
-LOGIN_REDIRECT_URL = '/main/'
+LOGIN_REDIRECT_URL = '/login/'
 
 LOGOUT_REDIRECT_URL = '/'
 

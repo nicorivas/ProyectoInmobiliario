@@ -1,7 +1,6 @@
 from django.views.generic import FormView
 from django.shortcuts import render
 from django.core import serializers
-from data.chile import comunas_regiones
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 

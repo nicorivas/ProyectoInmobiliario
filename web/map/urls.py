@@ -24,6 +24,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('home.urls')),
+    path('main/', include('main.urls')),
     path('realestate/', include('realestate.urls')),
     path('create/', include('create.urls')),
     path('appraisal/', include('appraisal.urls')),
@@ -31,11 +33,9 @@ urlpatterns = [
     path('province/', include('province.urls')),
     path('commune/', include('commune.urls')),
     path('square/', include('square.urls')),
-    path('main/', include('main.urls')),
     path('user/', include('user.urls')),
     path('vis/', include('vis.urls')),
-    #path('', include('home.urls')),
-    path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
-        form_class=AuthenticationFormB), name='login'),
+    #path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
+    #    form_class=AuthenticationFormB), name='login'),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

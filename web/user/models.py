@@ -15,7 +15,7 @@ class UserProfile(models.Model):
     address =  models.CharField(max_length=100, default='')
     phone = models.IntegerField(default=0)
     addressStreet = models.CharField("Calle",max_length=300,default="")
-    addressNumber = models.CharField("Numero",max_length=10,default=0)
+    addressNumber = models.CharField("Numero",max_length=10)
     addressCommune = models.ForeignKey(Commune,
         on_delete=models.CASCADE,
         verbose_name="Comuna",
@@ -29,7 +29,34 @@ class UserProfile(models.Model):
         null=True,
         to_field='code')
 
+    @property
+    def has_address(self):
+        if self.addressStreet == None or self.addressCommune == None or self.addressRegion == None:
+            return False
+        else:
+            return True
 
+    @property
+    def address(self):
+        if not self.has_address:
+            return ''
+        else:
+            return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
+
+    @property
+    def badge(self):
+        if self.user.is_superuser:
+            return '<div class="badge badge-dark">Superuser</div>'
+        groups = self.user.groups.values_list('name',flat=True)
+        if 'tasador' in groups:
+            return '<div class="badge badge-success">Tasador</div>'
+        elif 'visador' in groups:
+            return '<div class="badge badge-success">Visador</div>'
+        elif 'asignador' in groups:
+            return '<div class="badge badge-success">Asignador</div>'
+        else:
+            return ''
+    
 
     def __str__(self):
         return self.user.username

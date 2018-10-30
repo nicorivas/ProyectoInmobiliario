@@ -6,21 +6,56 @@
 
 {% block content %}
 <div class="container">
-<div class="card-body">
-    <form action="/user/profile/edit/" method="post" id="profile_form" enctype="multipart/form-data" data-commune-url="{% url 'user:user_ajax_load_communes' %}" novalidate>
-        {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ profile_form.as_p }}
-        <button type="submit" type="button" id="button_delete" class="btn btn-dark btn-sm">Guardar</button>
+  <div class="card mx-auto" style="width:30em;">
+    <div class="card-body">
+      <form action="/user/profile/edit/" class="needs-validation" method="post" id="form_profile" enctype="multipart/form-data" data-commune-url="{% url 'user:user_ajax_load_communes' %}" novalidate>
+          {% csrf_token %}
+          <h5 class="card-title">Editar perfil</h5>
+          <div class="form-group">
+            <label for="">Nombre</label>
+            {{form_profile.first_name}}
+          </div>
+          <div class="invalid-feedback">
+            Ingresar Nombre
+          </div>
+          <div class="form-group">
+            <label for="">Apellido</label>
+            {{form_profile.last_name}}
+          </div> 
+          <div class="form-group">
+            <label for="">Email</label>
+            {{form_profile.email}}
+          </div>
+          <div class="form-row">
+            <div class="form-group col-9">
+              <label for="">Calle</label>
+              {{form_profile.addressStreet}}
+            </div> 
+            <div class="form-group col-3">
+              <label for="">Número</label>
+              {{form_profile.addressNumber}}
+            </div> 
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="">Región</label>
+              {{form_profile.addressRegion}}
+            </div>
+            <div class="form-group col-6">
+              <label for="">Comuna</label>
+              {{form_profile.addressCommune}}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-dark btn-block">Guardar</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-    </form>
-    <br>
-</div>
-</div>
 <script>
   $("#id_addressRegion").change(function () {
     // get the url of the `load_cities` view
-    var url = $("#profile_form").attr("data-commune-url");
+    var url = $("#form_profile").attr("data-commune-url");
     // get the selected country ID from the HTML input
     var regionId = $(this).val();
     console.log(regionId);
@@ -42,5 +77,6 @@
     });
   });
 </script>
+
 {% endblock %}
 

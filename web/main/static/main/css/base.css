@@ -2,13 +2,17 @@ html, body {
   margin: 0;
   padding: 0;
   background: #000;
+  height: 105%;
 }
 
 #content {
   font-family: Lucida Grande, Helvetica, sans-serif;
   background: #fff;
   margin: 0;
-  padding: 20px;
+  height: 100%;
+  padding: 0px;
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 
 #footer {
@@ -22,50 +26,4 @@ html, body {
   margin: 0;
   padding: 10px;
   text-align: right;
-}
-
-.section {
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  padding: 1em;
-  margin-bottom: 0.2em;
-  background: #fff;
-  overflow: hidden;
-}
-
-.section-title {
-  padding-top: 0.5em;
-  padding-bottom: 1em;
-  padding-left: 0em;
-  background: #fff;
-  overflow: hidden;
-}
-
-.section-title h2 {
-  font-size: 20px;
-}
-
-.subsection {
-  border: 1px solid #ccc;
-  padding: 0.5em;
-  margin-left: -0.2em;
-  margin-right: -0.2em;
-  margin-bottom: 0.2em;
-  margin-top: 0.2em;
-  background: #fafafa;
-  overflow: hidden;
-}
-
-.subsection h2 {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0em;
-  margin-bottom: 0.5em;
-  font-size: 24px;
-}
-
-.subsection h3 {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0em;
-  margin-bottom: 0.5em;
-  font-size: 20px;
 }

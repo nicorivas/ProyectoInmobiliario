@@ -24,4 +24,4 @@ class Region(models.Model):
         return REGION_NAME__SHORT_NAME[self.name]
 
     def __str__(self):
-        return self.name
+        return self.shortName
