@@ -366,6 +366,7 @@ def appraisal(request, **kwargs):
     tipoTasacion = appraisal.tipoTasacion
     objetivo = appraisal.objetivo
     solicitante = appraisal.solicitante
+    print(appraisal.solicitante)
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
