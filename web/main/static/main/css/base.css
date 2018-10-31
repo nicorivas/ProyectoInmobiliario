@@ -27,3 +27,8 @@ html, body {
   padding: 10px;
   text-align: right;
 }
+
+.form-error {
+  color: #dc3545;
+  font-size: 0.75em;
+}

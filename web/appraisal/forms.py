@@ -121,7 +121,7 @@ class FormAppraisal(forms.ModelForm):
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'solicitante': forms.TextInput(attrs=class_bs),
+            'solicitante': forms.Select(attrs=class_bs),
             'solicitanteCodigo': forms.TextInput(attrs=class_bs),
             'solicitanteSucursal': forms.TextInput(attrs=class_bs),
             'solicitanteEjecutivo': forms.TextInput(attrs=class_bs),
@@ -133,19 +133,21 @@ class FormAppraisal(forms.ModelForm):
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
             'valorUF': forms.TextInput(attrs=class_bs),
-            'tipoTasacion':forms.TextInput(attrs=class_bs),
-            'objetivo':forms.TextInput(attrs=class_bs),
+            'tipoTasacion':forms.Select(attrs=class_bs),
+            'objetivo':forms.Select(attrs=class_bs,choices=Appraisal.petitioner_choices),
 
         }
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
-    photos = forms.FileField(widget=forms.ClearableFileInput(
-        attrs={'class':"custom-file-input",'multiple': True}))
+    photos = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={'class':"custom-file-input",'multiple': True}))
     description = forms.CharField(
         label='Descripción',
         max_length=60,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
 
 class FormComment(forms.Form):

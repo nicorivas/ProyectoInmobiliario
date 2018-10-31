@@ -16,17 +16,30 @@
       <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
         {% csrf_token %}
 
-         <div class="form-group row">
+         <div class="row">
+            
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Solicitud</p>
             </div>
-            <div class="col-md-4" id="petitioner">
-               <label>Institución</label>
-               {{form_create.solicitante_create}}
+            
+            <div class="col-md-2" id="petitioner">
+               <div class="form-group">
+                  <label>Institución</label>
+                  {{form_create.solicitante_create}}
+               </div>
             </div>
+            <div class="col-md-2" id="other" hidden>
+               <div class="form-group">
+                  {{form_create.solicitanteOther_create.label_tag}}
+                  {{form_create.solicitanteOther_create}}
+               </div>
+            </div>
+
             <div class="col-md-2">
-               <label>Código</label>
-               {{form_create.solicitanteCodigo_create}}
+               <div class="form-group">
+                  <label>Código</label>
+                  {{form_create.solicitanteCodigo_create}}
+               </div>
             </div>
 
             <div class="col-md-2">
@@ -36,9 +49,6 @@
                      {{form_create.appraisalTimeFrame_create}}
                      <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                     </div>
-                     <div class="invalid-feedback">
-                        Falta ingresar fecha de envio
                      </div>
                   </div>
                </div>
@@ -58,92 +68,84 @@
             </script>
          </div>
 
-         <div class="form-group row">
+         <div class="row">
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Cliente</p>
             </div>
             <div class="col-md-4">
-               <label>Nombre</label>
-               {{form_create.cliente_create}}
+               <div class="form-group">
+                  <label>Nombre</label>
+                  {{form_create.cliente_create}}
+               </div>
             </div>
             <div class="col-md-2">
-               <label>Rut</label>
-               {{form_create.clienteRut_create}}
-            </div>
-            <div class="col-md-2" id="other" hidden>
-               {{form_create.solicitanteOther_create.label_tag}}
-               <div class="input-group">
-                  {{form_create.solicitanteOther_create}}
-                  <div class="invalid-feedback">
-                     Falta Solicitante
-                  </div>
+               <div class="form-group">
+                  <label>Rut</label>
+                  {{form_create.clienteRut_create}}
                </div>
             </div>
          </div>
 
-         <div class="form-group row" id="propertyType">
+         <div class="row" id="propertyType">
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Propiedad</p>
             </div>
             <div class="col-md-2">
-               <label>Tipo</label>
-               {{form_create.propertyType_create}}
+               <div class="form-group">
+                  <label>Tipo</label>
+                  {{form_create.propertyType_create}}
+               </div>
             </div>
             <div class="col-md-2">
-               <label>Tasación</label>
-               {{form_create.tipoTasacion_create}}
+               <div class="form-group">
+                  <label>Tasación</label>
+                  {{form_create.tipoTasacion_create}}
+               </div>
             </div>
             <div class="col-md-2">
-               <label>Objetivo Tasación</label>
-               {{form_create.objetivo_create}}
+               <div class="form-group">
+                  <label>Objetivo Tasación</label>
+                  {{form_create.objetivo_create}}
+               </div>
             </div>
          </div>
 
-      <div class="form-group row">
-         <div class="col-md-2 text-right">
-         </div>
+      <div class="row">
+         <div class="col-md-2 text-right"></div>
          <div class="col-md-2">
-            {{form_create.addressRegion_create.label_tag}}
-            {{form_create.addressRegion_create}}
-            <div class="invalid-feedback">
-               Falta región.
+            <div class="form-group">
+               {{form_create.addressRegion_create.label_tag}}
+               {{form_create.addressRegion_create}}
             </div>
          </div>
          <div class="col-md-2">
-            {{form_create.addressCommune_create.label_tag}}
-            {{form_create.addressCommune_create}}
-            <div class="invalid-feedback">
-               Falta comuna.
+            <div class="form-group">
+               {{form_create.addressCommune_create.label_tag}}
+               {{form_create.addressCommune_create}}
             </div>
          </div>
-      
-         <div class="col-md-3">
-            {{form_create.addressStreet_create.label_tag}}
-            <div class="input-group">
+      </div>
+
+      <div class="row">
+         <div class="col-md-2 text-right"></div>
+         <div class="col-md-4">
+            <div class="form-group">
+               {{form_create.addressStreet_create.label_tag}}
                {{form_create.addressStreet_create}}
-               <div class="invalid-feedback">
-                  Por favor, ingrese una calle.
-               </div>
             </div>
          </div>
 
          <div class="col-md-1">
-            {{form_create.addressNumber_create.label_tag}}
-            <div class="input-group">
+            <div class="form-group">
+               {{form_create.addressNumber_create.label_tag}}
                {{form_create.addressNumber_create}}
-               <div class="invalid-feedback">
-                  Falta número
-               </div>
             </div>
          </div>
 
          <div class="col-md-1" id="type" hidden>
-            {{form_create.addressNumberFlat_create.label_tag}}
-            <div class="input-group">
+            <div class="form-group">
+               {{form_create.addressNumberFlat_create.label_tag}}
                {{form_create.addressNumberFlat_create}}
-               <div class="invalid-feedback">
-                  Falta #
-               </div>
             </div>
          </div>
       </div>
@@ -221,31 +223,82 @@ else {
 });
 </script>
 
+
 <script>
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function() {
- 'use strict';
- window.addEventListener('load', function() {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function(form) {
-      form.addEventListener('submit', function(event) {
-       if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-     }
-     form.classList.add('was-validated');
-  }, false);
+   $.formUtils.addValidator({
+      name : 'rut',
+      validatorFunction : function(rut, $el, config, language, $form) {
+         function dv(T){
+            var M=0,S=1;
+            for(;T;T=Math.floor(T/10))
+               S=(S+T%10*(9-M++%6))%11;
+            return S?S-1:'k';
+         };
+         if (rut.length < 2) return false
+         rut = rut.split('.').join("");
+         rut = rut.split('-').join("");
+         var digv = rut.charAt(rut.length-1);
+         n = rut.substring(0,rut.length-1)
+         return (dv(n) == digv);
+         rut = parseInt(rut);
+         if (isNaN(rut)) {
+            return false
+         }
+         return true
+      },
+      errorMessage : 'Rut invalido',
+      errorMessageKey: 'badRut'
    });
- }, false);
-})();
+
+   $.validate({
+      //errorMessageClass: 'help-block form-error text-danger small',
+      lang: 'es'
+   });
 </script>
+
+<!--
+<script>
+   // Example starter JavaScript for disabling form submissions if there are invalid fields
+   (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+         // Fetch all the forms we want to apply custom Bootstrap validation styles to
+         var forms = document.getElementsByClassName('needs-validation');
+         // Loop over them and prevent submission
+         var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+               for (var i = 0, element; element = form.elements[i++];) {
+                  console.log(element.name)
+                  if (element.name == 'clienteRut_create') {
+                     console.log('a')
+                     var ruts = element.value;
+                     ruts = ruts.split('.').join("");
+                     ruts = ruts.split('-').join("");
+                     var rut = parseInt(ruts);
+                     if (isNaN(rut)) {
+                        element.classList.add('invalid')
+                        event.preventDefault();
+                        event.stopPropagation();
+                     }
+                  } else {
+                     element.checkValidity()
+                  }
+               }
+               //if (form.checkValidity() === false) {
+               //   event.preventDefault();
+               //   event.stopPropagation();
+               //}
+               form.classList.add('was-validated');
+            }, false);
+         });
+      }, false);
+   })();
+</script>
+-->
 
 <script>
  jQuery('#petitioner').on('change', function() {
   var object = $("#petitioner option:selected");
-  console.log(object.val());
   if (object.val() == 0 ) {
     jQuery('#other').removeAttr('hidden');
     jQuery('#other').show();
