@@ -160,16 +160,31 @@ def save_appraisal(request,forms,comment):
         print('a')
         return
 
-def save(request,forms):
-    for name, form in forms.items():
-        if not form.is_valid():
-            return False
-    for name, form in forms.items():
-        if name in ['building','apartment','house']:
-            form.save()
-        if name == 'appraisal':
-            save_appraisal(request,forms,'Saved')
-    return True
+def save(request,forms,realEstate):
+    print('save')
+    if realEstate.propertyType == RealEstate.TYPE_APARTMENT:
+        if forms['building'].is_valid() and forms['apartment'].is_valid() and forms['appraisal'].is_valid():
+            print('holi')
+            for name, form in forms.items():
+                if name in ['building','apartment']:
+                    form.save()
+                if name == 'appraisal':
+                    save_appraisal(request,forms,'Saved')
+            return True
+        else:
+            print(forms['building'].errors)
+            print(forms['apartment'].errors)
+            print(forms['appraisal'].errors)
+    elif realEstate.propertyType == RealEstate.TYPE_HOUSE:
+        if forms['house'].is_valid() and forms['appraisal'].is_valid():
+            for name, form in forms.items():
+                if name == 'house':
+                    form.save()
+                if name == 'appraisal':
+                    save_appraisal(request,forms,'Saved')
+            return True
+    else:
+        return False
 
 def delete(request,appraisal):
     appraisal.delete()
@@ -305,7 +320,7 @@ def appraisal(request, **kwargs):
 
         # Switch to action
         if 'btn_save' in request.POST.keys():
-            ret = save(request,forms)
+            ret = save(request,forms,realestate)
         elif 'btn_delete' in request.POST.keys():
             ret = delete(request,appraisal)
         elif 'btn_finish' in request.POST.keys():

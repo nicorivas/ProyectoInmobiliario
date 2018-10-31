@@ -8,6 +8,7 @@ import datetime
 
 
 class AppraisalCreateForm(forms.Form):
+
     tipoTasacion_create = forms.ChoiceField(
         label="Tipo Pedido",
         choices=Appraisal.tipoTasacion_choices)
@@ -31,12 +32,12 @@ class AppraisalCreateForm(forms.Form):
     cliente_create = forms.CharField(
         max_length=100,
         label="Nombre Cliente", required=False)
-    cliente_create.widget.attrs.update({'class': "form-control"})
+    cliente_create.widget.attrs.update({'class': "form-control",'data-validation':"required"})
 
     clienteRut_create = forms.CharField(
         max_length=100,
         label="Rut Cliente", required=False)
-    clienteRut_create.widget.attrs.update({'class': "form-control"})
+    clienteRut_create.widget.attrs.update({'class': "form-control",'data-validation':"required rut"})
 
     propertyType_create = forms.ChoiceField(
         label="Tipo propiedad",
@@ -60,10 +61,10 @@ class AppraisalCreateForm(forms.Form):
         max_length=200,
         label="Calle",
         error_messages={'required': 'Please enter your name'})
-    addressStreet_create.widget.attrs.update({'class':"form-control"})
+    addressStreet_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
     addressNumber_create = forms.CharField(max_length=6,label="Número")
-    addressNumber_create.widget.attrs.update({'class':"form-control"})
+    addressNumber_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
     addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
     addressNumberFlat_create.widget.attrs.update({'class':"form-control",'disabled':''})
@@ -75,8 +76,8 @@ class AppraisalCreateForm(forms.Form):
             attrs={'class': "form-control datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
     appraisalTimeFrame_create.input_formats = ['%d/%m/%Y %H:%M']
-
-    appraisalPrice_create = forms.FloatField(label="Precio", required=False)
+    
+    appraisalPrice_create = forms.FloatField(label="Precio",required=False)
     appraisalPrice_create.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +85,11 @@ class AppraisalCreateForm(forms.Form):
         #self.fields['addressCommune_create'].queryset = []
 
     def clean(self):
+        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].replace('.','')
+        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].replace('-','')
+        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].lower()
+        if self.cleaned_data.get('addressStreet_create')=="":
+            raise forms.ValidationError('No name!')
         if self.cleaned_data.get('addressStreet_create')=="":
             raise forms.ValidationError('No name!')
         if self.cleaned_data.get('propertyType_create') == RealEstate.TYPE_APARTMENT:

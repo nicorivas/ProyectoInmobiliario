@@ -2,7 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
   background: #000;
-  height: 105%;
+  min-height: 100%;
 }
 
 #content {
@@ -26,4 +26,9 @@ html, body {
   margin: 0;
   padding: 10px;
   text-align: right;
+}
+
+.form-error {
+  color: #dc3545;
+  font-size: 0.75em;
 }

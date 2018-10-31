@@ -83,13 +83,15 @@ class Building(RealEstate):
         max_length=20,
         blank=True,
         null=True)
-    permisoEdificacion = models.IntegerField("Permiso edificación",
+    permisoEdificacion = models.CharField("Permiso edificación",
+        max_length=10,
         blank=True,
         null=True)
     permisoEdificacionDate = models.DateField("Permiso edificación fecha",
         blank=True,
         null=True)
-    recepcionFinal = models.IntegerField("Recepcion final",
+    recepcionFinal = models.CharField("Recepcion final",
+        max_length=10,
         blank=True,
         null=True)
     recepcionFinalDate = models.DateField("Recepcion final fecha",

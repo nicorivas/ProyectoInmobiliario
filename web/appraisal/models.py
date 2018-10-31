@@ -69,25 +69,27 @@ class Appraisal(models.Model):
 
     # generales
     OTHER = 0
-    BCI = "BCI"
-    SANTANDER = "SANTANDER"
-    ITAU = "ITAÚ"
-    INTERNACIONAL = "INTERNACIONAL"
-    CHILE = "BANCO DE CHILE"
-    CORPBANCA = "CORPBANCA"
-    SCOTIABANK = "SOCTIABANK"
-    BICE = "BICE"
+    BCI = 1
+    SANTANDER = 2
+    ITAU = 3
+    INTERNACIONAL = 4
+    CHILE = 5
+    CORPBANCA = 6
+    SCOTIABANK = 7
+    BICE = 8
     petitioner_choices = [
         (BCI, "BCI"),
-        (SANTANDER, "SANTANDER"),
-        (ITAU, "ITAU"),
-        (INTERNACIONAL, "BANCO INTERNACIONAL"),
-        (CHILE, "BANCO DE CHILE"),
-        (CORPBANCA, "CORPBANCA"),
-        (SCOTIABANK, "SCOTIOABANK"),
+        (SANTANDER, "Santander"),
+        (ITAU, "Itaú"),
+        (INTERNACIONAL, "Banco Internacional"),
+        (CHILE, "Banco de Chile"),
+        (CORPBANCA, "Corpbanca"),
+        (SCOTIABANK, "Scotiabank"),
         (BICE, "BICE"),
-        (OTHER, "OTRO")
+        (OTHER, "Otro")
     ]
+    solicitante = models.IntegerField("Solicitante", choices=petitioner_choices,blank=True,null=True)
+
     OTRA = 0
     INMOBILIARIA = 1
     REVISION = 2
@@ -102,6 +104,7 @@ class Appraisal(models.Model):
         (TERRENO, 'Terreno'),
         (OTRA, 'Otra')
     ]
+
     tipoTasacion = models.CharField("Tipo Pedido", choices=tipoTasacion_choices,max_length=100,blank=True,null=True)
 
     OTRO = 0
@@ -110,7 +113,6 @@ class Appraisal(models.Model):
     REMATE = 3
     VENTA = 4
     LIQUIDACION = 5
-
     objective_choices = [
         (OTRO, 'Otro'),
         (GARANTIA, 'Garantía'),
@@ -119,16 +121,16 @@ class Appraisal(models.Model):
         (VENTA, 'Venta'),
         (LIQUIDACION, 'Liquidación' ),
     ]
-    objetivo = models.CharField("Objetivo", choices=objective_choices,max_length=100,blank=True,null=True)
-    solicitante = models.CharField("Solicitante", choices=petitioner_choices,max_length=100,blank=True,null=True)
+    objetivo = models.IntegerField("Objetivo", choices=objective_choices,blank=True,null=True)
+
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
-    clienteRut = models.IntegerField("Cliente RUT",blank=True,null=True)
+    clienteRut = models.CharField("Cliente RUT",max_length=10,blank=True,null=True)
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
-    propietarioRut = models.IntegerField("Propietario RUT",blank=True,null=True)
-    rolAvaluo = models.IntegerField("Rol principal",blank=True,null=True)
+    propietarioRut = models.CharField("Propietario RUT",max_length=10,blank=True,null=True)
+    rolAvaluo = models.CharField("Rol principal",max_length=20,blank=True,null=True)
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
     visadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_visador')
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)

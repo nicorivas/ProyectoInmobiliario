@@ -121,6 +121,7 @@ class FormAppraisal(forms.ModelForm):
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
+
             'solicitante': forms.Select(choices=Appraisal.petitioner_choices,
                                          attrs={'class':"custom-select custom-select-sm"}),
             'solicitanteCodigo': forms.TextInput(attrs=class_bs),
@@ -136,19 +137,20 @@ class FormAppraisal(forms.ModelForm):
             'valorUF': forms.TextInput(attrs=class_bs),
             'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices,
                                          attrs={'class':"custom-select custom-select-sm"}),
-            'objetivo':forms.Select(choices=Appraisal.objective_choices,
-                                         attrs={'class':"custom-select custom-select-sm"}),
+            'objetivo':forms.Select(attrs=class_bs,choices=Appraisal.petitioner_choices),
 
         }
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
-    photos = forms.FileField(widget=forms.ClearableFileInput(
-        attrs={'class':"custom-file-input",'multiple': True}))
+    photos = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={'class':"custom-file-input",'multiple': True}))
     description = forms.CharField(
         label='Descripción',
         max_length=60,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
 
 class FormComment(forms.Form):

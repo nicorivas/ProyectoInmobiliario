@@ -39,7 +39,7 @@ class Apartment(RealEstate):
 
     selloDeGases = models.PositiveSmallIntegerField("Sello de gases",default=1,null=True)
 
-    permisoEdificacionNo = models.PositiveSmallIntegerField("Numero permiso edificacion",default=0,null=True)
+    permisoEdificacionNo = models.CharField("Numero permiso edificacion",max_length=20,default=0,null=True)
     permisoEdificacionFecha = models.DateField("Fecha permiso edificacion",default='2006-10-25',null=True)
     permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificacion",max_digits=7,decimal_places=2,default=0,null=True)
 
