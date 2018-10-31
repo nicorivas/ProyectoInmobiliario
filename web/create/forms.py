@@ -10,7 +10,7 @@ import datetime
 class AppraisalCreateForm(forms.Form):
     tipoTasacion_create = forms.ChoiceField(
         label="Tipo Pedido",
-        choices=Appraisal.request_choices)
+        choices=Appraisal.tipoTasacion_choices)
     tipoTasacion_create.widget.attrs.update({'class': "form-control"})
 
     objetivo_create = forms.ChoiceField(

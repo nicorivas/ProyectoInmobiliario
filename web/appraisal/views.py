@@ -350,6 +350,7 @@ def appraisal(request, **kwargs):
     #Data from de creation form
     tipoTasacion = appraisal.tipoTasacion
     objetivo = appraisal.objetivo
+    solicitante = appraisal.solicitante
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
@@ -410,7 +411,8 @@ def appraisal(request, **kwargs):
         'appraisal_history': appraisal_history,
         'comments': comments,
         'tipoTasacion': tipoTasacion,
-        'objetivo': objetivo
+        'objetivo': objetivo,
+        'solicitante': solicitante,
         }
 
     a = render(request, 'appraisal/realestate_appraisal.html', context)

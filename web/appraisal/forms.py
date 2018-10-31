@@ -121,7 +121,8 @@ class FormAppraisal(forms.ModelForm):
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'solicitante': forms.TextInput(attrs=class_bs),
+            'solicitante': forms.Select(choices=Appraisal.petitioner_choices,
+                                         attrs={'class':"custom-select custom-select-sm"}),
             'solicitanteCodigo': forms.TextInput(attrs=class_bs),
             'solicitanteSucursal': forms.TextInput(attrs=class_bs),
             'solicitanteEjecutivo': forms.TextInput(attrs=class_bs),
@@ -133,8 +134,10 @@ class FormAppraisal(forms.ModelForm):
             'visadorEmpresa': forms.TextInput(attrs=class_bs),
             'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
             'valorUF': forms.TextInput(attrs=class_bs),
-            'tipoTasacion':forms.TextInput(attrs=class_bs),
-            'objetivo':forms.TextInput(attrs=class_bs),
+            'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices,
+                                         attrs={'class':"custom-select custom-select-sm"}),
+            'objetivo':forms.Select(choices=Appraisal.objective_choices,
+                                         attrs={'class':"custom-select custom-select-sm"}),
 
         }
 

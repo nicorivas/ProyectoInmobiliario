@@ -94,7 +94,7 @@ class Appraisal(models.Model):
     ESCRITORIO = 3
     PILOTO = 4
     TERRENO = 5
-    request_choices = [
+    tipoTasacion_choices = [
         (INMOBILIARIA, 'Hipotecaria'),
         (REVISION, 'Revisión'),
         (ESCRITORIO, 'Escritorio'),
@@ -102,7 +102,7 @@ class Appraisal(models.Model):
         (TERRENO, 'Terreno'),
         (OTRA, 'Otra')
     ]
-    tipoTasacion = models.CharField("Tipo Pedido", choices=request_choices,max_length=100,blank=True,null=True)
+    tipoTasacion = models.CharField("Tipo Pedido", choices=tipoTasacion_choices,max_length=100,blank=True,null=True)
 
     OTRO = 0
     GARANTIA = 1
