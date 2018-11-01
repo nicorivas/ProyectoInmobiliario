@@ -67,6 +67,16 @@ class Appraisal(models.Model):
         default=APPRAISAL,blank=True,null=True)
     price = models.FloatField("Precio tasación",blank=True,null=True)
 
+    SIN_VISITA = 0
+    COMPLETA = 1
+    EXTERIOR = 2
+    visit_choices = [
+        (SIN_VISITA, 'Sin Visita'),
+        (COMPLETA, 'Completa'),
+        (EXTERIOR, 'Solo Exterior')
+    ]
+    visita = models.IntegerField("Visita", choices=visit_choices, blank=True,null=True)
+
     # generales
     OTHER = 0
     BCI = 1
