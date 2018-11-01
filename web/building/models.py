@@ -105,6 +105,28 @@ class Building(RealEstate):
     viviendaSocial = models.BooleanField("Vivienda social",
         blank=True,
         null=True)
+    desmontable = models.BooleanField("Desmontable",
+        blank=True,
+        null=True)
+    adobe = models.BooleanField("Adobe",
+        blank=True,
+        null=True)
+    acogidaLeyChoices = (
+        (0, 'O.G.U. y C.'),
+        (1, 'P.R.C.'),
+        (2, 'Ley Pereira'),
+        (3, 'Ley 19583'),
+        (4, 'Ley 19667'),
+        (5, 'Ley 19727'),
+        (6, 'Ley 20251'),
+        (7, 'Ley 6071'),
+        (8, 'Ninguna'),
+        (9, 'Antigüedad')
+    )
+    acogidaLey = models.IntegerField("Acogida a",
+        choices=acogidaLeyChoices,
+        blank=True,
+        null=True)
 
     class Meta:
         app_label = 'building'
