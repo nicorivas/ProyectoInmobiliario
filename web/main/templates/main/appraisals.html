@@ -35,12 +35,30 @@
         </td>
         {% if appraisal.tasadorUser %}
         <td>
-          {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
+        {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
+        {% if perms.appraisal.assign_tasador %}
+        {% if appraisal.active %}
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
+            Asignar tasador
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
         </td>
-            
+
         {% else %}
         <td>
           <p class="font-weight-bold text-warning">No asignado</p>
+        {% if perms.appraisal.assign_tasador %}
+        {% if appraisal.active %}
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
+            Asignar tasador
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
         </td>
         {% endif %}
         <td style="text-align:center;">
