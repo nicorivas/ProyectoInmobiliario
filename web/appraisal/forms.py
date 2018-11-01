@@ -26,7 +26,10 @@ class FormBuilding(forms.ModelForm):
             'recepcionFinal',
             'recepcionFinalDate',
             'expropiacion',
-            'viviendaSocial'
+            'viviendaSocial',
+            'adobe',
+            'desmontable',
+            'acogidaLey'
         ]
 
         class_bs = {'class':"form-control form-control-sm"}
@@ -51,7 +54,10 @@ class FormBuilding(forms.ModelForm):
             'recepcionFinal': forms.TextInput(attrs=class_bs),
             'recepcionFinalDate': forms.DateTimeInput(attrs=class_dp_m_bs),
             'expropiacion': forms.NullBooleanSelect(attrs=class_se_bs),
-            'viviendaSocial': forms.NullBooleanSelect(attrs=class_se_bs)
+            'viviendaSocial': forms.NullBooleanSelect(attrs=class_se_bs),
+            'adobe': forms.NullBooleanSelect(attrs=class_se_bs),
+            'desmontable': forms.NullBooleanSelect(attrs=class_se_bs),
+            'acogidaLey': forms.Select(attrs=class_se_bs),
         }
 
 class FormApartment(forms.ModelForm):

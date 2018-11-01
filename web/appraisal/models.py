@@ -98,7 +98,7 @@ class Appraisal(models.Model):
         (BICE, "BICE"),
         (OTHER, "Otro")
     ]
-    solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
+    solicitante = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
 
     OTRA = 0
     INMOBILIARIA = 1

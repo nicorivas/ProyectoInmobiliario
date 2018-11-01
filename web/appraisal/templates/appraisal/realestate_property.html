@@ -221,6 +221,15 @@
                 {{forms.building.ocupante}}
               </div>
             </div>
+
+            <div class="form-group row align-middle">
+              <label class="col-sm-4 col-form-label-sm text-right">
+                {{forms.building.acogidaLey.label_tag}}
+              </label>
+              <div class="col-lg-3">
+                {{forms.building.acogidaLey}}
+              </div>
+            </div>
   
           </div>
           <div class="col-6">
@@ -274,30 +283,30 @@
               </div>
               <div class="col-4">
                 <div class="form-group row align-middle">
-                  <label class="col-sm-4 col-form-label-sm text-right">
-                    Fecha
-                  </label>
-                  <div class="col-lg-3">
-                    {{forms.building.permisoEdificacionDate}}
-                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  <div class="col-lg-10">
+                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                      {{forms.building.permisoEdificacionDate}}
+                      <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <script type="text/javascript">
-                    $(function () {
-                      $('#datetimepicker1').datetimepicker({
-                        locale: 'es',
-                        icons: {
-                          time: "far fa-clock",
-                          date: "far fa-calendar-alt",
-                          up: "fas fa-arrow-up",
-                          down: "fas fa-arrow-down"
-                        }
-                      });
-                    });
-                  </script>
+                $(function () {
+                  $('#datetimepicker1').datetimepicker({
+                    format: 'L',
+                    locale: 'es',
+                    icons: {
+                      time: "far fa-clock",
+                      date: "far fa-calendar-alt",
+                      up: "fas fa-arrow-up",
+                      down: "fas fa-arrow-down"
+                    }
+                  });
+                });
+              </script>
             </div>
 
             <div class="row">
@@ -313,14 +322,30 @@
               </div>
               <div class="col-4">
                 <div class="form-group row align-middle">
-                  <label class="col-sm-4 col-form-label-sm text-right">
-                    Fecha
-                  </label>
-                  <div class="col-lg-3">
-                    {{forms.building.recepcionFinalDate}}
+                  <div class="col-lg-10">
+                    <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                      {{forms.building.recepcionFinalDate}}
+                      <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <script type="text/javascript">
+                $(function () {
+                  $('#datetimepicker2').datetimepicker({
+                    format: 'L',
+                    locale: 'es',
+                    icons: {
+                      time: "far fa-clock",
+                      date: "far fa-calendar-alt",
+                      up: "fas fa-arrow-up",
+                      down: "fas fa-arrow-down"
+                    }
+                  });
+                });
+              </script>
             </div>
 
             <div class="form-group row align-middle">
