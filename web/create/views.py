@@ -23,7 +23,7 @@ import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
 def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, cliente, clienteRut, tipoTasacion,
-                     objetivo,  price):
+                     objetivo,  visita, price):
     '''
     Create appraisal, given a ...?
     '''
@@ -38,7 +38,8 @@ def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, 
         cliente=cliente,
         clienteRut=clienteRut,
         tipoTasacion=tipoTasacion,
-        objetivo=objetivo)
+        objetivo=objetivo,
+        visita=visita)
     with reversion.create_revision():
         appraisal.save()
         reversion.set_user(user)
@@ -153,6 +154,7 @@ def create(request):
             solicitanteCodigo = form_create.cleaned_data['solicitanteCodigo_create']
             tipoTasacion = form_create.cleaned_data['tipoTasacion_create']
             objetivo = form_create.cleaned_data['objetivo_create']
+            visita = form_create.cleaned_data['visita_create']
 
             print('propertyType',propertyType)
 
@@ -234,7 +236,7 @@ def create(request):
             
             # ToDO: VER COMO CHECKEAR EXISTENCIA DE APPRAISAL
             appraisal = appraisal_create(realEstate, appraisalTimeFrame, request.user, solicitante,
-                        solicitanteCodigo, cliente, clienteRut, tipoTasacion, objetivo, appraisalPrice)
+                        solicitanteCodigo, cliente, clienteRut, tipoTasacion, objetivo, visita, appraisalPrice)
             
             '''
             appraisal = None

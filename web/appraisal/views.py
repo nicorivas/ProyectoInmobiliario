@@ -316,7 +316,7 @@ def appraisal(request, **kwargs):
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
         forms['photos'] = FormPhotos(request.POST,request.FILES)
-
+        print("aqui")
         print(request.POST.keys())
 
         # Switch to action

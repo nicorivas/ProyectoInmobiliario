@@ -19,6 +19,11 @@ class AppraisalCreateForm(forms.Form):
         choices=Appraisal.objective_choices)
     objetivo_create.widget.attrs.update({'class': "form-control"})
 
+    visita_create = forms.ChoiceField(
+        label="Visita",
+        choices=Appraisal.visit_choices)
+    visita_create.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
+
     solicitante_create = forms.ChoiceField(
         label="Solicitante",
         choices=Appraisal.petitioner_choices)
@@ -26,8 +31,9 @@ class AppraisalCreateForm(forms.Form):
 
     solicitanteOther_create =  forms.CharField(max_length=100, label="Otro", required=False)
     solicitanteOther_create.widget.attrs.update({'class': "form-control"})
+
     solicitanteCodigo_create = forms.CharField(max_length=100, label="Solicitante Código", required=False)
-    solicitanteCodigo_create.widget.attrs.update({'class': "form-control"})
+    solicitanteCodigo_create.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
 
     cliente_create = forms.CharField(
         max_length=100,
@@ -59,8 +65,7 @@ class AppraisalCreateForm(forms.Form):
 
     addressStreet_create = forms.CharField(
         max_length=200,
-        label="Calle",
-        error_messages={'required': 'Please enter your name'})
+        label="Calle")
     addressStreet_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
     addressNumber_create = forms.CharField(max_length=6,label="Número")
