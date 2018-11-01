@@ -44,8 +44,8 @@ class FormBuilding(forms.ModelForm):
             'ocupante': forms.Select(attrs=class_se_bs),
             'tipoBien': forms.TextInput(attrs=class_bs),
             'destinoSII': forms.Select(attrs=class_se_bs),
-            'usoActual': forms.TextInput(attrs=class_bs),
-            'usoFuturo': forms.TextInput(attrs=class_bs),
+            'usoActual': forms.Select(attrs=class_se_bs),
+            'usoFuturo': forms.Select(attrs=class_se_bs),
             'permisoEdificacion': forms.TextInput(attrs=class_bs),
             'permisoEdificacionDate': forms.DateTimeInput(attrs=class_dp_m_bs),
             'recepcionFinal': forms.TextInput(attrs=class_bs),
@@ -65,7 +65,8 @@ class FormApartment(forms.ModelForm):
             'builtSquareMeters',
             'usefulSquareMeters',
             'orientation',
-            'generalDescription'
+            'generalDescription',
+            'mercadoObjetivo'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
@@ -76,6 +77,7 @@ class FormApartment(forms.ModelForm):
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
             'orientation': forms.Select(attrs={'class':"custom-select custom-select-sm"}),
             'generalDescription': forms.Textarea(attrs=class_bs),
+            'mercadoObjetivo': forms.NullBooleanSelect(attrs={'class':"custom-select custom-select-sm"})
         }
 
 class FormHouse(forms.ModelForm):
@@ -119,23 +121,25 @@ class FormAppraisal(forms.ModelForm):
             'tipoTasacion',
             'objetivo'
         ]
-        class_bs = {'class':"form-control form-control-sm"}
+        attrs = {'class':"form-control form-control-sm"}
+        attrs_req = {'class':"form-control form-control-sm",'data-validation':"required"}
+        attrs_rut = {'class':"form-control form-control-sm",'data-validation':"rut"}
         widgets = {
 
-            'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=class_bs),
-            'solicitanteCodigo': forms.TextInput(attrs=class_bs),
-            'solicitanteSucursal': forms.TextInput(attrs=class_bs),
-            'solicitanteEjecutivo': forms.TextInput(attrs=class_bs),
-            'cliente': forms.TextInput(attrs=class_bs),
-            'clienteRut': forms.TextInput(attrs=class_bs),
-            'propietario': forms.TextInput(attrs=class_bs),
-            'propietarioRut': forms.TextInput(attrs=class_bs),
-            'rolAvaluo': forms.TextInput(attrs=class_bs),
-            'visadorEmpresa': forms.TextInput(attrs=class_bs),
-            'visadorEmpresaMail': forms.EmailInput(attrs=class_bs),
-            'valorUF': forms.TextInput(attrs=class_bs),
-            'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=class_bs),
-            'objetivo':forms.Select(attrs=class_bs,choices=Appraisal.petitioner_choices),
+            'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=attrs),
+            'solicitanteCodigo': forms.TextInput(attrs=attrs),
+            'solicitanteSucursal': forms.TextInput(attrs=attrs),
+            'solicitanteEjecutivo': forms.TextInput(attrs=attrs),
+            'cliente': forms.TextInput(attrs=attrs),
+            'clienteRut': forms.TextInput(attrs=attrs_rut),
+            'propietario': forms.TextInput(attrs=attrs),
+            'propietarioRut': forms.TextInput(attrs=attrs_rut),
+            'rolAvaluo': forms.TextInput(attrs=attrs),
+            'visadorEmpresa': forms.TextInput(attrs=attrs),
+            'visadorEmpresaMail': forms.EmailInput(attrs=attrs),
+            'valorUF': forms.TextInput(attrs=attrs),
+            'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=attrs),
+            'objetivo':forms.Select(attrs=attrs,choices=Appraisal.petitioner_choices),
 
         }
 

@@ -76,11 +76,13 @@ class Building(RealEstate):
         blank=True,
         null=True)
     usoActual = models.CharField("Uso actual",
-        max_length=20,
+        max_length=1,
+        choices=DESTINO_SII,
         blank=True,
         null=True)
     usoFuturo = models.CharField("Uso futuro",
-        max_length=20,
+        max_length=1,
+        choices=DESTINO_SII,
         blank=True,
         null=True)
     permisoEdificacion = models.CharField("Permiso edificación",

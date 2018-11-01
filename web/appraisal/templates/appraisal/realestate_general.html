@@ -1,174 +1,145 @@
-  <div class="card-body">
 
-     <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Tasación</label>
-      </div>
-      <div class="col-auto">
-        <label for="tasacion" class="col-form-label-sm">
-          Tipo de Tasacion
-        </label>
-      </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.tipoTasacion}}
-      </div>
-      <div class="col-auto">
-        <label for="tasacion" class="col-form-label-sm">
-          Objetivo de la Tasacion
-        </label>
-      </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.objetivo}}
-      </div>
-    </span>
+<div class="row ml-4 mt-4">
+<div class="col">
 
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label-sm font-weight-bold">Tasador</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control form-control-sm" value="{{forms.appraisal.instance.tasadorUser.first_name}} {{forms.appraisal.instance.tasadorUser.last_name}}" disabled>
+        </div>
+        {% if perms.appraisal.assign_tasador %}
+        {% if appraisal.active %}
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
+            Asignar tasador
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Visador</label>
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label-sm font-weight-bold">Visador</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control form-control-sm" value="{{forms.appraisal.instance.visadorUser.first_name}} {{forms.appraisal.instance.visadorUser.last_name}}" disabled>
+        </div>
+        {% if perms.appraisal.assign_visador %}
+        {% if appraisal.active %}
+        <div class="col-sm-auto">
+          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarVisador">
+            Asignar visador
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Nombre
-        </label>
-      </div>
-      <div class="col-lg-3">
-        <input type="text" class="form-control form-control-sm" value="{{forms.appraisal.instance.visadorUser.first_name}} {{forms.appraisal.instance.visadorUser.last_name}}" disabled>
-      </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Rut
-        </label>
-      </div>
-      <div class="col-lg-2">
-        <input type="text" class="form-control form-control-sm" value="" disabled>
-      </div>
-      {% if perms.appraisal.assign_visador %}
-      {% if appraisal.active %}
-      <div class="col-auto">
-        <button type="button" class="btn-sm btn-secondary" data-toggle="modal" data-target="#asignarVisador">
-          Asignar visador
-        </button>
-      </div>
-      {% endif %}
-      {% endif %}
-    </span>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Tasador</label>
+  <label class="col-form-label-sm font-weight-bold">Tasación</label>
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Tipo</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.tipoTasacion}}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Nombre
-        </label>
+    </div>
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Objetivo</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.objetivo}}
+        </div>
       </div>
-      <div class="col-lg-3">
-        <input type="text" class="form-control form-control-sm" value="{{forms.appraisal.instance.tasadorUser.first_name}} {{forms.appraisal.instance.tasadorUser.last_name}}" disabled>
-      </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Rut
-        </label>
-      </div>
-      <div class="col-lg-2">
-        <input type="text" class="form-control form-control-sm" value="" disabled>
-      </div>
-      {% if perms.appraisal.assign_tasador %}
-      {% if appraisal.active %}
-      <div class="col-auto">
-        <button type="button" class="btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
-          Asignar tasador
-        </button>
-      </div>
-      {% endif %}
-      {% endif %}
-    </span>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Solicitante</label>
-      </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Nombre
-        </label>
-      </div>
-        <div class="col-lg-3">
+  <label class="col-form-label-sm font-weight-bold">Solicitante</label>
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Nombre</label>
+        <div class="col-sm-9">
           {{forms.appraisal.solicitante}}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Código
-        </label>
-      </div>
-      <div class="col-lg-2">
+    </div>
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Código</label>
+        <div class="col-sm-9">
           {{forms.appraisal.solicitanteCodigo}}
+        </div>
       </div>
-    </span>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Sucursal
-        </label>
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Sucursal</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.solicitanteSucursal}}
+        </div>
       </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.solicitanteSucursal}}
+    </div>
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Ejecutivo</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.solicitanteEjecutivo}}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Ejecutivo
-        </label>
-      </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.solicitanteEjecutivo}}
-      </div>
-    </span>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Cliente</label>
+  <label class="col-form-label-sm font-weight-bold">Cliente</label>
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Nombre</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.cliente}}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Nombre
-        </label>
+    </div>
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Rut</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.clienteRut}}
+        </div>
       </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.cliente}}
-      </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Rut
-        </label>
-      </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.clienteRut}}
-      </div>
-    </span>
+    </div>
+  </div>
 
-    <span class="form-group row align-middle">
-      <div class="col-12">
-        <label class="col-form-label">Propietario</label>
+  <label class="col-form-label-sm font-weight-bold">Propietario</label>
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Nombre</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.propietario}}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Nombre
-        </label>
+    </div>
+    <div class="col-4">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label-sm text-right">Rut</label>
+        <div class="col-sm-9">
+          {{forms.appraisal.propietarioRut}}
+        </div>
       </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.propietario}}
-      </div>
-      <div class="col-auto">
-        <label for="solicitante" class="col-form-label-sm">
-          Rut
-        </label>
-      </div>
-      <div class="col-lg-3">
-        {{forms.appraisal.propietarioRut}}
-      </div>
-    </span>
+    </div>
+  </div>
 
     <div class="card bg-light mb-1">
     <div class="card-header">Roles</div>
@@ -189,3 +160,36 @@
     </div>
 
 </div>
+</div>
+
+<script>
+   $.formUtils.addValidator({
+      name : 'rut',
+      validatorFunction : function(rut, $el, config, language, $form) {
+         function dv(T){
+            var M=0,S=1;
+            for(;T;T=Math.floor(T/10))
+               S=(S+T%10*(9-M++%6))%11;
+            return S?S-1:'k';
+         };
+         if (rut.length < 2) return false
+         rut = rut.split('.').join("");
+         rut = rut.split('-').join("");
+         var digv = rut.charAt(rut.length-1);
+         n = rut.substring(0,rut.length-1)
+         return (dv(n) == digv);
+         rut = parseInt(rut);
+         if (isNaN(rut)) {
+            return false
+         }
+         return true
+      },
+      errorMessage : 'Rut invalido',
+      errorMessageKey: 'badRut'
+   });
+
+   $.validate({
+      //errorMessageClass: 'help-block form-error text-danger small',
+      lang: 'es'
+   });
+</script>
