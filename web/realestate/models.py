@@ -215,6 +215,10 @@ class RealEstate(models.Model):
         null=True)
 
     @property
+    def is_apartment(self):
+        return self.propertyType == self.TYPE_APARTMENT
+
+    @property
     def address_dict(self):
         # Returns address fields as dictionary
         return {'street':self.addressStreet,'number':self.addressNumber,'commune':self.addressCommune.name,'region':self.addressRegion.shortName}
