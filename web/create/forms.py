@@ -19,6 +19,11 @@ class AppraisalCreateForm(forms.Form):
         choices=Appraisal.objective_choices)
     objetivo_create.widget.attrs.update({'class': "form-control"})
 
+    visita_create = forms.ChoiceField(
+        label="Visita",
+        choices=Appraisal.visit_choices)
+    visita_create.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
+
     solicitante_create = forms.ChoiceField(
         label="Solicitante",
         choices=Appraisal.petitioner_choices)
