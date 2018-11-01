@@ -71,8 +71,6 @@ class FormApartment(forms.ModelForm):
             'builtSquareMeters',
             'usefulSquareMeters',
             'orientation',
-            'generalDescription',
-            'mercadoObjetivo'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
@@ -92,19 +90,11 @@ class FormHouse(forms.ModelForm):
         model = House
 
         fields = [
-            'bedrooms',
-            'bathrooms',
-            'builtSquareMeters',
-            'terrainSquareMeters',
-            'generalDescription'
+            'terrainSquareMeters'
         ]
         class_bs = {'class': "form-control form-control-sm"}
         widgets = {
-            'bedrooms': forms.NumberInput(attrs=class_bs),
-            'bathrooms': forms.NumberInput(attrs=class_bs),
-            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
-            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
-            'generalDescription': forms.Textarea(attrs=class_bs),
+            'terrainSquareMeters': forms.NumberInput(attrs=class_bs)
         }
 
 class FormAppraisal(forms.ModelForm):

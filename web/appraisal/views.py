@@ -305,6 +305,8 @@ def appraisal(request, **kwargs):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
+        print(request.method)
+
         # Process forms
         forms = {}
         forms['appraisal'] = FormAppraisal(request.POST,request.FILES,instance=appraisal)
@@ -403,10 +405,10 @@ def appraisal(request, **kwargs):
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix='')}
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-        forms['apartment'] = FormApartment(instance=realestate.apartment,label_suffix='')
+        forms['realestate'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
     elif realestate.propertyType == RealEstate.TYPE_HOUSE:
-        forms['house'] = FormHouse(instance=realestate.house,label_suffix='')
+        forms['realestate'] = FormHouse(instance=realestate.house,label_suffix='')
 
     # Disable fields if appraisal is finished
     if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:
@@ -414,6 +416,8 @@ def appraisal(request, **kwargs):
             for field in form.fields:
                 form.fields[field].widget.attrs['readonly'] = True
                 form.fields[field].widget.attrs['disabled'] = True
+
+    print(realestate.addressStreet)
 
     context = {
         'appraisal':appraisal,

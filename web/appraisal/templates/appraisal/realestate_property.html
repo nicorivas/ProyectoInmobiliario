@@ -15,9 +15,9 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">Calle</label>
+        <label class="col-sm-3 col-form-label-sm text-right">{{realestate.addressStreet.label_tag}}</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control form-control-sm" value="{{realestate.addressStreet }}" disabled>
+          <input type="text" class="form-control form-control-sm" value="{{realestate.addressStreet}}" disabled>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
           <div class="form-group row align-middle">
             <label class="col-sm-4 col-form-label-sm text-right">Piso</label>
             <div class="col-4">
-              {{forms.apartment.floor}}
+              {{forms.realestate.floor}}
             </div>
           </div>
 
