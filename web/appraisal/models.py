@@ -88,7 +88,7 @@ class Appraisal(models.Model):
         (BICE, "BICE"),
         (OTHER, "Otro")
     ]
-    solicitante = models.IntegerField("Solicitante", choices=petitioner_choices,blank=True,null=True)
+    solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
 
     OTRA = 0
     INMOBILIARIA = 1
@@ -104,8 +104,7 @@ class Appraisal(models.Model):
         (TERRENO, 'Terreno'),
         (OTRA, 'Otra')
     ]
-
-    tipoTasacion = models.CharField("Tipo Pedido", choices=tipoTasacion_choices,max_length=100,blank=True,null=True)
+    tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
 
     OTRO = 0
     GARANTIA = 1

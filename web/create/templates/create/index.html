@@ -207,7 +207,6 @@
 <script>
  jQuery('#propertyType').on('change', function() {
   var type = $("#propertyType option:selected");
-  console.log(type.val())
   if (type.val() == 2) {
    $("#type").removeAttr('hidden');
    $("#type").show();

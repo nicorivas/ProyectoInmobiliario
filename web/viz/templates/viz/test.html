@@ -1,0 +1,67 @@
+{% extends "main/base.html" %}
+
+{% block head %}
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-1.0.0.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.0.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.0.0.min.css" rel="stylesheet" type="text/css">
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-1.0.0.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.0.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.0.0.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-api-1.0.0.min.js"></script>
+{%endblock%}
+
+{% block content %}
+
+<div class="container-flex">
+
+<div class="row">
+<div class="col-6">
+
+{{ div | safe }}
+{{ script | safe }}
+
+</div>
+<div class="col-6">
+	<div class="card">
+		<div class="card-body">
+			<h5 class="card-title">Departamento</h5>
+			<div class="form-group">
+				<label for="name">Nombre</label>
+    			<input class="form-control" id="name">
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<div class="form-group">
+						<label for="lat">lat</label>
+    					<input class="form-control" id="lat">
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<label for="lng">lng</label>
+    					<input class="form-control" id="lng">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-8">
+					<div class="form-group">
+						<label for="street">Calle</label>
+    					<input class="form-control" id="street">
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="number">Número</label>
+    					<input class="form-control" id="number">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>
+
+{% endblock %}

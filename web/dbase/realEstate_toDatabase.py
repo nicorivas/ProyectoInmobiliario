@@ -407,7 +407,7 @@ def realEstateExists(re,out):
             except RealEstate.DoesNotExist:
                 return None
 
-def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0):
+def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0, getAddressFromCoords=0):
     '''
     Generate the objects from dictionaries.
     This is just a wrapper function, to be able to create buildings associated
@@ -437,7 +437,7 @@ def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0):
         if isinstance(re,type(None)):
             # We assign address from coords here to avoid doing it if it is not
             # necessary (the RE already exists)
-            if building.addressFromCoords:
+            if building.addressFromCoords and getAddressFromCoords:
                 setAddressFromCoords(building,out)
             building.save()
         else:
@@ -450,7 +450,7 @@ def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0):
                 continue
         re = realEstateExists(apartment,out)
         if isinstance(re,type(None)):
-            if apartment.addressFromCoords:
+            if apartment.addressFromCoords and getAddressFromCoords:
                 setAddressFromCoords(apartment,out)
             apartment.save()
         else:
@@ -461,7 +461,7 @@ def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0):
 
     return objects
 
-def dictionariesToDatabase_House(re_dicts, out, ci=0, cf=None, debug=0):
+def dictionariesToDatabase_House(re_dicts, out, ci=0, cf=None, debug=0, getAddressFromCoords=0):
     '''
     Generate the objects from dictionaries, for houses.
     '''
@@ -485,8 +485,9 @@ def dictionariesToDatabase_House(re_dicts, out, ci=0, cf=None, debug=0):
         if isinstance(house,bool) and not house:
             continue
         re = realEstateExists(house,out)
-        if isinstance(re,type(None)) and house.addressFromCoords:
-            setAddressFromCoords(house,out)
+        if isinstance(re,type(None)):
+            if house.addressFromCoords and getAddressFromCoords:
+                setAddressFromCoords(house,out)
             house.save()
         else:
             out.warning('House already existed')
@@ -565,20 +566,20 @@ if __name__ == "__main__":
     #commune_skip = []
 
     for region in regions:
+        out.info(region.name)
         communes = Commune.objects.filter(region=region)
         for commune in communes:
             if commune.name in commune_skip:
                 out.info('{} skipped'.format(commune))
                 continue
             out.info(commune.name)
-
             basepath = Path(REALSTATE_DATA_PATH+'/source/{}/{}/{}'.format(
-                slugify(region),
+                slugify(region.name),
                 slugify(commune),
                 source2))
             dates = [a for a in glob.glob(str(basepath / '*/')) if os.path.isdir(a)]
             if len(dates) == 0:
-                out.warning('{} does not have any data files'.format(commune.name))
+                out.warning('{} does not have any data files: {}'.format(commune.name,basepath))
                 continue
             dates.sort(key=lambda x: os.path.getmtime(x))
             path_i = Path(dates[0])

@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'commune',
     'square',
     'vis',
+    'viz'
 ]
 
 MIDDLEWARE = [

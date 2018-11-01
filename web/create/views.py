@@ -195,7 +195,6 @@ def create(request):
                 addressStreet = form_create.cleaned_data['addressStreet_create']
                 addressNumber = form_create.cleaned_data['addressNumber_create']
                 addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
-                print('addressNumberFlat',addressNumberFlat)
                 # check if building exists
                 building = None
                 try:

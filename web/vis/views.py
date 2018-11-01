@@ -25,9 +25,9 @@ def vis(request):
 
     #template_name = 'graph.html'
 
-    trace1 = go.Scatter(x=x, y=y, mode="markers",  name='1st Trace')
+    trace = go.Scatter(x=x, y=y, mode="markers",  name='1st Trace')
 
-    data=go.Data([trace1])
+    data = trace
     layout=go.Layout(title="Providencia", xaxis={'title':'Built square meters'}, yaxis={'title':'Market price'})
     figure=go.Figure(data=data,layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
@@ -35,6 +35,49 @@ def vis(request):
     context = {'graph':div}
 
     return render(request, 'vis/graph.html', context)
+
+def map(request):
+
+    apts = Apartment.objects.only('lat','lng','name').all()
+
+    x = np.array(apts.values_list('lat',flat=True))
+    y = np.array(apts.values_list('lng',flat=True))
+    text = list(apts.values_list('name',flat=True))
+
+    p_scatter = go.Scatter(
+        x=x,
+        y=y,
+        mode="markers",
+        name='1st Trace',
+        text=text)
+
+    # create our callback function
+    def updatePoint(trace, points, selector):
+        print('a')
+        c = list(scatter.marker.color)
+        s = list(scatter.marker.size)
+        for i in points.point_inds:
+            c[i] = '#bae2be'
+            s[i] = 20
+            scatter.marker.color = c
+            scatter.marker.size = s
+    p_scatter.on_click(updatePoint)
+
+    data = [p_scatter]
+
+    layout = go.Layout(
+        title="Propiedades en Santiago",
+        xaxis={'title':'lat'},
+        yaxis={'title':'lng'},
+        hovermode='closest')
+
+    figure = go.Figure(data=data,layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div')
+
+    context = {'graph':div}
+
+    return render(request, 'vis/graph.html', context)
+
 
 def summary_country(request):
 
