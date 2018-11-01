@@ -21,7 +21,10 @@ def view_profile(request, pk=None):
         user = request.user
         userprofile = UserProfile.objects.get(user=request.user)
 
-    context = {'user': user, 'userprofile': userprofile}
+    appraisals_active, appraisals_finished = userAppraisals(request)
+    context = {'user': user, 'userprofile': userprofile, 'appraisals_active': appraisals_active,
+        'appraisals_finished': appraisals_finished}
+
     return render(request, 'user/profile.html', context)
 
 @login_required
