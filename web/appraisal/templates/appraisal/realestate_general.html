@@ -172,6 +172,7 @@
                S=(S+T%10*(9-M++%6))%11;
             return S?S-1:'k';
          };
+         if (rut.length == 0) return true // assuming field is not required
          if (rut.length < 2) return false
          rut = rut.split('.').join("");
          rut = rut.split('-').join("");

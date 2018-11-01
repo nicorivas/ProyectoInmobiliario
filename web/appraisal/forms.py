@@ -1,4 +1,5 @@
 from django import forms
+from realestate.models import RealEstate
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
@@ -8,8 +9,12 @@ from multiupload.fields import MultiImageField
 class FormRealEstate(forms.ModelForm):
 
     class Meta:
-        model = Building
+        model = RealEstate
         fields = [
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'addressRegion',
             'anoConstruccion',
             'vidaUtilRemanente',
             'avaluoFiscal',
@@ -39,6 +44,10 @@ class FormRealEstate(forms.ModelForm):
         class_se_bs = {'class':"custom-select custom-select-sm"}
 
         widgets = {
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.TextInput(attrs=class_bs),
+            'addressRegion': forms.TextInput(attrs=class_bs),
             'anoConstruccion': forms.NumberInput(attrs=class_dp_y_bs),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
             'avaluoFiscal': forms.NumberInput(attrs=class_bs),
@@ -80,6 +89,7 @@ class FormApartment(forms.ModelForm):
     class Meta:
         model = Apartment
         fields = [
+            'number',
             'floor',
             'bedrooms',
             'bathrooms',
@@ -90,6 +100,7 @@ class FormApartment(forms.ModelForm):
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
+            'number': forms.TextInput(attrs=class_bs),
             'floor': forms.NumberInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),

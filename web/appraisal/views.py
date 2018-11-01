@@ -20,10 +20,11 @@ import os
 import csv
 
 from .forms import FormRealEstate
+from .forms import FormBuilding
 from .forms import FormApartment
+from .forms import FormHouse
 from .forms import FormAppraisal
 from .forms import FormComment
-from .forms import FormHouse
 from .forms import FormPhotos
 
 from django.db.models import Avg, StdDev
@@ -163,22 +164,22 @@ def save_appraisal(request,forms,comment):
 def save(request,forms,realEstate):
     print('save')
     if realEstate.propertyType == RealEstate.TYPE_APARTMENT:
-        if forms['building'].is_valid() and forms['apartment'].is_valid() and forms['appraisal'].is_valid():
+        if forms['building'].is_valid() and forms['realestate'].is_valid() and forms['appraisal'].is_valid():
             print('holi')
             for name, form in forms.items():
-                if name in ['building','apartment']:
+                if name in ['building','realestate']:
                     form.save()
                 if name == 'appraisal':
                     save_appraisal(request,forms,'Saved')
             return True
         else:
             print(forms['building'].errors)
-            print(forms['apartment'].errors)
+            print(forms['realestate'].errors)
             print(forms['appraisal'].errors)
     elif realEstate.propertyType == RealEstate.TYPE_HOUSE:
-        if forms['house'].is_valid() and forms['appraisal'].is_valid():
+        if forms['realestate'].is_valid() and forms['appraisal'].is_valid():
             for name, form in forms.items():
-                if name == 'house':
+                if name == 'realestate':
                     form.save()
                 if name == 'appraisal':
                     save_appraisal(request,forms,'Saved')

@@ -22,7 +22,7 @@ class RealEstate(models.Model):
         default=TYPE_OTHER)
 
     addressStreet = models.CharField("Calle",max_length=300,default="")
-    addressNumber = models.CharField("Numero",max_length=10,default=0)
+    addressNumber = models.CharField("Número",max_length=10,default=0)
     addressCommune = models.ForeignKey(Commune,
         on_delete=models.CASCADE,
         verbose_name="Comuna",
@@ -31,7 +31,7 @@ class RealEstate(models.Model):
         to_field='code')
     addressRegion = models.ForeignKey(Region,
         on_delete=models.CASCADE,
-        verbose_name="Region",
+        verbose_name="Región",
         blank=True,
         null=True,
         to_field='code')
@@ -49,7 +49,7 @@ class RealEstate(models.Model):
     sourceUrl = models.URLField("Source url",null=True,blank=True)
     sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
     sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
-    sourceDatePublished = models.DateTimeField("Fecha publicacion",blank=True,null=True)
+    sourceDatePublished = models.DateTimeField("Fecha publicación",blank=True,null=True)
 
     marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
 
@@ -67,7 +67,7 @@ class RealEstate(models.Model):
         (True, "Si"),
         (False, "No")
     )
-    anoConstruccion = models.IntegerField("Año construccion",
+    anoConstruccion = models.IntegerField("Año construcción",
         blank=True,
         null=True)
     vidaUtilRemanente = models.IntegerField("Vida util remanente",
@@ -217,6 +217,10 @@ class RealEstate(models.Model):
     @property
     def is_apartment(self):
         return self.propertyType == self.TYPE_APARTMENT
+
+    @property
+    def is_house(self):
+        return self.propertyType == self.TYPE_HOUSE
 
     @property
     def address_dict(self):
