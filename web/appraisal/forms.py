@@ -5,7 +5,7 @@ from building.models import Building
 from house.models import House
 from multiupload.fields import MultiImageField
 
-class FormBuilding(forms.ModelForm):
+class FormRealEstate(forms.ModelForm):
 
     class Meta:
         model = Building
@@ -29,7 +29,8 @@ class FormBuilding(forms.ModelForm):
             'viviendaSocial',
             'adobe',
             'desmontable',
-            'acogidaLey'
+            'acogidaLey',
+            'mercadoObjetivo'
         ]
 
         class_bs = {'class':"form-control form-control-sm"}
@@ -58,7 +59,21 @@ class FormBuilding(forms.ModelForm):
             'adobe': forms.NullBooleanSelect(attrs=class_se_bs),
             'desmontable': forms.NullBooleanSelect(attrs=class_se_bs),
             'acogidaLey': forms.Select(attrs=class_se_bs),
+            'mercadoObjetivo': forms.NullBooleanSelect(attrs={'class':"custom-select custom-select-sm"})
         }
+
+class FormBuilding(forms.ModelForm):
+
+    class Meta:
+        model = Building
+        fields = []
+
+        class_bs = {'class':"form-control form-control-sm"}
+        class_dp_y_bs = {'class':"form-control form-control-sm datepicker_year"}
+        class_dp_m_bs = {'class':"form-control form-control-sm datepicker_month"}
+        class_se_bs = {'class':"custom-select custom-select-sm"}
+
+        widgets = {}
 
 class FormApartment(forms.ModelForm):
 
@@ -68,20 +83,20 @@ class FormApartment(forms.ModelForm):
             'floor',
             'bedrooms',
             'bathrooms',
-            'builtSquareMeters',
             'usefulSquareMeters',
+            'terraceSquareMeters',
             'orientation',
+            'generalDescription'
         ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
             'floor': forms.NumberInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
-            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
             'orientation': forms.Select(attrs={'class':"custom-select custom-select-sm"}),
-            'generalDescription': forms.Textarea(attrs=class_bs),
-            'mercadoObjetivo': forms.NullBooleanSelect(attrs={'class':"custom-select custom-select-sm"})
+            'generalDescription': forms.Textarea(attrs=class_bs)
         }
 
 class FormHouse(forms.ModelForm):
@@ -90,11 +105,19 @@ class FormHouse(forms.ModelForm):
         model = House
 
         fields = [
-            'terrainSquareMeters'
+            'bedrooms',
+            'bathrooms',
+            'builtSquareMeters',
+            'terrainSquareMeters',
+            'generalDescription'
         ]
         class_bs = {'class': "form-control form-control-sm"}
         widgets = {
-            'terrainSquareMeters': forms.NumberInput(attrs=class_bs)
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
+            'generalDescription': forms.Textarea(attrs=class_bs)
         }
 
 class FormAppraisal(forms.ModelForm):

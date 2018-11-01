@@ -19,7 +19,7 @@ from reversion.models import Version
 import os
 import csv
 
-from .forms import FormBuilding
+from .forms import FormRealEstate
 from .forms import FormApartment
 from .forms import FormAppraisal
 from .forms import FormComment
@@ -311,11 +311,9 @@ def appraisal(request, **kwargs):
         forms = {}
         forms['appraisal'] = FormAppraisal(request.POST,request.FILES,instance=appraisal)
         forms['comment'] = FormComment(request.POST)
+        forms['realestate'] = FormRealEstate(request.POST)
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-            forms['apartment'] = FormApartment(request.POST,instance=realestate.apartment)
             forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
-        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
-            forms['house'] = FormHouse(request.POST,instance=realestate.house)
         forms['photos'] = FormPhotos(request.POST,request.FILES)
 
         print(request.POST.keys())
@@ -368,7 +366,6 @@ def appraisal(request, **kwargs):
     tipoTasacion = appraisal.tipoTasacion
     objetivo = appraisal.objetivo
     solicitante = appraisal.solicitante
-    print(appraisal.solicitante)
 
     # History of changes, for the logbook
     versions = list(Version.objects.get_for_object(appraisal))
@@ -403,12 +400,13 @@ def appraisal(request, **kwargs):
     forms = {
         'appraisal': FormAppraisal(instance=appraisal,label_suffix=''),
         'comment':FormComment(label_suffix=''),
-        'photos':FormPhotos(label_suffix='')}
+        'photos':FormPhotos(label_suffix=''),
+        'realestate':FormRealEstate(label_suffix='')}
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-        forms['realestate'] = FormApartment(instance=realestate.apartment,label_suffix='')
+        forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
-    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
-        forms['realestate'] = FormHouse(instance=realestate.house,label_suffix='')
+    if realestate.propertyType == RealEstate.TYPE_HOUSE:
+        forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
 
     # Disable fields if appraisal is finished
     if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:

@@ -71,40 +71,43 @@
         <div class="col-md-4">
           <!-- Fields -->
           <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Piso</label>
+            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.bedrooms.label_tag}}</label>
+            <div class="col-lg-4">
+              {{forms.property.bedrooms}}
+            </div>
+          </div>
+
+          <div class="form-group row align-middle">
+            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.bathrooms.label_tag}}</label>
+            <div class="col-lg-4">
+              {{forms.property.bathrooms}}
+            </div>
+          </div>
+
+          {% if realestate.is_apartment %}
+          <div class="form-group row align-middle">
+            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.floor.label_tag}}</label>
             <div class="col-4">
               {{forms.realestate.floor}}
             </div>
           </div>
 
           <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Dormitorios</label>
-            <div class="col-lg-4">
-              {{forms.apartment.bedrooms}}
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Baños</label>
-            <div class="col-lg-4">
-              {{forms.apartment.bathrooms}}
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Orientación</label>
+            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.orientation.label_tag}}</label>
             <div class="col-lg-4">
               {{forms.apartment.orientation}}
             </div>
           </div>
+          {% endif %}
 
           <label class="col-sm-4 col-form-label-sm font-weight-bold">Superficie</label>
 
+          {% if realestate.is_apartment %}
           <div class="form-group row align-middle">
             <label class="col-sm-4 col-form-label-sm text-right">Construida</label>
             <div class="col-lg-5">
               <div class="input-group input-group-sm">
-                {{forms.apartment.builtSquareMeters}}
+                {{forms.property.builtSquareMeters}}
                 <div class="input-group-append">
                   <div class="input-group-text">m2</div>
                 </div>
@@ -116,19 +119,21 @@
             <label class="col-sm-4 col-form-label-sm text-right">Útil</label>
             <div class="col-lg-5">
               <div class="input-group input-group-sm">
-                {{forms.apartment.usefulSquareMeters}}
+                {{forms.property.usefulSquareMeters}}
                 <div class="input-group-append">
                   <div class="input-group-text">m2</div>
                 </div>
               </div>
             </div>
           </div>
+          {% endif %}
+
         </div>
 
         <div class="col-md-8">
           <!-- Description -->
-          <label class="col-sm-4 col-form-label-sm font-weight-bold">Descripción general</label>
-          {{forms.apartment.generalDescription}}
+          <label class="col-sm-4 col-form-label-sm font-weight-bold">{{forms.property.generalDescription.label_tag}}</label>
+          {{forms.property.generalDescription}}
         </div>
       </div>
     </div>
@@ -147,38 +152,38 @@
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.apartment.mercadoObjetivo.label_tag}}
+                {{forms.realestate.mercadoObjetivo.label_tag}}
               </label>
               <div class="col-lg-4">
-                {{forms.apartment.mercadoObjetivo}}
+                {{forms.realestate.mercadoObjetivo}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.anoConstruccion.label_tag}}
+                {{forms.realestate.anoConstruccion.label_tag}}
               </label>
               <div class="col-lg-4">
-                {{forms.building.anoConstruccion}}
+                {{forms.realestate.anoConstruccion}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.vidaUtilRemanente.label_tag}}
+                {{forms.realestate.vidaUtilRemanente.label_tag}}
               </label>
               <div class="col-lg-4">
-                {{forms.building.vidaUtilRemanente}}
+                {{forms.realestate.vidaUtilRemanente}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.avaluoFiscal.label_tag}}
+                {{forms.realestate.avaluoFiscal.label_tag}}
               </label>
               <div class="col-lg-4">
                 <div class="input-group input-group-sm">
-                  {{forms.building.avaluoFiscal}}
+                  {{forms.realestate.avaluoFiscal}}
                   <div class="input-group-append">
                     <div class="input-group-text">$</div>
                   </div>
@@ -188,46 +193,46 @@
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.dfl2.label_tag}}
+                {{forms.realestate.dfl2.label_tag}}
               </label>
               <div class="col-lg-4">
-                {{forms.building.dfl2}}
+                {{forms.realestate.dfl2}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.selloVerde.label_tag}}
+                {{forms.realestate.selloVerde.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.selloVerde}}
+                {{forms.realestate.selloVerde}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.copropiedadInmobiliaria.label_tag}}
+                {{forms.realestate.copropiedadInmobiliaria.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.copropiedadInmobiliaria}}
+                {{forms.realestate.copropiedadInmobiliaria}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.ocupante.label_tag}}
+                {{forms.realestate.ocupante.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.ocupante}}
+                {{forms.realestate.ocupante}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.acogidaLey.label_tag}}
+                {{forms.realestate.acogidaLey.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.acogidaLey}}
+                {{forms.realestate.acogidaLey}}
               </div>
             </div>
   
@@ -236,37 +241,37 @@
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.tipoBien.label_tag}}
+                {{forms.realestate.tipoBien.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.tipoBien}}
+                {{forms.realestate.tipoBien}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.destinoSII.label_tag}}
+                {{forms.realestate.destinoSII.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.destinoSII}}
+                {{forms.realestate.destinoSII}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.usoActual.label_tag}}
+                {{forms.realestate.usoActual.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.usoActual}}
+                {{forms.realestate.usoActual}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.usoFuturo.label_tag}}
+                {{forms.realestate.usoFuturo.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.usoFuturo}}
+                {{forms.realestate.usoFuturo}}
               </div>
             </div>
 
@@ -274,10 +279,10 @@
               <div class="col-7">
                 <div class="form-group row align-middle">
                   <label class="col-sm-7 col-form-label-sm text-right">
-                    {{forms.building.permisoEdificacion.label_tag}}
+                    {{forms.realestate.permisoEdificacion.label_tag}}
                   </label>
                   <div class="col-lg-5">
-                    {{forms.building.permisoEdificacion}}
+                    {{forms.realestate.permisoEdificacion}}
                   </div>
                 </div>
               </div>
@@ -285,7 +290,7 @@
                 <div class="form-group row align-middle">
                   <div class="col-lg-10">
                     <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                      {{forms.building.permisoEdificacionDate}}
+                      {{forms.realestate.permisoEdificacionDate}}
                       <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                       </div>
@@ -313,10 +318,10 @@
               <div class="col-7">
                 <div class="form-group row align-middle">
                   <label class="col-sm-7 col-form-label-sm text-right">
-                    {{forms.building.recepcionFinal.label_tag}}
+                    {{forms.realestate.recepcionFinal.label_tag}}
                   </label>
                   <div class="col-lg-5">
-                    {{forms.building.recepcionFinal}}
+                    {{forms.realestate.recepcionFinal}}
                   </div>
                 </div>
               </div>
@@ -324,7 +329,7 @@
                 <div class="form-group row align-middle">
                   <div class="col-lg-10">
                     <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-                      {{forms.building.recepcionFinalDate}}
+                      {{forms.realestate.recepcionFinalDate}}
                       <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                       </div>
@@ -350,37 +355,37 @@
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.expropiacion.label_tag}}
+                {{forms.realestate.expropiacion.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.expropiacion}}
+                {{forms.realestate.expropiacion}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.viviendaSocial.label_tag}}
+                {{forms.realestate.viviendaSocial.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.viviendaSocial}}
+                {{forms.realestate.viviendaSocial}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.adobe.label_tag}}
+                {{forms.realestate.adobe.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.adobe}}
+                {{forms.realestate.adobe}}
               </div>
             </div>
 
             <div class="form-group row align-middle">
               <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.building.desmontable.label_tag}}
+                {{forms.realestate.desmontable.label_tag}}
               </label>
               <div class="col-lg-3">
-                {{forms.building.desmontable}}
+                {{forms.realestate.desmontable}}
               </div>
             </div>
           
