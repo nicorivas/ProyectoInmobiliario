@@ -36,7 +36,7 @@
             </div>
 
             <div class="col-md-2">
-               <div class="form-group">
+               <div class="form-group" id="code">
                   <label>Código</label>
                   {{form_create.solicitanteCodigo_create}}
                </div>
@@ -302,12 +302,19 @@ else {
     jQuery('#other').removeAttr('hidden');
     jQuery('#other').show();
     jQuery('#other').attr('required','required');
+    jQuery('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+    jQuery('#code').removeAttr('class', 'form-group has-error');
+    jQuery('.help-block').hide();
+    jQuery('#id_solicitanteCodigo_create').removeAttr('style');
+    jQuery('#code').attr('class', 'form-group');
+
 
  }
  else {
     jQuery('#other').hide();
     jQuery('#other').removeAttr('required');
     jQuery('#other').val('');
+    jQuery('#id_solicitanteCodigo_create').attr('data-validation','required');
  }
 });
 </script>
