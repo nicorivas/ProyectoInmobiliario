@@ -4,6 +4,8 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
 from house.models import House
+from region.models import Region
+from commune.models import Commune
 from multiupload.fields import MultiImageField
 
 class FormRealEstate(forms.ModelForm):
@@ -46,8 +48,8 @@ class FormRealEstate(forms.ModelForm):
         widgets = {
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
-            'addressCommune': forms.TextInput(attrs=class_bs),
-            'addressRegion': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'addressRegion': forms.Select(attrs=class_bs),
             'anoConstruccion': forms.NumberInput(attrs=class_dp_y_bs),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
             'avaluoFiscal': forms.NumberInput(attrs=class_bs),
@@ -70,6 +72,11 @@ class FormRealEstate(forms.ModelForm):
             'acogidaLey': forms.Select(attrs=class_se_bs),
             'mercadoObjetivo': forms.NullBooleanSelect(attrs={'class':"custom-select custom-select-sm"})
         }
+        
+    def __init__(self, *args, **kwargs):
+        super(FormRealEstate, self).__init__(*args, **kwargs)
+        self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
+        self.fields['addressRegion'].queryset = Region.objects.only('name').all()
 
 class FormBuilding(forms.ModelForm):
 

@@ -45,7 +45,7 @@ def get_realestate(request,id):
     realestate = RealEstate.objects.filter(id=id)
     # This must be only one building
     if len(realestate) == 0:
-        context = {'error_message': 'Real estate should exist by now'}
+        context = {'error_message': 'No existe real estate'}
         return render(request, 'appraisal/error.html',context)
     elif len(realestate) > 1:
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
@@ -109,7 +109,6 @@ def get_appraisal(request,id):
     '''
     try:
         appraisal = Appraisal.objects.get(pk=id)
-        appraisal = appraisal
         return appraisal
     except Appraisal.DoesNotExist:
         context = {'error_message': 'Appraisal not found?'}
@@ -123,8 +122,8 @@ def get_similar_realestate(realestate):
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         if (realestate.apartment.bedrooms != None and
             realestate.apartment.bathrooms != None and
-            realestate.apartment.builtSquareMeters != None and
-            realestate.apartment.usefulSquareMeters != None):
+            realestate.apartment.usefulSquareMeters != None and
+            realestate.apartment.terraceSquareMeters != None):
 
             apartments = Apartment.objects.filter(
                 bedrooms=realestate.apartment.bedrooms,
@@ -134,8 +133,8 @@ def get_similar_realestate(realestate):
             ds = []
             ni = 0
             for i, apt in enumerate(apartments):
-                d1 = float(pow(realestate.apartment.builtSquareMeters - apt.builtSquareMeters,2))
-                d2 = float(pow(realestate.apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
+                d1 = float(pow(realestate.apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
+                d2 = float(pow(realestate.apartment.terraceSquareMeters - apt.terraceSquareMeters,2))
                 ds.append([0,0])
                 ds[i][0] = apt.pk
                 ds[i][1] = d1+d2
@@ -164,22 +163,27 @@ def save_appraisal(request,forms,comment):
 def save(request,forms,realEstate):
     print('save')
     if realEstate.propertyType == RealEstate.TYPE_APARTMENT:
-        if forms['building'].is_valid() and forms['realestate'].is_valid() and forms['appraisal'].is_valid():
-            print('holi')
+        if forms['building'].is_valid() and \
+           forms['property'].is_valid() and \
+           forms['realestate'].is_valid() and \
+           forms['appraisal'].is_valid():
             for name, form in forms.items():
-                if name in ['building','realestate']:
+                if name in ['building','property','realestate']:
                     form.save()
                 if name == 'appraisal':
                     save_appraisal(request,forms,'Saved')
             return True
         else:
             print(forms['building'].errors)
+            print(forms['property'].errors)
             print(forms['realestate'].errors)
             print(forms['appraisal'].errors)
     elif realEstate.propertyType == RealEstate.TYPE_HOUSE:
-        if forms['realestate'].is_valid() and forms['appraisal'].is_valid():
+        if forms['realestate'].is_valid() and \
+           forms['property'].is_valid() and \
+           forms['appraisal'].is_valid():
             for name, form in forms.items():
-                if name == 'realestate':
+                if name == ['realestate','property']:
                     form.save()
                 if name == 'appraisal':
                     save_appraisal(request,forms,'Saved')
@@ -284,95 +288,10 @@ def delete_photo(request,forms,appraisal):
     if forms['appraisal'].is_valid():
         save_appraisal(request, forms, 'Removed picture(s)')
 
-def appraisal(request, **kwargs):
-    '''
-    General view for appraisals. Gets a variable number of parameters depending
-    on the type of realestate.
-    '''
-
-    # Get current appraisal
-    appraisal = get_appraisal(request,kwargs['appraisal_id'])
-    if isinstance(appraisal,HttpResponse): return appraisal
-    appraisal_old = deepcopy(appraisal) # done to check differences when saving history
-
-    # Get realestate
-    realestate = get_realestate(request,appraisal.realEstate.id)
-    if realestate == None:
-        context = {'error_message': 'Realestae was not found'}
-        return render(request, 'appraisal/error.html',context)
-
-    # DIE FORMS
-
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-
-        print(request.method)
-
-        # Process forms
-        forms = {}
-        forms['appraisal'] = FormAppraisal(request.POST,request.FILES,instance=appraisal)
-        forms['comment'] = FormComment(request.POST)
-        forms['realestate'] = FormRealEstate(request.POST)
-        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-            forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
-        forms['photos'] = FormPhotos(request.POST,request.FILES)
-        print("aqui")
-        print(request.POST.keys())
-
-        # Switch to action
-        if 'btn_save' in request.POST.keys():
-            ret = save(request,forms,realestate)
-        elif 'btn_delete' in request.POST.keys():
-            ret = delete(request,appraisal)
-        elif 'btn_finish' in request.POST.keys():
-            ret = finish(request,forms,appraisal)
-        elif 'btn_comment' in request.POST.keys():
-            ret = comment(forms,appraisal)
-        elif 'btn_assign_tasador' in request.POST.keys():
-            ret = assign_tasador(request,forms,appraisal)
-        elif 'btn_assign_visador' in request.POST.keys():
-            ret = assign_visador(request,forms,appraisal)
-        elif 'btn_upload_photo' in request.POST.keys():
-            ret = upload_photo(request,forms,appraisal)
-        elif 'btn_delete_photo' in request.POST.keys():
-            print('btn_delete_photo')
-            ret = delete_photo(request,forms,appraisal)
-        else:
-            ret = False
-
-        if isinstance(ret, HttpResponse): return ret
-
-    # REFERENCE PROPERTIES
-    references = []#get_similar_realestate(realestate)
-
-    if len(references) > 0:
-        averages = references.aggregate(
-            Avg('marketPrice'),
-            Avg('builtSquareMeters'),
-            Avg('usefulSquareMeters'))
-        stds = references.aggregate(
-            StdDev('marketPrice'),
-            StdDev('builtSquareMeters'),
-            StdDev('usefulSquareMeters'))
-    else:
-        averages = []
-        stds = []
-
-    # Visadores and tasadores for the Bootstrap modals where you can select
-    # them.
-    tasadores = User.objects.filter(groups__name__in=['tasador'])
-    visadores = User.objects.filter(groups__name__in=['visador'])
-
-    #Data from de creation form
-    tipoTasacion = appraisal.tipoTasacion
-    objetivo = appraisal.objetivo
-    solicitante = appraisal.solicitante
-
-    # History of changes, for the logbook
+def get_appraisal_history(appraisal):
     versions = list(Version.objects.get_for_object(appraisal))
     appraisal_history = []
     c = 0
-
     for i in range(len(versions)):
         if i == 0: continue
         version_new = versions[i]
@@ -393,6 +312,86 @@ def appraisal(request, **kwargs):
             appraisal_history.pop(c)
         else:
             c += 1
+    return appraisal_history
+
+def appraisal(request, **kwargs):
+    '''
+    General view for appraisals. Gets a variable number of parameters depending
+    on the type of realestate.
+    '''
+
+    # Get current appraisal
+    appraisal = get_appraisal(request,kwargs['appraisal_id'])
+    if isinstance(appraisal,HttpResponse):
+        return appraisal
+    appraisal_old = deepcopy(appraisal) # done to check differences when saving history
+
+    # Get realestate
+    realestate = get_realestate(request,appraisal.realEstate.id)
+    if isinstance(realestate,HttpResponse):
+        return realestate
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+
+        # Process forms
+        forms = {}
+        forms['appraisal'] = FormAppraisal(request.POST,request.FILES,instance=appraisal)
+        forms['comment'] = FormComment(request.POST)
+        forms['realestate'] = FormRealEstate(request.POST)
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+            forms['property'] = FormApartment(request.POST,instance=realestate.apartment)
+            forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+            forms['property'] = FormHouse(request.POST,instance=realestate.house)
+        forms['photos'] = FormPhotos(request.POST,request.FILES)
+
+        # Switch to action
+        if 'btn_save' in request.POST.keys():
+            ret = save(request,forms,realestate)
+        elif 'btn_delete' in request.POST.keys():
+            ret = delete(request,appraisal)
+        elif 'btn_finish' in request.POST.keys():
+            ret = finish(request,forms,appraisal)
+        elif 'btn_comment' in request.POST.keys():
+            ret = comment(forms,appraisal)
+        elif 'btn_assign_tasador' in request.POST.keys():
+            ret = assign_tasador(request,forms,appraisal)
+        elif 'btn_assign_visador' in request.POST.keys():
+            ret = assign_visador(request,forms,appraisal)
+        elif 'btn_upload_photo' in request.POST.keys():
+            ret = upload_photo(request,forms,appraisal)
+        elif 'btn_delete_photo' in request.POST.keys():
+            ret = delete_photo(request,forms,appraisal)
+        else:
+            ret = False
+
+        if isinstance(ret, HttpResponse): return ret
+
+    # REFERENCE PROPERTIES
+    references = []#get_similar_realestate(realestate)
+    #print(references)
+
+    if len(references) > 0:
+        averages = references.aggregate(
+            Avg('marketPrice'),
+            Avg('builtSquareMeters'),
+            Avg('usefulSquareMeters'))
+        stds = references.aggregate(
+            StdDev('marketPrice'),
+            StdDev('builtSquareMeters'),
+            StdDev('usefulSquareMeters'))
+    else:
+        averages = []
+        stds = []
+
+    # Visadores and tasadores for the Bootstrap modals where you can select
+    # them.
+    tasadores = User.objects.filter(groups__name__in=['tasador'])
+    visadores = User.objects.filter(groups__name__in=['visador'])
+
+    # History of changes, for the logbook
+    appraisal_history = get_appraisal_history(appraisal)
 
     # Comments, for the logbook
     comments = Comment.objects.filter(appraisal=appraisal).order_by('-timeCreated')
@@ -402,7 +401,7 @@ def appraisal(request, **kwargs):
         'appraisal': FormAppraisal(instance=appraisal,label_suffix=''),
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix=''),
-        'realestate':FormRealEstate(label_suffix='')}
+        'realestate':FormRealEstate(instance=realestate,label_suffix='')}
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
@@ -416,8 +415,6 @@ def appraisal(request, **kwargs):
                 form.fields[field].widget.attrs['readonly'] = True
                 form.fields[field].widget.attrs['disabled'] = True
 
-    print(realestate.addressStreet)
-
     context = {
         'appraisal':appraisal,
         'forms':forms,
@@ -428,10 +425,7 @@ def appraisal(request, **kwargs):
         'tasadores':tasadores,
         'visadores':visadores,
         'appraisal_history': appraisal_history,
-        'comments': comments,
-        'tipoTasacion': tipoTasacion,
-        'objetivo': objetivo,
-        'solicitante': solicitante,
+        'comments': comments
         }
 
     a = render(request, 'appraisal/realestate_appraisal.html', context)

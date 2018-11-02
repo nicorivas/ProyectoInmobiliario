@@ -23,7 +23,6 @@ class Photo(models.Model):
 
 @reversion.register()
 class Appraisal(models.Model):
-
     TYPE_UNDEFINED = 0
     TYPE_HOUSE = 1
     TYPE_APARTMENT = 2
@@ -78,28 +77,6 @@ class Appraisal(models.Model):
     visita = models.IntegerField("Visita", choices=visit_choices, blank=True,null=True)
 
     # generales
-    OTHER = 0
-    BCI = 1
-    SANTANDER = 2
-    ITAU = 3
-    INTERNACIONAL = 4
-    CHILE = 5
-    CORPBANCA = 6
-    SCOTIABANK = 7
-    BICE = 8
-    petitioner_choices = [
-        (BCI, "BCI"),
-        (SANTANDER, "Santander"),
-        (ITAU, "Itaú"),
-        (INTERNACIONAL, "Banco Internacional"),
-        (CHILE, "Banco de Chile"),
-        (CORPBANCA, "Corpbanca"),
-        (SCOTIABANK, "Scotiabank"),
-        (BICE, "BICE"),
-        (OTHER, "Otro")
-    ]
-    solicitante = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
-
     OTRA = 0
     INMOBILIARIA = 1
     REVISION = 2
@@ -132,6 +109,28 @@ class Appraisal(models.Model):
     ]
     objetivo = models.IntegerField("Objetivo", choices=objective_choices,blank=True,null=True)
 
+    OTHER = 0
+    BCI = 1
+    SANTANDER = 2
+    ITAU = 3
+    INTERNACIONAL = 4
+    CHILE = 5
+    CORPBANCA = 6
+    SCOTIABANK = 7
+    BICE = 8
+    petitioner_choices = [
+        (BCI, "BCI"),
+        (SANTANDER, "Santander"),
+        (ITAU, "Itaú"),
+        (INTERNACIONAL, "Banco Internacional"),
+        (CHILE, "Banco de Chile"),
+        (CORPBANCA, "Corpbanca"),
+        (SCOTIABANK, "Scotiabank"),
+        (BICE, "BICE"),
+        (OTHER, "Otro")
+    ]
+    solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
+    solicitanteOtro = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)

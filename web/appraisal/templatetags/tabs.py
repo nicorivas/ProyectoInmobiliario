@@ -6,8 +6,6 @@ register = template.Library()
 @register.filter
 @stringfilter
 def tab_nav_aria_selected(value, arg):
-    print('value={}-'.format(value))
-    print('arg={}-'.format(arg))
     if value == arg:
         return 'true'
     elif value == '' and arg == 'general':
