@@ -29,16 +29,6 @@ class Apartment(RealEstate):
     orientation = models.CharField("Orientación",max_length=2,choices=ORIENTATIONS,null=True,blank=True)
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
 
-    @property
-    def sourceNameNice(self):
-        "Returns source to be printed in a nice way."
-        if self.sourceName == 'toctoc':
-            return 'TocToc'
-        elif self.sourceName == 'portali':
-            return 'P.I.'
-        else:
-            return self.sourceName
-
     class Meta:
         app_label = 'apartment'
 

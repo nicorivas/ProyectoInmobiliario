@@ -98,8 +98,8 @@ def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
     response_results = response_json['results'][0]['geometry']['location']
     building.lat = response_results['lat']
     building.lon = response_results['lng']
-
     building.save()
+    
     return building
 
 def house_create(addressRegion,addressCommune,addressStreet,addressNumber):

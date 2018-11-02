@@ -68,8 +68,69 @@
     <table class="table table-sm table-striped">
       <thead class="thead-light">
         <tr>
-          <th scope="col">Propiedad</th>
-          <th scope="col">Tipología</th>
+          <!--<th scope="col">lat/lng</th>-->
+          <th scope="col">Dirección</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Fuente</th>
+          <th scope="col">Dorm.</th>
+          <th scope="col">Baños</th>
+          {% if realestate.is_house %}
+          <th scope="col">Superficie construida (m<sup>2</sup>)</th>
+          <th scope="col">Superficie terreno (m<sup>2</sup>)</th>
+          {% elif realestate.is_apartment %}
+          <th scope="col">m<sup>2</sup> útil</th>
+          <th scope="col">m<sup>2</sup> terraza</th>
+          {% endif %}
+          <th scope="col">Valor comercial (UF)</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+
+      <tr>
+        <td><input class="form-control form-control-sm form-control-inline" style="min-width:0;width:6em;display:inline;"></input></td>
+        <td>{{forms.createApartment.propertyType}}</td>
+        <td>{{forms.createApartment.sourceName}}</td>
+        <td>{{forms.createApartment.bedrooms}}</td>
+        <td>{{forms.createApartment.bathrooms}}</td>
+        <td>{{forms.createApartment.usefulSquareMeters}}</td>
+        <td>{{forms.createApartment.terraceSquareMeters}}</td>
+        <td>{{forms.createApartment.marketPrice}}</td>
+        <th scope="col"><button class="btn btn-dark btn-sm" name="btn_property_create">+</button></th>
+      </tr>
+
+      {% for o in appraisal.valuationRealEstate.all %}
+      <tr>
+        <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+        <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
+        <td><i class="{{o.get_propertyTypeIcon }}"></i></td>
+        <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
+        <td>{{ o.apartment.bedrooms }}</td>
+        <td>{{ o.apartment.bathrooms }}</td>
+        {% if realestate.is_house %}
+        <td>{{ o.house.builtSquareMeters }}</td>
+        <td>{{ o.house.terrainSquareMeters }}</td>
+        {% elif realestate.is_apartment %}
+        <td>{{ o.apartment.usefulSquareMeters }}</td>
+        <td>{{ o.apartment.terraceSquareMeters }}</td>
+        {% endif %}
+        <td>{{ o.marketPrice }}</td>
+        <td scope="col"><button class="btn btn-dark btn-sm" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding-top:0.1em;padding-bottom:0.1em;">+</button></td>
+      </tr>
+      {% endfor %}
+
+    </table>
+    
+
+    <div class="section-title">
+      <h5> Muestras de mercado </h5>
+    </div>
+
+    <table class="table table-sm table-striped">
+      <thead class="thead-light">
+        <tr>
+          <!--<th scope="col">lat/lng</th>-->
+          <th scope="col">Dirección</th>
+          <th scope="col">Tipo</th>
           <th scope="col">Fuente</th>
           <th scope="col">Dorm.</th>
           <th scope="col">Baños</th>
@@ -81,13 +142,35 @@
           <th scope="col">Superficie terraza (m<sup>2</sup>)</th>
           {% endif %}
           <th scope="col">Valor comercial (UF)</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
+        <tr class="table-warning">
+          <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
+          <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
+          <td><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
+          <td><a href="{{realestate.sourceUrl}}">{{realestate.sourceNameNice}}</a></td>
+          {% if realestate.is_house %}
+          <td>{{realestate.apartment.bedrooms}}</a></td>
+          <td>{{realestate.apartment.bathrooms}}</a></td>
+          <td>{{realestate.house.builtSquareMeters}}</td>
+          <td>{{realestate.house.terrainSquareMeters}}</td>
+          {% elif realestate.is_apartment %}
+          <td>{{realestate.apartment.bedrooms}}</a></td>
+          <td>{{realestate.apartment.bathrooms}}</a></td>
+          <td>{{realestate.apartment.usefulSquareMeters}}</td>
+          <td>{{realestate.apartment.terraceSquareMeters}}</td>
+          {% endif %}
+          <td>{{realestate.marketPrice}}</td>
+          <td></td>
+        </tr>
+
         {% for o in references %}
         <tr>
-          <td scope="row">{{o.building.addressStreet}} {{o.building.addressNumber}}</td>
-          <td>{{ o.propertyType | title }}</td>
+          <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+          <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
+          <td><i class="{{o.get_propertyTypeIcon }}"></i></td>
           <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
           <td>{{ o.bedrooms }}</a></td>
           <td>{{ o.bathrooms }}</a></td>
@@ -99,6 +182,7 @@
           <td>{{ o.terraceSquareMeters }}</td>
           {% endif %}
           <td>{{ o.marketPrice }}</td>
+          <td scope="col"><button class="btn btn-dark btn-sm" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding-top:0.1em;padding-bottom:0.1em;">+</button></td>
         </tr>
         {% endfor %}
 
@@ -106,13 +190,27 @@
           <th scope="row">Promedios</th>
           <td></td>
           <td></td>
-          <td>{{ averages.builtSquareMeters__avg }}
-          &plusmn; {{ stds.builtSquareMeters__stddev | floatformat:1 }}</td>
+          <td></td>
+          <td></td>
           <td>{{ averages.usefulSquareMeters__avg }}
           &plusmn; {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</td>
+          <td>{{ averages.terraceSquareMeters__avg }}
+          &plusmn; {{ stds.terraceSquareMeters__stddev | floatformat:1 }}</td>
           <td>{{ averages.marketPrice__avg }}
           &plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</td>
+          <td></td>
         </tr>
+
       </tbody>
     </table>
+
+    <div class="row">
+      <div class="col">
+        <div style="display: table;margin: auto;">
+          {{ plot_map.div | safe }}
+          {{ plot_map.script | safe }}
+        </div>
+      </div>
+    </div>
+
   </div>

@@ -15,8 +15,8 @@ class FormRealEstate(forms.ModelForm):
         fields = [
             'addressStreet',
             'addressNumber',
-            #'addressCommune',
-            #'addressRegion',
+            'addressCommune',
+            'addressRegion',
             'anoConstruccion',
             'vidaUtilRemanente',
             'avaluoFiscal',
@@ -48,8 +48,8 @@ class FormRealEstate(forms.ModelForm):
         widgets = {
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
-            #'addressCommune': forms.Select(attrs=class_bs),
-            #'addressRegion': forms.Select(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'addressRegion': forms.Select(attrs=class_bs),
             'anoConstruccion': forms.NumberInput(attrs=class_dp_y_bs),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
             'avaluoFiscal': forms.NumberInput(attrs=class_bs),
@@ -162,7 +162,6 @@ class FormAppraisal(forms.ModelForm):
         attrs_req = {'class':"form-control form-control-sm",'data-validation':"required"}
         attrs_rut = {'class':"form-control form-control-sm",'data-validation':"rut"}
         widgets = {
-
             'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=attrs),
             'solicitanteCodigo': forms.TextInput(attrs=attrs),
             'solicitanteSucursal': forms.TextInput(attrs=attrs),
@@ -177,8 +176,36 @@ class FormAppraisal(forms.ModelForm):
             'valorUF': forms.TextInput(attrs=attrs),
             'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=attrs),
             'objetivo':forms.Select(attrs=attrs,choices=Appraisal.petitioner_choices),
-
         }
+
+class FormCreateApartment(forms.ModelForm):
+    class Meta:
+        model = Apartment
+        fields = [
+            'propertyType',
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'sourceName',
+            'bedrooms',
+            'bathrooms',
+            'usefulSquareMeters',
+            'terraceSquareMeters',
+            'marketPrice'
+            ]
+        class_bs = {'class':"form-control form-control-sm"}
+        widgets = {
+            'propertyType':forms.Select(attrs=class_bs),
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'sourceName': forms.TextInput(attrs=class_bs),
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
+            'marketPrice': forms.NumberInput(attrs=class_bs)
+            }
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
