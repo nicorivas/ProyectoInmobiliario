@@ -1,7 +1,7 @@
 <div class="card-body">
 
     <div class="section-title">
-      <h2> Valorización </h2>
+      <h5> Valorización </h5>
     </div>
 
     <div class="row">
@@ -62,7 +62,7 @@
 <div class="card-body">
 
     <div class="section-title">
-      <h2> Muestras comparativas </h2>
+      <h5> Muestras comparativas </h5>
     </div>
 
     <table class="table table-sm table-striped">
@@ -71,8 +71,15 @@
           <th scope="col">Propiedad</th>
           <th scope="col">Tipología</th>
           <th scope="col">Fuente</th>
-          <th scope="col">Área construida (m<sup>2</sup>)</th>
-          <th scope="col">Área útil (m<sup>2</sup>)</th>
+          <th scope="col">Dorm.</th>
+          <th scope="col">Baños</th>
+          {% if realestate.is_house %}
+          <th scope="col">Superficie construida (m<sup>2</sup>)</th>
+          <th scope="col">Superficie terreno (m<sup>2</sup>)</th>
+          {% elif realestate.is_apartment %}
+          <th scope="col">Superficie útil (m<sup>2</sup>)</th>
+          <th scope="col">Superficie terraza (m<sup>2</sup>)</th>
+          {% endif %}
           <th scope="col">Valor comercial (UF)</th>
         </tr>
       </thead>
@@ -82,8 +89,15 @@
           <td scope="row">{{o.building.addressStreet}} {{o.building.addressNumber}}</td>
           <td>{{ o.propertyType | title }}</td>
           <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
+          <td>{{ o.bedrooms }}</a></td>
+          <td>{{ o.bathrooms }}</a></td>
+          {% if realestate.is_house %}
           <td>{{ o.builtSquareMeters }}</td>
+          <td>{{ o.terrainSquareMeters }}</td>
+          {% elif realestate.is_apartment %}
           <td>{{ o.usefulSquareMeters }}</td>
+          <td>{{ o.terraceSquareMeters }}</td>
+          {% endif %}
           <td>{{ o.marketPrice }}</td>
         </tr>
         {% endfor %}
