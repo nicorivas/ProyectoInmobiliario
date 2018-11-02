@@ -23,7 +23,7 @@ def main(request):
             appraisal = Appraisal.objects.get(pk=id)
             appraisal.delete()
         if 'btn_assign_tasador' in request.POST.keys():
-            print(request.POST['btn_assign_tasador'])
+            print(request.POST.dict())
             #ret = assign_tasador(request,forms,appraisal)
 
 
