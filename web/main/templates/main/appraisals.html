@@ -39,7 +39,8 @@
         {% if perms.appraisal.assign_tasador %}
         {% if appraisal.active %}
         <div class="col-auto">
-          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
+          <button type="button" class="btn btn-sm btn-secondary asignar_Tasador" data-id="{{appraisal.id}}"
+                  data-toggle="modal" data-target="#asignarTasador">
             Asignar tasador
           </button>
         </div>
@@ -53,7 +54,8 @@
         {% if perms.appraisal.assign_tasador %}
         {% if appraisal.active %}
         <div class="col-auto">
-          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
+          <button type="button" class="btn btn-sm btn-secondary asignar_Tasador"
+                  data-id="{{appraisal.id}}" data-toggle="modal" data-target="#asignarTasador">
             Asignar tasador
           </button>
         </div>
@@ -171,4 +173,12 @@
           },
       });
   });
+</script>
+
+<script>
+  $(document).on('click','.asignar_Tasador',function(){
+      var id = $(this).data('id');
+      console.log(id);
+      $('#tasadorApp_id').val(id);
+      });
 </script>

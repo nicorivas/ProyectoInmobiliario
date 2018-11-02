@@ -18,14 +18,13 @@ def main(request):
 
     if request.method == 'POST':
         if 'delete' in request.POST:
-            print('POST')
             # Handle the delete button, next to every appraisal
             id = int(request.POST['appraisal_id'])
             appraisal = Appraisal.objects.get(pk=id)
             appraisal.delete()
         if 'btn_assign_tasador' in request.POST.keys():
-            ret = assign_tasador(request,forms,appraisal)
-
+            print(request.POST['btn_assign_tasador'])
+            #ret = assign_tasador(request,forms,appraisal)
 
 
     tasadores = User.objects.filter(groups__name__in=['tasador'])
