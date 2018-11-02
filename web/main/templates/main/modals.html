@@ -89,9 +89,9 @@
             </tr>
           </thead>
           <tbody>
-            {% for user in tasadores %}
-            <form action="" method="post" id="form">
+          <form action="" method="post" id="form">
               {% csrf_token %}
+            {% for user in tasadores %}
             <tr>
               <th scope="col">
                 <div class="form-check">

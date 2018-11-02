@@ -1,7 +1,23 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block head %}
 <title>Perfil</title>
+
+        <script>
+          function timeCreated(string) {
+            var s = moment(string).format("D MMM HH:MM");
+            document.write(s)
+          }
+        </script>
+
+        <script>
+          function timeLeft(string) {
+            var m = moment(string);
+            document.write(m.fromNow());
+          }
+        </script>
+
 {% endblock %}
 
 {% block content %}
@@ -27,6 +43,14 @@
             </div>
         </div>
 
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    {% include 'user/appraiser_list.html' %}
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -42,5 +66,7 @@
 </div>
 
 {% endblock %}
+
+
 
 

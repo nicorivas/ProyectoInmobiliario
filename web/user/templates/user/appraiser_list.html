@@ -1,0 +1,29 @@
+<table class="table table-borderless">
+    <h5 class="card-title">Tasaciones</h5>
+    <thead>
+      <tr>
+        <th scope="col">Tasador</th>
+        <th scope="col">Activas</th>
+        <th scope="col">Atrasadas</th>
+        <th scope="col">Entregadas </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tasador in lista %}
+      <tr>
+        <td>
+        {{ tasador.user.first_name }} {{ tasador.user.last_name }}
+        </td>
+        <td>
+           {{ tasador.activeAppraisals }}
+        </td>
+        <td>
+            {{ tasador.lateAppraisals }}
+        </td>
+         <td>
+           {{ tasador.doneAppraisals }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>

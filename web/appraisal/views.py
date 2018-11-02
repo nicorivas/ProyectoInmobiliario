@@ -153,7 +153,6 @@ def save_appraisal(request,forms,comment):
         forms['appraisal'].save()
         reversion.set_user(request.user)
         reversion.set_comment(comment)
-        print('a')
         return
 
 def save(request,forms,realEstate):
