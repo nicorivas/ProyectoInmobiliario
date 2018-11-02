@@ -15,8 +15,8 @@ class FormRealEstate(forms.ModelForm):
         fields = [
             'addressStreet',
             'addressNumber',
-            'addressCommune',
-            'addressRegion',
+            #'addressCommune',
+            #'addressRegion',
             'anoConstruccion',
             'vidaUtilRemanente',
             'avaluoFiscal',
@@ -48,8 +48,8 @@ class FormRealEstate(forms.ModelForm):
         widgets = {
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
-            'addressCommune': forms.Select(attrs=class_bs),
-            'addressRegion': forms.Select(attrs=class_bs),
+            #'addressCommune': forms.Select(attrs=class_bs),
+            #'addressRegion': forms.Select(attrs=class_bs),
             'anoConstruccion': forms.NumberInput(attrs=class_dp_y_bs),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
             'avaluoFiscal': forms.NumberInput(attrs=class_bs),
@@ -75,8 +75,8 @@ class FormRealEstate(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(FormRealEstate, self).__init__(*args, **kwargs)
-        self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
-        self.fields['addressRegion'].queryset = Region.objects.only('name').all()
+        #self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
+        #self.fields['addressRegion'].queryset = Region.objects.only('name').all()
 
 class FormBuilding(forms.ModelForm):
 

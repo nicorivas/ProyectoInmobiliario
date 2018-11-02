@@ -23,25 +23,19 @@ class Photo(models.Model):
 
 @reversion.register()
 class Appraisal(models.Model):
-    TYPE_UNDEFINED = 0
-    TYPE_HOUSE = 1
-    TYPE_APARTMENT = 2
-    TYPE_BUILDING = 3
-    propertyType_choices = [
-        (TYPE_UNDEFINED, "Indefinido"),
-        (TYPE_HOUSE, "Casa"),
-        (TYPE_APARTMENT, "Departamento"),
-        (TYPE_BUILDING, "Edificio")]
-    propertyType = models.PositiveIntegerField(
-        choices=propertyType_choices,
-        default=TYPE_UNDEFINED)
+    '''
+    Hola
+    '''
+
     realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
         verbose_name="Propiedad")
+
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
+
     STATE_IMPORTED = 0
     STATE_ACTIVE = 1
     STATE_PAUSED = 2
@@ -64,6 +58,7 @@ class Appraisal(models.Model):
     ]
     source = models.IntegerField("Fuente de tasación",choices=source_choices,
         default=APPRAISAL,blank=True,null=True)
+
     price = models.FloatField("Precio tasación",blank=True,null=True)
 
     SIN_VISITA = 0
@@ -130,6 +125,7 @@ class Appraisal(models.Model):
         (OTHER, "Otro")
     ]
     solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
+
     solicitanteOtro = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
