@@ -42,32 +42,30 @@ def get_realestate(request,id):
         Given building id, returns the building object.
         It checks for some errors and sends to the error page.
     '''
-    realestate = RealEstate.objects.filter(id=id)
-    # This must be only one building
-    if len(realestate) == 0:
+    try:
+        realestate = RealEstate.objects.get(id=id)
+        return realestate
+    except RealEstate.DoesNotExist:
         context = {'error_message': 'No existe real estate'}
         return render(request, 'appraisal/error.html',context)
-    elif len(realestate) > 1:
+    except MultipleObjectsReturned:
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
-    realestate = realestate[0]
-    return realestate
 
 def get_building(request,id):
     '''
         Given building id, returns the building object.
         It checks for some errors and sends to the error page.
     '''
-    building = Building.objects.filter(id=id)
-    # This must be only one building
-    if len(building) == 0:
+    try:
+        building = Building.objects.get(id=id)
+        return building
+    except Building.DoesNotExist:
         context = {'error_message': 'Building should exist by now'}
         return render(request, 'appraisal/error.html',context)
-    elif len(building) > 1:
+    except MultipleObjectsReturned:
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
-    building = building[0]
-    return building
 
 def get_house(request,id):
     '''
@@ -75,32 +73,30 @@ def get_house(request,id):
         It checks for some errors and sends to the error page.
         TODO: Change this to proper try statements
     '''
-    house = House.objects.filter(id=id)
-    # This must be only one building
-    if len(house) == 0:
+    try:
+        house = House.objects.get(id=id)
+        return house
+    except House.DoesNotExist:
         context = {'error_message': 'House should exist by now'}
         return render(request, 'appraisal/error.html',context)
-    elif len(house) > 1:
+    except MultipleObjectsReturned:
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
-    house = house[0]
-    return house
 
 def get_apartment(request,id):
     '''
         Given an appartment id, return the apartment object.
         It checks for errors and sends to the correct error page.
     '''
-    apartment = Apartment.objects.filter(id=id)
-    # This must be only one apartment
-    if len(apartment) == 0:
+    try:
+        apartment = Apartment.objects.get(id=id)
+        return apartment
+    except Apartment.DoesNotExist:
         context = {'error_message': 'Apartment should exist by now'}
         return render(request, 'appraisal/error.html',context)
-    elif len(apartment) > 1:
+    except MultipleObjectsReturned:
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
-    apartment = apartment[0]
-    return apartment
 
 def get_appraisal(request,id):
     '''
@@ -342,7 +338,7 @@ def appraisal(request, **kwargs):
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             forms['property'] = FormApartment(request.POST,instance=realestate.apartment)
             forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
-        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        if realestate.propertyType == RealEstate.TYPE_HOUSE:
             forms['property'] = FormHouse(request.POST,instance=realestate.house)
         forms['photos'] = FormPhotos(request.POST,request.FILES)
 
