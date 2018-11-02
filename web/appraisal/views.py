@@ -26,6 +26,7 @@ from .forms import FormHouse
 from .forms import FormAppraisal
 from .forms import FormComment
 from .forms import FormPhotos
+from .forms import FormCreateApartment
 
 from django.db.models import Avg, StdDev
 
@@ -36,6 +37,12 @@ from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl import load_workbook
 
 import datetime
+import requests
+
+import numpy as np
+from bokeh.models import GMapOptions
+from bokeh.plotting import figure, show, ColumnDataSource, gmap
+from bokeh.embed import components
 
 def get_realestate(request,id):
     '''
@@ -115,30 +122,54 @@ def get_appraisal(request,id):
 
 def get_similar_realestate(realestate):
 
+    if (realestate.lng == 0.0 or realestate.lat == 0.0):
+        url = 'https://maps.googleapis.com/maps/api/geocode/json'
+        url_address = '?address={} {}, {}, {}'.format(
+            realestate.addressStreet,
+            realestate.addressNumber,
+            realestate.addressCommune,
+            realestate.addressRegion)
+        url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+        response = requests.get(url+''+url_address+''+url_key)
+        response_json = response.json()
+        response_results = response_json['results'][0]['geometry']['location']
+        realestate.lat = response_results['lat']
+        realestate.lng = response_results['lng']
+        print(realestate.lat)
+        print(realestate.lng)
+        #realestate.save()
+
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         if (realestate.apartment.bedrooms != None and
             realestate.apartment.bathrooms != None and
             realestate.apartment.usefulSquareMeters != None and
             realestate.apartment.terraceSquareMeters != None):
 
+            print(realestate.apartment.bedrooms)
+            print(realestate.apartment.bathrooms)
+
             apartments = Apartment.objects.filter(
                 bedrooms=realestate.apartment.bedrooms,
                 bathrooms=realestate.apartment.bathrooms,
+                usefulSquareMeters__isnull=False,
                 marketPrice__isnull=False).exclude(marketPrice=0)
+
+            print(apartments)
 
             ds = []
             ni = 0
             for i, apt in enumerate(apartments):
                 d1 = float(pow(realestate.apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
-                d2 = float(pow(realestate.apartment.terraceSquareMeters - apt.terraceSquareMeters,2))
+                #d2 = float(pow(realestate.apartment.terraceSquareMeters - apt.terraceSquareMeters,2))
+                d3 = float(pow(apt.latlng[0] - realestate.latlng[0],2)+pow(apt.latlng[1] - realestate.latlng[1],2))
                 ds.append([0,0])
                 ds[i][0] = apt.pk
-                ds[i][1] = d1+d2
+                ds[i][1] = d1+d3
 
             ds = sorted(ds, key=lambda x: x[1])
             ins = [x[0] for x in ds]
 
-            references = realestate.apartments.filter(pk__in=ins[0:5])
+            references = apartments.filter(pk__in=ins[0:20])
             return references
         else:
             return []
@@ -284,6 +315,15 @@ def delete_photo(request,forms,appraisal):
     if forms['appraisal'].is_valid():
         save_appraisal(request, forms, 'Removed picture(s)')
 
+def valuation_add_realestate(request,forms,appraisal,realestate_id):
+    print('valuation_add_realestate')
+    realestate = get_realestate(request,realestate_id)
+    print('valuation_add_realestate',realestate)
+    appraisal.valuationRealEstate.add(realestate)
+    print('valuation_add_realestate',appraisal.valuationRealEstate.all())
+    appraisal.save()
+    print('valuation_add_realestate',appraisal.valuationRealEstate.all())
+
 def get_appraisal_history(appraisal):
     versions = list(Version.objects.get_for_object(appraisal))
     appraisal_history = []
@@ -351,6 +391,9 @@ def appraisal(request, **kwargs):
             ret = finish(request,forms,appraisal)
         elif 'btn_comment' in request.POST.keys():
             ret = comment(forms,appraisal)
+        elif 'btn_valuation_add_realestate' in request.POST.keys():
+            print('a')
+            ret = valuation_add_realestate(request,forms,appraisal,request.POST['btn_valuation_add_realestate'])
         elif 'btn_assign_tasador' in request.POST.keys():
             ret = assign_tasador(request,forms,appraisal)
         elif 'btn_assign_visador' in request.POST.keys():
@@ -365,17 +408,37 @@ def appraisal(request, **kwargs):
         if isinstance(ret, HttpResponse): return ret
 
     # REFERENCE PROPERTIES
-    references = []#get_similar_realestate(realestate)
-    #print(references)
+    references = get_similar_realestate(realestate)
+    # --
+    map_options = GMapOptions(lat=realestate.lat, lng=realestate.lng, map_type="roadmap", zoom=15)
+    p = gmap("AIzaSyAKZ-wutxLGtqlojKj00BwHKFlH5dkr47c", map_options,plot_width=1000,plot_height=400)
+    #p = figure(title= 'Santiago',
+    #    x_axis_label= 'X-Axis',
+    #    y_axis_label= 'Y-Axis',
+    #    plot_width =600,
+    #    plot_height =600)
+    lat = np.array(references.values_list('lat',flat=True))
+    lng = np.array(references.values_list('lng',flat=True))
+    source = ColumnDataSource(data=dict(
+        lat=lat,
+        lon=lng)
+    )
+    p.circle(x='lon', y='lat', size=10, color="navy", source=source)
+    source = ColumnDataSource(data=dict(
+        lat=[realestate.lat],
+        lon=[realestate.lng])
+    )
+    p.circle(x='lon', y='lat', size=10, color="red", source=source)
+    script, div = components(p)
+    plot_map = {'script':script,'div':div}
+    # ---
 
     if len(references) > 0:
         averages = references.aggregate(
             Avg('marketPrice'),
-            Avg('builtSquareMeters'),
             Avg('usefulSquareMeters'))
         stds = references.aggregate(
             StdDev('marketPrice'),
-            StdDev('builtSquareMeters'),
             StdDev('usefulSquareMeters'))
     else:
         averages = []
@@ -401,6 +464,7 @@ def appraisal(request, **kwargs):
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
+        forms['createApartment'] = FormCreateApartment(label_suffix='')
     if realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
 
@@ -410,6 +474,9 @@ def appraisal(request, **kwargs):
             for field in form.fields:
                 form.fields[field].widget.attrs['readonly'] = True
                 form.fields[field].widget.attrs['disabled'] = True
+
+    valuationRealEstate = realestate.valuationRealEstate.all()
+    print('view valuationRealEstate',valuationRealEstate)
 
     context = {
         'appraisal':appraisal,
@@ -421,7 +488,9 @@ def appraisal(request, **kwargs):
         'tasadores':tasadores,
         'visadores':visadores,
         'appraisal_history': appraisal_history,
-        'comments': comments
+        'comments': comments,
+        'plot_map':plot_map,
+        'valuationRealEstate':valuationRealEstate
         }
 
     a = render(request, 'appraisal/realestate_appraisal.html', context)

@@ -26,6 +26,8 @@ from house.models import House
 from region.models import Region
 from commune.models import Commune
 
+from django.core.exceptions import MultipleObjectsReturned
+
 def addressToCoordinates(address):
     '''
     Given an address (string that Google would understand)
@@ -132,6 +134,13 @@ def createRealEstate(re,re_dict,propertyType,out):
 
     # Automatic fields
     if propertyType == RealEstate.TYPE_APARTMENT:
+        translation = [
+            ('nombre_edificio','name'),
+            ('codigo','sourceId'),
+            ('fecha_publicacion','sourceDatePublished'),
+            ('url','sourceUrl'),
+            ('direccion','address')]
+    elif propertyType == RealEstate.TYPE_BUILDING:
         translation = [
             ('nombre_edificio','name'),
             ('codigo','sourceId'),
@@ -260,13 +269,18 @@ def createHouse(hs_dict,out):
 
     return hs
 
+def updateApartment(apt_new,apt_old,fields):
+    for field in fields:
+        setattr(apt_old,field,getattr(apt_new,field))
+    apt_old.save()
+
 def createApartment(apt_dict,bd, out):
 
     out.status('Creating apartment')
 
     apt = Apartment()
 
-    ret = createRealEstate(apt,apt_dict,propertyType=RealEstate.TYPE_APARTMENT)
+    ret = createRealEstate(apt,apt_dict,RealEstate.TYPE_APARTMENT,out)
     if ret == False:
         error('Creating apartment failed, returning')
         return False
@@ -319,11 +333,12 @@ def createApartment(apt_dict,bd, out):
     else:
         out.warning("'m² útil' not found in source dictionary")
     if 'm² total' in apt_dict.keys():
-        try:
-            setattr(apt,'builtSquareMeters',float(apt_dict['m² total']))
-        except ValueError:
-            out.error("Failed converting 'm² total' = {} to float".format(apt_dict['m² total']))
-            return False
+        if 'm² útil' in apt_dict.keys():
+            try:
+                setattr(apt,'terraceSquareMeters',float(apt_dict['m² total'])-float(apt_dict['m² útil']))
+            except ValueError:
+                out.error("Failed converting 'm² total' = {} to float".format(apt_dict['m² total']))
+                return False
     else:
         out.warning("'m² total' not found in source dictionary")
 
@@ -366,15 +381,23 @@ def realEstateExists(re,out):
                 tmp = Apartment.objects.get(
                     bedrooms=re.bedrooms,
                     bathrooms=re.bathrooms,
-                    builtSquareMeters=re.builtSquareMeters,
                     usefulSquareMeters=re.usefulSquareMeters,
-                    marketPrice=re.marketPrice,
                     propertyType=re.propertyType,
                     lat=re.lat,
                     lng=re.lng)
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
+            except MultipleObjectsReturned:
+                out.warning('Más de un depto igual!')
+                tmp = Apartment.objects.filter(
+                    bedrooms=re.bedrooms,
+                    bathrooms=re.bathrooms,
+                    usefulSquareMeters=re.usefulSquareMeters,
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp[0]
         else:
             try:
                 tmp = Apartment.objects.get(
@@ -385,6 +408,14 @@ def realEstateExists(re,out):
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
+            except MultipleObjectsReturned:
+                out.warning('Más de un depto igual!')
+                tmp = Apartment.objects.filter(
+                    number=re.number,
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp[0]
     elif re.propertyType == RealEstate.TYPE_HOUSE:
         if not re.addressFromCoords:
             try:
@@ -397,6 +428,15 @@ def realEstateExists(re,out):
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
+            except MultipleObjectsReturned:
+                out.warning('Más de una casa igual!')
+                tmp = House.objects.filter(
+                    propertyType=re.propertyType,
+                    addressStreet=re.addressStreet,
+                    addressNumber=re.addressNumber,
+                    addressRegion=re.addressRegion,
+                    addressCommune=re.addressCommune)
+                return tmp[0]
         else:
             try:
                 tmp = House.objects.get(
@@ -406,8 +446,24 @@ def realEstateExists(re,out):
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
+            except MultipleObjectsReturned:
+                out.warning('Más de una casa igual!')
+                tmp = House.objects.filter(
+                    propertyType=re.propertyType,
+                    lat=re.lat,
+                    lng=re.lng)
+                return tmp[0]
 
-def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0, getAddressFromCoords=0):
+def dictionariesToDatabase_Apartment(re_dicts,
+    out,
+    ci=0,
+    cf=None,
+    debug=0,
+    getAddressFromCoords=0,
+    doUpdateBuilding=0,
+    doAddBuilding=0,
+    doUpdateApartment=1,
+    doAddApartment=0):
     '''
     Generate the objects from dictionaries.
     This is just a wrapper function, to be able to create buildings associated
@@ -429,32 +485,41 @@ def dictionariesToDatabase_Apartment(re_dicts, out, ci=0, cf=None, debug=0, getA
             continue
 
         out.say('{} {}'.format(c,re_dict['nombre_edificio']))
+
         building = createBuilding(re_dict,out)
         if isinstance(building,bool):
             if not building:
                 continue
-        re = realEstateExists(building,out)
-        if isinstance(re,type(None)):
-            # We assign address from coords here to avoid doing it if it is not
-            # necessary (the RE already exists)
-            if building.addressFromCoords and getAddressFromCoords:
-                setAddressFromCoords(building,out)
-            building.save()
-        else:
-            out.warning('Building already existed')
-            building = re # building is now the one that existed
+        if doUpdateBuilding or doAddBuilding:
+            re = realEstateExists(building,out)
+            if isinstance(re,type(None)):
+                # We assign address from coords here to avoid doing it if it is not
+                # necessary (the RE already exists)
+                if building.addressFromCoords and getAddressFromCoords:
+                    setAddressFromCoords(building,out)
+                building.save()
+            else:
+                out.warning('Building already existed')
+                building = re # building is now the one that existed
 
         apartment = createApartment(re_dict,building,out)
         if isinstance(apartment,bool):
             if not apartment:
                 continue
-        re = realEstateExists(apartment,out)
-        if isinstance(re,type(None)):
-            if apartment.addressFromCoords and getAddressFromCoords:
-                setAddressFromCoords(apartment,out)
-            apartment.save()
-        else:
-            out.warning('Apartment already existed')
+        if doUpdateApartment or doAddApartment:
+            re = realEstateExists(apartment,out)
+            print(re)
+            if isinstance(re,type(None)):
+                if doAddApartment:
+                    if apartment.addressFromCoords and getAddressFromCoords:
+                        setAddressFromCoords(apartment,out)
+                    apartment.save()
+            else:
+                if doUpdateApartment:
+                    out.info('Updating apartment')
+                    updateApartment(apartment,re,['marketPrice'])
+                else:
+                    out.warning('Apartment already existed')
 
         objects.append(building)
         objects.append(apartment)
@@ -554,16 +619,16 @@ if __name__ == "__main__":
     # Parameters
     source1 = ['toctoc','portali'][1]
     source2 = ['TocToc','PortalInmobiliario'][1]
-    property_type = RealEstate.TYPE_HOUSE
+    property_type = RealEstate.TYPE_APARTMENT
 
     regions = Region.objects.filter(code=13) # solo RM por ahora
 
     i_c = 0
     ci = 0
     #commune = 'Puente Alto'
-    commune_skip = ['Cerro Navia','Maipú','Calera de Tango','Providencia',
-    'Independencia','Curacaví','Quilicura','Estación Central','San Joaquín']
-    #commune_skip = []
+    #commune_skip = ['Cerro Navia','Maipú','Calera de Tango','Providencia',
+    #'Independencia','Curacaví','Quilicura','Estación Central','San Joaquín']
+    commune_skip = []
 
     for region in regions:
         out.info(region.name)

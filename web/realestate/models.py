@@ -215,6 +215,24 @@ class RealEstate(models.Model):
         null=True)
 
     @property
+    def sourceNameNice(self):
+        "Returns source to be printed in a nice way."
+        if self.sourceName == 'toctoc':
+            return 'TocToc'
+        elif self.sourceName == 'portali':
+            return 'P.I.'
+        else:
+            return self.sourceName
+
+    @property
+    def latlng(self):
+        return [self.lat,self.lng]
+
+    @property
+    def latlng_verbose(self):
+        return str(self.lat)+','+str(self.lng)
+
+    @property
     def is_apartment(self):
         return self.propertyType == self.TYPE_APARTMENT
 
@@ -242,7 +260,7 @@ class RealEstate(models.Model):
         return self.addressStreet+' '+str(self.addressNumber)
 
     @property
-    def latlng(self):
+    def latlng_verbose_nice(self):
         # Returns whole address in a nice format
         return str(self.lat+33)[2:7]+', '+str(self.lng+70)[2:7]
 

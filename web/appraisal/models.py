@@ -142,6 +142,8 @@ class Appraisal(models.Model):
 
     photos = models.ManyToManyField(Photo)
 
+    valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
+
     # valor
     valorUF = models.IntegerField("Valor UF",blank=True,null=True)
 
