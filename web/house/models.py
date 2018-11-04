@@ -13,6 +13,39 @@ class House(RealEstate):
     terrainSquareMeters = models.DecimalField("Superficie terreno",max_digits=7,decimal_places=2,null=True,blank=True)
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
 
+    @property 
+    def builtSquareMetersVerbose(self):
+        if isinstance(self.builtSquareMeters,type(None)):
+            return "-"
+        else:
+            return "{:10.1f}".format(self.builtSquareMeters)
+
+    @property 
+    def terrainSquareMetersVerbose(self):
+        if isinstance(self.terrainSquareMeters,type(None)):
+            return "-"
+        else:
+            return "{:10.1f}".format(self.terrainSquareMeters)
+
+    @property
+    def marketPricePerBuiltSquareMeters(self):
+        if isinstance(self.builtSquareMeters,type(None)) or \
+           isinstance(self.marketPrice,type(None)):
+            return ""
+        else:
+            x = self.marketPrice/self.builtSquareMeters
+            return "{:10.2f}".format(x)
+
+    @property
+    def marketPricePerTotalSquareMeters(self):
+        if isinstance(self.builtSquareMeters,type(None)) or \
+           isinstance(self.terrainSquareMeters,type(None)) or \
+           isinstance(self.marketPrice,type(None)):
+            return ""
+        else:
+            x = self.marketPrice/(self.builtSquareMeters+self.terrainSquareMeters)
+            return "{:10.2f}".format(x)
+
     def __str__(self):
         return "{}, {} {}, {}, {}".format(
             self.name,

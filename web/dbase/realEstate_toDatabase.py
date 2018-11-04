@@ -272,6 +272,7 @@ def createHouse(hs_dict,out):
 def updateApartment(apt_new,apt_old,fields):
     for field in fields:
         setattr(apt_old,field,getattr(apt_new,field))
+        print(field,getattr(apt_old,field))
     apt_old.save()
 
 def createApartment(apt_dict,bd, out):
@@ -517,7 +518,7 @@ def dictionariesToDatabase_Apartment(re_dicts,
             else:
                 if doUpdateApartment:
                     out.info('Updating apartment')
-                    updateApartment(apartment,re,['marketPrice'])
+                    updateApartment(apartment,re,['terraceSquareMeters'])
                 else:
                     out.warning('Apartment already existed')
 

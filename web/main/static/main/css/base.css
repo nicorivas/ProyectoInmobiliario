@@ -32,3 +32,12 @@ html, body {
   color: #dc3545;
   font-size: 0.75em;
 }
+
+.btn:focus, .btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.table td {
+  vertical-align: middle;
+}

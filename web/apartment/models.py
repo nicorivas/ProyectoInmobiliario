@@ -29,6 +29,40 @@ class Apartment(RealEstate):
     orientation = models.CharField("Orientación",max_length=2,choices=ORIENTATIONS,null=True,blank=True)
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
 
+    @property 
+    def usefulSquareMetersVerbose(self):
+        if isinstance(self.usefulSquareMeters,type(None)):
+            return "-"
+        else:
+            return "{:10.1f}".format(self.usefulSquareMeters)
+
+    @property 
+    def terraceSquareMetersVerbose(self):
+        if isinstance(self.terraceSquareMeters,type(None)):
+            return "-"
+        else:
+            return "{:10.1f}".format(self.terraceSquareMeters)
+
+    @property
+    def marketPricePerUsefulSquareMeters(self):
+        if isinstance(self.usefulSquareMeters,type(None)) or \
+           isinstance(self.marketPrice,type(None)):
+            return ""
+        else:
+            x = self.marketPrice/self.usefulSquareMeters
+            return "{:10.2f}".format(x)
+
+    @property
+    def marketPricePerTotalSquareMeters(self):
+        if isinstance(self.marketPrice,type(None)) or \
+           isinstance(self.terraceSquareMeters,type(None)) or \
+           isinstance(self.usefulSquareMeters,type(None)):
+            return ""
+        else:
+            x = self.marketPrice/(self.usefulSquareMeters+self.terraceSquareMeters)
+            return "{:10.2f}".format(x)
+    
+
     class Meta:
         app_label = 'apartment'
 
