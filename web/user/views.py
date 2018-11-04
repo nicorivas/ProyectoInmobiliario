@@ -1,10 +1,9 @@
 from appraisal.models import Appraisal
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.contrib.auth.models import User, Group
-from .forms import EditProfileForm, UserForm, AuthenticationFormB
+from django.contrib.auth.models import User
+from .forms import EditProfileForm, AuthenticationFormB, EvaluationForm
 from .models import UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -137,4 +136,12 @@ def login(request):
     form_login = AuthenticationFormB()
     context = {'form_login':form_login}
     return render(request,'user/login.html',context)
+
+def appraiserEvaluationView(request):
+    appraisals_active, appraisals_finished = userAppraisals(request)
+    form_user = EvaluationForm()
+
+    context = {'appraisals_active': appraisals_active,
+        'appraisals_finished': appraisals_finished, 'form_user':form_user}
+    return render(request, 'user/appraiser_evaluation.html', context)
 

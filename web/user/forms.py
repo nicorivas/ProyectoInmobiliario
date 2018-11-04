@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from region.models import Region
 from commune.models import Commune
 from django.contrib.auth.forms import AuthenticationForm
+from django import forms
 
 class AuthenticationFormB(AuthenticationForm):
     username = forms.CharField(max_length=254,
@@ -52,4 +53,10 @@ class EditProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
+class EvaluationForm(forms.Form):
+    tasadores = forms.ModelChoiceField(
+        label='Tasadores',
+        queryset=User.objects.filter(groups__name__in=['tasador']),
+        required=False
+    )
+    tasadores.widget.attrs.update({'class':"form-control"})
