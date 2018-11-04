@@ -231,6 +231,13 @@ class Appraisal(models.Model):
         return False
 
     @property
+    def solicitanteVerbose(self):
+        if isinstance(self.solicitante,type(None)):
+            return '-'
+        else:
+            return self.petitioner_choices[self.solicitante][1]
+
+    @property
     def timeLeft(self):
         return self.timeDue - self.timeCreated
 

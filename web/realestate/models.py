@@ -255,6 +255,11 @@ class RealEstate(models.Model):
         return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
 
     @property
+    def addressVerboseNoRegion(self):
+        # Returns whole address in a nice format
+        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name
+
+    @property
     def addressShort(self):
         # Returns whole address in a nice format
         return self.addressStreet+' '+str(self.addressNumber)

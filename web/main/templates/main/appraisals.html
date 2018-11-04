@@ -6,14 +6,16 @@
 
   <h5 class="card-title">Tasaciones activas</h5>
 
-  <table class="table table-borderless">
+  <table class="table table-sm table-borderless">
     <thead>
       <tr>
         <th scope="col">ID</th>
-        <th scope="col" style="text-align:center;">Tipo</th>
+        <th scope="col">Cliente</th>
+        <th scope="col" style="text-align:center;">T.</th>
         <th scope="col">Dirección</th>
         <th scope="col">Tasador</th>
-        <th scope="col" style="text-align:center;">Estado</th>
+        <th scope="col">Visador</th>
+        <th scope="col" style="text-align:center;">E.</th>
         <th scope="col">Creada</th>
         <th scope="col">Entrega</th>
         <th scope="col"></th>
@@ -21,46 +23,65 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_active %}
-      <tr>
+      <tr class="clickable-row">
         <td>
           {{ appraisal.id }}
+        </td>
+        <td>
+          {{ appraisal.solicitanteVerbose }}
         </td>
         <td style="text-align:center;">
           <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
         </td>
         <td>
-          <a class="text-dark" href="{{appraisal.url}}">
-            {{ appraisal.realEstate.address }}
+          <a href="{{appraisal.url}}">
+            {{ appraisal.realEstate.addressVerboseNoRegion }}
           </a>
         </td>
-        {% if appraisal.tasadorUser %}
         <td>
-        {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
-        {% if perms.appraisal.assign_tasador %}
-        {% if appraisal.active %}
-        <div class="col-auto">
-          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
-            Asignar tasador
-          </button>
-        </div>
-        {% endif %}
-        {% endif %}
+          <div class="row">
+            <div class="col-auto">
+              <span style="vertical-align: middle;">
+              {% if appraisal.tasadorUser %}
+                {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
+              {% else %}
+              -
+              {% endif %}
+              </span>
+            </div>
+            {% if perms.appraisal.assign_tasador %}
+            {% if appraisal.active %}
+            <div class="col text-right">
+              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarTasador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+                person_add
+              </button>
+            </div>
+            {% endif %}
+            {% endif %}
+          </div>
         </td>
-
-        {% else %}
         <td>
-          <p class="font-weight-bold text-warning">No asignado</p>
-        {% if perms.appraisal.assign_tasador %}
-        {% if appraisal.active %}
-        <div class="col-auto">
-          <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#asignarTasador">
-            Asignar tasador
-          </button>
-        </div>
-        {% endif %}
-        {% endif %}
+          <div class="row">
+            <div class="col-auto">
+              <span style="vertical-align: middle;">
+              {% if appraisal.visadorUser %}
+                {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name }}
+              {% else %}
+              -
+              {% endif %}
+              </span>
+            </div>
+            {% if perms.appraisal.assign_visador %}
+            {% if appraisal.active %}
+            <div class="col text-right">
+              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarTasador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+                person_add
+              </button>
+            </div>
+            {% endif %}
+            {% endif %}
+          </div>
         </td>
-        {% endif %}
         <td style="text-align:center;">
           {% if appraisal.active %}
           <i class="fas fa-play"></i>
@@ -73,18 +94,18 @@
         </td>
         <td>
         {% if appraisal.daysLeft > 3 %}
-          <p class="font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
+          <p style="margin-bottom:0em;" class="font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% elif appraisal.daysLeft > 1 %}
-          <p class="text-warning font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
+          <p style="margin-bottom:0em;" class="text-warning font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% else %}
-          <p class="text-danger font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
+          <p style="margin-bottom:0em;" class="text-danger font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
         {% endif %}
         </td>
         <td>
-        <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-top:-1.0em;margin-bottom:-1.0em;">
+        <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
           delete
         </button>
-        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-top:-1.0em;margin-bottom:-1.0em;">
+        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
           comment
         </button>
         </td>
@@ -153,6 +174,18 @@
 {% include "main/modals.html" %}
 
 <script>
+
+  $(document).ready(function($) {
+    $(".clickable-row").hover(
+      function() {
+        $(this).addClass('table-secondary')
+      },
+      function() {
+        $(this).removeClass('table-secondary')
+      }
+    );
+  });
+
   $(document).on('click','.delete_appraisal',function(){
       var id = $(this).data('id');
       $.ajax({

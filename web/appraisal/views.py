@@ -28,6 +28,9 @@ from .forms import FormComment
 from .forms import FormPhotos
 from .forms import FormCreateApartment
 
+import viz.maps as maps
+import appraisal.related as related
+
 from django.db.models import Avg, StdDev
 
 import json
@@ -39,12 +42,7 @@ from openpyxl import load_workbook
 import datetime
 import requests
 
-import numpy as np
-from bokeh.models import GMapOptions
-from bokeh.plotting import figure, show, ColumnDataSource, gmap
-from bokeh.embed import components
-
-def get_realestate(request,id):
+def getRealEstate(request,id):
     '''
         Given building id, returns the building object.
         It checks for some errors and sends to the error page.
@@ -59,7 +57,7 @@ def get_realestate(request,id):
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
 
-def get_building(request,id):
+def getBuilding(request,id):
     '''
         Given building id, returns the building object.
         It checks for some errors and sends to the error page.
@@ -74,7 +72,7 @@ def get_building(request,id):
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
 
-def get_house(request,id):
+def getHouse(request,id):
     '''
         Given building id, returns the building object.
         It checks for some errors and sends to the error page.
@@ -90,7 +88,7 @@ def get_house(request,id):
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
 
-def get_apartment(request,id):
+def getApartment(request,id):
     '''
         Given an appartment id, return the apartment object.
         It checks for errors and sends to the correct error page.
@@ -105,7 +103,7 @@ def get_apartment(request,id):
         context = {'error_message': 'Se encontró más de una propiedad (error base!)'}
         return render(request, 'appraisal/error.html',context)
 
-def get_appraisal(request,id):
+def getAppraisal(request,id):
     '''
         Given an appraisal id, returns the apraisal object.
         It checks for errors and sends to the correct error page.
@@ -120,75 +118,15 @@ def get_appraisal(request,id):
         context = {'error_message': 'More than one appraisal of the same property'}
         return render(request, 'appraisal/error.html', context)
 
-def get_similar_realestate(realestate):
-
-    if (realestate.lng == 0.0 or realestate.lat == 0.0):
-        url = 'https://maps.googleapis.com/maps/api/geocode/json'
-        url_address = '?address={} {}, {}, {}'.format(
-            realestate.addressStreet,
-            realestate.addressNumber,
-            realestate.addressCommune,
-            realestate.addressRegion)
-        url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
-        response = requests.get(url+''+url_address+''+url_key)
-        response_json = response.json()
-        response_results = response_json['results'][0]['geometry']['location']
-        realestate.lat = response_results['lat']
-        realestate.lng = response_results['lng']
-        print(realestate.lat)
-        print(realestate.lng)
-        #realestate.save()
-
-    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-        if (realestate.apartment.bedrooms != None and
-            realestate.apartment.bathrooms != None and
-            realestate.apartment.usefulSquareMeters != None and
-            realestate.apartment.terraceSquareMeters != None):
-
-            print(realestate.apartment.bedrooms)
-            print(realestate.apartment.bathrooms)
-
-            apartments = Apartment.objects.filter(
-                bedrooms=realestate.apartment.bedrooms,
-                bathrooms=realestate.apartment.bathrooms,
-                usefulSquareMeters__isnull=False,
-                marketPrice__isnull=False).exclude(marketPrice=0)
-
-            print(apartments)
-
-            ds = []
-            ni = 0
-            for i, apt in enumerate(apartments):
-                d1 = float(pow(realestate.apartment.usefulSquareMeters - apt.usefulSquareMeters,2))
-                #d2 = float(pow(realestate.apartment.terraceSquareMeters - apt.terraceSquareMeters,2))
-                d3 = float(pow(apt.latlng[0] - realestate.latlng[0],2)+pow(apt.latlng[1] - realestate.latlng[1],2))
-                ds.append([0,0])
-                ds[i][0] = apt.pk
-                ds[i][1] = d1+d3
-
-            ds = sorted(ds, key=lambda x: x[1])
-            ins = [x[0] for x in ds]
-
-            references = apartments.filter(pk__in=ins[0:20])
-            return references
-        else:
-            return []
-    else:
-        return []
-
 
 def save_appraisal(request,forms,comment):
-    print('save_appraisal')
     with reversion.create_revision():
-        print(forms['appraisal'].cleaned_data)
         forms['appraisal'].save()
         reversion.set_user(request.user)
         reversion.set_comment(comment)
-        print('a')
         return
 
-def save(request,forms,realEstate):
-    print('save')
+def save(request,forms,appraisal,realEstate):
     if realEstate.propertyType == RealEstate.TYPE_APARTMENT:
         if forms['building'].is_valid() and \
            forms['property'].is_valid() and \
@@ -196,15 +134,19 @@ def save(request,forms,realEstate):
            forms['appraisal'].is_valid():
             for name, form in forms.items():
                 if name in ['building','property','realestate']:
+                    print('save',name)
                     form.save()
                 if name == 'appraisal':
                     save_appraisal(request,forms,'Saved')
+            re_ids = request.POST.getlist('valuationRealEstateRow')
+            for re_id in re_ids:
+                valuation_add_realestate(request,forms,appraisal,re_id)
             return True
         else:
-            print(forms['building'].errors)
-            print(forms['property'].errors)
-            print(forms['realestate'].errors)
-            print(forms['appraisal'].errors)
+            print('errors',forms['building'].errors)
+            print('errors',forms['property'].errors)
+            print('errors',forms['realestate'].errors)
+            print('errors',forms['appraisal'].errors)
     elif realEstate.propertyType == RealEstate.TYPE_HOUSE:
         if forms['realestate'].is_valid() and \
            forms['property'].is_valid() and \
@@ -231,7 +173,6 @@ def finish(request,forms, appraisal):
     appraisal.timeFinished = datetime.datetime.now()
     appraisal.state = Appraisal.STATE_FINISHED
     save_appraisal(request,forms,'Finished')
-    print('finish')
     return False
 
 def comment(forms,appraisal):
@@ -316,15 +257,15 @@ def delete_photo(request,forms,appraisal):
         save_appraisal(request, forms, 'Removed picture(s)')
 
 def valuation_add_realestate(request,forms,appraisal,realestate_id):
-    print('valuation_add_realestate')
-    realestate = get_realestate(request,realestate_id)
-    print('valuation_add_realestate',realestate)
-    appraisal.valuationRealEstate.add(realestate)
-    print('valuation_add_realestate',appraisal.valuationRealEstate.all())
-    appraisal.save()
-    print('valuation_add_realestate',appraisal.valuationRealEstate.all())
+    realestate = getRealEstate(request,realestate_id)
+    if realestate in appraisal.valuationRealEstate.all():
+        print('Already existed')
+    else:
+        print('New new new')
+        appraisal.valuationRealEstate.add(realestate)
+        appraisal.save()
 
-def get_appraisal_history(appraisal):
+def getAppraisalHistory(appraisal):
     versions = list(Version.objects.get_for_object(appraisal))
     appraisal_history = []
     c = 0
@@ -357,18 +298,20 @@ def appraisal(request, **kwargs):
     '''
 
     # Get current appraisal
-    appraisal = get_appraisal(request,kwargs['appraisal_id'])
+    appraisal = getAppraisal(request,kwargs['appraisal_id'])
     if isinstance(appraisal,HttpResponse):
         return appraisal
     appraisal_old = deepcopy(appraisal) # done to check differences when saving history
 
     # Get realestate
-    realestate = get_realestate(request,appraisal.realEstate.id)
+    realestate = getRealEstate(request,appraisal.realEstate.id)
     if isinstance(realestate,HttpResponse):
         return realestate
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
+
+        print(request.POST)
 
         # Process forms
         forms = {}
@@ -384,7 +327,7 @@ def appraisal(request, **kwargs):
 
         # Switch to action
         if 'btn_save' in request.POST.keys():
-            ret = save(request,forms,realestate)
+            ret = save(request,forms,appraisal,realestate)
         elif 'btn_delete' in request.POST.keys():
             ret = delete(request,appraisal)
         elif 'btn_finish' in request.POST.keys():
@@ -407,50 +350,48 @@ def appraisal(request, **kwargs):
 
         if isinstance(ret, HttpResponse): return ret
 
-    # REFERENCE PROPERTIES
-    references = get_similar_realestate(realestate)
-    # --
-    map_options = GMapOptions(lat=realestate.lat, lng=realestate.lng, map_type="roadmap", zoom=15)
-    p = gmap("AIzaSyAKZ-wutxLGtqlojKj00BwHKFlH5dkr47c", map_options,plot_width=1000,plot_height=400)
-    #p = figure(title= 'Santiago',
-    #    x_axis_label= 'X-Axis',
-    #    y_axis_label= 'Y-Axis',
-    #    plot_width =600,
-    #    plot_height =600)
-    lat = np.array(references.values_list('lat',flat=True))
-    lng = np.array(references.values_list('lng',flat=True))
-    source = ColumnDataSource(data=dict(
-        lat=lat,
-        lon=lng)
-    )
-    p.circle(x='lon', y='lat', size=10, color="navy", source=source)
-    source = ColumnDataSource(data=dict(
-        lat=[realestate.lat],
-        lon=[realestate.lng])
-    )
-    p.circle(x='lon', y='lat', size=10, color="red", source=source)
-    script, div = components(p)
-    plot_map = {'script':script,'div':div}
-    # ---
+    # Reference real estate
+    references = []
 
+    refRealEstate = related.getSimilarRealEstate(realestate)
+    for obj in refRealEstate:
+        references.append({'realestate':obj})
+
+    valRealEstate = [x.apartment for x in appraisal.valuationRealEstate.all()]
+    for ref in references:
+        if ref['realestate'] in valRealEstate:
+            ref['included_in_valuation'] = 1
+        else:
+            ref['included_in_valuation'] = 0
+
+    print(references)
+
+    # Map of references
     if len(references) > 0:
-        averages = references.aggregate(
+        plot_map = maps.mapReferences(refRealEstate,realestate)
+    else:
+        plot_map = {}
+
+    # Derived properties from references
+    if len(references) > 0:
+        averages = refRealEstate.aggregate(
             Avg('marketPrice'),
-            Avg('usefulSquareMeters'))
-        stds = references.aggregate(
+            Avg('usefulSquareMeters'),
+            Avg('terraceSquareMeters'))
+        stds = refRealEstate.aggregate(
             StdDev('marketPrice'),
-            StdDev('usefulSquareMeters'))
+            StdDev('usefulSquareMeters'),
+            StdDev('terraceSquareMeters'))
     else:
         averages = []
         stds = []
 
-    # Visadores and tasadores for the Bootstrap modals where you can select
-    # them.
+    # Visadores and tasadores for the modals where you can select them.
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     visadores = User.objects.filter(groups__name__in=['visador'])
 
     # History of changes, for the logbook
-    appraisal_history = get_appraisal_history(appraisal)
+    appraisal_history = getAppraisalHistory(appraisal)
 
     # Comments, for the logbook
     comments = Comment.objects.filter(appraisal=appraisal).order_by('-timeCreated')
@@ -464,7 +405,7 @@ def appraisal(request, **kwargs):
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
-        forms['createApartment'] = FormCreateApartment(label_suffix='')
+        forms['createApartment'] = FormCreateApartment(prefix='vc',label_suffix='')
     if realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
 
@@ -476,7 +417,6 @@ def appraisal(request, **kwargs):
                 form.fields[field].widget.attrs['disabled'] = True
 
     valuationRealEstate = realestate.valuationRealEstate.all()
-    print('view valuationRealEstate',valuationRealEstate)
 
     context = {
         'appraisal':appraisal,

@@ -1,216 +1,515 @@
-<div class="card-body">
-
-    <div class="section-title">
-      <h5> Valorización </h5>
+<div id="accordion">
+  <div class="card ml-4 mr-4 mt-4">
+    <div class="card-header" id="header">
+      <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Valor recomendado</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#recommendedValue" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+      </div>
     </div>
-
-    <div class="row">
-    <div class="col-6">
-    <table class="table table-sm table-bordered">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Valores de tasación</th>
-          <th scope="col">$</th>
-          <th scope="col">UF</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Valor comercial</td>
-          <td scope="col"><input type="number" name="valor" id="id_valor" class="form-control form-control-sm" disabled></td>
-          <td scope="col">{{forms.appraisal.valorUF}}</td>
-        </tr>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
-          <td scope="col"><input type="number" name="valor_liquidez" id="id_valor_liquidez" class="form-control form-control-sm" disabled></td>
-          <td scope="col"><input type="number" name="valor_liquidez_uf" id="id_valor_liquidez_uf" class="form-control form-control-sm" disabled></td>
-        </tr>
-        <tr>
-          <td scope="col" style="vertical-align: middle;">Monto seguro</td>
-          <td scope="col"><input type="number" name="valor_monto_seguro" id="id_valor_monto_seguro" class="form-control form-control-sm" disabled></td>
-          <td scope="col"><input type="number" name="valor_monto_seguro_uf" id="id_valor_monto_seguro_uf" class="form-control form-control-sm" disabled></td>
-        </tr>
-      </tbody>
-    </table>
+    <div id="recommendedValue" class="collapse show" aria-labelledby="heading">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-6">
+          <table class="table table-sm table-bordered">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Valores de tasación</th>
+                <th scope="col"></th>
+                <th scope="col">$</th>
+                <th scope="col">UF</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td scope="col" style="vertical-align: middle;">Valor comercial</td>
+                <td></td>
+                <td scope="col"><input id="valueMarket" class="form-control form-control-sm" disabled></td>
+                <td scope="col">{{forms.appraisal.valorUF}}</td>
+              </tr>
+              <tr>
+                <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
+                <td scope="col"><input type="number" id="liquidity" class="form-control form-control-sm" value="0.75"></td>
+                <td scope="col"><input id="valueLiquid" class="form-control form-control-sm" disabled></td>
+                <td scope="col"><input id="valueLiquidUF" class="form-control form-control-sm" disabled></td>
+              </tr>
+              <tr>
+                <td scope="col" style="vertical-align: middle;">Monto seguro</td>
+                <td></td>
+                <td scope="col"><input id="valueSafe" class="form-control form-control-sm" disabled></td>
+                <td scope="col"><input id="valueSafeUF" class="form-control form-control-sm" disabled></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     </div>
-
   </div>
 
-  <script>
-    $("#id_valorUF").change(function () {
-      var url = $("#form").attr("ajax_computeValuationsUrl");
-      var valor = $(this).val();
-      $.ajax({
-        url: url,
-        data: {
-          'valor': valor
-        },
-        success: function (data) {
-          data = JSON.parse(data)
-          $("#id_valor").val(parseFloat(data.valorComercialPesos));
-          $("#id_valor_liquidez").val(parseFloat(data.valorLiquidezPesos));
-          $("#id_valor_liquidez_uf").val(parseFloat(data.valorLiquidezUF));
-          $("#id_valor_monto_seguro").val(parseFloat(data.montoSeguroPesos));
-          $("#id_valor_monto_seguro_uf").val(parseFloat(data.montoSeguroUF));
-        }
-      });
-    });
-  </script>
+<script>
+  function computeValues() {
+    var valorUF = parseFloat($("#id_valorUF").val());
+    var UF = 27437.41;
+    var liquidez = parseFloat($("#liquidity").val());
+    $("#valueMarket").val(parseInt(valorUF*UF).toLocaleString('es'));
+    $("#valueLiquid").val(parseInt(valorUF*UF*liquidez).toLocaleString('es'));
+    $("#valueLiquidUF").val(parseFloat(valorUF*liquidez).toLocaleString('es'));
+    $("#valueSafe").val(parseInt(valorUF*UF).toLocaleString('es'));
+    $("#valueSafeUF").val(parseFloat(valorUF).toLocaleString('es'));
+  }
+  $("#id_valorUF").change(function () {
+    computeValues();
+  });
+  $("#liquidity").change(function () {
+    computeValues()
+  });
+  $("#id_valorUF").focus(function () {
+    computeValues()
+  });
+  $("#id_valorUF").focusout(function () {
+    computeValues()
+  });
+</script>
 
-
-<div class="card-body">
-
-    <div class="section-title">
-      <h5> Muestras comparativas </h5>
+<div class="card ml-4 mr-4 mt-4">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Muestras comparativas</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuationRealEstate" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
     </div>
+  </div>
 
-    <table class="table table-sm table-striped">
-      <thead class="thead-light">
-        <tr>
-          <!--<th scope="col">lat/lng</th>-->
-          <th scope="col">Dirección</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Fuente</th>
-          <th scope="col">Dorm.</th>
-          <th scope="col">Baños</th>
-          {% if realestate.is_house %}
-          <th scope="col">Superficie construida (m<sup>2</sup>)</th>
-          <th scope="col">Superficie terreno (m<sup>2</sup>)</th>
-          {% elif realestate.is_apartment %}
-          <th scope="col">m<sup>2</sup> útil</th>
-          <th scope="col">m<sup>2</sup> terraza</th>
-          {% endif %}
-          <th scope="col">Valor comercial (UF)</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
+  {% load l10n %}
+  {% localize on %}
 
-      <tr>
-        <td><input class="form-control form-control-sm form-control-inline" style="min-width:0;width:6em;display:inline;"></input></td>
-        <td>{{forms.createApartment.propertyType}}</td>
-        <td>{{forms.createApartment.sourceName}}</td>
-        <td>{{forms.createApartment.bedrooms}}</td>
-        <td>{{forms.createApartment.bathrooms}}</td>
-        <td>{{forms.createApartment.usefulSquareMeters}}</td>
-        <td>{{forms.createApartment.terraceSquareMeters}}</td>
-        <td>{{forms.createApartment.marketPrice}}</td>
-        <th scope="col"><button class="btn btn-dark btn-sm" name="btn_property_create">+</button></th>
-      </tr>
+  <div id="valuationRealEstate" class="collapse show" aria-labelledby="heading">
+    <div class="card-body">
+      <table id="tableValuationRealEstate" class="table table-sm">
 
-      {% for o in appraisal.valuationRealEstate.all %}
-      <tr>
-        <!--<td><small>{{o.latlng_verbose}}</small></td>-->
-        <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
-        <td><i class="{{o.get_propertyTypeIcon }}"></i></td>
-        <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
-        <td>{{ o.apartment.bedrooms }}</td>
-        <td>{{ o.apartment.bathrooms }}</td>
-        {% if realestate.is_house %}
-        <td>{{ o.house.builtSquareMeters }}</td>
-        <td>{{ o.house.terrainSquareMeters }}</td>
-        {% elif realestate.is_apartment %}
-        <td>{{ o.apartment.usefulSquareMeters }}</td>
-        <td>{{ o.apartment.terraceSquareMeters }}</td>
-        {% endif %}
-        <td>{{ o.marketPrice }}</td>
-        <td scope="col"><button class="btn btn-dark btn-sm" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding-top:0.1em;padding-bottom:0.1em;">+</button></td>
-      </tr>
-      {% endfor %}
+        <thead class="thead-light">
+          <tr>
+            <!--<th scope="col">lat/lng</th>-->
+            <th scope="col" style="width: 30%">Dirección</th>
+            <th scope="col" style="width: 5%">Tipo</th>
+            <th scope="col" style="width: 5%">Fuente</th>
+            <th scope="col" style="width: 5%">Dorm.</th>
+            <th scope="col" style="width: 5%">Baños</th>
+            {% if realestate.is_house %}
+            <th scope="col" style="width: 8%">m<sup>2</sup> const.</th>
+            <th scope="col" style="width: 8%">m<sup>2</sup> terreno</th>
+            {% elif realestate.is_apartment %}
+            <th scope="col" style="width: 8%">m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 8%">m<sup>2</sup> terraza</th>
+            {% endif %}
+            <th scope="col" style="width: 15%">Valor comercial</th>
+            {% if realestate.is_house %}
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> con.</th>
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            {% elif realestate.is_apartment %}
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            {% endif %}
+            <th scope="col" style="width: 5%"></th>
+          </tr>
+        </thead>
 
-    </table>
-    
-
-    <div class="section-title">
-      <h5> Muestras de mercado </h5>
-    </div>
-
-    <table class="table table-sm table-striped">
-      <thead class="thead-light">
-        <tr>
-          <!--<th scope="col">lat/lng</th>-->
-          <th scope="col">Dirección</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Fuente</th>
-          <th scope="col">Dorm.</th>
-          <th scope="col">Baños</th>
-          {% if realestate.is_house %}
-          <th scope="col">Superficie construida (m<sup>2</sup>)</th>
-          <th scope="col">Superficie terreno (m<sup>2</sup>)</th>
-          {% elif realestate.is_apartment %}
-          <th scope="col">Superficie útil (m<sup>2</sup>)</th>
-          <th scope="col">Superficie terraza (m<sup>2</sup>)</th>
-          {% endif %}
-          <th scope="col">Valor comercial (UF)</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
         <tr class="table-warning">
           <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
           <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
-          <td><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
-          <td><a href="{{realestate.sourceUrl}}">{{realestate.sourceNameNice}}</a></td>
+          <td><i class="{{realestate.get_propertyTypeIcon}}"></i></td>
+          <td></td>
           {% if realestate.is_house %}
-          <td>{{realestate.apartment.bedrooms}}</a></td>
-          <td>{{realestate.apartment.bathrooms}}</a></td>
+          <td>{{realestate.apartment.bedrooms}}</td>
+          <td>{{realestate.apartment.bathrooms}}</td>
           <td>{{realestate.house.builtSquareMeters}}</td>
           <td>{{realestate.house.terrainSquareMeters}}</td>
           {% elif realestate.is_apartment %}
-          <td>{{realestate.apartment.bedrooms}}</a></td>
-          <td>{{realestate.apartment.bathrooms}}</a></td>
+          <td>{{realestate.apartment.bedrooms}}</td>
+          <td>{{realestate.apartment.bathrooms}}</td>
           <td>{{realestate.apartment.usefulSquareMeters}}</td>
           <td>{{realestate.apartment.terraceSquareMeters}}</td>
           {% endif %}
           <td>{{realestate.marketPrice}}</td>
           <td></td>
+          <td></td>
+          <td></td>
         </tr>
 
-        {% for o in references %}
-        <tr>
+        {% for o in appraisal.valuationRealEstate.all %}
+        <tr id="trValuationRealEstate_{{o.id}}">
+          <input name="valuationRealEstateRow" type="hidden" value="{{o.id}}">
           <!--<td><small>{{o.latlng_verbose}}</small></td>-->
           <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
           <td><i class="{{o.get_propertyTypeIcon }}"></i></td>
           <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
-          <td>{{ o.bedrooms }}</a></td>
-          <td>{{ o.bathrooms }}</a></td>
-          {% if realestate.is_house %}
-          <td>{{ o.builtSquareMeters }}</td>
-          <td>{{ o.terrainSquareMeters }}</td>
-          {% elif realestate.is_apartment %}
-          <td>{{ o.usefulSquareMeters }}</td>
-          <td>{{ o.terraceSquareMeters }}</td>
+          <td>{{ o.apartment.bedrooms }}</td>
+          <td>{{ o.apartment.bathrooms }}</td>
+          {% if o.is_house %}
+          <td class="tdBuiltSquareMeters">{{ o.house.builtSquareMetersVerbose }}</td>
+          <td class="tdTerrainSquareMeters">{{ o.house.terrainSquareMetersVerbose }}</td>
+          {% elif o.is_apartment %}
+          <td class="tdUsefulSquareMeters">{{ o.apartment.usefulSquareMetersVerbose }}</td>
+          <td class="tdTerraceSquareMeters">{{ o.apartment.terraceSquareMetersVerbose }}</td>
           {% endif %}
-          <td>{{ o.marketPrice }}</td>
-          <td scope="col"><button class="btn btn-dark btn-sm" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding-top:0.1em;padding-bottom:0.1em;">+</button></td>
+          <td class="tdMarketPrice">{{ o.marketPrice }}</td>
+          {% if o.is_house %}
+          <td class="">{{ o.house.marketPricePerBuiltSquareMeters }}</td>
+          <td class="">{{ o.house.marketPricePerTotalSquareMeters }}</td>
+          {% elif o.is_apartment %}
+          <td class="">{{ o.apartment.marketPricePerUsefulSquareMeters }}</td>
+          <td class="">{{ o.apartment.marketPricePerTotalSquareMeters }}</td>
+          {% endif %}
+
+          <td style="padding:0em;">
+            <button type="button" class="btn btn-sm remove" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">remove_circle</i>
+            </button>
         </tr>
         {% endfor %}
 
-        <tr class="table-warning">
+        <tr class="table-primary">
           <th scope="row">Promedios</th>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
-          <td>{{ averages.usefulSquareMeters__avg }}
-          &plusmn; {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</td>
-          <td>{{ averages.terraceSquareMeters__avg }}
-          &plusmn; {{ stds.terraceSquareMeters__stddev | floatformat:1 }}</td>
-          <td>{{ averages.marketPrice__avg }}
-          &plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</td>
+          <td id='vreUsefulSquareMetersAvg'></td>
+          <td id='vreTerraceSquareMetersAvg'></td>
+          <td id='vreMarketPriceAvg'></td>
+          <td id='vreMarketPricePerUsefulSquareMetersAvg'></td>
+          <td id='vreMarketPricePerTotalSquareMetersAvg'></td>
           <td></td>
         </tr>
 
-      </tbody>
-    </table>
+        <tr>
+          <td><input class="form-control form-control-sm form-control-inline" style="min-width:0;width:6em;display:inline;"></input></td>
+          <td>{{forms.createApartment.propertyType}}</td>
+          <td>{{forms.createApartment.sourceName}}</td>
+          <td>{{forms.createApartment.bedrooms}}</td>
+          <td>{{forms.createApartment.bathrooms}}</td>
+          <td>{{forms.createApartment.usefulSquareMeters}}</td>
+          <td>{{forms.createApartment.terraceSquareMeters}}</td>
+          <td>{{forms.createApartment.marketPrice}}</td>
+          <td></td>
+          <td></td>
+          <td style="padding:0em;">
+            <button class="btn btn-sm" name="btn_property_create">
+              <i class="material-icons">add_box</i>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
 
+  {% endlocalize %}
+
+</div>
+
+<div class="card ml-4 mr-4 mt-4">
+  <div class="card-header" id="header">
     <div class="row">
       <div class="col">
-        <div style="display: table;margin: auto;">
-          {{ plot_map.div | safe }}
-          {{ plot_map.script | safe }}
+        <p style="margin:0em;">Muestras de mercado</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#realEstateMarket" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="realEstateMarket" class="collapse" aria-labelledby="heading">
+    <div class="card-body">
+      <table id="tableMarketRealEstate" class="table table-sm">
+
+        <thead class="thead-light">
+          <tr>
+            <!--<th scope="col">lat/lng</th>-->
+            <th scope="col" style="width: 30%">Dirección</th>
+            <th scope="col" style="width: 5%">Tipo</th>
+            <th scope="col" style="width: 5%">Fuente</th>
+            <th scope="col" style="width: 5%">Dorm.</th>
+            <th scope="col" style="width: 5%">Baños</th>
+            {% if realestate.is_house %}
+            <th scope="col" style="width: 8%">m<sup>2</sup> const.</th>
+            <th scope="col" style="width: 8%">m<sup>2</sup> terreno</th>
+            {% elif realestate.is_apartment %}
+            <th scope="col" style="width: 8%">m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 8%">m<sup>2</sup> terraza</th>
+            {% endif %}
+            <th scope="col" style="width: 15%">Valor comercial</th>
+            {% if realestate.is_house %}
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> con.</th>
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            {% elif realestate.is_apartment %}
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            {% endif %}
+            <th scope="col" style="width: 5%"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr class="table-warning">
+            <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
+            <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
+            <td><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
+            <td></td>
+            {% if realestate.is_house %}
+            <td>{{realestate.apartment.bedrooms}}</a></td>
+            <td>{{realestate.apartment.bathrooms}}</a></td>
+            <td>{{realestate.house.builtSquareMeters}}</td>
+            <td>{{realestate.house.terrainSquareMeters}}</td>
+            {% elif realestate.is_apartment %}
+            <td>{{realestate.apartment.bedrooms}}</a></td>
+            <td>{{realestate.apartment.bathrooms}}</a></td>
+            <td>{{realestate.apartment.usefulSquareMeters}}</td>
+            <td>{{realestate.apartment.terraceSquareMeters}}</td>
+            {% endif %}
+            <td>{{realestate.marketPrice}}</td>
+            {% if realestate.is_house %}
+            <td>{{realestate.house.marketPricePerBuiltSquareMeters}}</td>
+            <td>{{realestate.house.marketPricePerTerrainSquareMeters}}</td>
+            {% elif realestate.is_apartment %}
+            <td>{{realestate.apartment.marketPricePerUsefulSquareMeters}}</td>
+            <td>{{realestate.apartment.marketPricePerTerraceSquareMeters}}</td>
+            {% endif %}
+            <td></td>
+          </tr>
+
+          {% for r in references %}
+          {% if r.included_in_valuation %} 
+          <tr class="table-success" id="trMarketRealEstate_{{r.realestate.id}}" value="{{r.realestate.id}}">
+          {% else %}
+          <tr id="trMarketRealEstate_{{r.realestate.id}}" value="{{r.realestate.id}}">
+          {% endif %}
+            <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+            <td scope="row">
+              {{r.realestate.addressStreet}} {{r.realestate.addressNumber}}
+            </td>
+            <td>
+              <i class="{{r.realestate.get_propertyTypeIcon }}"></i>
+            </td>
+            <td>
+              <a href="{{r.realestate.sourceUrl}}">{{ r.realestate.sourceNameNice }}</a>
+            </td>
+            <td>
+              {{ r.realestate.bedrooms }}
+            </td>
+            <td>
+              {{ r.realestate.bathrooms }}
+            </td>
+            {% if r.realestate.is_house %}
+            <td class="tdBuiltSquareMeters">
+              {{ r.realestate.builtSquareMetersVerbose }}
+            </td>
+            <td class="tdTerrainSquareMeters">
+              {{ r.realestate.terrainSquareMetersVerbose }}
+            </td>
+            {% elif realestate.is_apartment %}
+            <td class="tdUsefulSquareMeters">
+              {{ r.realestate.usefulSquareMetersVerbose }}
+            </td>
+            <td class="tdTerraceSquareMeters">
+              {{ r.realestate.terraceSquareMetersVerbose }}
+            </td>
+            {% endif %}
+            <td class="tdMarketPrice">
+              {{ r.realestate.marketPrice }}
+            </td>
+            {% if realestate.is_house %}
+            <td class="">
+              {{ r.realestate.marketPricePerBuiltSquareMeters }}
+            </td>
+            <td class="">
+              {{ r.realestate.marketPricePerTotalSquareMeters }}
+            </td>
+            {% elif realestate.is_apartment %}
+            <td class="">
+              {{ r.realestate.marketPricePerUsefulSquareMeters }}
+            </td>
+            <td class="">
+              {{ r.realestate.marketPricePerTotalSquareMeters }}
+            </td>
+            {% endif %}
+            <td style="padding:0em;">
+              {% if r.included_in_valuation %} 
+              <button type="button" class="btn btn-sm add" name="btn_valuation_add_realestate" value="{{r.realestate.id}}" style="padding:0px; border:0px;display: none;">
+                <i class="material-icons">add_box</i>
+              </button>
+              {% else %}
+              <button type="button" class="btn btn-sm add" name="btn_valuation_add_realestate" value="{{r.realestate.id}}" style="padding:0px; border:0px;">
+                <i class="material-icons">add_box</i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+
+          <tr class="table-primary">
+            <th scope="row">Promedios</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ averages.usefulSquareMeters__avg | floatformat:1}} &plusmn; 
+                {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</td>
+            <td>{{ averages.terraceSquareMeters__avg | floatformat:1 }} &plusmn; 
+                {{ stds.terraceSquareMeters__stddev | floatformat:1 }}</td>
+            <td>{{ averages.marketPrice__avg | floatformat:1 }} &plusmn; 
+                {{ stds.marketPrice__stddev | floatformat:1 }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card ml-4 mr-4 mt-4">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Muestras CBR</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#realEstateCBR" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card ml-4 mr-4 mt-4 mb-4">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Mapa entorno</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#map" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="map" class="collapse" aria-labelledby="heading">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div style="display: table;margin: auto;">
+            {{ plot_map.div | safe }}
+            {{ plot_map.script | safe }}
+          </div>
         </div>
       </div>
     </div>
-
   </div>
+</div>
+</div>
+
+<script>
+
+  function averages() {
+    var sumUsefulSquareMeters = 0
+    var sumTerraceSquareMeters = 0
+    var sumMarketPrice = 0
+    var c = 0
+    $('#tableValuationRealEstate tr').each(function() {
+      str = parseFloat($(this).find(".tdUsefulSquareMeters").text());
+      if (!isNaN(str)) {
+        sumUsefulSquareMeters += parseFloat($(this).find(".tdUsefulSquareMeters").text());
+        c += 1
+      }
+      str = parseFloat($(this).find(".tdTerraceSquareMeters").text());
+      if (!isNaN(str)) {
+        sumTerraceSquareMeters += parseFloat($(this).find(".tdTerraceSquareMeters").text());
+      }
+      str = parseFloat($(this).find(".tdMarketPrice").text());
+      if (!isNaN(str)) {
+        sumMarketPrice += parseFloat($(this).find(".tdMarketPrice").text());
+      }
+    });
+    var avgUsefulSquareMeters = sumUsefulSquareMeters/c;
+    var avgTerraceSquareMeters = sumTerraceSquareMeters/c;
+    var avgMarketPrice = sumMarketPrice/c;
+    $('#vreUsefulSquareMetersAvg').text((avgUsefulSquareMeters).toFixed(2))
+    $('#vreTerraceSquareMetersAvg').text((avgTerraceSquareMeters).toFixed(2))
+    $('#vreMarketPriceAvg').text((avgMarketPrice).toFixed(2))
+    $('#vreMarketPricePerUsefulSquareMetersAvg').text((avgMarketPrice/avgUsefulSquareMeters).toFixed(2))
+    $('#vreMarketPricePerTotalSquareMetersAvg').text((avgMarketPrice/(avgUsefulSquareMeters+avgTerraceSquareMeters)).toFixed(2))
+  }
+
+  function remove(val) {
+    /*
+    Remove the row from the valuation list.
+    Add the button to add row in MarketList, if it is there.
+    */
+    row_valuation = $('#trValuationRealEstate_'+val);
+    row_valuation.remove();
+    row_market = $('#trMarketRealEstate_'+val);
+    row_market.find('.btn').show();
+    row_market.removeClass('table-success');
+    averages();
+  }
+
+  $(document).ready(function() {
+
+    averages();
+
+    $('.remove').click(function() {
+      var rid = $(this).val();
+      remove(rid);
+    });
+
+    $('.add').click(function() {
+      var rid = $(this).val();
+      var row = $(this).closest('tr');
+      row.addClass('table-success');
+      
+      // Create row to be added to valuation real estate list
+      var newRow = row.clone();
+      var rowCount = $('#tableValuationRealEstate tr').length-4+1; // minus heading and current, +1 for count
+      var btn = newRow.find('.add')
+      btn.removeClass('add')
+      btn.addClass('remove')
+      btn.empty()
+      btn.append('<i class="material-icons">remove_circle</i>')
+      btn.attr("value",rid)
+      // Input, needed when saving
+      var hiddenInput = '<input name="valuationRealEstateRow" type="hidden" value="'+rid+'">'
+      $('#tableValuationRealEstate > tbody > tr').eq(rowCount-1).after('<tr id="trValuationRealEstate_'+rid+'">'+hiddenInput+newRow.html()+'</tr>');
+      // Add event handler to button created in new row
+      $('.remove').click(function(){
+        var rid = $(this).val();
+        remove(rid);
+      })
+
+      // Modify clicked row to remove the add button
+      btn = row.find('.btn')
+      btn.hide()
+      
+      // Recompute the averages
+      averages();
+    });
+  });
+</script>
+
