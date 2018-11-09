@@ -1,6 +1,6 @@
 <div id="accordion">
-  <div class="card ml-4 mr-4 mt-4">
-    <div class="card-header" id="header">
+  <div class="card ml-4 mr-4 mt-4 rounded-0">
+    <div class="card-header bg-light" id="header">
       <div class="row">
       <div class="col">
         <p style="margin:0em;">Valor recomendado</p>
@@ -13,71 +13,109 @@
       </div>
     </div>
     <div id="recommendedValue" class="collapse show" aria-labelledby="heading">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-6">
-          <table class="table table-sm table-bordered">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">Valores de tasación</th>
-                <th scope="col"></th>
-                <th scope="col">$</th>
-                <th scope="col">UF</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td scope="col" style="vertical-align: middle;">Valor comercial</td>
-                <td></td>
-                <td scope="col"><input id="valueMarket" class="form-control form-control-sm" disabled></td>
-                <td scope="col">{{forms.appraisal.valorUF}}</td>
-              </tr>
-              <tr>
-                <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
-                <td scope="col"><input type="number" id="liquidity" class="form-control form-control-sm" value="0.75"></td>
-                <td scope="col"><input id="valueLiquid" class="form-control form-control-sm" disabled></td>
-                <td scope="col"><input id="valueLiquidUF" class="form-control form-control-sm" disabled></td>
-              </tr>
-              <tr>
-                <td scope="col" style="vertical-align: middle;">Monto seguro</td>
-                <td></td>
-                <td scope="col"><input id="valueSafe" class="form-control form-control-sm" disabled></td>
-                <td scope="col"><input id="valueSafeUF" class="form-control form-control-sm" disabled></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="card-body" style="padding:0em;">
+
+      <table class="table mb-0">
+        <thead class="thead">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" style="width:10em;"></th>
+            <th scope="col" style="width:7em;"></th>
+            <th scope="col" style="text-align:center;width:10em;">$</th>
+            <th scope="col" style="text-align:center;width:10em;">UF</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td scope="col"></td>
+            <td scope="col" style="vertical-align: middle;">Valor comercial</td>
+            <td scope="col"></td>
+            <td scope="col"><input id="valueMarket" class="form-control text-right" disabled></td>
+            <td scope="col">{{forms.appraisal.valorUF}}</td>
+            <td scope="col"></td>
+          </tr>
+          <tr>
+            <td scope="col"></td>
+            <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
+            <td scope="col"><input type="number" id="liquidity" class="form-control text-right" value="0.75"></td>
+            <td scope="col"><input id="valueLiquid" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="valueLiquidUF" class="form-control text-right" disabled></td>
+            <td scope="col"></td>
+          </tr>
+          <tr>
+            <td scope="col"></td>
+            <td scope="col" style="vertical-align: middle;">Monto seguro</td>
+            <td scope="col"></td>
+            <td scope="col"><input id="valueSafe" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="valueSafeUF" class="form-control text-right" disabled></td>
+            <td scope="col"></td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
     </div>
   </div>
 
-<script>
-  function computeValues() {
-    var valorUF = parseFloat($("#id_valorUF").val());
-    var UF = 27437.41;
-    var liquidez = parseFloat($("#liquidity").val());
-    $("#valueMarket").val(parseInt(valorUF*UF).toLocaleString('es'));
-    $("#valueLiquid").val(parseInt(valorUF*UF*liquidez).toLocaleString('es'));
-    $("#valueLiquidUF").val(parseFloat(valorUF*liquidez).toLocaleString('es'));
-    $("#valueSafe").val(parseInt(valorUF*UF).toLocaleString('es'));
-    $("#valueSafeUF").val(parseFloat(valorUF).toLocaleString('es'));
-  }
-  $("#id_valorUF").change(function () {
-    computeValues();
-  });
-  $("#liquidity").change(function () {
-    computeValues()
-  });
-  $("#id_valorUF").focus(function () {
-    computeValues()
-  });
-  $("#id_valorUF").focusout(function () {
-    computeValues()
-  });
-</script>
+<div class="card ml-4 mr-4 mt-4 rounded-0">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Valor de renta</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuationRent" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="valuationRent" class="collapse show" aria-labelledby="heading">
+    <div class="card-body" style="padding:0em;">
+      <table id="tableValuationRent" class="table table-sm mb-0">
+        <thead class="thead">
+          <tr style="text-align:center;">
+            <th></th>
+            <th style="width:16em;">Renta mensual (U.F.)</th>
+            <th style="width:5em;">Meses</th>
+            <th style="width:16em;">Renta líquida anual (U.F.)</th>
+            <th style="width:5em;">Tasa (%)</th>
+            <th style="width:16em;">Canon arriendo (U.F./m<sup>2</sup>)</th>
+            <th style="width:16em;">Valor de renta</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td>
+              <input id="valueRentMonth" class="form-control form-control-sm text-right" disabled>
+            </td>
+            <td>
+              <input id="valueRentMonths" class="form-control form-control-sm text-center" disabled>
+            </td>
+            <td>
+              <input id="valueRentYear" class="form-control form-control-sm text-right" disabled>
+            </td>
+            <td>
+              <input id="valueRentRate" class="form-control form-control-sm text-right" disabled>
+            </td>
+            <td>
+              <input id="valueRentPerArea" class="form-control form-control-sm text-right" disabled>
+            </td>
+            <td>
+              <input id="valueRent" class="form-control form-control-sm text-right" disabled>
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-<div class="card ml-4 mr-4 mt-4">
+<div class="card ml-4 mr-4 mt-4 rounded-0">
   <div class="card-header" id="header">
     <div class="row">
       <div class="col">
@@ -95,121 +133,135 @@
   {% localize on %}
 
   <div id="valuationRealEstate" class="collapse show" aria-labelledby="heading">
-    <div class="card-body">
-      <table id="tableValuationRealEstate" class="table table-sm">
+    <div class="card-body" style="padding:0em;">
+      <table id="tableValuationRealEstate" class="table table-sm mb-0">
 
-        <thead class="thead-light">
+        <thead class="thead">
           <tr>
             <!--<th scope="col">lat/lng</th>-->
-            <th scope="col" style="width: 30%">Dirección</th>
-            <th scope="col" style="width: 5%">Tipo</th>
-            <th scope="col" style="width: 5%">Fuente</th>
-            <th scope="col" style="width: 5%">Dorm.</th>
-            <th scope="col" style="width: 5%">Baños</th>
+            <th></th>
+            <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
+            <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
+            <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-toilet-paper"></i></th>
             {% if realestate.is_house %}
-            <th scope="col" style="width: 8%">m<sup>2</sup> const.</th>
-            <th scope="col" style="width: 8%">m<sup>2</sup> terreno</th>
+            <th scope="col" style="width: 7em;text-align:center;">m<sup>2</sup> const.</th>
+            <th scope="col" style="width: 7em;text-align:center;">m<sup>2</sup> terreno</th>
             {% elif realestate.is_apartment %}
-            <th scope="col" style="width: 8%">m<sup>2</sup> útil</th>
-            <th scope="col" style="width: 8%">m<sup>2</sup> terraza</th>
+            <th scope="col" style="width: 7em;text-align:center;">m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 7em;text-align:center;">m<sup>2</sup> terraza</th>
             {% endif %}
-            <th scope="col" style="width: 15%">Valor comercial</th>
+            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
             {% if realestate.is_house %}
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> con.</th>
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> con.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
             {% elif realestate.is_apartment %}
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> útil</th>
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
             {% endif %}
-            <th scope="col" style="width: 5%"></th>
+            <th scope="col" style="width: 5em;"></th>
+            <th></th>
           </tr>
         </thead>
 
-        <tr class="table-warning">
-          <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
-          <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
-          <td><i class="{{realestate.get_propertyTypeIcon}}"></i></td>
-          <td></td>
-          {% if realestate.is_house %}
-          <td>{{realestate.apartment.bedrooms}}</td>
-          <td>{{realestate.apartment.bathrooms}}</td>
-          <td>{{realestate.house.builtSquareMeters}}</td>
-          <td>{{realestate.house.terrainSquareMeters}}</td>
-          {% elif realestate.is_apartment %}
-          <td>{{realestate.apartment.bedrooms}}</td>
-          <td>{{realestate.apartment.bathrooms}}</td>
-          <td>{{realestate.apartment.usefulSquareMeters}}</td>
-          <td>{{realestate.apartment.terraceSquareMeters}}</td>
-          {% endif %}
-          <td>{{realestate.marketPrice}}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
+        <tbody>
+          <tr class="table-warning">
+            <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
+            <td></td>
+            <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
+            <td style="text-align:center;"><i class="{{realestate.get_propertyTypeIcon}}"></i></td>
+            <td></td>
+            {% if realestate.is_house %}
+            <td style="text-align:center;">{{realestate.apartment.bedrooms}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bathrooms}}</td>
+            <td style="text-align:right;">{{realestate.house.builtSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.house.terrainSquareMeters}}</td>
+            {% elif realestate.is_apartment %}
+            <td style="text-align:center;">{{realestate.apartment.bedrooms}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bathrooms}}</td>
+            <td style="text-align:right;">{{realestate.apartment.usefulSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.apartment.terraceSquareMeters}}</td>
+            {% endif %}
+            <!--<td>{{realestate.marketPrice}}</td>-->
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
 
-        {% for o in appraisal.valuationRealEstate.all %}
-        <tr id="trValuationRealEstate_{{o.id}}">
-          <input name="valuationRealEstateRow" type="hidden" value="{{o.id}}">
-          <!--<td><small>{{o.latlng_verbose}}</small></td>-->
-          <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
-          <td><i class="{{o.get_propertyTypeIcon }}"></i></td>
-          <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
-          <td>{{ o.apartment.bedrooms }}</td>
-          <td>{{ o.apartment.bathrooms }}</td>
-          {% if o.is_house %}
-          <td class="tdBuiltSquareMeters">{{ o.house.builtSquareMetersVerbose }}</td>
-          <td class="tdTerrainSquareMeters">{{ o.house.terrainSquareMetersVerbose }}</td>
-          {% elif o.is_apartment %}
-          <td class="tdUsefulSquareMeters">{{ o.apartment.usefulSquareMetersVerbose }}</td>
-          <td class="tdTerraceSquareMeters">{{ o.apartment.terraceSquareMetersVerbose }}</td>
-          {% endif %}
-          <td class="tdMarketPrice">{{ o.marketPrice }}</td>
-          {% if o.is_house %}
-          <td class="">{{ o.house.marketPricePerBuiltSquareMeters }}</td>
-          <td class="">{{ o.house.marketPricePerTotalSquareMeters }}</td>
-          {% elif o.is_apartment %}
-          <td class="">{{ o.apartment.marketPricePerUsefulSquareMeters }}</td>
-          <td class="">{{ o.apartment.marketPricePerTotalSquareMeters }}</td>
-          {% endif %}
+          {% for o in appraisal.valuationRealEstate.all %}
+          <tr id="trValuationRealEstate_{{o.id}}">
+            <input name="valuationRealEstateRow" type="hidden" value="{{o.id}}">
+            <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+            <td></td>
+            <td scope="row">{{o.addressStreet}} {{o.addressNumber}}</td>
+            <td style="text-align:center;"><i class="{{o.get_propertyTypeIcon }}"></i></td>
+            <td><a href="{{o.sourceUrl}}">{{ o.sourceNameNice }}</a></td>
+            <td style="text-align:center;">{{ o.apartment.bedrooms }}</td>
+            <td style="text-align:center;">{{ o.apartment.bathrooms }}</td>
+            {% if o.is_house %}
+            <td class="tdBuiltSquareMeters" style="text-align:right;" >{{ o.house.builtSquareMetersVerbose }}</td>
+            <td class="tdTerrainSquareMeters" style="text-align:right;" >{{ o.house.terrainSquareMetersVerbose }}</td>
+            {% elif o.is_apartment %}
+            <td class="tdUsefulSquareMeters" style="text-align:right;" >{{ o.apartment.usefulSquareMetersVerbose }}</td>
+            <td class="tdTerraceSquareMeters" style="text-align:right;" >{{ o.apartment.terraceSquareMetersVerbose }}</td>
+            {% endif %}
+            <td class="tdMarketPrice" style="text-align:right;">{{ o.marketPrice }}</td>
+            {% if o.is_house %}
+            <td class="" style="text-align:right;">{{ o.house.marketPricePerBuiltSquareMeters }}</td>
+            <td class="" style="text-align:right;">{{ o.house.marketPricePerTotalSquareMeters }}</td>
+            {% elif o.is_apartment %}
+            <td class="" style="text-align:right;">{{ o.apartment.marketPricePerUsefulSquareMeters }}</td>
+            <td class="" style="text-align:right;">{{ o.apartment.marketPricePerTotalSquareMeters }}</td>
+            {% endif %}
+            <td style="padding:0em;text-align:right;">
+              <button type="button" class="btn btn-sm remove" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding:0px; border:0px;">
+                <i class="material-icons">delete</i>
+              </button>
+            </td>
+            <td></td>
+          </tr>
+          {% endfor %}
 
-          <td style="padding:0em;">
-            <button type="button" class="btn btn-sm remove" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding:0px; border:0px;">
-              <i class="material-icons">remove_circle</i>
-            </button>
-        </tr>
-        {% endfor %}
+          <tr class="table-primary">
+            <td></td>
+            <th scope="row">Promedios</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td id='vreUsefulSquareMetersAvg' style="text-align:right;"></td>
+            <td id='vreTerraceSquareMetersAvg' style="text-align:right;"></td>
+            <td id='vreMarketPriceAvg' style="text-align:right;"></td>
+            <td id='vreMarketPricePerUsefulSquareMetersAvg' style="text-align:right;"></td>
+            <td id='vreMarketPricePerTotalSquareMetersAvg' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+          </tr>
 
-        <tr class="table-primary">
-          <th scope="row">Promedios</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td id='vreUsefulSquareMetersAvg'></td>
-          <td id='vreTerraceSquareMetersAvg'></td>
-          <td id='vreMarketPriceAvg'></td>
-          <td id='vreMarketPricePerUsefulSquareMetersAvg'></td>
-          <td id='vreMarketPricePerTotalSquareMetersAvg'></td>
-          <td></td>
-        </tr>
+          <tr>
+            <td></td>
+            <td><input class="form-control form-control-sm form-control-inline" style="min-width:0;width:6em;display:inline;"></input></td>
+            <td>{{forms.createApartment.propertyType}}</td>
+            <td>{{forms.createApartment.sourceName}}</td>
+            <td>{{forms.createApartment.bedrooms}}</td>
+            <td>{{forms.createApartment.bathrooms}}</td>
+            <td>{{forms.createApartment.usefulSquareMeters}}</td>
+            <td>{{forms.createApartment.terraceSquareMeters}}</td>
+            <td>{{forms.createApartment.marketPrice}}</td>
+            <td></td>
+            <td></td>
+            <td style="padding:0em;text-align:right;">
+              <button class="btn btn-sm" name="btn_property_create" style="padding:0px; border:0px;">
+                <i class="material-icons">add_box</i>
+              </button>
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
 
-        <tr>
-          <td><input class="form-control form-control-sm form-control-inline" style="min-width:0;width:6em;display:inline;"></input></td>
-          <td>{{forms.createApartment.propertyType}}</td>
-          <td>{{forms.createApartment.sourceName}}</td>
-          <td>{{forms.createApartment.bedrooms}}</td>
-          <td>{{forms.createApartment.bathrooms}}</td>
-          <td>{{forms.createApartment.usefulSquareMeters}}</td>
-          <td>{{forms.createApartment.terraceSquareMeters}}</td>
-          <td>{{forms.createApartment.marketPrice}}</td>
-          <td></td>
-          <td></td>
-          <td style="padding:0em;">
-            <button class="btn btn-sm" name="btn_property_create">
-              <i class="material-icons">add_box</i>
-            </button>
-          </td>
-        </tr>
       </table>
     </div>
   </div>
@@ -218,7 +270,7 @@
 
 </div>
 
-<div class="card ml-4 mr-4 mt-4">
+<div class="card ml-4 mr-4 mt-4 rounded-0">
   <div class="card-header" id="header">
     <div class="row">
       <div class="col">
@@ -232,62 +284,66 @@
     </div>
   </div>
   <div id="realEstateMarket" class="collapse" aria-labelledby="heading">
-    <div class="card-body">
-      <table id="tableMarketRealEstate" class="table table-sm">
+    <div class="card-body" style="padding:0em;margin:0em;">
+      <table id="tableMarketRealEstate" class="table table-sm mb-0">
 
-        <thead class="thead-light">
+        <thead class="thead">
           <tr>
             <!--<th scope="col">lat/lng</th>-->
-            <th scope="col" style="width: 30%">Dirección</th>
-            <th scope="col" style="width: 5%">Tipo</th>
-            <th scope="col" style="width: 5%">Fuente</th>
-            <th scope="col" style="width: 5%">Dorm.</th>
-            <th scope="col" style="width: 5%">Baños</th>
+            <th></th>
+            <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
+            <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
+            <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-toilet-paper"></i></th>
             {% if realestate.is_house %}
-            <th scope="col" style="width: 8%">m<sup>2</sup> const.</th>
-            <th scope="col" style="width: 8%">m<sup>2</sup> terreno</th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> const.</th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terreno</th>
             {% elif realestate.is_apartment %}
-            <th scope="col" style="width: 8%">m<sup>2</sup> útil</th>
-            <th scope="col" style="width: 8%">m<sup>2</sup> terraza</th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terraza</th>
             {% endif %}
-            <th scope="col" style="width: 15%">Valor comercial</th>
+            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
             {% if realestate.is_house %}
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> con.</th>
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> con.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
             {% elif realestate.is_apartment %}
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> útil</th>
-            <th scope="col" style="width: 10%">V.C./ m<sup>2</sup> tot.</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> útil</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
             {% endif %}
-            <th scope="col" style="width: 5%"></th>
+            <th scope="col" style="width: 5em;"></th>
+            <th></th>
           </tr>
         </thead>
 
         <tbody>
 
           <tr class="table-warning">
+            <td></td>
             <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
             <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
-            <td><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
+            <td style="text-align:center;"><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
             <td></td>
             {% if realestate.is_house %}
-            <td>{{realestate.apartment.bedrooms}}</a></td>
-            <td>{{realestate.apartment.bathrooms}}</a></td>
-            <td>{{realestate.house.builtSquareMeters}}</td>
-            <td>{{realestate.house.terrainSquareMeters}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bedrooms}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bathrooms}}</td>
+            <td style="text-align:right;">{{realestate.house.builtSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.house.terrainSquareMeters}}</td>
             {% elif realestate.is_apartment %}
-            <td>{{realestate.apartment.bedrooms}}</a></td>
-            <td>{{realestate.apartment.bathrooms}}</a></td>
-            <td>{{realestate.apartment.usefulSquareMeters}}</td>
-            <td>{{realestate.apartment.terraceSquareMeters}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bedrooms}}</td>
+            <td style="text-align:center;">{{realestate.apartment.bathrooms}}</td>
+            <td style="text-align:right;">{{realestate.apartment.usefulSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.apartment.terraceSquareMeters}}</td>
             {% endif %}
-            <td>{{realestate.marketPrice}}</td>
+            <td style="text-align:right;">{{realestate.marketPrice}}</td>
             {% if realestate.is_house %}
-            <td>{{realestate.house.marketPricePerBuiltSquareMeters}}</td>
-            <td>{{realestate.house.marketPricePerTerrainSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.house.marketPricePerBuiltSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.house.marketPricePerTerrainSquareMeters}}</td>
             {% elif realestate.is_apartment %}
-            <td>{{realestate.apartment.marketPricePerUsefulSquareMeters}}</td>
-            <td>{{realestate.apartment.marketPricePerTerraceSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.apartment.marketPricePerUsefulSquareMeters}}</td>
+            <td style="text-align:right;">{{realestate.apartment.marketPricePerTerraceSquareMeters}}</td>
             {% endif %}
+            <td></td>
             <td></td>
           </tr>
 
@@ -298,51 +354,52 @@
           <tr id="trMarketRealEstate_{{r.realestate.id}}" value="{{r.realestate.id}}">
           {% endif %}
             <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+            <td></td>
             <td scope="row">
               {{r.realestate.addressStreet}} {{r.realestate.addressNumber}}
             </td>
-            <td>
+            <td style="text-align:center;">
               <i class="{{r.realestate.get_propertyTypeIcon }}"></i>
             </td>
             <td>
               <a href="{{r.realestate.sourceUrl}}">{{ r.realestate.sourceNameNice }}</a>
             </td>
-            <td>
+            <td style="text-align:center;">
               {{ r.realestate.bedrooms }}
             </td>
-            <td>
+            <td style="text-align:center;">
               {{ r.realestate.bathrooms }}
             </td>
             {% if r.realestate.is_house %}
-            <td class="tdBuiltSquareMeters">
+            <td class="tdBuiltSquareMeters" style="text-align:right;">
               {{ r.realestate.builtSquareMetersVerbose }}
             </td>
-            <td class="tdTerrainSquareMeters">
+            <td class="tdTerrainSquareMeters" style="text-align:right;">
               {{ r.realestate.terrainSquareMetersVerbose }}
             </td>
             {% elif realestate.is_apartment %}
-            <td class="tdUsefulSquareMeters">
+            <td class="tdUsefulSquareMeters" style="text-align:right;">
               {{ r.realestate.usefulSquareMetersVerbose }}
             </td>
-            <td class="tdTerraceSquareMeters">
+            <td class="tdTerraceSquareMeters" style="text-align:right;">
               {{ r.realestate.terraceSquareMetersVerbose }}
             </td>
             {% endif %}
-            <td class="tdMarketPrice">
+            <td class="tdMarketPrice" style="text-align:right;">
               {{ r.realestate.marketPrice }}
             </td>
             {% if realestate.is_house %}
-            <td class="">
+            <td class="" style="text-align:right;">
               {{ r.realestate.marketPricePerBuiltSquareMeters }}
             </td>
-            <td class="">
+            <td class="" style="text-align:right;">
               {{ r.realestate.marketPricePerTotalSquareMeters }}
             </td>
             {% elif realestate.is_apartment %}
-            <td class="">
+            <td class="" style="text-align:right;">
               {{ r.realestate.marketPricePerUsefulSquareMeters }}
             </td>
-            <td class="">
+            <td class="" style="text-align:right;">
               {{ r.realestate.marketPricePerTotalSquareMeters }}
             </td>
             {% endif %}
@@ -357,10 +414,12 @@
               </button>
               {% endif %}
             </td>
+            <td></td>
           </tr>
           {% endfor %}
 
           <tr class="table-primary">
+            <td></td>
             <th scope="row">Promedios</th>
             <td></td>
             <td></td>
@@ -375,6 +434,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
           </tr>
 
         </tbody>
@@ -383,7 +443,7 @@
   </div>
 </div>
 
-<div class="card ml-4 mr-4 mt-4">
+<div class="card ml-4 mr-4 mt-4 rounded-0">
   <div class="card-header" id="header">
     <div class="row">
       <div class="col">
@@ -398,11 +458,11 @@
   </div>
 </div>
 
-<div class="card ml-4 mr-4 mt-4 mb-4">
+<div class="card ml-4 mr-4 mt-4 mb-4 rounded-0">
   <div class="card-header" id="header">
     <div class="row">
       <div class="col">
-        <p style="margin:0em;">Mapa entorno</p>
+        <p style="margin:0em;">Mapa propiedades</p>
       </div>
       <div class="col text-right">
         <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#map" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
@@ -424,11 +484,418 @@
     </div>
   </div>
 </div>
+
+
+<div class="card ml-4 mr-4 mt-4 mb-4 rounded-0">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Avalúos</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#avaluos" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="avaluos" class="collapse show" aria-labelledby="heading">
+    <div class="card-body" style="padding:0em;">
+      <div class="row">
+        <div class="col">
+          <div style="display: table;margin: auto;">
+            <table id="table_constructions" class="table table-sm mb-0">
+
+              <thead class="thead">
+                <!-- Headers !-->
+                <tr>
+                  <!--<th scope="col">lat/lng</th>-->
+                  <th scope="col" colspan="5" style="width: 39%"></th>
+                  <th scope="col" style="width: 3%">Un.</th>
+                  <th scope="col" style="width: 8%">Cantidad</th>
+                  <th scope="col" style="width: 8%">$/m<sup>2</sup></th>
+                  <th scope="col" style="width: 8%">UF/m<sup>2</sup></th>
+                  <th scope="col" style="width: 8%">Valor $</th>
+                  <th scope="col" style="width: 7%">Valor UF</th>
+                  <th scope="col" style="width: 7%">Valor visado UF</th>
+                  <th scope="col" style="width: 7%">Valor seguro UF</th>
+                  <th scope="col" style="width: 6%"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <!-- Terrains, only activated when real esate is house !-->
+                {% if realestate.is_house %}
+                <tr class="table-warning">
+                  <td>Terreno</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr class="table-secondary">
+                  <td>Subtotal</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endif %}
+
+                <!-- Subdivision of table for constructions !-->
+                <tr class="table-warning">
+                  <td style="width: 14%">Construcciones</td>
+                  <td style="width: 5%">Material</td>
+                  <td style="width: 8%">Año</td>
+                  <td style="width: 5%">Prenda</td>
+                  <td style="width: 7%">Recep.</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+
+                <!-- Iterate over constructions !-->
+                {% for con in realestate.constructions.all %}
+                <tr>
+                  <!-- Hidden inputs are used for processing the form. 
+                    Construction id to get if the obejct exists !-->
+                  <input type="hidden" name="construction_id" id="in_construction_id" value="{{con.id}}">
+                  <!-- And edited, to see if we have to consider this row. See comment in view. !-->
+                  <input type="hidden" name="construction_edited" id="in_construction_edited" value="0">
+                  <td id='td_name'>
+                    {{con.name}}
+                  </td>
+                  <td id='td_material'>
+                    {{con.get_material_display}}
+                  </td>
+                  <td id='td_year'>
+                    <span>{{con.year|date:'Y'}}</span>
+                    <div class="input-group date" id="datetimepicker4" data-target-input="nearest" style="display:none;">
+                      <div class="input-group-append" data-target="#datetimepicker4" data-toggle="datetimepicker">
+                        <div class="input-group-text">
+                          <i class="fa fa-calendar"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  <script type="text/javascript">
+                    $(function () {
+                      $('#datetimepicker4').datetimepicker({
+                        format: 'YYYY-MM-DD'
+                      });
+                    });
+                  </script>
+                  
+                  <td id='td_prenda'>
+                    {{con.get_prenda_display}}
+                  </td>
+                  <td id='td_recepcion'>
+                    {{con.get_recepcion_display}}
+                  </td>
+                  <td>
+                    m<sup>2</sup>
+                  </td>
+                  <td>
+                    <input id="id_area" type="number" name="area" step="any" class="form-control form-control-sm constructions" style="width:100%;" value="{{con.area}}">
+                  </td>
+                  <td>
+                    <input id="id_pesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_UFPerArea" type="number" name="UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;" value="{{con.UFPerArea}}">
+                  </td>
+                  <td>
+                    <input id="id_pesos" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_UF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_visadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_seguroUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td style="padding:0em;text-align:right;">
+                    <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
+                      <i class="material-icons">save</i>
+                    </button>
+                    <button type="button" class="btn btn-sm edit_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+                      <i class="material-icons">edit</i>
+                    </button>
+                    <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+
+                <!-- This row is here to be copied when the add construction is clicked -->
+                <tr id='tr_create_construction' style="display:none;">
+                  <input id="in_construction_id" type="hidden" name="construction_id" value="-1">
+                  <input id="in_construction_edited" type="hidden" name="construction_edited" value="0">
+                  <td>
+                    {{forms.createConstruction.name}}
+                  </td>
+                  <td>
+                    {{forms.createConstruction.material}}
+                  </td>
+                  <td>
+                    <div class="input-group date" id="datetimepicker3" data-target-input="nearest">
+                      {{forms.createConstruction.year}}
+                      <div class="input-group-append" data-target="#datetimepicker3" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                      </div>
+                    </div>
+                  </td>
+                  <script type="text/javascript">
+                    $(function () {
+                      $('#datetimepicker3').datetimepicker({
+                        format: 'YYYY-MM-DD'
+                      });
+                    });
+                  </script>
+                  <td>
+                    {{forms.createConstruction.prenda}}
+                  </td>
+                  <td>
+                    {{forms.createConstruction.recepcion}}
+                  </td>
+                  <td>
+                    m<sup>2</sup>
+                  </td>
+                  <td>
+                    {{forms.createConstruction.area}}
+                  </td>
+                  <td>
+                    <input id="id_pesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    {{forms.createConstruction.UFPerArea}}
+                  </td>
+                  <td>
+                    <input id="id_pesos" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_UF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_visadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_seguroUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td style="padding:0em;text-align:right;">
+                    <button class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
+                      <i class="material-icons">save</i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- This row only contains the add button -->
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <!--<td colspan="2"><div class="btn btn-dark btn-sm"> Agregar construcción </btn></td>-->
+                  <td></td>
+                  <td></td>
+                  <td style="padding:0em;text-align:right;">
+                    <button id="add_construction" type="button" class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
+                      <i class="material-icons">add_box</i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Subtotals of constructions -->
+                <tr class="table-secondary">
+                  <td>Subtotal</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td id='id_ptotalConstArea'></td>
+                  <td id='id_ptotalConstPesosPerArea'></td>
+                  <td id='id_ptotalConstUFPerArea'></td>
+                  <td id='id_ptotalConstPesos'></td>
+                  <td id='id_ptotalConstUF'></td>
+                  <td id='id_ptotalConstVisadoUF'></td>
+                  <td id='id_ptotalConstSeguroUF'></td>
+                  <td></td>
+                </tr>
+
+                <tr class="table-warning">
+                  <td>Obras complementarias</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+
+                <!-- This row is here to be copied when the add construction is clicked -->
+                <tr id='tr_create_construction_comp' style="display:none;">
+                  <input id="in_construction_id" type="hidden" name="construction_id" value="-1">
+                  <input id="in_construction_edited" type="hidden" name="construction_edited" value="0">
+                  <td colspan="7">
+                    {{forms.createConstruction.name}}
+                  </td>
+                  <td>
+                    <input id="id_pesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    {{forms.createConstruction.UFPerArea}}
+                  </td>
+                  <td>
+                    <input id="id_pesos" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_UF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_visadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td>
+                    <input id="id_seguroUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+                  </td>
+                  <td style="padding:0em;text-align:right;">
+                    <button class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
+                      <i class="material-icons">save</i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- This row only contains the add button -->
+                <tr>
+                  <td colspan="14" style="padding:0em;text-align:right;">
+                    <button id="add_construction_comp" type="button" class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
+                      <i class="material-icons">add_box</i>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr class="table-secondary">
+                  <td>Subtotal</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+
+                <tr class="table-primary">
+                  <td colspan="9" style="text-align:right;padding-right:3em;">Valor comercial tasador</td>
+                  <td id='id_totalPesos'></td>
+                  <td id='id_totalUF'></td>
+                  <td id='id_totalVisadoUF'></td>
+                  <td id='id_totalSeguroUF'></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
 
-  function averages() {
+  var UF_IN_PESOS = 0.0;
+
+  function pesosFormat(number) {
+    return parseFloat(number).toLocaleString('es',{maximumFractionDigits:2});
+  }
+  function UFFormat(number) {
+    return parseFloat(number).toLocaleString('es',{maximumFractionDigits:2}); 
+  }
+  function PercentFormat(number) {
+    return parseFloat(number).toLocaleString('es',{style:'percent',maximumFractionDigits:2}); 
+  }
+  //UFFormat()
+
+  function computeValues() {
+    var valorUF = parseFloat($("#id_valorUF").val());
+    var liquidez = parseFloat($("#liquidity").val());
+    $("#valueMarket").val(parseInt(valorUF*UF_IN_PESOS).toLocaleString('es'));
+    $("#valueLiquid").val(parseInt(valorUF*UF_IN_PESOS*liquidez).toLocaleString('es'));
+    $("#valueLiquidUF").val(parseFloat(valorUF*liquidez).toLocaleString('es'));
+    $("#valueSafe").val(parseInt(valorUF*UF_IN_PESOS).toLocaleString('es'));
+    $("#valueSafeUF").val(parseFloat(valorUF).toLocaleString('es'));
+    var months = 11
+    var valueRentMonth = valorUF*0.005
+    var rate = 0.06
+    var area = 46.65
+    $("#valueRentMonth").val(UFFormat(valorUF*0.005))
+    $("#valueRentMonths").val(months)
+    $("#valueRentYear").val(UFFormat(valueRentMonth*months))
+    $("#valueRentRate").val(PercentFormat(rate))
+    $("#valueRentPerArea").val(UFFormat(rate*area))
+    $("#valueRent").val(UFFormat(valueRentMonth*months/rate))
+  }
+
+  $("#id_valorUF").change(function () {
+    computeValues();
+  });
+
+  $("#liquidity").change(function () {
+    computeValues()
+  });
+
+  $("#id_valorUF").focus(function () {
+    computeValues()
+  });
+
+  $("#id_valorUF").focusout(function () {
+    computeValues()
+  });
+
+  function averagesValuationRealEstate() {
     var sumUsefulSquareMeters = 0
     var sumTerraceSquareMeters = 0
     var sumMarketPrice = 0
@@ -458,6 +925,70 @@
     $('#vreMarketPricePerTotalSquareMetersAvg').text((avgMarketPrice/(avgUsefulSquareMeters+avgTerraceSquareMeters)).toFixed(2))
   }
 
+  function computeConstructions() {
+    var sumArea = 0
+    var sumPesosPerArea = 0
+    var sumUFPerArea = 0
+    var sumPesos = 0
+    var sumUF = 0
+    var sumVisadoUF = 0
+    var sumSeguroUF = 0
+    var c = 0
+    $('#table_constructions tr').each(function() {
+      if ($(this).attr('id') == 'id_input') return
+      if ($(this).attr('id') == 'tr_create_construction') return
+      area = parseFloat($(this).find("#id_area").val());
+      if (!isNaN(area)) {
+        sumArea += area;
+        c += 1
+      }
+      pesosPerArea = parseFloat($(this).find("#id_pesosPerArea").val());
+      if (!isNaN(pesosPerArea)) {
+        sumPesosPerArea += pesosPerArea;
+      }
+      UFPerArea = parseFloat($(this).find("#id_UFPerArea").val());
+      if (!isNaN(UFPerArea)) {
+        sumUFPerArea += UFPerArea;
+      }
+      pesos = parseFloat($(this).find("#id_pesos").val());
+      if (!isNaN(pesos)) {
+        sumPesos += pesos;
+      }
+      UF = parseFloat($(this).find("#id_UF").val());
+      if (!isNaN(UF)) {
+        sumUF += UF;
+      }
+      visadoUF = parseFloat($(this).find("#id_visadoUF").val());
+      if (!isNaN(visadoUF)) {
+        sumVisadoUF += visadoUF;
+      }
+      seguroUF = parseFloat($(this).find("#id_seguroUF").val());
+      if (!isNaN(seguroUF)) {
+        sumSeguroUF += seguroUF;
+      }
+    });
+    var avgArea = sumArea/c;
+    var avgPesosPerArea = sumPesosPerArea/c;
+    var avgUFPerArea = sumUFPerArea/c;
+    var avgPesos = sumPesos/c;
+    var avgUF = sumUF/c;
+    var avgVisadoUF = sumVisadoUF/c;
+    var avgSeguroUF = sumSeguroUF/c;
+
+    $('#id_ptotalConstArea').text((sumArea).toFixed(2))
+    $('#id_ptotalConstPesosPerArea').text((sumPesos/sumArea).toFixed(2))
+    $('#id_ptotalConstUFPerArea').text((sumUF/sumArea).toFixed(2))
+    $('#id_ptotalConstPesos').text((sumPesos).toFixed(2))
+    $('#id_ptotalConstUF').text((sumUF).toFixed(2))
+    $('#id_ptotalConstVisadoUF').text((sumVisadoUF).toFixed(2))
+    $('#id_ptotalConstSeguroUF').text((sumSeguroUF).toFixed(2))
+
+    $('#id_totalPesos').text((sumPesos).toFixed(2))
+    $('#id_totalUF').text((sumUF).toFixed(2))
+    $('#id_totalVisadoUF').text((sumVisadoUF).toFixed(2))
+    $('#id_totalSeguroUF').text((sumSeguroUF).toFixed(2))
+  }
+
   function remove(val) {
     /*
     Remove the row from the valuation list.
@@ -468,16 +999,112 @@
     row_market = $('#trMarketRealEstate_'+val);
     row_market.find('.btn').show();
     row_market.removeClass('table-success');
-    averages();
+    averagesValuationRealEstate();
   }
 
+  function constructions() {
+    $('#table_constructions tr').each(function() {
+      uf = UF_IN_PESOS;
+      area = parseFloat($(this).find("#id_area").val());
+      UFPerArea = parseFloat($(this).find("#id_UFPerArea").val());
+      $(this).find('#id_pesosPerArea').val(parseInt(UFPerArea*uf));
+      $(this).find('#id_pesos').val(parseInt(UFPerArea*uf*area));
+      $(this).find('#id_UF').val(parseInt(UFPerArea*area));
+      $(this).find('#id_visadoUF').val(parseInt(UFPerArea*area));
+      $(this).find('#id_seguroUF').val(parseInt(UFPerArea*area));
+    });
+  }
+
+  $(".constructions").change(function () {
+    constructions();
+    computeConstructions();
+  });
+  
   $(document).ready(function() {
 
-    averages();
+    $.getJSON('https://mindicador.cl/api', function(data) {
+      UF_IN_PESOS = data.uf.valor
+      constructions();
+      computeConstructions();
+      computeValues();
+      }).fail(function() {
+        console.log('Error al consumir la API!');
+      }
+    );
+
+    averagesValuationRealEstate();
+    computeConstructions();
+
+    $('.edit_construction').click(function() {
+      row = $(this).closest('tr')
+
+      input = row.find('#in_construction_edited')
+      input.val('1')
+
+      btn = row.find('.save_construction')
+      btn.toggle()
+
+      cell = row.find('#td_name')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.name}}')
+      cell.find('#id_name').val(text.trim())
+
+      cell = row.find('#td_material')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.material|escapejs}}')
+      cell.find('#id_material option').filter(function() {
+        return $(this).text() == text.trim(); 
+      }).prop('selected', true);
+
+      cell = row.find('#td_year')
+      text = cell.text()
+      cell.find("span").empty()
+      cell.find('.input-group').toggle()
+      cell.find('.input-group').prepend('{{forms.createConstruction.year|escapejs}}')
+      cell.find('#id_year').val(text.trim()+'-01-01')
+
+      cell = row.find('#td_prenda')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.prenda|escapejs}}')
+      cell.find('#id_prenda option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_recepcion')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.recepcion|escapejs}}')
+      cell.find('#id_recepcion option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      $(this).toggle()
+    });
 
     $('.remove').click(function() {
       var rid = $(this).val();
       remove(rid);
+    });
+
+    $('#add_construction').click(function() {
+      var newRow = $('#tr_create_construction').clone();
+      //$(this).closest('tr').before(newRow)
+      $('#tr_create_construction').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_construction_edited').val('1')
+    });
+
+    $('#add_construction_comp').click(function() {
+      var newRow = $('#tr_create_construction_comp').clone();
+      //$(this).closest('tr').before(newRow)
+      $('#tr_create_construction_comp').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_construction_edited').val('1')
     });
 
     $('.add').click(function() {
@@ -510,6 +1137,10 @@
       // Recompute the averages
       averages();
     });
+
+    constructions();
+    computeConstructions();
+
   });
 </script>
 

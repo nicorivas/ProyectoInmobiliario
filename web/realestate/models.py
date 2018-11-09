@@ -3,6 +3,77 @@ from commune.models import Commune
 from region.models import Region
 from neighborhood.models import Neighborhood
 
+
+class Construction(models.Model):
+    '''
+    Parts of a RealEstate, such as balconies or other parts of a house.
+    '''
+    name = models.CharField("Calle",max_length=300,default="",blank=True)
+    
+    complementary = models.BooleanField("Complementaria",blank=True,default=False)
+
+    MATERIAL_UNKNOWN = '-'
+    MATERIAL_ACERO = 'A'
+    MATERIAL_HORMIGON = 'B'
+    MATERIAL_ALBANILERIA = 'C'
+    MATERIAL_PIEDRA_BLOQUE = 'D'
+    MATERIAL_MADERA = 'E'
+    MATERIAL_ADOBE = 'F'
+    MATERIAL_METALCOM = 'G'
+    MATERIAL_PREFAB_MADERA = 'H'
+    MATERIAL_PREFAB_HORMIGON = 'I'
+    MATERIAL_OTRO = 'J'
+    MATERIAL_CHOICES = [
+        (MATERIAL_UNKNOWN, "Desconocido"),
+        (MATERIAL_ACERO, "Acero"),
+        (MATERIAL_HORMIGON, "Hormigón"),
+        (MATERIAL_ALBANILERIA, "Albañilería"),
+        (MATERIAL_PIEDRA_BLOQUE, "Piedra/Bloque"),
+        (MATERIAL_MADERA, "Madera"),
+        (MATERIAL_ADOBE, "Adobe"),
+        (MATERIAL_METALCOM, "Metalcom"),
+        (MATERIAL_PREFAB_MADERA, "Prefab. Madera"),
+        (MATERIAL_PREFAB_HORMIGON, "Prefab. Hormigón"),
+        (MATERIAL_OTRO, "Otros")]
+    material = models.CharField(
+        max_length=2,
+        choices=MATERIAL_CHOICES,
+        default=MATERIAL_UNKNOWN)
+    
+    year = models.DateField("Año construcción",blank=True,null=False,default='1985-01-01')
+    
+    BOOLEAN_NULL_CHOICES = (
+        (None, "S/A"),
+        (True, "Si"),
+        (False, "No")
+    )
+    prenda = models.BooleanField("Mercado objetivo",blank=True,null=True,choices=BOOLEAN_NULL_CHOICES)
+
+    RECEPCION_CONRF = 0
+    RECEPCION_SINRF = 1
+    RECEPCION_SINPE = 2
+    RECEPCION_SINANT = 3
+    RECEPCION_NR = 4
+    RECEPCION_CHOICES = [
+        (RECEPCION_CONRF, "Con R/F"),
+        (RECEPCION_SINRF, "Sin R/F"),
+        (RECEPCION_SINPE, "Sin P/E"),
+        (RECEPCION_SINANT, "Sin Ant."),
+        (RECEPCION_NR, "N/R")]
+    recepcion = models.IntegerField(
+        choices=RECEPCION_CHOICES,
+        default=RECEPCION_NR)
+
+    area = models.FloatField("Area",
+        blank=True,
+        null=False,
+        default=0)
+
+    UFPerArea = models.FloatField("Area",
+        blank=True,
+        null=False,
+        default=0)
+
 class RealEstate(models.Model):
     ''' Topmost abstraction for all kinds of properties that can be valued'''
     ''' Bien raíz '''
@@ -38,8 +109,10 @@ class RealEstate(models.Model):
     addressFromCoords = models.BooleanField("Direccion por coordenadas",default=False)
 
     name = models.CharField("Nombre",max_length=200,default="",null=True,blank=True)
+
     lat = models.FloatField("Latitud",default=0.0)
     lng = models.FloatField("Longitud",default=0.0)
+
     neighborhood = models.ForeignKey(Neighborhood,
         on_delete=models.CASCADE,
         verbose_name="Barrio",
@@ -53,14 +126,23 @@ class RealEstate(models.Model):
 
     marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
 
+    constructions = models.ManyToManyField(Construction)
 
     BOOLEAN_NULL_CHOICES = (
         (None, "S/A"),
         (True, "Si"),
         (False, "No")
     )
-    mercadoObjetivo = models.BooleanField("Mercado objetivo",blank=True,null=True,choices=BOOLEAN_NULL_CHOICES)
+    BOOLEAN_NULL_CHOICES_TMP = (
+        (1, "S/A"),
+        (2, "Si"),
+        (3, "No")
+    )
+    mercadoObjetivo = models.PositiveSmallIntegerField("Mercado objetivo",blank=True,null=False,default=1,choices=BOOLEAN_NULL_CHOICES_TMP)
 
+    programa = models.CharField("Programa",max_length=10000,null=True,blank=True)
+
+    estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
 
     BOOLEAN_NULL_CHOICES = (
         (None, "S/A"),
@@ -70,16 +152,21 @@ class RealEstate(models.Model):
     anoConstruccion = models.IntegerField("Año construcción",
         blank=True,
         null=True)
+
     vidaUtilRemanente = models.IntegerField("Vida util remanente",
         blank=True,
         null=True)
+
     avaluoFiscal = models.FloatField("Avaluo fiscal",
         blank=True,
         null=True)
-    dfl2 = models.BooleanField("DFL 2",
+
+    dfl2 = models.PositiveSmallIntegerField("DFL 2",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
     SELLO_VERDE_CHOICES = (
         ('V', 'Verde'),
         ('A', 'Amarillo'),
@@ -93,10 +180,13 @@ class RealEstate(models.Model):
         choices=SELLO_VERDE_CHOICES,
         blank=True,
         null=True)
-    copropiedadInmobiliaria = models.BooleanField("Copropiedad Inmobiliaria",
+
+    copropiedadInmobiliaria = models.PositiveSmallIntegerField("Copropiedad Inmobiliaria",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
     OCUPANTE_CHOICES = (
         ('P', 'Propietario'),
         ('A', 'Arrendatario'),
@@ -108,10 +198,12 @@ class RealEstate(models.Model):
         choices=OCUPANTE_CHOICES,
         blank=True,
         null=True)
+
     tipoBien = models.CharField("Tipo de bien",
         max_length=20,
         blank=True,
         null=True)
+
     DESTINO_SII = (
         ('H', 'Habitacional'),
         ('O', 'Oficina'),
@@ -131,16 +223,19 @@ class RealEstate(models.Model):
         choices=DESTINO_SII,
         blank=True,
         null=True)
+
     usoActual = models.CharField("Uso actual",
         max_length=1,
         choices=DESTINO_SII,
         blank=True,
         null=True)
+
     usoFuturo = models.CharField("Uso futuro",
         max_length=1,
         choices=DESTINO_SII,
         blank=True,
         null=True)
+
     permisoEdificacion = models.CharField("Permiso edificación",
         max_length=10,
         blank=True,
@@ -148,6 +243,7 @@ class RealEstate(models.Model):
     permisoEdificacionDate = models.DateField("Permiso edificación fecha",
         blank=True,
         null=True)
+
     recepcionFinal = models.CharField("Recepcion final",
         max_length=10,
         blank=True,
@@ -155,22 +251,31 @@ class RealEstate(models.Model):
     recepcionFinalDate = models.DateField("Recepcion final fecha",
         blank=True,
         null=True)
-    expropiacion = models.BooleanField("Expropiacion",
+
+    expropiacion = models.PositiveSmallIntegerField("Expropiacion",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
-    viviendaSocial = models.BooleanField("Vivienda social",
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
+    viviendaSocial = models.PositiveSmallIntegerField("Vivienda social",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
-    desmontable = models.BooleanField("Desmontable",
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
+    desmontable = models.PositiveSmallIntegerField("Desmontable",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
-    adobe = models.BooleanField("Adobe",
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
+    adobe = models.PositiveSmallIntegerField("Adobe",
         blank=True,
-        null=True,
-        choices=BOOLEAN_NULL_CHOICES)
+        null=False,
+        default=1,
+        choices=BOOLEAN_NULL_CHOICES_TMP)
+
     acogidaLeyChoices = (
         (0, 'O.G.U. y C.'),
         (1, 'P.R.C.'),
@@ -187,6 +292,7 @@ class RealEstate(models.Model):
         choices=acogidaLeyChoices,
         blank=True,
         null=True)
+
     permisoEdificacionNo = models.CharField("Numero permiso edificacion",
         max_length=20,
         default=0,
@@ -199,6 +305,7 @@ class RealEstate(models.Model):
         decimal_places=2,
         default=0,
         null=True)
+    
     USE = (
         (0,'Usada'),
         (1,'Nueva')
@@ -207,9 +314,11 @@ class RealEstate(models.Model):
         choices=USE,
         default=0,
         null=True)
+
     antiguedad = models.PositiveSmallIntegerField("Antiguedad",
         default=0,
         null=True)
+
     vidaUtil = models.PositiveSmallIntegerField("Vida util",
         default=80,
         null=True)
@@ -297,3 +406,4 @@ class RealEstate(models.Model):
             return "fas fa-building"
         else:
             return "far fa-times-circle"
+    
