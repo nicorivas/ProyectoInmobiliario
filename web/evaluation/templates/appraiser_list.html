@@ -10,7 +10,7 @@
     </thead>
     <tbody>
       {% for tasador in lista %}
-      <tr>
+      <tr id="{{tasador.user.pk}}" class="tasaciones">
         <td>
         {{ tasador.user.first_name }} {{ tasador.user.last_name }}
         </td>

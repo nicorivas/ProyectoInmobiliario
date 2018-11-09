@@ -28,7 +28,6 @@ urlpatterns = [
     path('password_change/', auth_views.PasswordChangeView.as_view(template_name='user/password_change.html',
             success_url=reverse_lazy('user:password_change_done')), name='password_change'),
     path('password_change/done', auth_views.PasswordChangeDoneView.as_view(template_name='user/password_change_done.html'),
-         name='password_change_done'),
-    path('profile/evaluation/', views.appraiserEvaluationView, name='apprariserEvaluation')
+         name='password_change_done')
 
 ]

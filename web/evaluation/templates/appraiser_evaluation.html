@@ -3,6 +3,7 @@
 
 {% block content %}
 
+
 <div class="col-md-2" id="appraiser">
     <div class="form-group">
         <label>Tasadores</label>
@@ -20,11 +21,42 @@
     </div>
 </div>
 
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+                <div class="card-body">
+                    {% include "main/appraisals.html" %}
+                </div>
+        </div>
+
+    </div>
+</div>
 
 <script>
  jQuery('#appraiser').on('change', function() {
   var object = $("#appraiser option:selected");
-  console.log(object.val());
+  var id = object.val();
+    jQuery('.tasaciones').attr('hidden');
+    jQuery('.tasaciones').hide();
+    jQuery('#'+id).removeAttr('hidden');
+    jQuery('#'+id).show();
+});
+</script>
+
+<script>
+    $( document ).ready(function() {
+        jQuery('.tasaciones').attr('hidden');
+        jQuery('.tasaciones').hide();
+        jQuery('.clickable-row').attr('hidden');
+        jQuery('.clickable-row').hide();
+        jQuery('.previas').attr('hidden');
+        jQuery('.previas').hide();
+});
+</script>
+
+<script>
+    jQuery('#appraiser').on('change', function() {
+  var object = $("#appraiser option:selected");
   if (object.val() == 0 ) {
     jQuery('#other').removeAttr('hidden');
     jQuery('#other').show();
@@ -45,5 +77,6 @@
  }
 });
 </script>
+
 
 {% endblock %}

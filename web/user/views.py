@@ -19,7 +19,6 @@ from reversion.models import Version
 @login_required(login_url='user/login')
 def userAppraisals(request):
     apps = Appraisal.objects.defer('photos')
-    print('USER AOORA')
     try:
         if request.user.groups.values_list('name', flat=True)[0]=='tasador':
             appraisals_active = apps.filter(tasadorUser=request.user).filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
@@ -33,7 +32,6 @@ def userAppraisals(request):
     except IndexError:
         appraisals_active = apps.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
         appraisals_finished = apps.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
-    print(appraisals_active)
     return [appraisals_active, appraisals_finished]
 
 def save_appraisalNF(appraisal, request, comment):
@@ -49,6 +47,17 @@ def assign_tasadorNF(request):
     appraisal.tasadorUser = User.objects.get(pk=request.POST.dict()['tasador'])
     save_appraisalNF(appraisal, request,'Changed tasador')
     return
+
+def appraiserWork(tasadores):
+    list = []
+    for users in tasadores:
+        activeAppraisals = Appraisal.objects.filter(tasadorUser=users)
+        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+        doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
+        list.append({'user': users, 'activeAppraisals':len(activeAppraisals),
+                      'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
+    return list
+
 
 @login_required(login_url='user/login')
 def view_profile(request, pk=None):
@@ -71,15 +80,10 @@ def view_profile(request, pk=None):
 
     appraisals_active, appraisals_finished = userAppraisals(request)
     tasadores = list(User.objects.filter(groups__name__in=['tasador']))
-    lista = []
-    for users in tasadores:
-        activeAppraisals = Appraisal.objects.filter(tasadorUser=users)
-        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
-        doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
-        lista.append({'user': users, 'activeAppraisals':len(activeAppraisals),
-                      'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
+    visadores = list(User.objects.filter(groups__name__in=['visador']))
+    lista = appraiserWork(tasadores)
     context = {'user': user, 'userprofile': userprofile, 'appraisals_active': appraisals_active,
-        'appraisals_finished': appraisals_finished, 'tasadores': tasadores, 'lista': lista}
+        'appraisals_finished': appraisals_finished, 'tasadores': tasadores, 'visadores': visadores, 'lista': lista}
     return render(request, 'user/profile.html', context)
 
 @login_required
@@ -137,11 +141,5 @@ def login(request):
     context = {'form_login':form_login}
     return render(request,'user/login.html',context)
 
-def appraiserEvaluationView(request):
-    appraisals_active, appraisals_finished = userAppraisals(request)
-    form_user = EvaluationForm()
 
-    context = {'appraisals_active': appraisals_active,
-        'appraisals_finished': appraisals_finished, 'form_user':form_user}
-    return render(request, 'user/appraiser_evaluation.html', context)
 
