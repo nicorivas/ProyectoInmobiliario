@@ -1,3 +1,17 @@
+        <script>
+          function timeCreated(string) {
+            var s = moment(string).format("D MMM HH:MM");
+            document.write(s)
+          }
+        </script>
+
+        <script>
+          function timeLeft(string) {
+            var m = moment(string);
+            document.write(m.fromNow());
+          }
+        </script>
+
 <div class="container" style="max-width:100%">
 
 <div class="card mb-4">
@@ -74,7 +88,7 @@
             {% if perms.appraisal.assign_visador %}
             {% if appraisal.active %}
             <div class="col text-right">
-              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarTasador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarVisador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
                 person_add
               </button>
             </div>
@@ -136,7 +150,7 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_finished %}
-      <tr>
+      <tr class="previas">
         <td>
           {{ appraisal.id }}
         </td>
@@ -213,3 +227,4 @@
       $('#tasadorAppraisal_id').val(id);
       });
 </script>
+

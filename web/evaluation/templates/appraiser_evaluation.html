@@ -1,0 +1,82 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="col-md-2" id="appraiser">
+    <div class="form-group">
+        <label>Tasadores</label>
+        {{form_user.tasadores}}
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-body">
+                {% include 'user/appraiser_list.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+                <div class="card-body">
+                    {% include "main/appraisals.html" %}
+                </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+ jQuery('#appraiser').on('change', function() {
+  var object = $("#appraiser option:selected");
+  var id = object.val();
+    jQuery('.tasaciones').attr('hidden');
+    jQuery('.tasaciones').hide();
+    jQuery('#'+id).removeAttr('hidden');
+    jQuery('#'+id).show();
+});
+</script>
+
+<script>
+    $( document ).ready(function() {
+        jQuery('.tasaciones').attr('hidden');
+        jQuery('.tasaciones').hide();
+        jQuery('.clickable-row').attr('hidden');
+        jQuery('.clickable-row').hide();
+        jQuery('.previas').attr('hidden');
+        jQuery('.previas').hide();
+});
+</script>
+
+<script>
+    jQuery('#appraiser').on('change', function() {
+  var object = $("#appraiser option:selected");
+  if (object.val() == 0 ) {
+    jQuery('#other').removeAttr('hidden');
+    jQuery('#other').show();
+    jQuery('#other').attr('required','required');
+    jQuery('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+    jQuery('#code').removeAttr('class', 'form-group has-error');
+    jQuery('.help-block').hide();
+    jQuery('#id_solicitanteCodigo_create').removeAttr('style');
+    jQuery('#code').attr('class', 'form-group');
+
+
+ }
+ else {
+    jQuery('#other').hide();
+    jQuery('#other').removeAttr('required');
+    jQuery('#other').val('');
+    jQuery('#id_solicitanteCodigo_create').attr('data-validation','required');
+ }
+});
+</script>
+
+
+{% endblock %}
