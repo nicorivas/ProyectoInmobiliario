@@ -3,6 +3,8 @@
     <div class="card mb-2">
       <div class="card-body">
         <h5 class="card-title">Fotografías</h5>
+
+        <!-- Form to insert a picture -->
         <div class="form-group row mb-4">
           <div class="col-md-4">
             <div class="custom-file">
@@ -23,15 +25,34 @@
             <button name='btn_upload_photo' class="btn btn-primary">Agregar foto</button>
           </div>
         </div>
+
+        <!-- Gallery -->
         <div class="container-fluid">
           <div class="row">
             {% for photo in appraisal.photos.all %}
-            <div class="card mr-2 mb-2" style="width: 12rem;">
+            <div class="card mr-2 mb-2" style="width: 16rem;">
               <a class="photo_show" data-url="{{photo.photo.url}}" data-id="{{photo.id}}">
-              <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{photo.thumbnail.url}}"/>
+                <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{photo.thumbnail.url}}"/>
               </a>
               <div class="card-body">
-                <p class="card-text">{{photo.description}}</p>
+                <input name="photo_description_{{photo.id}}" class="form-control form-control-sm in_description" style="display:none;">
+                <p class="card-title description">
+                  {{photo.description}}
+                </p>
+                <p class="card-text" style="text-align:right">
+                  <a class="btn btn-sm photo_show" data-url="{{photo.photo.url}}" data-id="{{photo.id}}">
+                    <i class="material-icons">zoom_in</i>
+                  </a>
+                  <button type="button" class="btn btn-sm edit_photo" style="padding:0px; border:0px;">
+                    <i class="material-icons">edit</i>
+                  </button>
+                  <button name="btn_save_photo" value="{{photo.id}}" class="btn btn-sm save_photo" style="padding:0px; border:0px; display:none;">
+                    <i class="material-icons">save</i>
+                  </button>
+                  <button name="btn_delete_photo" value="{{photo.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </p>
               </div>
             </div>
             {% endfor %}
@@ -71,6 +92,21 @@
 </script>
 
 <script>
+  $(document).ready(function() {
+    $('.edit_photo').click(function() {
+      card = $(this).closest('.card-body')
+      p = card.find('.description')
+      description = p.html()
+      p.empty()
+      input = card.find('.in_description')
+      input.val(description.trim())
+      input.toggle()
+      $(this).toggle()
+      btn = card.find('.save_photo')
+      btn.toggle()
+    })
+  })
+
   $(document).on('click','.photo_show',function(){
       var url = $(this).data('url');
       var id = $(this).data('id');
