@@ -4,5 +4,5 @@ from django.conf.urls import url
 app_name = 'evaluation'
 
 urlpatterns = [
-    path('evaluation/', views.appraiserEvaluationView, name='apprariserEvaluation')
+    path('', views.appraiserEvaluationView, name='apprariserEvaluation')
 ]
