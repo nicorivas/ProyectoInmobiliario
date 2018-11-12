@@ -13,4 +13,4 @@ def appraiserEvaluationView(request):
     context = {'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished, 'form_user':form_user, 'lista':lista, 'tasadores': tasadores,
                'visadores': visadores,}
-    return render(request, 'evaluation/appraiser_evaluation.html', context)
+    return render(request, 'appraiser_evaluation.html', context)
