@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'square',
     'vis',
     'viz',
-    'evaluation'
+    'evaluation',
 ]
 
 MIDDLEWARE = [

@@ -37,7 +37,7 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_active %}
-      <tr class="clickable-row">
+      <tr class='activas'  id="app-{{appraisal.tasadorUser.id}}">
         <td>
           {{ appraisal.id }}
         </td>
@@ -146,11 +146,12 @@
         <th scope="col">Fecha creación</th>
         <th scope="col">Fecha término</th>
         <th scope="col"></th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       {% for appraisal in appraisals_finished %}
-      <tr class="previas">
+      <tr class="previas" id="app2-{{appraisal.tasadorUser.id}}">
         <td>
           {{ appraisal.id }}
         </td>
@@ -174,8 +175,15 @@
         <td>
         <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm">
           visibility
+          </button>
+        </td>
+        <td>
+          {% if perms.appraisal.assign_visador %}
+          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="button_delete" class="btn btn-dark btn-sm">
+          evaluar
         </button>
         </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -223,7 +231,6 @@
 <script>
   $(document).on('click','.asignar_Tasador',function(){
       var id = $(this).data('id');
-      console.log(id);
       $('#tasadorAppraisal_id').val(id);
       });
 </script>
