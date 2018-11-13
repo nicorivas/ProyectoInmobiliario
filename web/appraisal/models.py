@@ -283,3 +283,17 @@ class Comment(models.Model):
     appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
     conflict = models.BooleanField("Incidencia",default=False)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
+
+class AppraisalEvaluation(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
+    onTime = models.IntegerField("Puntualidad", blank=True,null=False,default=0)
+    completeness = models.IntegerField("Completitud", blank=True,null=False,default=0)
+    generalQuality = models.IntegerField("Calidad General", blank=True,null=False,default=0)
+    commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)
+    commentFeedback = models.CharField("Feedback de la tasación", null=False, blank=True, max_length=500)
+
+    @property
+    def appraisalEvaluationMean(self):
+        evaluationMean = (self.onTime + self.completeness + self.generalQuality)/3
+        return evaluationMean

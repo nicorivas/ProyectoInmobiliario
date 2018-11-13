@@ -138,12 +138,50 @@
             </tr>
           </thead>
           <tbody>
-            <td>
+            <tr>
+
+             <td>
              Puntualidad
-            </td>
-          <td>
+              </td>
+             <td>
              {{evaluationForm.onTime}}
-          </td>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                 Completitud
+              </td>
+              <td>
+                 {{evaluationForm.completeness}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                 Calidad General
+              </td>
+              <td>
+                {{evaluationForm.generalQuality}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 Comentarios
+              </td>
+              <td>
+                {{evaluationForm.commentText}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 Feedback al Tasador
+              </td>
+              <td>
+                {{evaluationForm.commentFeedback}}
+              </td>
+            </tr>
+
           </tbody>
         </table>
       </div>

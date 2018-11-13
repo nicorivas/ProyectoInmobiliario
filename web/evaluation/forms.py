@@ -13,5 +13,6 @@ class EvaluationForm(forms.Form):
     completeness = forms.IntegerField(label="Completitud")
     generalQuality = forms.IntegerField(label='Calidad General')
     commentText = forms.CharField(label='Comentarios', max_length=500, widget=forms.Textarea, required=False)
-    commentText.widget.attrs.update({'class': "form-control", 'rows': 3})
+    commentText.widget.attrs.update({'class': "form-control", 'rows': 2})
     commentFeedback = forms.CharField(label='Feedback', max_length=500, widget=forms.Textarea, required=False)
+    commentFeedback.widget.attrs.update({'class': "form-control", 'rows': 2})
