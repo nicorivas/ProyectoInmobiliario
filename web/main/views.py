@@ -25,10 +25,17 @@ def assign_tasadorNF(request):
     save_appraisalNF(appraisal, request,'Changed tasador')
     return
 
+def assign_visadorNF(request):
+    appraisal = Appraisal.objects.get(pk=request.POST.dict()['visadorAppraisal_id'])
+    appraisal.visadorUser = User.objects.get(pk=request.POST.dict()['visador'])
+    save_appraisalNF(appraisal, request,'Changed visador')
+    return
+
 @login_required(login_url='/user/login')
 def main(request):
 
     if request.method == 'POST':
+        print(request.POST)
         if 'delete' in request.POST:
             # Handle the delete button, next to every appraisal
             id = int(request.POST['appraisal_id'])
@@ -37,14 +44,18 @@ def main(request):
         if 'btn_assign_tasador' in request.POST.keys():
             print(request.POST.dict())
             ret = assign_tasadorNF(request)
+        if 'btn_assign_visador' in request.POST.keys():
+            print(request.POST.dict())
+            ret = assign_visadorNF(request)
 
 
     tasadores = User.objects.filter(groups__name__in=['tasador'])
+    visadores = User.objects.filter(groups__name__in=['visador'])
     appraisals_active, appraisals_finished = userAppraisals(request)
     context = {
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
-        'tasadores':tasadores}
+        'tasadores':tasadores, 'visadores':visadores}
 
     return render(request, 'main/index.html', context)
 

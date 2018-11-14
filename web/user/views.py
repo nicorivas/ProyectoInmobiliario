@@ -43,6 +43,12 @@ def save_appraisalNF(appraisal, request, comment):
         reversion.set_comment(comment)
         return
 
+def assign_visadorNF(request):
+    appraisal = Appraisal.objects.get(pk=request.POST.dict()['visadorAppraisal_id'])
+    appraisal.visadorUser = User.objects.get(pk=request.POST.dict()['visador'])
+    save_appraisalNF(appraisal, request,'Changed visador')
+    return
+
 def assign_tasadorNF(request):
     appraisal = Appraisal.objects.get(pk=request.POST.dict()['tasadorAppraisal_id'])
     appraisal.tasadorUser = User.objects.get(pk=request.POST.dict()['tasador'])
@@ -72,6 +78,10 @@ def view_profile(request, pk=None):
         if 'btn_assign_tasador' in request.POST.keys():
             print(request.POST.dict())
             ret = assign_tasadorNF(request)
+        if 'btn_assign_visador' in request.POST.keys():
+            print(request.POST.dict())
+            ret = assign_visadorNF(request)
+
     if pk:
         user = User.objects.get(pk=pk)
         userprofile = UserProfile.objects.get(pk=pk)
