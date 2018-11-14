@@ -146,6 +146,7 @@ class RealEstate(models.Model):
     sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
     sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
     sourceDatePublished = models.DateTimeField("Fecha publicación",blank=True,null=True)
+    sourceAddedManually = models.BooleanField("Añadido manualmente",blank=True,null=False,default=False)
 
     marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
 
@@ -347,6 +348,8 @@ class RealEstate(models.Model):
             return 'TocToc'
         elif self.sourceName == 'portali':
             return 'P.I.'
+        elif self.sourceName == 'portalinmobiliario':
+            return 'P.I.'
         else:
             return self.sourceName
 
@@ -373,16 +376,16 @@ class RealEstate(models.Model):
 
     @property
     def is_apartment(self):
-        print(self.propertyType)
-        return self.propertyType == self.TYPE_APARTMENT
+        # Casting to int is done so that it also works when called in javascript.
+        return int(self.propertyType == self.TYPE_APARTMENT)
 
     @property
     def is_house(self):
-        return self.propertyType == self.TYPE_HOUSE
+        return int(self.propertyType == self.TYPE_HOUSE)
 
     @property
     def is_building(self):
-        return self.propertyType == self.TYPE_BUILDING
+        return int(self.propertyType == self.TYPE_BUILDING)
 
     @property
     def address_dict(self):

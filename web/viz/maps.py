@@ -5,10 +5,12 @@ from bokeh.embed import components
 import numpy as np
 
 def mapReferences(references,realestate):
-    map_options = GMapOptions(lat=realestate.lat, lng=realestate.lng, map_type="roadmap", zoom=15)
+    map_options = GMapOptions(lat=realestate.lat, lng=realestate.lng, map_type="roadmap", zoom=13, scale_control=True)
     p = gmap("AIzaSyAKZ-wutxLGtqlojKj00BwHKFlH5dkr47c", map_options,plot_width=1000,plot_height=400)
     lat = np.array(references.values_list('lat',flat=True))
     lng = np.array(references.values_list('lng',flat=True))
+    print('lat',lat)
+    print('lng',lng)
     source = ColumnDataSource(data=dict(
         lat=lat,
         lon=lng)

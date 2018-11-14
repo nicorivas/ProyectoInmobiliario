@@ -9,6 +9,7 @@ from house.models import House
 from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo
+from commune.models import Commune
 
 import reversion
 from copy import deepcopy
@@ -25,6 +26,7 @@ from .forms import FormAppraisal
 from .forms import FormComment
 from .forms import FormPhotos
 from .forms import FormCreateApartment
+from .forms import FormCreateHouse
 from .forms import FormCreateConstruction
 from .forms import FormCreateTerrain
 from .forms import FormCreateAsset
@@ -163,6 +165,13 @@ def save(request,forms,appraisal,realEstate):
             forms['property'].save()
             forms['realestate'].save()
             save_appraisal(request,forms,'Saved')
+            re_ids = request.POST.getlist('valuationRealEstateRow')
+            re_ids_re = request.POST.getlist('valuationRealEstateRemove')
+            for i, re_id in enumerate(re_ids):
+                if not int(re_ids_re[i]):
+                    valuation_add_realestate(request,forms,appraisal,re_id)
+                else:
+                    valuation_remove_realestate(request,forms,appraisal,re_id)
             return True
         else:
             print('errors',forms['property'].errors)
@@ -281,7 +290,7 @@ def save_photo(request,forms,appraisal):
         return
 
 def add_realestate(request,forms,appraisal,realestate):
-    form = forms['createApartment']
+    form = forms['createRealEstate']
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         if form.is_valid():
 
@@ -309,10 +318,30 @@ def add_realestate(request,forms,appraisal,realestate):
             apartment.save()
 
             valuation_add_realestate(request,forms,appraisal,apartment.realestate_ptr.id)
+        else:
+            print(forms['createRealEstate'].errors)
+    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+        if form.is_valid():
+            house = create.house_create(
+                realestate.addressRegion,
+                form.cleaned_data['addressCommune'],
+                form.cleaned_data['addressStreet'],
+                form.cleaned_data['addressNumber'])
+            house.sourceUrl = form.cleaned_data['sourceUrl']
+            house.sourceId = form.cleaned_data['sourceId']
+            house.sourceName = form.cleaned_data['sourceName']
+            house.marketPrice = form.cleaned_data['marketPrice']
+            house.bedrooms = form.cleaned_data['bedrooms']
+            house.bathrooms = form.cleaned_data['bathrooms']
+            house.builtSquareMeters = form.cleaned_data['builtSquareMeters']
+            house.terrainSquareMeters = form.cleaned_data['terrainSquareMeters']
+            house.marketPrice = form.cleaned_data['marketPrice']
+            house.save()
+            valuation_add_realestate(request,forms,appraisal,house.realestate_ptr.id)
+        else:
+            print(forms['createRealEstate'].errors)
     else:
-        print(request.POST)
-        print(forms['createApartment'])
-        print(forms['createApartment'].errors)
+        return False
 
 def valuation_add_realestate(request,forms,appraisal,realestate_id):
     try:
@@ -482,8 +511,10 @@ def float_es(string):
 
 def clean_request_post(request_post):
 
-    request_post['valorUF'] = float_es(request_post['valorUF'])
-    request_post['c-year'] = request_post['c-year']+'-01-01'
+    if 'valorUF' in request_post.keys():
+        request_post['valorUF'] = float_es(request_post['valorUF'])
+    if 'c-year' in request_post.keys():
+        request_post['c-year'] = request_post['c-year']+'-01-01'
 
     return request_post
 
@@ -520,13 +551,14 @@ def view_appraisal(request, **kwargs):
         forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
         forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-            apartment_new = Apartment()
-            forms['createApartment'] = FormCreateApartment(request_post,prefix='vc',instance=apartment_new)
-        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             forms['property'] = FormApartment(request_post,instance=realestate.apartment)
             forms['building'] = FormBuilding(request_post,instance=realestate.apartment.building_in)
+            apartment_new = Apartment()
+            forms['createRealEstate'] = FormCreateApartment(request_post,prefix='vc',instance=apartment_new)
         if realestate.propertyType == RealEstate.TYPE_HOUSE:
             forms['property'] = FormHouse(request_post,instance=realestate.house)
+            house_new = House()
+            forms['createRealEstate'] = FormCreateHouse(request_post,prefix='vc',instance=house_new)
         forms['photos'] = FormPhotos(request_post,request.FILES)
 
         # Switch to action
@@ -572,12 +604,20 @@ def view_appraisal(request, **kwargs):
     for obj in refRealEstate:
         references.append({'realestate':obj})
 
-    valRealEstate = [x.apartment for x in appraisal.valuationRealEstate.all()]
-    for ref in references:
-        if ref['realestate'] in valRealEstate:
-            ref['included_in_valuation'] = 1
-        else:
-            ref['included_in_valuation'] = 0
+    if realestate.propertyType == RealEstate.TYPE_APARTMENT:    
+        valRealEstate = [x.apartment for x in appraisal.valuationRealEstate.all()]
+        for ref in references:
+            if ref['realestate'] in valRealEstate:
+                ref['included_in_valuation'] = 1
+            else:
+                ref['included_in_valuation'] = 0
+    else:
+        valRealEstate = [x.house for x in appraisal.valuationRealEstate.all()]
+        for ref in references:
+            if ref['realestate'] in valRealEstate:
+                ref['included_in_valuation'] = 1
+            else:
+                ref['included_in_valuation'] = 0
 
     plot_map = {}
     # Map of references
@@ -628,15 +668,22 @@ def view_appraisal(request, **kwargs):
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
-        forms['createApartment'] = FormCreateApartment(prefix='vc',label_suffix='')
+        forms['createRealEstate'] = FormCreateApartment(prefix='vc',label_suffix='')
         forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
     if realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
+        forms['createRealEstate'] = FormCreateHouse(prefix='vc',label_suffix='')
         forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
+
+    # Select communes for create building
+    communes = Commune.objects.only('name').filter(region=realestate.addressRegion).order_by('name')
+    commune = Commune.objects.only('name').get(name__icontains=realestate.addressCommune)
+    forms['createRealEstate'].fields['addressCommune'].queryset = communes
+    forms['createRealEstate'].fields['addressCommune'].initial = commune
 
     #print('form initial',forms['realestate'])
 

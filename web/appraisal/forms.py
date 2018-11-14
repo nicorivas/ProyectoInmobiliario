@@ -224,6 +224,39 @@ class FormCreateApartment(forms.ModelForm):
             'marketPrice': forms.NumberInput(attrs=class_bs)
             }
 
+class FormCreateHouse(forms.ModelForm):
+    class Meta:
+        model = House
+        fields = [
+            'propertyType',
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'sourceUrl',
+            'sourceName',
+            'sourceId',
+            'bedrooms',
+            'bathrooms',
+            'builtSquareMeters',
+            'terrainSquareMeters',
+            'marketPrice'
+            ]
+        class_bs = {'class':"form-control form-control-sm"}
+        widgets = {
+            'propertyType':forms.Select(attrs={'class':"form-control form-control-sm sourceName",'readonly':'readonly'}),
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'sourceUrl': forms.URLInput(attrs=class_bs),
+            'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
+            'sourceId': forms.TextInput(attrs=class_bs),
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
+            'marketPrice': forms.NumberInput(attrs=class_bs)
+            }
+
 class FormCreateConstruction(forms.ModelForm):
     class Meta:
         model = Construction

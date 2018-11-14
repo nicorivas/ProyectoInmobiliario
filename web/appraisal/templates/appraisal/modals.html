@@ -191,61 +191,63 @@
 
         <div class="form-group">
           <label>Tipo de propiedad</label>
-          {{forms.createApartment.propertyType}}
+          {{forms.createRealEstate.propertyType}}
         </div>
 
         <div class="row">
           <div class="col-6">
             <div class="form-group">
               <label>Calle</label>
-              {{forms.createApartment.addressStreet}}
+              {{forms.createRealEstate.addressStreet}}
             </div>
           </div>
           <div class="col-2">
             <div class="form-group">
               <label>Número</label>
-              {{forms.createApartment.addressNumber}}
+              {{forms.createRealEstate.addressNumber}}
             </div>
           </div>
           <div class="col-4">
             <div class="form-group">
               <label>Comuna</label>
-              {{forms.createApartment.addressCommune}}
+              {{forms.createRealEstate.addressCommune}}
             </div>
           </div>
         </div>
 
+        {% if realestate.is_apartment %}
         <div class="row">
           <div class="col-6">
             <div class="form-group">
               <label>Departamento</label>
-              {{forms.createApartment.number}}
+              {{forms.createRealEstate.number}}
             </div>
           </div>
           <div class="col-6">
             <div class="form-group">
               <label>Piso</label>
-              {{forms.createApartment.floor}}
+              {{forms.createRealEstate.floor}}
             </div>
           </div>
         </div>
+        {% endif %}
 
         <div class="form-group">
           <label>Fuente URL</label>
-          {{forms.createApartment.sourceUrl}}
+          {{forms.createRealEstate.sourceUrl}}
         </div>
 
         <div class="row">
           <div class="col">
             <div class="form-group">
               <label>Fuente</label>
-              {{forms.createApartment.sourceName}}
+              {{forms.createRealEstate.sourceName}}
             </div>
           </div>
           <div class="col">
             <div class="form-group">
               <label>Código</label>
-              {{forms.createApartment.sourceId}}
+              {{forms.createRealEstate.sourceId}}
             </div>
           </div>
         </div>
@@ -254,32 +256,47 @@
           <div class="col">
             <div class="form-group">
               <label>Dormitorios</label>
-              {{forms.createApartment.bedrooms}}
+              {{forms.createRealEstate.bedrooms}}
             </div>
           </div>
           <div class="col">
             <div class="form-group">
               <label>Baños</label>
-              {{forms.createApartment.bathrooms}}
+              {{forms.createRealEstate.bathrooms}}
             </div>
           </div>
+          {% if realestate.is_apartment %}
           <div class="col">
             <div class="form-group">
               <label>Superficie útil</label>
-              {{forms.createApartment.usefulSquareMeters}}
+              {{forms.createRealEstate.usefulSquareMeters}}
             </div>
           </div>
           <div class="col">
             <div class="form-group">
               <label>Superficie terraza</label>
-              {{forms.createApartment.terraceSquareMeters}}
+              {{forms.createRealEstate.terraceSquareMeters}}
             </div>
           </div>
+          {% elif realestate.is_house %}
+          <div class="col">
+            <div class="form-group">
+              <label>Superficie construida</label>
+              {{forms.createRealEstate.builtSquareMeters}}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Superficie terreno</label>
+              {{forms.createRealEstate.terrainSquareMeters}}
+            </div>
+          </div>
+          {% endif %}
         </div>
 
         <div class="form-group">
           <label>Precio mercado</label>
-          {{forms.createApartment.marketPrice}}
+          {{forms.createRealEstate.marketPrice}}
         </div>
 
       </div>
@@ -298,11 +315,6 @@
 </form>
 
 <script>
-  $.validator.setDefaults({
-    submitHandler: function() {
-      alert("submitted!");
-    }
-  });
   $("#form_create_apartment").validate({
     rules: {
       "vc-addressStreet": "required",
@@ -322,14 +334,12 @@
 
 <script>
   // Modal things
-  $("#id_vc-sourceUrl").change(function () {
+  function parseSource() {
     var url = $("#id_vc-sourceUrl").val();
     if (url == undefined) {
       return
     }
-    console.log('url',url,url.replace('http://','').replace('https://',''))
     var urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
-    console.log('urlParts',urlParts)
     if (urlParts.length == 1) {
       return
     }
@@ -344,6 +354,10 @@
       validator.element( "#id_vc-sourceName" );
       validator.element( "#id_vc-sourceId" );
     }
+  }
+  $("#id_vc-sourceUrl").change(parseSource)
+  $(document).ready(function() {
+    parseSource();
   })
 </script>
 
