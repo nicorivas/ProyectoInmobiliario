@@ -7,7 +7,7 @@
 <div class="col-md-2" id="appraiser">
     <div class="form-group">
         <label>Tasadores</label>
-        {{form_user.tasadores}}
+        {{evaluationForm.tasadores}}
     </div>
 </div>
 
@@ -15,7 +15,7 @@
     <div class="col-8">
         <div class="card">
             <div class="card-body">
-                {% include 'user/appraiser_list.html' %}
+                {% include 'appraiser_list.html' %}
             </div>
         </div>
     </div>
@@ -37,9 +37,17 @@
   var object = $("#appraiser option:selected");
   var id = object.val();
     jQuery('.tasaciones').attr('hidden');
-    jQuery('.tasaciones').hide();
+    jQuery('.tasaciones').hide()
+    jQuery('.activas').attr('hidden');
+    jQuery('.activas').hide();
+    jQuery('.previas').attr('hidden');
+    jQuery('.previas').hide();
     jQuery('#'+id).removeAttr('hidden');
     jQuery('#'+id).show();
+    jQuery('#app-'+id).removeAttr('hidden');
+    jQuery('#app-'+id).show();
+    jQuery('#app2-'+id).removeAttr('hidden');
+    jQuery('#app2-'+id).show();
 });
 </script>
 
@@ -47,8 +55,8 @@
     $( document ).ready(function() {
         jQuery('.tasaciones').attr('hidden');
         jQuery('.tasaciones').hide();
-        jQuery('.clickable-row').attr('hidden');
-        jQuery('.clickable-row').hide();
+        jQuery('.activas').attr('hidden');
+        jQuery('.activas').hide();
         jQuery('.previas').attr('hidden');
         jQuery('.previas').hide();
 });

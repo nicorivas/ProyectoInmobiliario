@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib.auth.models import User
-from .forms import EditProfileForm, AuthenticationFormB, EvaluationForm
+from .forms import EditProfileForm, AuthenticationFormB
+
 from .models import UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 

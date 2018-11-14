@@ -119,5 +119,78 @@
   </div>
 </div>
 
+<div class="modal fade" id="evaluateAppraisal" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Evaluar Tasación</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <table class="table table-sm">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Categoría</th>
+              <th scope="col">Puntaje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+
+             <td>
+             Puntualidad
+              </td>
+             <td>
+             {{evaluationForm.onTime}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                 Completitud
+              </td>
+              <td>
+                 {{evaluationForm.completeness}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                 Calidad General
+              </td>
+              <td>
+                {{evaluationForm.generalQuality}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 Comentarios
+              </td>
+              <td>
+                {{evaluationForm.commentText}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 Feedback al Tasador
+              </td>
+              <td>
+                {{evaluationForm.commentFeedback}}
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button name="btn_assign_visador" class="btn btn-primary">Evaluar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
