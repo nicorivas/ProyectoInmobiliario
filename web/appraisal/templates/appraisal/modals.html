@@ -175,6 +175,179 @@
 
 
 
+<form class="cmxform" action="" method="post" id="form_create_apartment" action novalidate="novalidate">
+{% csrf_token %}
+
+<div class="modal fade" id="addRealEstate" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Añadir propiedad</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label>Tipo de propiedad</label>
+          {{forms.createApartment.propertyType}}
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <label>Calle</label>
+              {{forms.createApartment.addressStreet}}
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="form-group">
+              <label>Número</label>
+              {{forms.createApartment.addressNumber}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              <label>Comuna</label>
+              {{forms.createApartment.addressCommune}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <label>Departamento</label>
+              {{forms.createApartment.number}}
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label>Piso</label>
+              {{forms.createApartment.floor}}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fuente URL</label>
+          {{forms.createApartment.sourceUrl}}
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label>Fuente</label>
+              {{forms.createApartment.sourceName}}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Código</label>
+              {{forms.createApartment.sourceId}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label>Dormitorios</label>
+              {{forms.createApartment.bedrooms}}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Baños</label>
+              {{forms.createApartment.bathrooms}}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Superficie útil</label>
+              {{forms.createApartment.usefulSquareMeters}}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Superficie terraza</label>
+              {{forms.createApartment.terraceSquareMeters}}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Precio mercado</label>
+          {{forms.createApartment.marketPrice}}
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button id="id_btn_add_realestate" name="btn_add_realestate" class="btn btn-primary">Añadir</button>
+        <!--<button class="btn btn-danger" name="btn_delete_photo">Borrar</button>-->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</form>
+
+<script>
+  $.validator.setDefaults({
+    submitHandler: function() {
+      alert("submitted!");
+    }
+  });
+  $("#form_create_apartment").validate({
+    rules: {
+      "vc-addressStreet": "required",
+      "vc-addressNumber": "required",
+      "vc-addressCommune": "required",
+      "vc-sourceUrl": "required",
+      "vc-sourceName": "required",
+      "vc-sourceId": "required",
+      "vc-bathrooms": "required",
+      "vc-bedrooms": "required",
+      "vc-usefulSquareMeters": "required",
+      "vc-terraceSquareMeters": "required",
+      "vc-marketPrice": "required"
+    }
+  });
+</script>
+
+<script>
+  // Modal things
+  $("#id_vc-sourceUrl").change(function () {
+    var url = $("#id_vc-sourceUrl").val();
+    if (url == undefined) {
+      return
+    }
+    console.log('url',url,url.replace('http://','').replace('https://',''))
+    var urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
+    console.log('urlParts',urlParts)
+    if (urlParts.length == 1) {
+      return
+    }
+    var domain = urlParts[0].replace('www.','');
+    var id = urlParts[4].split('-')[0]
+    if (domain == 'portalinmobiliario.com') {
+      $("#id_vc-sourceName").attr('value','portalinmobiliario');
+      $("#id_vc-sourceName").val('portalinmobiliario');
+      $("#id_vc-sourceId").attr('value',id);
+      $("#id_vc-sourceId").val(id);
+      var validator = $( "#form_create_apartment" ).validate();
+      validator.element( "#id_vc-sourceName" );
+      validator.element( "#id_vc-sourceId" );
+    }
+  })
+</script>
+
+
 <div class="modal fade" id="modalPhoto" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">

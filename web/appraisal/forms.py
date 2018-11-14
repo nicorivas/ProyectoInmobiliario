@@ -1,5 +1,5 @@
 from django import forms
-from realestate.models import RealEstate, Construction
+from realestate.models import RealEstate, Construction, Terrain, Asset
 from apartment.models import Apartment
 from appraisal.models import Appraisal
 from building.models import Building
@@ -195,7 +195,11 @@ class FormCreateApartment(forms.ModelForm):
             'addressStreet',
             'addressNumber',
             'addressCommune',
+            'number',
+            'floor',
+            'sourceUrl',
             'sourceName',
+            'sourceId',
             'bedrooms',
             'bathrooms',
             'usefulSquareMeters',
@@ -208,7 +212,11 @@ class FormCreateApartment(forms.ModelForm):
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
             'addressCommune': forms.Select(attrs=class_bs),
-            'sourceName': forms.TextInput(attrs=class_bs),
+            'number': forms.NumberInput(attrs=class_bs),
+            'floor': forms.NumberInput(attrs=class_bs),
+            'sourceUrl': forms.URLInput(attrs=class_bs),
+            'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
+            'sourceId': forms.TextInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
@@ -239,6 +247,33 @@ class FormCreateConstruction(forms.ModelForm):
             'UFPerArea': forms.NumberInput(attrs=class_bs)
             }     
 
+class FormCreateTerrain(forms.ModelForm):
+    class Meta:
+        model = Terrain
+        fields = [
+            'name',
+            'area',
+            'UFPerArea'
+            ]
+        class_bs = {'class':"form-control form-control-sm constructions"}
+        widgets = {
+            'name': forms.TextInput(attrs=class_bs),
+            'area': forms.NumberInput(attrs=class_bs),
+            'UFPerArea': forms.NumberInput(attrs=class_bs)
+            }
+
+class FormCreateAsset(forms.ModelForm):
+    class Meta:
+        model = Asset
+        fields = [
+            'name',
+            'value'
+            ]
+        class_bs = {'class':"form-control form-control-sm constructions"}
+        widgets = {
+            'name': forms.TextInput(attrs=class_bs),
+            'value': forms.NumberInput(attrs=class_bs)
+            } 
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}

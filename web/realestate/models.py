@@ -8,7 +8,7 @@ class Construction(models.Model):
     '''
     Parts of a RealEstate, such as balconies or other parts of a house.
     '''
-    name = models.CharField("Calle",max_length=300,default="",blank=True)
+    name = models.CharField("Nombre",max_length=300,default="",blank=True)
     
     complementary = models.BooleanField("Complementaria",blank=True,default=False)
 
@@ -74,6 +74,29 @@ class Construction(models.Model):
         null=False,
         default=0)
 
+class Terrain(models.Model):
+    '''
+    Parts of the terrain
+    '''
+    name = models.CharField("Nombre",max_length=300,default="",blank=True)
+    
+    area = models.FloatField("Area",
+        blank=True,
+        null=False,
+        default=0)
+
+    UFPerArea = models.FloatField("UF per Area",
+        blank=True,
+        null=False,
+        default=0)
+
+class Asset(models.Model):
+    '''
+    Any other asset, simply a name with value
+    '''
+    name = models.CharField("Nombre",max_length=300,default="",blank=True)
+    value = models.FloatField("Valor en UF",blank=True,null=False,default=0)
+
 class RealEstate(models.Model):
     ''' Topmost abstraction for all kinds of properties that can be valued'''
     ''' Bien raíz '''
@@ -92,8 +115,8 @@ class RealEstate(models.Model):
         choices=propertyType_choices,
         default=TYPE_OTHER)
 
-    addressStreet = models.CharField("Calle",max_length=300,default="")
-    addressNumber = models.CharField("Número",max_length=10,default=0)
+    addressStreet = models.CharField("Calle",max_length=300,default="",blank=True,)
+    addressNumber = models.CharField("Número",max_length=10,default=0,blank=True,)
     addressCommune = models.ForeignKey(Commune,
         on_delete=models.CASCADE,
         verbose_name="Comuna",
@@ -119,7 +142,7 @@ class RealEstate(models.Model):
         blank=True,
         null=True)
 
-    sourceUrl = models.URLField("Source url",null=True,blank=True)
+    sourceUrl = models.URLField("Source url",max_length=1000,null=True,blank=True)
     sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
     sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
     sourceDatePublished = models.DateTimeField("Fecha publicación",blank=True,null=True)
@@ -128,27 +151,21 @@ class RealEstate(models.Model):
 
     constructions = models.ManyToManyField(Construction)
 
+    terrains = models.ManyToManyField(Terrain)
+
+    assets = models.ManyToManyField(Asset)
+
     BOOLEAN_NULL_CHOICES = (
-        (None, "S/A"),
-        (True, "Si"),
-        (False, "No")
-    )
-    BOOLEAN_NULL_CHOICES_TMP = (
         (1, "S/A"),
         (2, "Si"),
         (3, "No")
     )
-    mercadoObjetivo = models.PositiveSmallIntegerField("Mercado objetivo",blank=True,null=False,default=1,choices=BOOLEAN_NULL_CHOICES_TMP)
+    mercadoObjetivo = models.PositiveSmallIntegerField("Mercado objetivo",blank=True,null=False,default=1,choices=BOOLEAN_NULL_CHOICES)
 
     programa = models.CharField("Programa",max_length=10000,null=True,blank=True)
 
     estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
 
-    BOOLEAN_NULL_CHOICES = (
-        (None, "S/A"),
-        (True, "Si"),
-        (False, "No")
-    )
     anoConstruccion = models.IntegerField("Año construcción",
         blank=True,
         null=True)
@@ -165,7 +182,7 @@ class RealEstate(models.Model):
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     SELLO_VERDE_CHOICES = (
         ('V', 'Verde'),
@@ -185,7 +202,7 @@ class RealEstate(models.Model):
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     OCUPANTE_CHOICES = (
         ('P', 'Propietario'),
@@ -256,25 +273,25 @@ class RealEstate(models.Model):
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     viviendaSocial = models.PositiveSmallIntegerField("Vivienda social",
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     desmontable = models.PositiveSmallIntegerField("Desmontable",
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     adobe = models.PositiveSmallIntegerField("Adobe",
         blank=True,
         null=False,
         default=1,
-        choices=BOOLEAN_NULL_CHOICES_TMP)
+        choices=BOOLEAN_NULL_CHOICES)
 
     acogidaLeyChoices = (
         (0, 'O.G.U. y C.'),
@@ -334,6 +351,19 @@ class RealEstate(models.Model):
             return self.sourceName
 
     @property
+    def total_area(self):
+        if self.propertyType == self.TYPE_HOUSE:
+            if self.house.terrainSquareMeters != None and self.house.builtSquareMeters != None:
+                return self.house.terrainSquareMeters + self.house.builtSquareMeters
+            else:
+                return False
+        elif self.propertyType == self.TYPE_APARTMENT:
+            if self.apartment.usefulSquareMeters != None and self.apartment.terraceSquareMeters != None:
+                return self.apartment.usefulSquareMeters + self.apartment.terraceSquareMeters
+            else:
+                return False
+
+    @property
     def latlng(self):
         return [self.lat,self.lng]
 
@@ -343,6 +373,7 @@ class RealEstate(models.Model):
 
     @property
     def is_apartment(self):
+        print(self.propertyType)
         return self.propertyType == self.TYPE_APARTMENT
 
     @property
@@ -356,6 +387,8 @@ class RealEstate(models.Model):
     @property
     def address_dict(self):
         # Returns address fields as dictionary
+        if self.addressCommune == None or self.addressRegion == None:
+            return {}
         return {'street':self.addressStreet,'number':self.addressNumber,'commune':self.addressCommune.name,'region':self.addressRegion.shortName}
 
     @property
@@ -366,7 +399,10 @@ class RealEstate(models.Model):
     @property
     def addressVerboseNoRegion(self):
         # Returns whole address in a nice format
-        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name
+        if self.addressCommune == None:
+            return self.addressStreet+' '+str(self.addressNumber)
+        else:
+            return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name
 
     @property
     def addressShort(self):

@@ -6,7 +6,7 @@
       <div class="form-group row">
         <label class="col-sm-3 col-form-label-sm text-right">Lat/Lng</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control form-control-sm" value="{{realestate.lat}},{{realestate.lng}}" disabled>
+          <input type="text" class="form-control form-control-sm" value="{{realestate.lat|floatformat:6}},{{realestate.lng|floatformat:6}}" disabled>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@
 
           {% if realestate.is_apartment %}
           <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Construida</label>
+            <label class="col-sm-4 col-form-label-sm text-right">Útil</label>
             <div class="col-lg-5">
               <div class="input-group input-group-sm">
                 {{forms.property.usefulSquareMeters}}
@@ -142,7 +142,7 @@
           </div>
 
           <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Útil</label>
+            <label class="col-sm-4 col-form-label-sm text-right">Terraza</label>
             <div class="col-lg-5">
               <div class="input-group input-group-sm">
                 {{forms.property.terraceSquareMeters}}

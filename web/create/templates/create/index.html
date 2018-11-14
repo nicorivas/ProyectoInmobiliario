@@ -261,46 +261,6 @@ else {
    });
 </script>
 
-<!--
-<script>
-   // Example starter JavaScript for disabling form submissions if there are invalid fields
-   (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-         // Fetch all the forms we want to apply custom Bootstrap validation styles to
-         var forms = document.getElementsByClassName('needs-validation');
-         // Loop over them and prevent submission
-         var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-               for (var i = 0, element; element = form.elements[i++];) {
-                  console.log(element.name)
-                  if (element.name == 'clienteRut_create') {
-                     console.log('a')
-                     var ruts = element.value;
-                     ruts = ruts.split('.').join("");
-                     ruts = ruts.split('-').join("");
-                     var rut = parseInt(ruts);
-                     if (isNaN(rut)) {
-                        element.classList.add('invalid')
-                        event.preventDefault();
-                        event.stopPropagation();
-                     }
-                  } else {
-                     element.checkValidity()
-                  }
-               }
-               //if (form.checkValidity() === false) {
-               //   event.preventDefault();
-               //   event.stopPropagation();
-               //}
-               form.classList.add('was-validated');
-            }, false);
-         });
-      }, false);
-   })();
-</script>
--->
-
 <script>
  jQuery('#petitioner').on('change', function() {
   var object = $("#petitioner option:selected");

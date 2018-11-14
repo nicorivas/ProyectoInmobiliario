@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
-from realestate.models import RealEstate, Construction
+from realestate.models import RealEstate, Construction, Terrain, Asset
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -26,6 +26,9 @@ from .forms import FormComment
 from .forms import FormPhotos
 from .forms import FormCreateApartment
 from .forms import FormCreateConstruction
+from .forms import FormCreateTerrain
+from .forms import FormCreateAsset
+from create import create
 
 import viz.maps as maps
 import appraisal.related as related
@@ -137,14 +140,15 @@ def save(request,forms,appraisal,realEstate):
             # objects.
             forms['building'].save()
             forms['property'].save()
-            print('before saving',realEstate.anoConstruccion)
-            print('cleaned_data',forms['realestate'].cleaned_data)
             forms['realestate'].save()
-            print('after saving',realEstate.mercadoObjetivo)
             save_appraisal(request,forms,'Saved')
             re_ids = request.POST.getlist('valuationRealEstateRow')
-            for re_id in re_ids:
-                valuation_add_realestate(request,forms,appraisal,re_id)
+            re_ids_re = request.POST.getlist('valuationRealEstateRemove')
+            for i, re_id in enumerate(re_ids):
+                if not int(re_ids_re[i]):
+                    valuation_add_realestate(request,forms,appraisal,re_id)
+                else:
+                    valuation_remove_realestate(request,forms,appraisal,re_id)
             return True
         else:
             print('errors',forms['building'].errors)
@@ -155,12 +159,16 @@ def save(request,forms,appraisal,realEstate):
         if forms['realestate'].is_valid() and \
            forms['property'].is_valid() and \
            forms['appraisal'].is_valid():
-            for name, form in forms.items():
-                if name == ['realestate','property']:
-                    form.save()
-                if name == 'appraisal':
-                    save_appraisal(request,forms,'Saved')
+            
+            forms['property'].save()
+            forms['realestate'].save()
+            save_appraisal(request,forms,'Saved')
             return True
+        else:
+            print('errors',forms['property'].errors)
+            print('errors',forms['realestate'].errors)
+            print('errors',forms['appraisal'].errors)
+            print(forms['appraisal'])
     else:
         return False
 
@@ -272,6 +280,40 @@ def save_photo(request,forms,appraisal):
     except Photo.DoesNotExist:
         return
 
+def add_realestate(request,forms,appraisal,realestate):
+    form = forms['createApartment']
+    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        if form.is_valid():
+
+            building = create.building_create(
+                realestate.addressRegion,
+                form.cleaned_data['addressCommune'],
+                form.cleaned_data['addressStreet'],
+                form.cleaned_data['addressNumber'])
+            building.sourceUrl = form.cleaned_data['sourceUrl']
+            building.sourceId = form.cleaned_data['sourceId']
+            building.sourceName = form.cleaned_data['sourceName']
+            building.fromApartment = True
+            building.save()
+
+            apartment = create.apartment_create(building,0)
+            apartment.sourceUrl = form.cleaned_data['sourceUrl']
+            apartment.sourceId = form.cleaned_data['sourceId']
+            apartment.sourceName = form.cleaned_data['sourceName']
+            apartment.marketPrice = form.cleaned_data['marketPrice']
+            apartment.bedrooms = form.cleaned_data['bedrooms']
+            apartment.bathrooms = form.cleaned_data['bathrooms']
+            apartment.usefulSquareMeters = form.cleaned_data['usefulSquareMeters']
+            apartment.terraceSquareMeters = form.cleaned_data['terraceSquareMeters']
+            apartment.marketPrice = form.cleaned_data['marketPrice']
+            apartment.save()
+
+            valuation_add_realestate(request,forms,appraisal,apartment.realestate_ptr.id)
+    else:
+        print(request.POST)
+        print(forms['createApartment'])
+        print(forms['createApartment'].errors)
+
 def valuation_add_realestate(request,forms,appraisal,realestate_id):
     try:
         realestate = RealEstate.objects.get(id=realestate_id)
@@ -284,6 +326,81 @@ def valuation_add_realestate(request,forms,appraisal,realestate_id):
     except RealEstate.DoesNotExist:
         return
 
+def valuation_remove_realestate(request,forms,appraisal,realestate_id):
+    try:
+        realestate = RealEstate.objects.get(id=realestate_id)
+        if realestate in appraisal.valuationRealEstate.all():
+            appraisal.valuationRealEstate.remove(realestate_id)
+    except RealEstate.DoesNotExist:
+        return
+
+def valuation_add_asset(request,forms,appraisal,realestate):
+    '''
+    Create asset based on forms. A bit complicated because some fields
+    of the form are always active ('area', 'UFPerArea'), but we need to add
+    only those that have been activated to be edited. The button edit
+    changes the hidden inout construction_edited. All of the rows have
+    'construction_id'.
+    '''
+    print('valuation_add_asset')
+    c = 0
+    for i, cid in enumerate(request.POST.getlist('asset_id')):
+        if int(request.POST.getlist('asset_edited')[i]):
+            request_post = request.POST.copy()
+            # These are not always active, so count with c.
+            request_post['a-name'] = request_post.getlist('a-name')[c]
+            request_post['a-value'] = request_post.getlist('a-value')[i]
+            forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
+            if forms['createAsset'].is_valid():
+                # Does the terrain exist?
+                try:
+                    asset = Asset.objects.get(id=cid)
+                    # It exists, so update.
+                    form = FormCreateAsset(request_post,instance=asset,prefix='a')
+                    form.save()
+                except Asset.DoesNotExist:
+                    # It's a new one, so create.
+                    asset = forms['createAsset'].save()
+                    realestate.assets.add(asset)
+                    realestate.save()
+            else:
+                print(forms['createAsset'].errors)
+            c =+ 1
+
+def valuation_add_terrain(request,forms,appraisal,realestate):
+    '''
+    Create terrain based on forms. A bit complicated because some fields
+    of the form are always active ('area', 'UFPerArea'), but we need to add
+    only those that have been activated to be edited. The button edit
+    changes the hidden inout construction_edited. All of the rows have
+    'construction_id'.
+    '''
+    print('valuation_add_terrain')
+    c = 0
+    for i, cid in enumerate(request.POST.getlist('terrain_id')):
+        if int(request.POST.getlist('terrain_edited')[i]):
+            request_post = request.POST.copy()
+            # These are not always active, so count with c.
+            request_post['t-name'] = request_post.getlist('t-name')[c]
+            request_post['t-area'] = request_post.getlist('t-area')[i]
+            request_post['t-UFPerArea'] = request_post.getlist('t-UFPerArea')[i]
+            forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
+            if forms['createTerrain'].is_valid():
+                # Does the terrain exist?
+                try:
+                    terrain = Terrain.objects.get(id=cid)
+                    # It exists, so update.
+                    form = FormCreateTerrain(request_post,instance=terrain,prefix='t')
+                    form.save()
+                except Terrain.DoesNotExist:
+                    # It's a new one, so create.
+                    terrain = forms['createTerrain'].save()
+                    realestate.terrains.add(terrain)
+                    realestate.save()
+            else:
+                print(forms['createTerrain'].errors)
+            c =+ 1
+
 def valuation_add_construction(request,forms,appraisal,realestate):
     '''
     Create constructions based on forms. A bit complicated because some fields
@@ -292,28 +409,29 @@ def valuation_add_construction(request,forms,appraisal,realestate):
     changes the hidden inout construction_edited. All of the rows have
     'construction_id'.
     '''
+    print('valuation_add_construction')
     c = 0
     for i, cid in enumerate(request.POST.getlist('construction_id')):
         if int(request.POST.getlist('construction_edited')[i]):
             requestpost = request.POST.copy()
             # These are not always active, so count with c.
-            requestpost['name'] = requestpost.getlist('name')[c]
-            requestpost['material'] = requestpost.getlist('material')[c]
-            requestpost['year'] = requestpost.getlist('year')[c]
-            if len(requestpost['year']) == 4:
-                requestpost['year'] = requestpost['year']+'-01-01'
-            requestpost['prenda'] = requestpost.getlist('prenda')[c]
-            requestpost['recepcion'] = requestpost.getlist('recepcion')[c]
+            requestpost['c-name'] = requestpost.getlist('c-name')[c]
+            requestpost['c-material'] = requestpost.getlist('c-material')[c]
+            requestpost['c-year'] = requestpost.getlist('c-year')[c]
+            if len(requestpost['c-year']) == 4:
+                requestpost['c-year'] = requestpost['c-year']+'-01-01'
+            requestpost['c-prenda'] = requestpost.getlist('c-prenda')[c]
+            requestpost['c-recepcion'] = requestpost.getlist('c-recepcion')[c]
             # These are always active, so count with i
-            requestpost['area'] = requestpost.getlist('area')[i]
-            requestpost['UFPerArea'] = requestpost.getlist('UFPerArea')[i]
-            forms['createConstruction'] = FormCreateConstruction(requestpost)
+            requestpost['c-area'] = requestpost.getlist('c-area')[i]
+            requestpost['c-UFPerArea'] = requestpost.getlist('c-UFPerArea')[i]
+            forms['createConstruction'] = FormCreateConstruction(requestpost,prefix='c')
             if forms['createConstruction'].is_valid():
                 # Does the construction exist?
                 try:
                     construction = Construction.objects.get(id=cid)
                     # It exists, so update.
-                    form = FormCreateConstruction(requestpost,instance=construction)
+                    form = FormCreateConstruction(requestpost,instance=construction,prefix='c')
                     form.save()
                 except Construction.DoesNotExist:
                     # It's a new one, so create.
@@ -325,7 +443,6 @@ def valuation_add_construction(request,forms,appraisal,realestate):
             c =+ 1
 
 def valuation_remove_construction(request,forms,appraisal,realestate):
-    print('valuation_remove_construction')
     try:
         construction = Construction.objects.get(id=int(request.POST['btn_valuation_remove_construction']))
         construction.delete()
@@ -345,7 +462,6 @@ def getAppraisalHistory(appraisal):
         appraisal_history[c]['user'] = version_new.revision.user
         appraisal_history[c]['time'] = version_new.revision.date_created
         appraisal_history[c]['diffs'] = []
-        print(version_new.field_dict.items())
         for key, value in version_new.field_dict.items():
             if value != version_old.field_dict[key]:
                 appraisal_history[c]['diffs'].append({
@@ -359,7 +475,20 @@ def getAppraisalHistory(appraisal):
             c += 1
     return appraisal_history
 
-def appraisal(request, **kwargs):
+def float_es(string):
+    string = string.replace('.','')
+    string = string.replace(',','.')
+    return float(string)
+
+def clean_request_post(request_post):
+
+    request_post['valorUF'] = float_es(request_post['valorUF'])
+    request_post['c-year'] = request_post['c-year']+'-01-01'
+
+    return request_post
+
+
+def view_appraisal(request, **kwargs):
     '''
     General view for appraisals. Gets a variable number of parameters depending
     on the type of realestate.
@@ -369,6 +498,7 @@ def appraisal(request, **kwargs):
     appraisal = getAppraisal(request,kwargs['appraisal_id'])
     if isinstance(appraisal,HttpResponse):
         return appraisal
+
     appraisal_old = deepcopy(appraisal) # done to check differences when saving history
 
     # Get realestate
@@ -376,48 +506,59 @@ def appraisal(request, **kwargs):
     if isinstance(realestate,HttpResponse):
         return realestate
 
-    print('initial',realestate.anoConstruccion)
-
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
+        request_post = clean_request_post(request.POST.copy())
+
         # Process forms
         forms = {}
-        forms['appraisal'] = FormAppraisal(request.POST,request.FILES,instance=appraisal)
-        forms['comment'] = FormComment(request.POST)
-        forms['realestate'] = FormRealEstate(request.POST,instance=realestate)
-        forms['createConstruction'] = FormCreateConstruction(request.POST)
+        forms['appraisal'] = FormAppraisal(request_post,request.FILES,instance=appraisal)
+        forms['comment'] = FormComment(request_post)
+        forms['realestate'] = FormRealEstate(request_post,instance=realestate)
+        forms['createConstruction'] = FormCreateConstruction(request_post,prefix='c')
+        forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
+        forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-            forms['property'] = FormApartment(request.POST,instance=realestate.apartment)
-            forms['building'] = FormBuilding(request.POST,instance=realestate.apartment.building_in)
+            apartment_new = Apartment()
+            forms['createApartment'] = FormCreateApartment(request_post,prefix='vc',instance=apartment_new)
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+            forms['property'] = FormApartment(request_post,instance=realestate.apartment)
+            forms['building'] = FormBuilding(request_post,instance=realestate.apartment.building_in)
         if realestate.propertyType == RealEstate.TYPE_HOUSE:
-            forms['property'] = FormHouse(request.POST,instance=realestate.house)
-        forms['photos'] = FormPhotos(request.POST,request.FILES)
+            forms['property'] = FormHouse(request_post,instance=realestate.house)
+        forms['photos'] = FormPhotos(request_post,request.FILES)
 
         # Switch to action
-        if 'btn_save' in request.POST.keys():
+        if 'btn_save' in request_post.keys():
             ret = save(request,forms,appraisal,realestate)
-        elif 'btn_delete' in request.POST.keys():
+        elif 'btn_delete' in request_post.keys():
             ret = delete(request,appraisal)
-        elif 'btn_finish' in request.POST.keys():
+        elif 'btn_finish' in request_post.keys():
             ret = finish(request,forms,appraisal)
-        elif 'btn_comment' in request.POST.keys():
+        elif 'btn_comment' in request_post.keys():
             ret = comment(forms,appraisal)
-        elif 'btn_valuation_add_realestate' in request.POST.keys():
-            ret = valuation_add_realestate(request,forms,appraisal,request.POST['btn_valuation_add_realestate'])
-        elif 'btn_valuation_add_construction' in request.POST.keys():
+        elif 'btn_add_realestate' in request_post.keys():
+            ret = add_realestate(request,forms,appraisal,realestate)
+        elif 'btn_valuation_add_realestate' in request_post.keys():
+            ret = valuation_add_realestate(request,forms,appraisal,request_post['btn_valuation_add_realestate'])
+        elif 'btn_valuation_add_construction' in request_post.keys():
             ret = valuation_add_construction(request,forms,appraisal,realestate)
-        elif 'btn_valuation_remove_construction' in request.POST.keys():
+        elif 'btn_valuation_add_terrain' in request_post.keys():
+            ret = valuation_add_terrain(request,forms,appraisal,realestate)
+        elif 'btn_valuation_add_asset' in request_post.keys():
+            ret = valuation_add_asset(request,forms,appraisal,realestate)
+        elif 'btn_valuation_remove_construction' in request_post.keys():
             ret = valuation_remove_construction(request,forms,appraisal,realestate)
-        elif 'btn_assign_tasador' in request.POST.keys():
+        elif 'btn_assign_tasador' in request_post.keys():
             ret = assign_tasador(request,forms,appraisal)
-        elif 'btn_assign_visador' in request.POST.keys():
+        elif 'btn_assign_visador' in request_post.keys():
             ret = assign_visador(request,forms,appraisal)
-        elif 'btn_upload_photo' in request.POST.keys():
+        elif 'btn_upload_photo' in request_post.keys():
             ret = upload_photo(request,forms,appraisal)
-        elif 'btn_delete_photo' in request.POST.keys():
+        elif 'btn_delete_photo' in request_post.keys():
             ret = delete_photo(request,forms,appraisal)
-        elif 'btn_save_photo' in request.POST.keys():
+        elif 'btn_save_photo' in request_post.keys():
             ret = save_photo(request,forms,appraisal)
         else:
             ret = False
@@ -440,21 +581,31 @@ def appraisal(request, **kwargs):
 
     plot_map = {}
     # Map of references
-    if len(references) > 0:
-        plot_map = maps.mapReferences(refRealEstate,realestate)
+    #if len(references) > 0:
+    #    plot_map = maps.mapReferences(refRealEstate,realestate)
     
     # Derived properties from references
     averages = []
     stds = []
     if len(references) > 0:
-        averages = refRealEstate.aggregate(
-            Avg('marketPrice'),
-            Avg('usefulSquareMeters'),
-            Avg('terraceSquareMeters'))
-        stds = refRealEstate.aggregate(
-            StdDev('marketPrice'),
-            StdDev('usefulSquareMeters'),
-            StdDev('terraceSquareMeters'))
+        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+            averages = refRealEstate.aggregate(
+                Avg('marketPrice'),
+                Avg('usefulSquareMeters'),
+                Avg('terraceSquareMeters'))
+            stds = refRealEstate.aggregate(
+                StdDev('marketPrice'),
+                StdDev('usefulSquareMeters'),
+                StdDev('terraceSquareMeters'))
+        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+            averages = refRealEstate.aggregate(
+                Avg('marketPrice'),
+                Avg('builtSquareMeters'),
+                Avg('terrainSquareMeters'))
+            stds = refRealEstate.aggregate(
+                StdDev('marketPrice'),
+                StdDev('builtSquareMeters'),
+                StdDev('terrainSquareMeters'))
 
     # Visadores and tasadores for the modals where you can select them.
     tasadores = User.objects.filter(groups__name__in=['tasador'])
@@ -469,7 +620,6 @@ def appraisal(request, **kwargs):
     comments = Comment.objects.filter(appraisal=appraisal).order_by('-timeCreated')
 
     # Forms
-    print('before form initial',realestate.anoConstruccion)
     forms = {
         'appraisal': FormAppraisal(instance=appraisal,label_suffix=''),
         'comment':FormComment(label_suffix=''),
@@ -479,9 +629,14 @@ def appraisal(request, **kwargs):
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
         forms['createApartment'] = FormCreateApartment(prefix='vc',label_suffix='')
-        forms['createConstruction'] = FormCreateConstruction(label_suffix='')
+        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
+        forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
     if realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
+        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
+        forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
 
     #print('form initial',forms['realestate'])
 
@@ -495,6 +650,8 @@ def appraisal(request, **kwargs):
     valuationRealEstate = []
     valuationRealEstate = realestate.valuationRealEstate.all()
 
+    htmlBits = {'unitUF':'<small>(U.F.)</small>','unitPesos':'<small>($)</small>'}
+
     context = {
         'appraisal':appraisal,
         'forms':forms,
@@ -507,7 +664,8 @@ def appraisal(request, **kwargs):
         'appraisal_history': appraisal_history,
         'comments': comments,
         'plot_map':plot_map,
-        'valuationRealEstate':valuationRealEstate
+        'valuationRealEstate':valuationRealEstate,
+        'htmlBits':htmlBits
         }
 
     a = render(request, 'appraisal/realestate_appraisal.html', context)

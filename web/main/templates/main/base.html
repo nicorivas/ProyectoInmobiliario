@@ -30,6 +30,11 @@
 
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
+
 
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-1.0.0.min.css" rel="stylesheet" type="text/css">
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.0.min.css" rel="stylesheet" type="text/css">
@@ -46,10 +51,12 @@
 <body>
 
 {% include "main/header.html" %}
+
 <div id="content">
 {% block content %}
 {% endblock content %}
 </div>
+
 {% include "main/footer.html" %}
 
 </body>

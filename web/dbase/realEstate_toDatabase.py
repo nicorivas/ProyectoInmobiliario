@@ -196,6 +196,12 @@ def createBuilding(bd_dict,out):
 
     return bd
 
+def updateHouse(house_new,house_old,fields):
+    for field in fields:
+        setattr(house_old,field,getattr(house_new,field))
+        print(field,getattr(house_old,field))
+    house_old.save()
+
 def createHouse(hs_dict,out):
     '''
     Creates a Building object, populated with the values of a dictionary
@@ -257,7 +263,7 @@ def createHouse(hs_dict,out):
             out.error("Failed converting 'm² construida' = {} to float".format(hs_dict['m² construida']))
             return False
     else:
-        out.warning("'m² útil' not found in source dictionary")
+        out.warning("'m² construida' not found in source dictionary")
     if 'm² terreno' in hs_dict.keys():
         try:
             setattr(hs,'terrainSquareMeters',float(hs_dict['m² terreno']))
@@ -426,6 +432,7 @@ def realEstateExists(re,out):
                     addressNumber=re.addressNumber,
                     addressRegion=re.addressRegion,
                     addressCommune=re.addressCommune)
+                out.warning('House existed')
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
@@ -444,6 +451,7 @@ def realEstateExists(re,out):
                     propertyType=re.propertyType,
                     lat=re.lat,
                     lng=re.lng)
+                out.warning('House existed')
                 return tmp
             except RealEstate.DoesNotExist:
                 return None
@@ -527,7 +535,15 @@ def dictionariesToDatabase_Apartment(re_dicts,
 
     return objects
 
-def dictionariesToDatabase_House(re_dicts, out, ci=0, cf=None, debug=0, getAddressFromCoords=0):
+def dictionariesToDatabase_House(
+    re_dicts,
+    out,
+    ci=0,
+    cf=None,
+    debug=0,
+    getAddressFromCoords=0,
+    doUpdateHouse=1,
+    doAddHouse=0):
     '''
     Generate the objects from dictionaries, for houses.
     '''
@@ -550,15 +566,20 @@ def dictionariesToDatabase_House(re_dicts, out, ci=0, cf=None, debug=0, getAddre
         house = createHouse(re_dict,out)
         if isinstance(house,bool) and not house:
             continue
-        re = realEstateExists(house,out)
-        if isinstance(re,type(None)):
-            if house.addressFromCoords and getAddressFromCoords:
-                setAddressFromCoords(house,out)
-            house.save()
-        else:
-            out.warning('House already existed')
 
-        objects.append(house)
+        if doUpdateHouse or doAddHouse:
+            re = realEstateExists(house,out)
+            if isinstance(re,type(None)):
+                if house.addressFromCoords and getAddressFromCoords:
+                    setAddressFromCoords(house,out)
+                house.save()
+                objects.append(house)
+            else:
+                if doUpdateHouse:
+                    out.info('Updating house')
+                    updateHouse(house,re,['terrainSquareMeters','builtSquareMeters'])
+                else:
+                    out.warning('House already existed')
 
     return objects
 
@@ -620,7 +641,7 @@ if __name__ == "__main__":
     # Parameters
     source1 = ['toctoc','portali'][1]
     source2 = ['TocToc','PortalInmobiliario'][1]
-    property_type = RealEstate.TYPE_APARTMENT
+    property_type = RealEstate.TYPE_HOUSE
 
     regions = Region.objects.filter(code=13) # solo RM por ahora
 

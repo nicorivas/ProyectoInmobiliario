@@ -165,7 +165,7 @@ class Appraisal(models.Model):
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 
     # valor
-    valorUF = models.IntegerField("Valor UF",blank=True,null=True)
+    valorUF = models.FloatField("Valor UF",blank=True,null=True)
 
     @property
     def status_verbose(self):
@@ -208,6 +208,8 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
+        if self.realEstate == None:
+            return "-"
         address = self.realEstate.address_dict
         if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
             return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
@@ -266,11 +268,6 @@ class Appraisal(models.Model):
         permissions = (
             ("assign_tasador", "Can assign tasadores"),
             ("assign_visador", "Can assign visadores"),)
-
-    def __str__(self):
-        return "{} {}".format(
-            self.realEstate,
-            self.solicitante)
 
     def __iter__(self):
         for field_name in self._meta.get_fields():

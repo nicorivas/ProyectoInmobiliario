@@ -16,134 +16,19 @@ from house.models import House
 from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal
+from . import create
 
 import datetime
 
 import requests # to call the API of Google to get lat-lon
 import reversion # to save the first version when creating an appraisal
 
-def appraisal_create(realEstate,timeFrame,user, solicitante, solicitanteCodigo, cliente, clienteRut, tipoTasacion,
-                     objetivo,  visita, price):
-    '''
-    Create appraisal, given a ...?
-    '''
-    timeDue = timeFrame
-    appraisal = Appraisal(
-        realEstate=realEstate,
-        timeCreated=datetime.datetime.now(),
-        timeDue=timeDue,
-        price=price,
-        solicitante=solicitante,
-        solicitanteCodigo=solicitanteCodigo,
-        cliente=cliente,
-        clienteRut=clienteRut,
-        tipoTasacion=tipoTasacion,
-        objetivo=objetivo,
-        visita=visita)
-    with reversion.create_revision():
-        appraisal.save()
-        reversion.set_user(user)
-        reversion.set_comment('Created')
-    return appraisal
-
-def apartment_create(building_in,addressNumberFlat):
-    '''
-    Given a building and a flat number, create an apartment.
-    '''
-    apartment = Apartment(
-        addressRegion=building_in.addressRegion,
-        addressCommune=building_in.addressCommune,
-        addressStreet=building_in.addressStreet,
-        addressNumber=building_in.addressNumber,
-        building_in=building_in,
-        number=addressNumberFlat)
-    apartments = Apartment.objects.all()
-    if len(apartments) == 0:
-        apartmentId = 1
-    else:
-        apartmentId = int(apartments.order_by('-id')[0].id)+1
-    apartment.id = apartmentId
-    apartment.propertyType = RealEstate.TYPE_APARTMENT
-    apartment.save()
-    return apartment
-
-def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
-    '''
-    Given an address, create a building
-    '''
-    building = Building(
-        addressRegion=addressRegion,
-        addressCommune=addressCommune,
-        addressStreet=addressStreet,
-        addressNumber=addressNumber)
-
-    # get id
-    if len(Building.objects.all()) > 0:
-        buildingId = int(Building.objects.all().order_by('-id')[0].id)+1
-    else:
-        buildingId = 1
-    building.propertyType = RealEstate.TYPE_BUILDING
-    building.id = buildingId
-
-    # get lat lon
-    url = 'https://maps.googleapis.com/maps/api/geocode/json'
-    url_address = '?address={} {}, {}, {}'.format(
-        addressStreet,
-        addressNumber,
-        addressCommune,
-        addressRegion)
-    url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
-    response = requests.get(url+''+url_address+''+url_key)
-    response_json = response.json()
-    response_results = response_json['results'][0]['geometry']['location']
-    building.lat = response_results['lat']
-    building.lon = response_results['lng']
-    building.save()
-    
-    return building
-
-def house_create(addressRegion,addressCommune,addressStreet,addressNumber):
-    '''
-    Given an address, create a house
-    '''
-    house = House(
-        addressRegion=addressRegion,
-        addressCommune=addressCommune,
-        addressStreet=addressStreet,
-        addressNumber=addressNumber)
-
-    # get id
-    if len(House.objects.all()) > 0:
-        houseId = int(House.objects.all().order_by('-id')[0].id)+1
-    else:
-        houseId = 1
-    house.propertyType = RealEstate.TYPE_HOUSE
-    house.id = houseId
-
-    # get lat lon
-    url = 'https://maps.googleapis.com/maps/api/geocode/json'
-    url_address = '?address={} {}, {}, {}'.format(
-        addressStreet,
-        addressNumber,
-        addressCommune,
-        addressRegion)
-    url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
-    response = requests.get(url+''+url_address+''+url_key)
-    response_json = response.json()
-    response_results = response_json['results'][0]['geometry']['location']
-    house.lat = response_results['lat']
-    house.lon = response_results['lng']
-
-    house.save()
-    return house
-
 @login_required(login_url='/user/login')
-def create(request):
+def view_create(request):
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        print('request.POST',request.POST)
         form_create = AppraisalCreateForm(request.POST)
         # check whether it's valid:
         if form_create.is_valid():
@@ -156,8 +41,6 @@ def create(request):
             objetivo = form_create.cleaned_data['objetivo_create']
             visita = form_create.cleaned_data['visita_create']
 
-            print('propertyType',propertyType)
-
             if form_create.cleaned_data['solicitante_create'] == "0":
                 solicitante = form_create.cleaned_data['solicitanteOther_create']
             else:
@@ -166,6 +49,7 @@ def create(request):
 
             realEstate = None
             if propertyType == RealEstate.TYPE_HOUSE:
+
                 addressRegion = form_create.cleaned_data['addressRegion_create']
                 addressCommune = form_create.cleaned_data['addressCommune_create']
                 addressStreet = form_create.cleaned_data['addressStreet_create']
@@ -179,7 +63,7 @@ def create(request):
                         addressStreet=addressStreet)
                 except House.DoesNotExist:
                     # house does not exist, so create it
-                    realEstate = house_create(addressRegion,addressCommune,addressStreet,addressNumber)
+                    realEstate = create.house_create(addressRegion,addressCommune,addressStreet,addressNumber)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'House is repeated'}
@@ -197,6 +81,7 @@ def create(request):
                 addressStreet = form_create.cleaned_data['addressStreet_create']
                 addressNumber = form_create.cleaned_data['addressNumber_create']
                 addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
+
                 # check if building exists
                 building = None
                 try:
@@ -204,10 +89,11 @@ def create(request):
                         addressRegion=addressRegion,
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
-                        addressNumber=addressNumber)
+                        addressNumber=addressNumber,
+                        propertyType=RealEstate.TYPE_BUILDING)
                 except Building.DoesNotExist:
                     # building does not exist, so create it
-                    building = building_create(addressRegion,addressCommune,addressStreet,addressNumber)
+                    building = create.building_create(addressRegion,addressCommune,addressStreet,addressNumber)
                 except MultipleObjectsReturned:
                     context = {'error_message': 'Building is repeated'}
                     return render(request, 'create/error.html',context)
@@ -220,10 +106,11 @@ def create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        number=addressNumberFlat)
+                        number=addressNumberFlat,
+                        propertyType=RealEstate.TYPE_APARTMENT)
                 except Apartment.DoesNotExist:
                     # flat does not exist, so create it
-                    realEstate = apartment_create(building,addressNumberFlat)
+                    realEstate = create.apartment_create(building,addressNumberFlat)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'Apartment is repeated'}
@@ -235,26 +122,13 @@ def create(request):
             appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
             
             # ToDO: VER COMO CHECKEAR EXISTENCIA DE APPRAISAL
-            appraisal = appraisal_create(realEstate, appraisalTimeFrame, request.user, solicitante,
+            appraisal = create.appraisal_create(realEstate.realestate_ptr, appraisalTimeFrame, request.user, solicitante,
                         solicitanteCodigo, cliente, clienteRut, tipoTasacion, objetivo, visita, appraisalPrice)
-            
-            '''
-            appraisal = None
-            try:
-                appraisal = Appraisal.objects.get(realEstate=realEstate) #ver cómo chequear la existencia de un appraisal
-            except Appraisal.DoesNotExist:
-                appraisal = appraisal_create(realEstate, appraisalTimeFrame, request.user, solicitante,
-                        solicitanteCodigo, cliente, clienteRut, tipoTasacion, objetivo, appraisalPrice)
-            except MultipleObjectsReturned:
-                context = {'error_message': 'More than one appraisal of the same property'}
-                return render(request, 'create/error.html', context)
-            '''
 
             # go to appraisal url
             return HttpResponseRedirect(appraisal.url)
         else:
             errordata = form_create.errors.as_data()
-            print(errordata)
             message = {'error_message':'Validation Error, for now is price appraisal'}
             context = {'form_create': form_create, 'message': message}
             if '__all__' in errordata.keys():
