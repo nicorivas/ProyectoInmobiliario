@@ -21,8 +21,8 @@
             <th scope="col"></th>
             <th scope="col" style="width:10em;"></th>
             <th scope="col" style="width:7em;"></th>
-            <th scope="col" style="text-align:center;width:10em;">$</th>
             <th scope="col" style="text-align:center;width:10em;">U.F.</th>
+            <th scope="col" style="text-align:center;width:10em;">$</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -31,24 +31,24 @@
             <td scope="col"></td>
             <td scope="col" style="vertical-align: middle;">Valor comercial</td>
             <td scope="col"></td>
-            <td scope="col"><input id="valueMarket" class="form-control text-right" disabled></td>
             <td scope="col">{{forms.appraisal.valorUF}}</td>
+            <td scope="col"><input id="in_value_market" class="form-control text-right" disabled></td>
             <td scope="col"></td>
           </tr>
           <tr>
             <td scope="col"></td>
             <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
-            <td scope="col"><input type="text" id="liquidity" class="form-control text-right" value="0,75"></td>
-            <td scope="col"><input id="valueLiquid" class="form-control text-right" disabled></td>
-            <td scope="col"><input id="valueLiquidUF" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0,75"></td>
+            <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
             <td scope="col"></td>
           </tr>
           <tr>
             <td scope="col"></td>
             <td scope="col" style="vertical-align: middle;">Monto seguro</td>
             <td scope="col"></td>
-            <td scope="col"><input id="valueSafe" class="form-control text-right" disabled></td>
-            <td scope="col"><input id="valueSafeUF" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="in_value_safe_UF" class="form-control text-right" disabled></td>
+            <td scope="col"><input id="in_value_safe" class="form-control text-right" disabled></td>
             <td scope="col"></td>
           </tr>
         </tbody>
@@ -65,24 +65,24 @@
         <p style="margin:0em;">Valor de renta</p>
       </div>
       <div class="col text-right">
-        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuationRent" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuation_rent" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
           more_vert
         </a>
       </div>
     </div>
   </div>
-  <div id="valuationRent" class="collapse show" aria-labelledby="heading">
+  <div id="valuation_rent" class="collapse show" aria-labelledby="heading">
     <div class="card-body" style="padding:0em;">
-      <table id="tableValuationRent" class="table table-sm mb-0">
+      <table id="table_valuation_rent" class="table table-sm mb-0">
         <thead class="thead">
           <tr style="text-align:center;">
             <th></th>
-            <th style="width:16em;">Renta mensual (U.F.)</th>
+            <th style="width:16em;">Renta mensual {{htmlBits.unitUF|safe}}</th>
             <th style="width:5em;">Meses</th>
-            <th style="width:16em;">Renta líquida anual (U.F.)</th>
-            <th style="width:5em;">Tasa (%)</th>
-            <th style="width:16em;">Canon arriendo (U.F./m<sup>2</sup>)</th>
-            <th style="width:16em;">Valor de renta</th>
+            <th style="width:16em;">Renta líquida anual {{htmlBits.unitUF|safe}}</th>
+            <th style="width:5em;">Tasa</th>
+            <th style="width:16em;">Canon arriendo {{htmlBits.unitUFperSquaredMeter|safe}}</th>
+            <th style="width:16em;">Valor de renta {{htmlBits.unitUF|safe}}</th>
             <th></th>
           </tr>
         </thead>
@@ -90,22 +90,22 @@
           <tr>
             <td></td>
             <td>
-              <input id="valueRentMonth" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_month" class="form-control form-control-sm text-right" disabled>
             </td>
             <td>
-              <input id="valueRentMonths" class="form-control form-control-sm text-center" disabled>
+              <input id="id_value_rent_months" class="form-control form-control-sm text-center" disabled>
             </td>
             <td>
-              <input id="valueRentYear" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_year" class="form-control form-control-sm text-right" disabled>
             </td>
             <td>
-              <input id="valueRentRate" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_rate" class="form-control form-control-sm text-right" disabled>
             </td>
             <td>
-              <input id="valueRentPerArea" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_per_area" class="form-control form-control-sm text-right" disabled>
             </td>
             <td>
-              <input id="valueRent" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent" class="form-control form-control-sm text-right" disabled>
             </td>
             <td></td>
           </tr>
@@ -144,8 +144,8 @@
             <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
             <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
             <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
-            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bed"></i></th>
-            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bath"></i></th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bath"></i></th>
             {% if realestate.is_house %}
             <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> const.</th>
             <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terreno</th>
@@ -185,10 +185,14 @@
             <td style="text-align:right;">{{realestate.apartment.usefulSquareMeters|default_if_none:"-"}}</td>
             <td style="text-align:right;">{{realestate.apartment.terraceSquareMeters|default_if_none:"-"}}</td>
             {% endif %}
-            <!--<td>{{realestate.marketPrice}}</td>-->
-            <td></td>
-            <td></td>
-            <td></td>
+            <td class="td_cre_market_price" style="text-align:right;"></td>
+            {% if realestate.is_house %}
+            <td class="td_cre_market_price_per_built_square_meters" style="text-align:right;"></td>
+            <td class="td_cre_market_price_per_total_square_meters" style="text-align:right;"></td>
+            {% elif realestate.is_apartment %}
+            <td class="td_cre_market_price_per_useful_square_meters" style="text-align:right;"></td>
+            <td class="td_cre_market_price_per_total_square_meters" style="text-align:right;"></td>
+            {% endif %}
             <td></td>
             <td></td>
           </tr>
@@ -308,8 +312,8 @@
             <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
             <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
             <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
-            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bed"></i></th>
-            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bath"></i></th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bath"></i></th>
             {% if realestate.is_house %}
             <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> const.</th>
             <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terreno</th>
@@ -350,13 +354,13 @@
             <td style="text-align:right;">{{realestate.apartment.usefulSquareMeters|default_if_none:"-"}}</td>
             <td style="text-align:right;">{{realestate.apartment.terraceSquareMeters|default_if_none:"-"}}</td>
             {% endif %}
-            <td style="text-align:right;">{{realestate.marketPrice}}</td>
+            <td class="td_cre_market_price" style="text-align:right;"></td>
             {% if realestate.is_house %}
-            <td style="text-align:right;">{{realestate.house.marketPricePerBuiltSquareMeters}}</td>
-            <td style="text-align:right;">{{realestate.house.marketPricePerTerrainSquareMeters}}</td>
+            <td class="td_cre_market_price_per_built_square_meters" style="text-align:right;"></td>
+            <td class="td_cre_market_price_per_total_square_meters" style="text-align:right;"></td>
             {% elif realestate.is_apartment %}
-            <td style="text-align:right;">{{realestate.apartment.marketPricePerUsefulSquareMeters}}</td>
-            <td style="text-align:right;">{{realestate.apartment.marketPricePerTerraceSquareMeters}}</td>
+            <td class="td_cre_market_price_per_useful_square_meters" style="text-align:right;"></td>
+            <td class="td_cre_market_price_per_total_square_meters" style="text-align:right;"></td>
             {% endif %}
             <td></td>
             <td></td>
@@ -444,12 +448,21 @@
             <td></td>
             <td></td>
             <td></td>
+            {% if realestate.is_apartment %}
             <td style="text-align:right;">{{ averages.usefulSquareMeters__avg | floatformat:1}} &plusmn; 
                 <small>{{ stds.usefulSquareMeters__stddev | floatformat:1 }}</small></td>
             <td style="text-align:right;">{{ averages.terraceSquareMeters__avg | floatformat:1 }} &plusmn; 
                 <small>{{ stds.terraceSquareMeters__stddev | floatformat:1 }}</small></td>
             <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }} &plusmn; 
                 <small>{{ stds.marketPrice__stddev | floatformat:1 }}</small></td>
+            {% elif realestate.is_house %}
+            <td style="text-align:right;">{{ averages.builtSquareMeters__avg | floatformat:1}} &plusmn; 
+                <small>{{ stds.builtSquareMeters__stddev | floatformat:1 }}</small></td>
+            <td style="text-align:right;">{{ averages.terrainSquareMeters__avg | floatformat:1 }} &plusmn; 
+                <small>{{ stds.terrainSquareMeters__stddev | floatformat:1 }}</small></td>
+            <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }} &plusmn; 
+                <small>{{ stds.marketPrice__stddev | floatformat:1 }}</small></td>
+            {% endif %}
             <td></td>
             <td></td>
             <td></td>
@@ -1115,40 +1128,52 @@
   }
 
   function computeValues() {
+    // Main valuation prices
     var valorUF = parseFloatEs($("#id_valorUF").val());
     var liquidez = parseFloatEs($("#liquidity").val());
+    var seguroUF = parseFloatEs($("#id_totalSeguroUF").text());
     if (!isNaN(valorUF)) {
       $("liquidity").val(floatFormat(liquidez))
       $("#id_valorUF").val(UFFormat(valorUF));
-      $("#valueMarket").val(pesosFormat(valorUF*UF_IN_PESOS));
-      $("#valueLiquid").val(pesosFormat(valorUF*UF_IN_PESOS*liquidez));
-      $("#valueLiquidUF").val(UFFormat(valorUF*liquidez));
-      $("#valueSafe").val(pesosFormat(valorUF*UF_IN_PESOS));
-      $("#valueSafeUF").val(UFFormat(valorUF));
+      $("#in_value_market").val(pesosFormat(valorUF*UF_IN_PESOS));
+      $("#in_value_liquid_UF").val(UFFormat(valorUF*liquidez));
+      $("#in_value_liquid").val(pesosFormat(valorUF*liquidez*UF_IN_PESOS));
+      $("#in_value_safe_UF").val(UFFormat(seguroUF));
+      $("#in_value_safe").val(pesosFormat(seguroUF*UF_IN_PESOS));
     } else {
-      $("#valueMarket").val('');
-      $("#valueLiquid").val('');
-      $("#valueLiquidUF").val('');
-      $("#valueSafe").val('');
-      $("#valueSafeUF").val('');
+      $("#in_value_market").val('');
+      $("#in_value_liquid_UF").val('');
+      $("#in_value_liquid").val('');
+      $("#in_value_safe_UF").val('');
+      $("#in_value_safe").val('');
     }
+    // Update valuation prince in rows of tables of current real estate
+    var builtSquareMeters  = {{realestate.house.builtSquareMeters}}
+    var totalSquareMeters  = {{realestate.total_area}}
+    var house = {{realestate.is_house}}
+    console.log(house)
+    $(".td_cre_market_price").text(UFFormat(valorUF))
+    if ({{realestate.is_house}}) {
+      $(".td_cre_market_price_per_built_square_meters").text(UFFormat(valorUF/builtSquareMeters))
+      $(".td_cre_market_price_per_total_square_meters").text(UFFormat(valorUF/totalSquareMeters))
+    }
+    // Rent prices
     var months = 11
     var rate = 0.06
     var area = 10.0
-    console.log(area)
-    $("#valueRentMonths").val(months)
-    $("#valueRentRate").val(percentFormat(rate))
+    $("#id_value_rent_months").val(months)
+    $("#id_value_rent_rate").val(percentFormat(rate))
     if (!isNaN(valorUF)) {
-      $("#valueRentMonth").val(UFFormat(valorUF*0.005))
-      var valueRentMonth = valorUF*0.005
-      $("#valueRentYear").val(UFFormat(valueRentMonth*months))
-      $("#valueRentPerArea").val(UFFormat(rate*area))
-      $("#valueRent").val(UFFormat(valueRentMonth*months/rate))
+      $("#id_value_rent_month").val(UFFormat(valorUF*0.005))
+      var value_rent_month = valorUF*0.005
+      $("#id_value_rent_year").val(UFFormat(value_rent_month*months))
+      $("#id_value_rent_per_area").val(UFFormat(rate*area))
+      $("#id_value_rent").val(UFFormat(value_rent_month*months/rate))
     } else {
-      $("#valueRentMonth").val('');
-      $("#valueRentYear").val('');
-      $("#valueRentPerArea").val('');
-      $("#valueRent").val('');
+      $("#id_value_rent_month").val('');
+      $("#id_value_rent_year").val('');
+      $("#id_value_rent_per_area").val('');
+      $("#id_value_rent").val('');
     }
   }
 
@@ -1167,6 +1192,20 @@
   $("#id_valorUF").focusout(function () {
     computeValues()
   });
+
+  function remove(val) {
+    /*
+    Remove the row from the valuation list.
+    Add the button to add row in MarketList, if it is there.
+    */
+    row_valuation = $('#trValuationRealEstate_'+val);
+    row_valuation.find('#in_valuationRealEstateRemove').attr('value',1)
+    row_valuation.toggle();
+    row_market = $('#trMarketRealEstate_'+val);
+    row_market.find('.btn').show();
+    row_market.removeClass('table-success');
+    averagesValuationRealEstate();
+  }
 
   function averagesValuationRealEstate() {
     var sumUsefulSquareMeters = 0
@@ -1275,11 +1314,6 @@
       $('#id_ptotalTerrPesos').text(pesosFormat(sumPesos))
       $('#id_ptotalTerrUF').text(UFFormat(sumUF))
       $('#id_ptotalTerrVisadoUF').text(UFFormat(sumVisadoUF))
-
-      $('#id_totalPesos').text(pesosFormat(sumPesos))
-      $('#id_totalUF').text(UFFormat(sumUF))
-      $('#id_totalVisadoUF').text(UFFormat(sumVisadoUF))
-      $('#id_totalSeguroUF').text(UFFormat(sumSeguroUF))
     }
   }
 
@@ -1430,20 +1464,6 @@
     assetsTableComputeTotalsConstructions();
     assetsTableComputeTotalsAssets();
     assetsTableComputeTotalsGlobal();
-  }
-
-  function remove(val) {
-    /*
-    Remove the row from the valuation list.
-    Add the button to add row in MarketList, if it is there.
-    */
-    row_valuation = $('#trValuationRealEstate_'+val);
-    row_valuation.find('#in_valuationRealEstateRemove').attr('value',1)
-    row_valuation.toggle();
-    row_market = $('#trMarketRealEstate_'+val);
-    row_market.find('.btn').show();
-    row_market.removeClass('table-success');
-    averagesValuationRealEstate();
   }
 
   function assetsTableUpdateRows() {

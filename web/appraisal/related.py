@@ -59,7 +59,8 @@ def getSimilarRealEstate(realestate):
                 bedrooms=realestate.house.bedrooms,
                 bathrooms=realestate.house.bathrooms,
                 builtSquareMeters__isnull=False,
-                marketPrice__isnull=False).exclude(marketPrice=0)
+                terrainSquareMeters__isnull=False,
+                marketPrice__isnull=False)
 
             print(houses)
 

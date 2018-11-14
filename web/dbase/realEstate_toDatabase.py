@@ -198,8 +198,8 @@ def createBuilding(bd_dict,out):
 
 def updateHouse(house_new,house_old,fields):
     for field in fields:
+        print(field,getattr(house_old,field),'->',getattr(house_new,field))
         setattr(house_old,field,getattr(house_new,field))
-        print(field,getattr(house_old,field))
     house_old.save()
 
 def createHouse(hs_dict,out):
@@ -220,11 +220,10 @@ def createHouse(hs_dict,out):
     v = v.replace(',','.')
     v = v.replace('/m²','') # strange cases
     try:
-        float(v)
+        setattr(hs,'marketPrice',v)
     except ValueError:
         out.error("Failed converting 'precio_publicacion2' = {} to float".format(v))
         return False
-    setattr(hs,'marketPrice',v)
 
     if 'Dormitorio' in hs_dict.keys():
         try:
@@ -277,8 +276,8 @@ def createHouse(hs_dict,out):
 
 def updateApartment(apt_new,apt_old,fields):
     for field in fields:
+        print(field,getattr(apt_old,field),'->',getattr(apt_new,field))
         setattr(apt_old,field,getattr(apt_new,field))
-        print(field,getattr(apt_old,field))
     apt_old.save()
 
 def createApartment(apt_dict,bd, out):
@@ -577,7 +576,7 @@ def dictionariesToDatabase_House(
             else:
                 if doUpdateHouse:
                     out.info('Updating house')
-                    updateHouse(house,re,['terrainSquareMeters','builtSquareMeters'])
+                    updateHouse(house,re,['terrainSquareMeters','builtSquareMeters','marketPrice'])
                 else:
                     out.warning('House already existed')
 

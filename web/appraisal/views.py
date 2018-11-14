@@ -581,8 +581,8 @@ def view_appraisal(request, **kwargs):
 
     plot_map = {}
     # Map of references
-    #if len(references) > 0:
-    #    plot_map = maps.mapReferences(refRealEstate,realestate)
+    if len(references) > 0:
+        plot_map = maps.mapReferences(refRealEstate,realestate)
     
     # Derived properties from references
     averages = []
@@ -650,7 +650,10 @@ def view_appraisal(request, **kwargs):
     valuationRealEstate = []
     valuationRealEstate = realestate.valuationRealEstate.all()
 
-    htmlBits = {'unitUF':'<small>(U.F.)</small>','unitPesos':'<small>($)</small>'}
+    htmlBits = {
+        'unitUF':'<small>(U.F.)</small>',
+        'unitPesos':'<small>($)</small>',
+        'unitUFperSquaredMeter':'<small>(U.F./m<sup>2</sup>)</small>'}
 
     context = {
         'appraisal':appraisal,
