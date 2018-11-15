@@ -37,7 +37,7 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_active %}
-      <tr class='activas'  id="app-{{appraisal.tasadorUser.id}}">
+      <tr class='activas {{appraisal.tasadorUser.id}}'  id="app-{{appraisal.tasadorUser.id}}">
         <td>
           {{ appraisal.id }}
         </td>
@@ -66,7 +66,8 @@
             {% if perms.appraisal.assign_tasador %}
             {% if appraisal.active %}
             <div class="col text-right">
-              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarTasador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+              <button type="button" class="btn btn-sm asignarTasador" data-toggle="modal" data-target="#asignarTasador"
+                      value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
                 person_add
               </button>
             </div>
@@ -88,7 +89,8 @@
             {% if perms.appraisal.assign_visador %}
             {% if appraisal.active %}
             <div class="col text-right">
-              <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#asignarVisador" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+              <button type="button" class="btn btn-sm asignarVisador" data-toggle="modal" data-target="#asignarVisador"
+                      value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
                 person_add
               </button>
             </div>
@@ -134,7 +136,7 @@
 
   <div class="card-body">
 
-  <h5 class="card-title">Tasaciones previas</h5>
+  <h5 class="card-title">Tasaciones finalizadas</h5>
 
   <table class="table table-borderless">
     <thead>
@@ -151,7 +153,7 @@
     </thead>
     <tbody>
       {% for appraisal in appraisals_finished %}
-      <tr class="previas" id="app2-{{appraisal.tasadorUser.id}}">
+      <tr class="previas {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
         <td>
           {{ appraisal.id }}
         </td>
@@ -179,7 +181,8 @@
         </td>
         <td>
           {% if perms.appraisal.assign_visador %}
-          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="button_delete" class="btn btn-dark btn-sm">
+          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="{{appraisal.tasadorUser.id}}"
+                  value="{{appraisal.id}}" class="btn btn-dark btn-sm evaluateAppraisal">
           evaluar
         </button>
         </td>
@@ -229,9 +232,25 @@
 </script>
 
 <script>
-  $(document).on('click','.asignar_Tasador',function(){
-      var id = $(this).data('id');
+  $(document).on('click','.asignarTasador',function(){
+      var id = $(this).val();
       $('#tasadorAppraisal_id').val(id);
+      });
+
+</script>
+
+<script>
+  $(document).on('click','.asignarVisador',function(){
+      var id = $(this).val();
+      $('#visadorAppraisal_id').val(id);
       });
 </script>
 
+<script>
+  $(document).on('click','.evaluateAppraisal',function(){
+      var id = $(this).val();
+      var id2 = $(this).attr('id');
+      $('#evaluadorAppraisal_id').val(id);
+      $('#evaluador_id').val(id2);
+      });
+</script>
