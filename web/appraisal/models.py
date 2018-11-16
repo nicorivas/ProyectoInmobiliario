@@ -219,7 +219,7 @@ class Appraisal(models.Model):
                 slugify(address['number']),
                 self.realEstate.propertyType,
                 self.realEstate.apartment.building_in.id,
-                self.realEstate.apartment.number,
+                self.realEstate.apartment.addressNumber2,
                 self.realEstate.apartment.id,
                 self.id)
         elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
@@ -257,7 +257,10 @@ class Appraisal(models.Model):
         if isinstance(self.solicitante,type(None)):
             return '-'
         else:
-            return self.petitioner_choices[self.solicitante][1]
+            for choice in self.petitioner_choices:
+                if self.solicitante == choice[0]:
+                    return choice[1]
+            return '-'
 
     @property
     def timeLeft(self):

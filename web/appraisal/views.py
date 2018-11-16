@@ -411,6 +411,11 @@ def valuation_add_terrain(request,forms,appraisal,realestate):
             request_post = request.POST.copy()
             # These are not always active, so count with c.
             request_post['t-name'] = request_post.getlist('t-name')[c]
+            request_post['t-frente'] = request_post.getlist('t-frente')[c]
+            request_post['t-fondo'] = request_post.getlist('t-fondo')[c]
+            request_post['t-topography'] = request_post.getlist('t-topography')[c]
+            request_post['t-shape'] = request_post.getlist('t-shape')[c]
+            request_post['t-rol'] = request_post.getlist('t-rol')[c]
             request_post['t-area'] = request_post.getlist('t-area')[i]
             request_post['t-UFPerArea'] = request_post.getlist('t-UFPerArea')[i]
             forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
@@ -451,6 +456,9 @@ def valuation_add_construction(request,forms,appraisal,realestate):
                 requestpost['c-year'] = requestpost['c-year']+'-01-01'
             requestpost['c-prenda'] = requestpost.getlist('c-prenda')[c]
             requestpost['c-recepcion'] = requestpost.getlist('c-recepcion')[c]
+            requestpost['c-state'] = requestpost.getlist('c-state')[c]
+            requestpost['c-quality'] = requestpost.getlist('c-quality')[c]
+            requestpost['c-rol'] = requestpost.getlist('c-rol')[c]
             # These are always active, so count with i
             requestpost['c-area'] = requestpost.getlist('c-area')[i]
             requestpost['c-UFPerArea'] = requestpost.getlist('c-UFPerArea')[i]
@@ -475,7 +483,14 @@ def valuation_remove_construction(request,forms,appraisal,realestate):
     try:
         construction = Construction.objects.get(id=int(request.POST['btn_valuation_remove_construction']))
         construction.delete()
-    except RealEstate.DoesNotExist:
+    except Construction.DoesNotExist:
+        print('Error')
+
+def valuation_remove_terrain(request,forms,appraisal,realestate):
+    try:
+        terrain = Terrain.objects.get(id=int(request.POST['btn_valuation_remove_terrain']))
+        terrain.delete()
+    except Terrain.DoesNotExist:
         print('Error')
 
 def getAppraisalHistory(appraisal):
@@ -507,7 +522,10 @@ def getAppraisalHistory(appraisal):
 def float_es(string):
     string = string.replace('.','')
     string = string.replace(',','.')
-    return float(string)
+    try:
+        return float(string)
+    except ValueError:
+        return ""
 
 def clean_request_post(request_post):
 
@@ -582,6 +600,8 @@ def view_appraisal(request, **kwargs):
             ret = valuation_add_asset(request,forms,appraisal,realestate)
         elif 'btn_valuation_remove_construction' in request_post.keys():
             ret = valuation_remove_construction(request,forms,appraisal,realestate)
+        elif 'btn_valuation_remove_terrain' in request_post.keys():
+            ret = valuation_remove_terrain(request,forms,appraisal,realestate)
         elif 'btn_assign_tasador' in request_post.keys():
             ret = assign_tasador(request,forms,appraisal)
         elif 'btn_assign_visador' in request_post.keys():
@@ -700,7 +720,10 @@ def view_appraisal(request, **kwargs):
     htmlBits = {
         'unitUF':'<small>(U.F.)</small>',
         'unitPesos':'<small>($)</small>',
-        'unitUFperSquaredMeter':'<small>(U.F./m<sup>2</sup>)</small>'}
+        'unitMeter':'<small>(m)</small>',
+        'unitUFPerSquaredMeter':'<small>(U.F./m<sup>2</sup>)</small>',
+        'unitPesosPerSquaredMeter':'<small>($/m<sup>2</sup>)</small>',
+        'unitSquaredMeter':'<small>(m<sup>2</sup>)</small>'}
 
     context = {
         'appraisal':appraisal,

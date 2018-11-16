@@ -41,6 +41,12 @@ class Construction(models.Model):
         default=MATERIAL_UNKNOWN)
     
     year = models.DateField("Año construcción",blank=True,null=False,default='1985-01-01')
+
+    quality = models.IntegerField("Calidad",blank=True,null=True,choices=[(1,1),(2,2),(3,3),(4,4),(5,5)])
+
+    state = models.IntegerField("Estado",blank=True,null=True,choices=[(1,'Sin valor'),(2,'Malo'),(3,'Regular'),(4,'Bueno'),(5,'Muy bueno')])
+
+    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
     
     BOOLEAN_NULL_CHOICES = (
         (None, "S/A"),
@@ -79,11 +85,31 @@ class Terrain(models.Model):
     Parts of the terrain
     '''
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
-    
+
+    frente = models.FloatField("Frente",blank=True,null=True)
+
+    fondo = models.FloatField("Fondo",blank=True,null=True)
+
+    TOPOGRAPHY_CHOICES = (
+        (0, 'Plano'),
+        (1, 'Semiplano'),
+        (2, 'Pendiente'),
+        (3, 'Pendiente abrupta')
+    )
+    topography = models.IntegerField("Topografía",choices=TOPOGRAPHY_CHOICES,blank=True,null=True)
+
+    SHAPE_CHOICES = (
+        (0, 'Regular'),
+        (1, 'Irregular'),
+    )
+    shape = models.IntegerField("Forma",choices=SHAPE_CHOICES,blank=True,null=True)
+
     area = models.FloatField("Area",
         blank=True,
         null=False,
         default=0)
+
+    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
 
     UFPerArea = models.FloatField("UF per Area",
         blank=True,
@@ -359,12 +385,12 @@ class RealEstate(models.Model):
             if self.house.terrainSquareMeters != None and self.house.builtSquareMeters != None:
                 return self.house.terrainSquareMeters + self.house.builtSquareMeters
             else:
-                return False
+                return 0
         elif self.propertyType == self.TYPE_APARTMENT:
             if self.apartment.usefulSquareMeters != None and self.apartment.terraceSquareMeters != None:
                 return self.apartment.usefulSquareMeters + self.apartment.terraceSquareMeters
             else:
-                return False
+                return 0
 
     @property
     def latlng(self):

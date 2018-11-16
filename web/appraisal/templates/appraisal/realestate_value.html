@@ -525,7 +525,7 @@
   <div class="card-header" id="header">
     <div class="row">
       <div class="col">
-        <p style="margin:0em;">Avalúos</p>
+        <p style="margin:0em;">Valoración</p>
       </div>
       <div class="col text-right">
         <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#avaluos" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
@@ -539,20 +539,14 @@
 
       <table id="table_constructions" class="table table-sm mb-0">
 
-        <thead class="thead">
+        <thead class="thead table-warning">
           <!-- Headers !-->
           <tr>
             <th></th>
-            <th scope="col" colspan="5" style="width: 30em;"></th>
-            <th scope="col" style="width: 1em;">Un.</th>
-            <th scope="col" style="width: 5em;text-align:right;">Cantidad</th>
-            <th scope="col" style="width: 5em;text-align:right;">$/m<sup>2</sup></th>
-            <th scope="col" style="width: 5em;text-align:right;">UF/m<sup>2</sup></th>
-            <th scope="col" style="width: 5em;text-align:right;">{{htmlBits.unitPesos|safe}}</th>
-            <th scope="col" style="width: 5em;text-align:right;">{{htmlBits.unitUF|safe}}</th>
-            <th scope="col" style="width: 7em;text-align:right;">Visado {{htmlBits.unitUF|safe}}</th>
-            <th scope="col" style="width: 7em;text-align:right;"></th>
-            <th scope="col" style="width: 4em;"></th>
+            <th scope="col" colspan="8" style="width: 42em;">Terrenos</th>
+            <th scope="col" colspan="2" style="width: 4em;text-align:center;" class="border-left">Cantidad</th>
+            <th scope="col" colspan="4" style="width: 30em;text-align:center;" class="border-left">Valores</th>
+            <th scope="col" style="width:6em;"></th>
             <th></th>
           </tr>
         </thead>
@@ -563,20 +557,21 @@
           {% if realestate.is_house %}
           <tr class="table-warning">
             <td></td>
-            <td>Terreno</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td style="width:20em;font-size:0.85em;">Descripción</td>
+            <td style="width:5.0em;font-size:0.85em;">Frente {{htmlBits.unitMeter|safe}}</td>
+            <td style="width:5.0em;font-size:0.85em;">Fondo {{htmlBits.unitMeter|safe}}</td>
+            <td style="width:4.0em;font-size:0.85em;">Topo.</td>
+            <td style="width:4.0em;font-size:0.85em;">Forma</td>
+            <td style="width:4.0em;font-size:0.85em;">Rol</td>
+            <td style="width:0.1em;"></td>
+            <td style="width:0.1em;"></td>
+            <td style="text-align:center;width:4em;font-size:0.85em;">Superficie {{htmlBits.unitSquaredMeter|safe}}</td>
+            <td style="width:0.1em;"></td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitPesos|safe}}</td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitUF|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitPesosPerSquaredMeter|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitUFPerSquaredMeter|safe}}</td>
+            <td style="width:6em;"></td>
             <td></td>
           </tr>
 
@@ -588,19 +583,30 @@
             <!-- And edited, to see if we have to consider this row. See comment in view. !-->
             <input type="hidden" name="terrain_edited" id="in_terrain_edited" value="0">
             <td></td>
-            <td id='td_name' colspan="5" style="font-size:0.85em;">
+            <td id='td_name' style="font-size:0.85em;">
               {{ter.name}}
             </td>
-            <td style="font-size:0.85em;">m<sup>2</sup></td>
+            <td id='td_frente' style="font-size:0.85em;">
+              {{ter.frente}}
+            </td>
+            <td id='td_fondo' style="font-size:0.85em;">
+              {{ter.fondo}}
+            </td>
+            <td id='td_topography' style="font-size:0.85em;">
+              {{ter.get_topography_display}}
+            </td>
+            <td id='td_shape' style="font-size:0.85em;">
+              {{ter.get_shape_display}}
+            </td>
+            <td id='td_rol' style="font-size:0.85em;">
+              {{ter.rol}}
+            </td>
+            <td></td>
+            <td></td>
             <td>
               <input id="id_terrainArea" type="number" name="t-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.area}}">
             </td>
-            <td>
-              <input id="id_terrainPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
-            </td>
-            <td>
-              <input id="id_terrainUFPerArea" type="number" name="t-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.UFPerArea}}">
-            </td>
+            <td></td>
             <td>
               <input id="id_terrainPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
@@ -608,9 +614,10 @@
               <input id="id_terrainUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td>
-              <input id="id_terrainVisadoUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+              <input id="id_terrainPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td>
+              <input id="id_terrainUFPerArea" type="number" name="t-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.UFPerArea}}">
             </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm save_terrain" name="btn_valuation_add_terrain" style="padding:0px; border:0px; display: none;">
@@ -632,20 +639,26 @@
             <input id="in_terrain_id" type="hidden" name="terrain_id" value="-1">
             <input id="in_terrain_edited" type="hidden" name="terrain_edited" value="0">
             <td></td>
-            <td colspan="5">
+            <td>
               {{forms.createTerrain.name}}
             </td>
             <td>
-              m<sup>2</sup>
+              {{forms.createTerrain.frente}}
             </td>
             <td>
+              {{forms.createTerrain.fondo}}
+            </td>
+            <td>
+              {{forms.createTerrain.topography}}
+            </td>
+            <td colspan="2">
+              {{forms.createTerrain.shape}}
+            </td>
+            <td colspan="2">
+              {{forms.createTerrain.rol}}
+            </td>            
+            <td colspan="2">
               {{forms.createTerrain.area}}
-            </td>
-            <td>
-              <input id="id_terrainPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
-            </td>
-            <td>
-              {{forms.createTerrain.UFPerArea}}
             </td>
             <td>
               <input id="id_terrainPesos" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
@@ -654,77 +667,73 @@
               <input id="id_terrainUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
             <td>
-              <input id="id_terrainVisadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+              <input id="id_terrainPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
-            <td></td>
+            <td>
+              {{forms.createTerrain.UFPerArea}}
+            </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm" name="btn_valuation_add_terrain" style="padding:0px; border:0px;">
                 <i class="material-icons">save</i>
               </button>
             </td>
-            <td></td>
+            <td>              
+            </td>
           </tr>
           <!-- This row only contains the add button -->
           <tr>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <!--<td colspan="2"><div class="btn btn-dark btn-sm"> Agregar construcción </btn></td>-->
-            <td></td>
-            <td></td>
-            <td style="padding:0em;text-align:right;">
+            <td colspan="15" style="padding:0em;text-align:right;">
               <button id="add_terrain" type="button" class="btn btn-sm" name="btn_valuation_add_terrain" style="padding:0px; border:0px;">
                 <i class="material-icons">add_box</i>
               </button>
             </td>
             <td></td>
           </tr>
+          <!-- Totals -->
           <tr class="table-secondary">
             <td></td>
-            <td style="font-size:0.85em;">Subtotal</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td colspan="8" style="font-size:0.85em;">Total terrenos</td>
             <td></td>
             <td id='id_ptotalTerrArea' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalTerrPesosPerArea' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalTerrUFPerArea' style="text-align:right;font-size:0.85em;"></td>
             <td id='id_ptotalTerrPesos' style="text-align:right;font-size:0.85em;"></td>
             <td id='id_ptotalTerrUF' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalTerrVisadoUF' style="text-align:right;font-size:0.85em;"></td>
-            <td></td>
+            <td id='id_ptotalTerrPesosPerArea' style="text-align:right;font-size:0.85em;"></td>
+            <td id='id_ptotalTerrUFPerArea' style="text-align:right;font-size:0.85em;"></td>
             <td></td>
             <td></td>
           </tr>
           {% endif %}
 
+          <thead class="thead table-warning">
+            <!-- Headers !-->
+            <tr>
+              <th></th>
+              <th scope="col" colspan="8" style="width: 40em;">Construcciones</th>
+              <th scope="col" colspan="2" style="width: 4em;text-align:center;" class="border-left">Cantidad</th>
+              <th scope="col" colspan="4" style="width: 30em;text-align:center;" class="border-left">Valores</th>
+              <th scope="col" style="width:6em;"></th>
+              <th></th>
+            </tr>
+          </thead>
+
           <!-- Subdivision of table for constructions !-->
           <tr class="table-warning">
             <td></td>
-            <td style="width: 16em;">Construcciones</td>
-            <td style="width: 5em;font-size:0.85em;">Material</td>
-            <td style="width: 5em;font-size:0.85em;">Año</td>
-            <td style="width: 3em;font-size:0.85em;">Prenda</td>
-            <td style="width: 3em;font-size:0.85em;">Recep.</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td style="width: 12em;font-size:0.85em;">Descripción</td>
+            <td style="width: 4em;font-size:0.85em;">Material</td>
+            <td style="width: 4em;font-size:0.85em;">Año</td>
+            <td style="width: 4em;font-size:0.85em;">Prenda</td>
+            <td style="width: 4em;font-size:0.85em;">Recep.</td>
+            <td style="width: 4em;font-size:0.85em;">Calidad</td>
+            <td style="width: 4em;font-size:0.85em;">Estado</td>
+            <td style="width: 4em;font-size:0.85em;">Rol</td>
+            <td colspan="2" style="text-align:center;width:4em;font-size:0.85em;">Superficie {{htmlBits.unitSquaredMeter|safe}}</td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitPesos|safe}}</td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitUF|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitUFPerSquaredMeter|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitPesosPerSquaredMeter|safe}}</td>
+            <td style="width:6em;"></td>
             <td></td>
           </tr>
 
@@ -744,45 +753,25 @@
               {{con.get_material_display}}
             </td>
             <td id='td_year' style="font-size:0.85em;">
-              <span>{{con.year|date:'Y'}}</span>
-              <!--
-              <div class="input-group date" id="datetimepicker4" data-target-input="nearest" style="display:none;">
-                <div class="input-group-append" data-target="#datetimepicker4" data-toggle="datetimepicker">
-                  <div class="input-group-text">
-                    <i class="fa fa-calendar"></i>
-                  </div>
-                </div>
-              </div>
-              -->
+              {{con.year|date:'Y'}}
             </td>
-            
-            <!--
-            <script type="text/javascript">
-              $(function () {
-                $('#datetimepicker4').datetimepicker({
-                  format: 'YYYY-MM-DD'
-                });
-              });
-            </script>
-            -->
-            
             <td id='td_prenda' style="font-size:0.85em;">
               {{con.get_prenda_display}}
             </td>
             <td id='td_recepcion' style="font-size:0.85em;">
               {{con.get_recepcion_display}}
             </td>
-            <td style="font-size:0.85em;">
-              m<sup>2</sup>
+            <td id='td_recepcion' style="font-size:0.85em;">
+              {{con.get_quality_display}}
             </td>
-            <td>
+            <td id='td_recepcion' style="font-size:0.85em;">
+              {{con.get_state_display}}
+            </td>
+            <td id='td_recepcion' style="font-size:0.85em;">
+              {{con.rol}}
+            </td>
+            <td colspan="2">
               <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}">
-            </td>
-            <td>
-              <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
-            </td>
-            <td>
-              <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}">
             </td>
             <td>
               <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
@@ -791,10 +780,10 @@
               <input id="id_consUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td>
-              <input id="id_consVisadoUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+              <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td>
-              <input id="id_consSeguroUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+              <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}">
             </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
@@ -832,16 +821,16 @@
               {{forms.createConstruction.recepcion}}
             </td>
             <td>
-              m<sup>2</sup>
+              {{forms.createConstruction.quality}}
             </td>
             <td>
+              {{forms.createConstruction.state}}
+            </td>
+            <td>
+              {{forms.createConstruction.rol}}
+            </td>
+            <td colspan="2">
               {{forms.createConstruction.area}}
-            </td>
-            <td>
-              <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
-            </td>
-            <td>
-              {{forms.createConstruction.UFPerArea}}
             </td>
             <td>
               <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
@@ -850,10 +839,10 @@
               <input id="id_consUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
             <td>
-              <input id="id_consVisadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+              <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
             <td>
-              <input id="id_consSeguroUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
+              {{forms.createConstruction.UFPerArea}}
             </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
@@ -866,21 +855,7 @@
           <!-- This row only contains the add button -->
           <tr>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <!--<td colspan="2"><div class="btn btn-dark btn-sm"> Agregar construcción </btn></td>-->
-            <td></td>
-            <td></td>
-            <td style="padding:0em;text-align:right;">
+            <td colspan="15" style="padding:0em;text-align:right;">
               <button id="add_construction" type="button" class="btn btn-sm" name="btn_valuation_add_construction" style="padding:0px; border:0px;">
                 <i class="material-icons">add_box</i>
               </button>
@@ -891,38 +866,43 @@
           <!-- Subtotals of constructions -->
           <tr class="table-secondary">
             <td></td>
-            <td style="font-size:0.85em;">Subtotal</td>
+            <td style="font-size:0.85em;">Total construcciones</td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td id='id_ptotalConstArea' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalConstPesosPerArea' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalConstUFPerArea' style="text-align:right;font-size:0.85em;"></td>
             <td id='id_ptotalConstPesos' style="text-align:right;font-size:0.85em;"></td>
             <td id='id_ptotalConstUF' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalConstVisadoUF' style="text-align:right;font-size:0.85em;"></td>
-            <td id='id_ptotalConstSeguroUF' style="text-align:right;font-size:0.85em;"></td>
+            <td id='id_ptotalConstPesosPerArea' style="text-align:right;font-size:0.85em;"></td>
+            <td id='id_ptotalConstUFPerArea' style="text-align:right;font-size:0.85em;"></td>
             <td></td>
             <td></td>
           </tr>
 
+          <thead class="thead table-warning">
+            <!-- Headers !-->
+            <tr>
+              <th></th>
+              <th scope="col" colspan="8" style="width: 40em;">Obras complementarias</th>
+              <th scope="col" colspan="2" style="width: 4em;text-align:center;" class="border-left">Cantidad</th>
+              <th scope="col" colspan="4" style="width: 30em;text-align:center;" class="border-left">Valores</th>
+              <th scope="col" style="width:6em;"></th>
+              <th></th>
+            </tr>
+          </thead>
+
           <tr class="table-warning">
             <td></td>
-            <td>Obras complementarias</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td colspan="10">Descripción</td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitPesos|safe}}</td>
+            <td class="td-center" style="width:8em;">{{htmlBits.unitUF|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitPesosPerSquaredMeter|safe}}</td>
+            <td class="td-center" style="width:7em;">{{htmlBits.unitUFPerSquaredMeter|safe}}</td>
             <td></td>
             <td></td>
           </tr>
@@ -935,7 +915,7 @@
             <!-- And edited, to see if we have to consider this row. See comment in view. !-->
             <input type="hidden" name="asset_edited" id="in_asset_edited" value="0">
             <td></td>
-            <td id='td_name' colspan="9" style="font-size:0.85em;">
+            <td id='td_name' colspan="10" style="font-size:0.85em;">
               {{ass.name}}
             </td>
             <td>
@@ -945,10 +925,8 @@
               <input id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}">
             </td>
             <td>
-              <input id="id_assetVisadoUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td>
-              <input id="id_assetSeguroUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm save_asset" name="btn_valuation_add_asset" style="padding:0px; border:0px; display: none;">
@@ -970,7 +948,7 @@
             <input id="in_asset_id" type="hidden" name="asset_id" value="-1">
             <input id="in_asset_edited" type="hidden" name="asset_edited" value="0">
             <td></td>
-            <td colspan="9">
+            <td colspan="10">
               {{forms.createAsset.name}}
             </td>
             <td>
@@ -980,10 +958,8 @@
               {{forms.createAsset.value}}
             </td>
             <td>
-              <input id="id_assetVisadoUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
             <td>
-              <input id="id_assetSeguroUF" class="form-control form-control-sm constructions" style="width:100%;" readonly="true">
             </td>
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm" name="btn_valuation_add_asset" style="padding:0px; border:0px;">
@@ -996,7 +972,7 @@
           <!-- This row only contains the add button -->
           <tr>
             <td></td>
-            <td colspan="14" style="padding:0em;text-align:right;">
+            <td colspan="15" style="padding:0em;text-align:right;">
               <button id="add_asset" type="button" class="btn btn-sm" name="btn_valuation_add_asset" style="padding:0px; border:0px;">
                 <i class="material-icons">add_box</i>
               </button>
@@ -1006,32 +982,34 @@
 
           <tr class="table-secondary">
             <td></td>
-            <td style="font-size:0.85em;">Subtotal</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td colspan="10" style="font-size:0.85em;">Total obras complementarias</td>
             <td id='id_ptotalAssetsPesos' style="text-align:right;font-size:0.85em;">1</td>
             <td id='id_ptotalAssetsUF' style="text-align:right;font-size:0.85em;">2</td>
-            <td id='id_ptotalAssetsVisadoUF' style="text-align:right;font-size:0.85em;">3</td>
-            <td id='id_ptotalAssetsSeguroUF' style="text-align:right;font-size:0.85em;">4</td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
           </tr>
 
           <!-- Grand total -->
 
-          <tr class="table-primary" style="border:2px solid #000;">
+          <tr class="table-primary">
             <td></td>
-            <td colspan="9" style="text-align:right;padding-right:3em;">Valor comercial tasador</td>
+            <td colspan="10" style="text-align:right;padding-right:3em;">Valor tasador</td>
             <td id='id_totalPesos' style="text-align:right;"></td>
             <td id='id_totalUF' style="text-align:right;"></td>
-            <td id='id_totalVisadoUF' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="table-primary">
+            <td></td>
+            <td colspan="10" style="text-align:right;padding-right:3em;">Valor seguro</td>
+            <td id='id_totalSeguroPesos' style="text-align:right;"></td>
             <td id='id_totalSeguroUF' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
           </tr>
@@ -1115,16 +1093,20 @@
     }
   }
   function parseFloatEs(string) {
-    console.log('parseFloatEs',string)
     string = string.replace(/[.]+/g,'')
     string = string.replace(/[,]+/g,'.')
-    console.log('parseFloatEs',string)
     return parseFloat(string)
   }
 
   function formatNumbers() {
-    var valorUF = parseFloat($("#id_valorUF").val());
-    $("#id_valorUF").val(UFFormat(valorUF));
+    str = $("#id_valorUF").val();
+    console.log('str.length',str.length)
+    if (str.length == 0) {
+      $("#id_valorUF").val('');
+    } else {
+      var valorUF = parseFloat($("#id_valorUF").val());
+      $("#id_valorUF").val(UFFormat(valorUF));
+    }
   }
 
   function computeValues() {
@@ -1138,12 +1120,18 @@
       $("#in_value_market").val(pesosFormat(valorUF*UF_IN_PESOS));
       $("#in_value_liquid_UF").val(UFFormat(valorUF*liquidez));
       $("#in_value_liquid").val(pesosFormat(valorUF*liquidez*UF_IN_PESOS));
-      $("#in_value_safe_UF").val(UFFormat(seguroUF));
-      $("#in_value_safe").val(pesosFormat(seguroUF*UF_IN_PESOS));
     } else {
       $("#in_value_market").val('');
       $("#in_value_liquid_UF").val('');
       $("#in_value_liquid").val('');
+      $("#in_value_safe_UF").val('');
+      $("#in_value_safe").val('');
+    }
+    var seguroUF = parseFloatEs($("#id_totalSeguroUF").text());
+    if (!isNaN(seguroUF)) {
+      $("#in_value_safe_UF").val(UFFormat(seguroUF));
+      $("#in_value_safe").val(pesosFormat(seguroUF*UF_IN_PESOS));
+    } else {
       $("#in_value_safe_UF").val('');
       $("#in_value_safe").val('');
     }
@@ -1270,8 +1258,6 @@
     var sumUFPerArea = 0
     var sumPesos = 0
     var sumUF = 0
-    var sumVisadoUF = 0
-    var sumSeguroUF = 0
     var c = 0
     $('#table_constructions tr').each(function() {
       console.log($(this))
@@ -1299,14 +1285,6 @@
       if (!isNaN(UF)) {
         sumUF += UF;
       }
-      visadoUF = parseFloat($(this).find("#id_terrainVisadoUF").val());
-      if (!isNaN(visadoUF)) {
-        sumVisadoUF += visadoUF;
-      }
-      seguroUF = parseFloat($(this).find("#id_terrainSeguroUF").val());
-      if (!isNaN(seguroUF)) {
-        sumSeguroUF += seguroUF;
-      }
     });
     if (c == 0) {
       $('#id_ptotalTerrArea').text('-')
@@ -1314,25 +1292,17 @@
       $('#id_ptotalTerrUFPerArea').text('-')
       $('#id_ptotalTerrPesos').text('-')
       $('#id_ptotalTerrUF').text('-')
-      $('#id_ptotalTerrVisadoUF').text('-')
-      $('#id_totalPesos').text('-')
-      $('#id_totalUF').text('-')
-      $('#id_totalVisadoUF').text('-')
-      $('#id_totalSeguroUF').text('-')
     } else {
       var avgArea = sumArea/c;
       var avgPesosPerArea = sumPesosPerArea/c;
       var avgUFPerArea = sumUFPerArea/c;
       var avgPesos = sumPesos/c;
       var avgUF = sumUF/c;
-      var avgVisadoUF = sumVisadoUF/c;
-      var avgSeguroUF = sumSeguroUF/c;
       $('#id_ptotalTerrArea').text(areaFormat(sumArea))
       $('#id_ptotalTerrPesosPerArea').text(pesosFormat(sumPesos/sumArea))
       $('#id_ptotalTerrUFPerArea').text(UFFormat(sumUF/sumArea))
       $('#id_ptotalTerrPesos').text(pesosFormat(sumPesos))
       $('#id_ptotalTerrUF').text(UFFormat(sumUF))
-      $('#id_ptotalTerrVisadoUF').text(UFFormat(sumVisadoUF))
     }
   }
 
@@ -1342,8 +1312,6 @@
     var sumUFPerArea = 0
     var sumPesos = 0
     var sumUF = 0
-    var sumVisadoUF = 0
-    var sumSeguroUF = 0
     var c = 0
     $('#table_constructions tr').each(function() {
       if (!($(this).hasClass('tr_construction'))) return
@@ -1370,14 +1338,6 @@
       if (!isNaN(UF)) {
         sumUF += UF;
       }
-      visadoUF = parseFloat($(this).find("#id_consVisadoUF").val());
-      if (!isNaN(visadoUF)) {
-        sumVisadoUF += visadoUF;
-      }
-      seguroUF = parseFloat($(this).find("#id_consSeguroUF").val());
-      if (!isNaN(seguroUF)) {
-        sumSeguroUF += seguroUF;
-      }
     });
     if (c == 0) {
       $('#id_ptotalConstArea').text('-')
@@ -1385,23 +1345,17 @@
       $('#id_ptotalConstUFPerArea').text('-')
       $('#id_ptotalConstPesos').text('-')
       $('#id_ptotalConstUF').text('-')
-      $('#id_ptotalConstVisadoUF').text('-')
-      $('#id_ptotalConstSeguroUF').text('-')
     } else {
       var avgArea = sumArea/c;
       var avgPesosPerArea = sumPesosPerArea/c;
       var avgUFPerArea = sumUFPerArea/c;
       var avgPesos = sumPesos/c;
       var avgUF = sumUF/c;
-      var avgVisadoUF = sumVisadoUF/c;
-      var avgSeguroUF = sumSeguroUF/c;
       $('#id_ptotalConstArea').text(areaFormat(sumArea))
       $('#id_ptotalConstPesosPerArea').text(pesosFormat(sumPesos/sumArea))
       $('#id_ptotalConstUFPerArea').text(UFFormat(sumUF/sumArea))
       $('#id_ptotalConstPesos').text(pesosFormat(sumPesos))
       $('#id_ptotalConstUF').text(UFFormat(sumUF))
-      $('#id_ptotalConstVisadoUF').text(UFFormat(sumVisadoUF))
-      $('#id_ptotalConstSeguroUF').text(UFFormat(sumSeguroUF))
     }
   }
 
@@ -1409,8 +1363,6 @@
   function assetsTableComputeTotalsAssets() {
     var sumPesos = 0
     var sumUF = 0
-    var sumVisadoUF = 0
-    var sumSeguroUF = 0
     var c = 0
     $('#table_constructions tr').each(function() {
       if (!($(this).hasClass('tr_asset'))) return
@@ -1426,29 +1378,15 @@
         sumUF += UF;
         c += 1;
       }
-      visadoUF = parseFloat($(this).find("#id_assetVisadoUF").val());
-      if (!isNaN(visadoUF)) {
-        sumVisadoUF += visadoUF;
-      }
-      seguroUF = parseFloat($(this).find("#id_assetSeguroUF").val());
-      if (!isNaN(seguroUF)) {
-        sumSeguroUF += seguroUF;
-      }
     });
     if (c == 0) {
       $('#id_ptotalAssetsPesos').text('-')
       $('#id_ptotalAssetsUF').text('-')
-      $('#id_ptotalAssetsVisadoUF').text('-')
-      $('#id_ptotalAssetsSeguroUF').text('-')
     } else {
       var avgPesos = sumPesos/c;
       var avgUF = sumUF/c;
-      var avgVisadoUF = sumVisadoUF/c;
-      var avgSeguroUF = sumSeguroUF/c;
       $('#id_ptotalAssetsPesos').text(pesosFormat(sumPesos))
       $('#id_ptotalAssetsUF').text(UFFormat(sumUF))
-      $('#id_ptotalAssetsVisadoUF').text(UFFormat(sumVisadoUF))
-      $('#id_ptotalAssetsSeguroUF').text(UFFormat(sumSeguroUF))
     }
   }
 
@@ -1463,19 +1401,34 @@
     sumUF += parseFloatEs($('#id_ptotalConstUF').text().trim());
     sumUF += parseFloatEs($('#id_ptotalAssetsUF').text().trim());
 
-    var sumVisadoUF = 0
-    sumVisadoUF += parseFloatEs($('#id_ptotalTerrVisadoUF').text().trim());
-    sumVisadoUF += parseFloatEs($('#id_ptotalConstVisadoUF').text().trim());
-    sumVisadoUF += parseFloatEs($('#id_ptotalAssetsVisadoUF').text().trim());
+    var sumSeguroPesos = 0
+    sumSeguroPesos += parseFloatEs($('#id_ptotalConstPesos').text().trim());
+    sumSeguroPesos += parseFloatEs($('#id_ptotalAssetsPesos').text().trim());
 
     var sumSeguroUF = 0
-    sumSeguroUF += parseFloatEs($('#id_ptotalConstSeguroUF').text().trim());
-    sumSeguroUF += parseFloatEs($('#id_ptotalAssetsSeguroUF').text().trim());
+    sumSeguroUF += parseFloatEs($('#id_ptotalConstUF').text().trim());
+    sumSeguroUF += parseFloatEs($('#id_ptotalAssetsUF').text().trim());
 
-    $('#id_totalPesos').text(pesosFormat(sumPesos))
-    $('#id_totalUF').text(UFFormat(sumUF))
-    $('#id_totalVisadoUF').text(UFFormat(sumVisadoUF))
-    $('#id_totalSeguroUF').text(UFFormat(sumSeguroUF))
+    if (!isNaN(sumPesos)) {
+      $('#id_totalPesos').text(pesosFormat(sumPesos))
+    } else {
+      $('#id_totalPesos').text('')
+    }
+    if (!isNaN(sumUF)) {
+      $('#id_totalUF').text(UFFormat(sumUF))
+    } else {
+      $('#id_totalUF').text('')
+    }
+    if (!isNaN(sumSeguroPesos)) {
+      $('#id_totalSeguroPesos').text(pesosFormat(sumSeguroPesos))
+    } else {
+      $('#id_totalSeguroPesos').text('')
+    }
+    if (!isNaN(sumSeguroUF)) {
+      $('#id_totalSeguroUF').text(UFFormat(sumSeguroUF))
+    } else {
+      $('#id_totalSeguroUF').text('')
+    }
   }
 
   function assetsTableComputeTotals() {

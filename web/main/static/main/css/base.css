@@ -41,3 +41,20 @@ html, body {
 .table td {
   vertical-align: middle;
 }
+
+.error {
+  font-size: 0.8em;
+  color: #dc3545;
+}
+
+input.error
+{
+    border: 1px solid #dc3545 !important; 
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}

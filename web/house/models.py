@@ -7,6 +7,7 @@ import datetime
 
 class House(RealEstate):
 
+    addressNumber2 = models.TextField("Lote",max_length=10,null=True,blank=True)
     bedrooms = models.PositiveSmallIntegerField("Dormitorios",null=True,blank=True)
     bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)
     builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)

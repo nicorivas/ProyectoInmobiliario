@@ -71,8 +71,8 @@ class AppraisalCreateForm(forms.Form):
     addressNumber_create = forms.CharField(max_length=6,label="Número")
     addressNumber_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
-    addressNumberFlat_create = forms.CharField(max_length=6,label="Depto.",required=False)
-    addressNumberFlat_create.widget.attrs.update({'class':"form-control",'disabled':''})
+    addressNumber2_create = forms.CharField(max_length=6,label="Depto.",required=False)
+    addressNumber2_create.widget.attrs.update({'class':"form-control"})
 
     appraisalTimeFrame_create = forms.DateTimeField(
         initial=datetime.datetime.now().strftime("%Y-%m-%d"),

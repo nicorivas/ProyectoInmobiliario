@@ -29,16 +29,14 @@
         </div>
       </div>
     </div>
-    {% if realestate.is_apartment %}
     <div class="col-2">
       <div class="form-group row">
-        <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.number.label_tag}}</label>
+        <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.addressNumber2.label_tag}}</label>
         <div class="col-sm-8">
-          {{forms.property.number}}
+          {{forms.property.addressNumber2}}
         </div>
       </div>
     </div>
-    {% endif %}
   </div>
 
   <div class="row">
@@ -116,7 +114,7 @@
           </div>
 
           <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Útil</label>
+            <label class="col-sm-4 col-form-label-sm text-right">Terreno</label>
             <div class="col-lg-5">
               <div class="input-group input-group-sm">
                 {{forms.property.terrainSquareMeters}}
@@ -250,7 +248,12 @@
                 {{forms.realestate.vidaUtilRemanente.label_tag}}
               </label>
               <div class="col-lg-4">
-                {{forms.realestate.vidaUtilRemanente}}
+                <div class="input-group input-group-sm">
+                  {{forms.realestate.vidaUtilRemanente}}
+                  <div class="input-group-append">
+                    <div class="input-group-text">años</div>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -28,6 +28,7 @@ def view_create(request):
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
+        print(request.POST)
         # create a form instance and populate it with data from the request:
         form_create = AppraisalCreateForm(request.POST)
         # check whether it's valid:
@@ -54,16 +55,18 @@ def view_create(request):
                 addressCommune = form_create.cleaned_data['addressCommune_create']
                 addressStreet = form_create.cleaned_data['addressStreet_create']
                 addressNumber = form_create.cleaned_data['addressNumber_create']
+                addressNumber2 = form_create.cleaned_data['addressNumber2_create']
                 # check if house exists
                 try:
                     realEstate = House.objects.get(
-                        addressCommune=addressCommune,
-                        addressNumber=addressNumber,
                         addressRegion=addressRegion,
-                        addressStreet=addressStreet)
+                        addressCommune=addressCommune,
+                        addressStreet=addressStreet,
+                        addressNumber=addressNumber,
+                        addressNumber2=addressNumber2)
                 except House.DoesNotExist:
                     # house does not exist, so create it
-                    realEstate = create.house_create(addressRegion,addressCommune,addressStreet,addressNumber)
+                    realEstate = create.house_create(addressRegion,addressCommune,addressStreet,addressNumber,addressNumber2)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'House is repeated'}

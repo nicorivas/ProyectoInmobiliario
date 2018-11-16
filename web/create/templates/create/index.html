@@ -16,7 +16,7 @@
       <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
         {% csrf_token %}
 
-         <div class="row">
+         <div class="row mb-4">
             
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Solicitud</p>
@@ -68,7 +68,7 @@
             </script>
          </div>
 
-         <div class="row">
+         <div class="row mb-4">
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Cliente</p>
             </div>
@@ -148,10 +148,10 @@
             </div>
          </div>
 
-         <div class="col-md-1" id="type" hidden>
+         <div class="col-md-1" id="div_addressNumber2_create">
             <div class="form-group">
-               {{form_create.addressNumberFlat_create.label_tag}}
-               {{form_create.addressNumberFlat_create}}
+               {{form_create.addressNumber2_create.label_tag}}
+               {{form_create.addressNumber2_create}}
             </div>
          </div>
       </div>
@@ -190,8 +190,6 @@
     var url = $("#form_create").attr("data-commune-url");
     // get the selected country ID from the HTML input
     var regionId = $(this).val();
-    console.log(regionId);
-
     // initialize an AJAX request
     $.ajax({
       // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
@@ -211,23 +209,25 @@
 </script>
 
 <script>
- jQuery('#propertyType').on('change', function() {
-  var type = $("#propertyType option:selected");
-  if (type.val() == 2) {
-   $("#type").removeAttr('hidden');
-   $("#type").show();
-   $("#type").val('');
-   $("#type").attr('required','required');
-   $("#type").removeAttr('disabled');
-   $("#id_addressNumberFlat_create").removeAttr('disabled');
-}
-else {
-   $("#type").hide();
-   $("#type").removeAttr('required','required');
-}
-});
-</script>
 
+  function showApartmentNumber() {
+    var type = $("#propertyType option:selected");
+    if (type.val() == 2) {
+      $("#div_addressNumber2_create").find('label').html('Depto.');
+    } else {
+      $("#div_addressNumber2_create").find('label').html('Lote');
+    }
+  }
+
+  $('#propertyType').on('change', function() {
+    showApartmentNumber();
+  });
+
+  $(document).ready(function() {
+    showApartmentNumber();
+  });
+
+</script>
 
 <script>
    $.formUtils.addValidator({
@@ -254,33 +254,61 @@ else {
       errorMessage : 'Rut invalido',
       errorMessageKey: 'badRut'
    });
-
-   $.validate({
-      //errorMessageClass: 'help-block form-error text-danger small',
-      lang: 'es'
-   });
 </script>
 
 <script>
- jQuery('#petitioner').on('change', function() {
+  $("#form_create").validate({
+    rules: {
+      "addressStreet_create": "required",
+      "addressNumber_create": "required",
+      "addressCommune_create": "required",
+      "addressRegion_create": "required",
+      "cliente_create": "required",
+      "clienteRut_create": "required",
+      "solicitanteCodigo_create": "required",
+      "appraisalTimeFrame_create": "required"
+    },
+    groups: {
+      "appraisalTimeFrame_create": "date"
+    },
+    messages: {
+      "addressStreet_create": "Campo requerido",
+      "addressNumber_create": "Requerido",
+      "addressCommune_create": "Campo requerido",
+      "addressRegion_create": "Campo requerido",
+      "cliente_create": "Campo requerido",
+      "clienteRut_create": "Campo requerido",
+      "solicitanteCodigo_create": "Campo requerido",
+      "appraisalTimeFrame_create": "Campo requerido"
+    },
+    errorPlacement: function(error, element) {
+      if (element.attr("id") == "id_appraisalTimeFrame_create") {
+        error.insertAfter("#datetimepicker1");
+      } else {
+        console.log('b')
+        error.insertAfter(element);
+      }
+    }
+  });
+</script>
+
+<script>
+  $('#petitioner').on('change', function() {
   var object = $("#petitioner option:selected");
   if (object.val() == 0 ) {
-    jQuery('#other').removeAttr('hidden');
-    jQuery('#other').show();
-    jQuery('#other').attr('required','required');
-    jQuery('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
-    jQuery('#code').removeAttr('class', 'form-group has-error');
-    jQuery('.help-block').hide();
-    jQuery('#id_solicitanteCodigo_create').removeAttr('style');
-    jQuery('#code').attr('class', 'form-group');
-
-
- }
- else {
-    jQuery('#other').hide();
-    jQuery('#other').removeAttr('required');
-    jQuery('#other').val('');
-    jQuery('#id_solicitanteCodigo_create').attr('data-validation','required');
+    $('#other').removeAttr('hidden');
+    $('#other').show();
+    $('#other').attr('required','required');
+    $('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+    $('#code').removeAttr('class', 'form-group has-error');
+    $('.help-block').hide();
+    $('#id_solicitanteCodigo_create').removeAttr('style');
+    $('#code').attr('class', 'form-group');
+ } else {
+    $('#other').hide();
+    $('#other').removeAttr('required');
+    $('#other').val('');
+    $('#id_solicitanteCodigo_create').attr('data-validation','required');
  }
 });
 </script>

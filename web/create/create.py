@@ -101,7 +101,7 @@ def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
     building.save()
     return building
 
-def house_create(addressRegion,addressCommune,addressStreet,addressNumber):
+def house_create(addressRegion,addressCommune,addressStreet,addressNumber,addressNumber2):
     '''
     Given an address, create a house
     '''
@@ -109,7 +109,8 @@ def house_create(addressRegion,addressCommune,addressStreet,addressNumber):
         addressRegion=addressRegion,
         addressCommune=addressCommune,
         addressStreet=addressStreet,
-        addressNumber=addressNumber)
+        addressNumber=addressNumber,
+        addressNumber2=addressNumber2)
 
     # get id
     if len(House.objects.all()) > 0:

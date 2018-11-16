@@ -20,7 +20,9 @@ def save_appraisalNF(appraisal, request, comment):
         return
 
 def assign_tasadorNF(request):
-    appraisal = Appraisal.objects.get(pk=request.POST.dict()['tasadorAppraisal_id'])
+    print(request.POST)
+    pk = request.POST.dict()['tasadorAppraisal_id'];
+    appraisal = Appraisal.objects.get(pk=pk)
     appraisal.tasadorUser = User.objects.get(pk=request.POST.dict()['tasador'])
     save_appraisalNF(appraisal, request,'Changed tasador')
     return
