@@ -2,12 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from user.views import userAppraisals, appraiserWork
+from appraisal.models import AppraisalEvaluation, Appraisal
 from .forms import EvaluationForm
+
+from django.core.exceptions import ObjectDoesNotExist
 
 def appraiserEvaluationView(request):
     if request.method == 'POST':
-        print(request)
-        evaluationForm = EvaluationForm(request.Post, instance=user)
+
+        print(request.POST)
+        evaluationForm = EvaluationForm(request.POST)
         if evaluationForm.is_valid():
             evaluationForm.save()
             _onTime = evaluationForm.cleaned_data['onTime']
@@ -15,6 +19,20 @@ def appraiserEvaluationView(request):
             _generalQuality = evaluationForm.cleaned_data['generalQuality']
             _commentText = evaluationForm.cleaned_data['commentText']
             _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
+            appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
+            appraiser = User.objects.get(pk=request.POST['evaluador_id'])
+
+            evaluation, created = AppraisalEvaluation.objects.update_or_create(
+                                    appraisal=appraisal,
+                                    user=appraiser,
+                                    onTime=_onTime,
+                                    completeness=_completeness,
+                                    generalQuality=_generalQuality,
+                                    commentText=_commentText,
+                                    commentFeedback=_commentFeedback)
+
+            print(evaluation.appraisalEvaluationMean)
+
 
     appraisals_active, appraisals_finished = userAppraisals(request)
     evaluationForm = EvaluationForm()

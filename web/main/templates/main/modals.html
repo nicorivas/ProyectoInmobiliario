@@ -36,7 +36,58 @@
         </button>
       </div>
       <div class="modal-body">
+        <form action="" method="post" id="form">
+            <table class="table table-sm">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Tasaciones</th>
+                </tr>
+              </thead>
+              <tbody>
 
+                  {% csrf_token %}
+                {% for user in visadores %}
+                <tr>
+                  <th scope="col">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{user.id}}" checked>
+                      <label class="form-check-label" for="visador_radio">
+                        {{user.first_name}} {{user.last_name}}
+                      </label>
+                    </div>
+                  </th>
+                  <th scope="col">10</th>
+                </tr>
+                {% endfor %}
+
+              </tbody>
+            </table>
+
+              <div class="modal-footer">
+                  <input id="visadorAppraisal_id" name="visadorAppraisal_id" type="hidden" value="">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button name="btn_assign_visador" class="btn btn-primary">Asignar</button>
+              </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="asignarTasador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Seleccione un tasador</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+    <form action="" method="post" id="form">
         <table class="table table-sm">
           <thead class="thead-light">
             <tr>
@@ -45,12 +96,14 @@
             </tr>
           </thead>
           <tbody>
-            {% for user in visadores %}
+
+              {% csrf_token %}
+            {% for user in tasadores %}
             <tr>
               <th scope="col">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{user.id}}" checked>
-                  <label class="form-check-label" for="visador_radio">
+                  <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{user.id}}" checked>
+                  <label class="form-check-label" for="tasador_radio">
                     {{user.first_name}} {{user.last_name}}
                   </label>
                 </div>
@@ -58,62 +111,21 @@
               <th scope="col">10</th>
             </tr>
             {% endfor %}
+
           </tbody>
         </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button name="btn_assign_visador" class="btn btn-primary">Asignar</button>
-      </div>
+          <div class="modal-footer">
+              <input id="tasadorAppraisal_id" name="tasadorAppraisal_id" type="hidden" value="">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+              <button name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
+          </div>
+     </form>
     </div>
   </div>
 </div>
+</div>
 
-<form action="" method="post" id="form">
-{% csrf_token %}
-  <div class="modal fade" id="asignarTasador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Seleccione un tasador</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <table class="table table-sm">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">Nombre</th>
-                <th scope="col">Tasaciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for user in tasadores %}
-              <tr>
-                <th scope="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{user.id}}" checked>
-                    <label class="form-check-label" for="tasador_radio">
-                      {{user.first_name}} {{user.last_name}}
-                    </label>
-                  </div>
-                </th>
-                <th scope="col">10</th>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <div class="modal-footer">
-          <input id="tasadorAppraisal_id" name="tasadorAppraisal_id" type="hidden" value="">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
+
 
 <div class="modal fade" id="evaluateAppraisal" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -125,7 +137,8 @@
         </button>
       </div>
       <div class="modal-body">
-
+       <form action="" method="post" id="form">
+           {% csrf_token %}
         <table class="table table-sm">
           <thead class="thead-light">
             <tr>
@@ -137,7 +150,7 @@
             <tr>
 
              <td>
-             Puntualidad
+             {{evaluationForm.onTime.label}}
               </td>
              <td>
              {{evaluationForm.onTime}}
@@ -146,7 +159,7 @@
 
             <tr>
               <td>
-                 Completitud
+                 {{evaluationForm.completeness.label}}
               </td>
               <td>
                  {{evaluationForm.completeness}}
@@ -155,15 +168,15 @@
 
             <tr>
               <td>
-                 Calidad General
+                 {{evaluationForm.generalQuality.label}}
               </td>
-              <td>
+
                 {{evaluationForm.generalQuality}}
               </td>
             </tr>
             <tr>
               <td>
-                 Comentarios
+                 {{evaluationForm.commentText.label}}
               </td>
               <td>
                 {{evaluationForm.commentText}}
@@ -171,22 +184,24 @@
             </tr>
             <tr>
               <td>
-                 Feedback al Tasador
+                 {{evaluationForm.commentFeedback.label}}
               </td>
               <td>
+
                 {{evaluationForm.commentFeedback}}
               </td>
             </tr>
 
           </tbody>
         </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button name="btn_assign_visador" class="btn btn-primary">Evaluar</button>
+        <div class="modal-footer">
+            <input id="evaluadorAppraisal_id" name="evaluadorAppraisal_id" type="hidden" value="">
+            <input id="evaluador_id" name="evaluador_id" type="hidden" value="">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button name="btn_evaluate_appraisal" class="btn btn-primary">Evaluar</button>
+        </div>
+       </form>
       </div>
     </div>
   </div>
 </div>
-
-

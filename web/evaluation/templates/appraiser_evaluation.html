@@ -33,55 +33,53 @@
 </div>
 
 <script>
- jQuery('#appraiser').on('change', function() {
+ $('#appraiser').on('change', function() {
   var object = $("#appraiser option:selected");
   var id = object.val();
-    jQuery('.tasaciones').attr('hidden');
-    jQuery('.tasaciones').hide()
-    jQuery('.activas').attr('hidden');
-    jQuery('.activas').hide();
-    jQuery('.previas').attr('hidden');
-    jQuery('.previas').hide();
-    jQuery('#'+id).removeAttr('hidden');
-    jQuery('#'+id).show();
-    jQuery('#app-'+id).removeAttr('hidden');
-    jQuery('#app-'+id).show();
-    jQuery('#app2-'+id).removeAttr('hidden');
-    jQuery('#app2-'+id).show();
+    $('.tasaciones').attr('hidden');
+    $('.tasaciones').hide()
+    $('.activas').attr('hidden');
+    $('.activas').hide();
+    $('.previas').attr('hidden');
+    $('.previas').hide();
+    $('#'+id).removeAttr('hidden');
+    $('#'+id).show();
+    $('.'+id).removeAttr('hidden');
+    $('.'+id).show();
 });
 </script>
 
 <script>
     $( document ).ready(function() {
-        jQuery('.tasaciones').attr('hidden');
-        jQuery('.tasaciones').hide();
-        jQuery('.activas').attr('hidden');
-        jQuery('.activas').hide();
-        jQuery('.previas').attr('hidden');
-        jQuery('.previas').hide();
+        $('.tasaciones').attr('hidden');
+        $('.tasaciones').hide();
+        $('.activas').attr('hidden');
+        $('.activas').hide();
+        $('.previas').attr('hidden');
+        $('.previas').hide();
 });
 </script>
 
 <script>
-    jQuery('#appraiser').on('change', function() {
+    $('#appraiser').on('change', function() {
   var object = $("#appraiser option:selected");
   if (object.val() == 0 ) {
-    jQuery('#other').removeAttr('hidden');
-    jQuery('#other').show();
-    jQuery('#other').attr('required','required');
-    jQuery('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
-    jQuery('#code').removeAttr('class', 'form-group has-error');
-    jQuery('.help-block').hide();
-    jQuery('#id_solicitanteCodigo_create').removeAttr('style');
-    jQuery('#code').attr('class', 'form-group');
+    $('#other').removeAttr('hidden');
+    $('#other').show();
+    $('#other').attr('required','required');
+    $('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+    $('#code').removeAttr('class', 'form-group has-error');
+    $('.help-block').hide();
+    $('#id_solicitanteCodigo_create').removeAttr('style');
+    $('#code').attr('class', 'form-group');
 
 
  }
  else {
-    jQuery('#other').hide();
-    jQuery('#other').removeAttr('required');
-    jQuery('#other').val('');
-    jQuery('#id_solicitanteCodigo_create').attr('data-validation','required');
+    $('#other').hide();
+    $('#other').removeAttr('required');
+    $('#other').val('');
+    $('#id_solicitanteCodigo_create').attr('data-validation','required');
  }
 });
 </script>

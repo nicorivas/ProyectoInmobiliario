@@ -295,5 +295,5 @@ class AppraisalEvaluation(models.Model):
 
     @property
     def appraisalEvaluationMean(self):
-        evaluationMean = (self.onTime + self.completeness + self.generalQuality)/3
+        evaluationMean = (self.onTime + self.completeness + self.generalQuality)/3.0
         return evaluationMean
