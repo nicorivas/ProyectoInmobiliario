@@ -8,6 +8,8 @@ from .forms import EvaluationForm
 from django.core.exceptions import ObjectDoesNotExist
 
 def appraiserEvaluationView(request):
+    print(request)
+
     if request.method == 'POST':
 
         print(request.POST)
@@ -21,7 +23,6 @@ def appraiserEvaluationView(request):
             _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
             appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
             appraiser = User.objects.get(pk=request.POST['evaluador_id'])
-
             evaluation, created = AppraisalEvaluation.objects.update_or_create(
                                     appraisal=appraisal,
                                     user=appraiser,
@@ -35,6 +36,7 @@ def appraiserEvaluationView(request):
 
 
     appraisals_active, appraisals_finished = userAppraisals(request)
+    print(appraisals_finished)
     evaluationForm = EvaluationForm()
     tasadores = list(User.objects.filter(groups__name__in=['tasador']))
     visadores = list(User.objects.filter(groups__name__in=['visador']))
