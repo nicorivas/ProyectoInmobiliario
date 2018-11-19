@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class UserProfile(models.Model):
+    rut = models.CharField('RUT', max_length=14)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', primary_key=True)
     first_name = models.CharField(max_length=100, default='')
     last_name = models.CharField(max_length=100, default='')

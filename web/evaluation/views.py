@@ -7,12 +7,21 @@ from .forms import EvaluationForm
 
 from django.core.exceptions import ObjectDoesNotExist
 
+def get_appraisalEvaluations(request):
+    try:
+        appraisalEvaluation = AppraisalEvaluation.objects.get(pk=request.POST['evaluadorAppraisal_id'])
+        evaluationForm = EvaluationForm(instance=appraisalEvaluation)
+        print(appraisalEvaluation.appraisalEvaluationMean)
+        return evaluationForm
+    except AppraisalEvaluation.DoesNotExist:
+        return
+
+
 def appraiserEvaluationView(request):
-    print(request)
     evaluationForm = EvaluationForm()
     if request.method == 'POST':
-
         if request.method == 'POST':
+            #print(request.POST)
             if 'delete' in request.POST:
                 # Handle the delete button, next to every appraisal
                 id = int(request.POST['appraisal_id'])
@@ -25,6 +34,7 @@ def appraiserEvaluationView(request):
                 print(request.POST.dict())
                 ret = assign_visadorNF(request)
             if 'evaluadorAppraisal_id' in request.POST.keys():
+                print(get_appraisalEvaluations(request))
                 evaluationForm = EvaluationForm(request.POST)
                 if evaluationForm.is_valid():
                     evaluationForm.save()
@@ -38,12 +48,13 @@ def appraiserEvaluationView(request):
                     evaluation, created = AppraisalEvaluation.objects.update_or_create(
                                             appraisal=appraisal,
                                             user=appraiser,
-                                            onTime=_onTime,
-                                            completeness=_completeness,
-                                            generalQuality=_generalQuality,
-                                            commentText=_commentText,
-                                            commentFeedback=_commentFeedback)
-
+                                            defaults={
+                                                'onTime':_onTime,
+                                                'completeness':_completeness,
+                                                'generalQuality':_generalQuality,
+                                                'commentText':_commentText,
+                                                'commentFeedback':_commentFeedback})
+                    print(evaluation, created)
                     print(evaluation.appraisalEvaluationMean)
 
 

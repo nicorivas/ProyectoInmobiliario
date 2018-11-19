@@ -54,23 +54,21 @@
     $('.appraiser').click(function() {
        var id = $(this).val();
        if (id == 0 ) {
-    $('#other').removeAttr('hidden');
-    $('#other').show();
-    $('#other').attr('required','required');
-    $('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
-    $('#code').removeAttr('class', 'form-group has-error');
-    $('.help-block').hide();
-    $('#id_solicitanteCodigo_create').removeAttr('style');
-    $('#code').attr('class', 'form-group');
-
-
+            $('#other').removeAttr('hidden');
+            $('#other').show();
+            $('#other').attr('required','required');
+            $('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+            $('#code').removeAttr('class', 'form-group has-error');
+            $('.help-block').hide();
+            $('#id_solicitanteCodigo_create').removeAttr('style');
+            $('#code').attr('class', 'form-group');
  }
- else {
-    $('#other').hide();
-    $('#other').removeAttr('required');
-    $('#other').val('');
-    $('#id_solicitanteCodigo_create').attr('data-validation','required');
- }
+        else {
+            $('#other').hide();
+            $('#other').removeAttr('required');
+            $('#other').val('');
+            $('#id_solicitanteCodigo_create').attr('data-validation','required');
+         }
 });
 </script>
 
