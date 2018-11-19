@@ -164,7 +164,10 @@ class FormAppraisal(forms.ModelForm):
             'visadorEmpresaMail',
             'valorUF',
             'tipoTasacion',
-            'objetivo'
+            'objetivo',
+            'descripcionSector',
+            'descripcionPlanoRegulador',
+            'descripcionExpropiacion'
         ]
         attrs = {'class':"form-control form-control-sm"}
         attrs_check = {'class':"form-check-input"}
@@ -187,6 +190,9 @@ class FormAppraisal(forms.ModelForm):
             'valorUF': forms.TextInput(attrs={'class':"form-control text-right",'lang':"es-ES"}),
             'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=attrs),
             'objetivo':forms.Select(attrs=attrs,choices=Appraisal.petitioner_choices),
+            'descripcionSector':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'descripcionPlanoRegulador':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'descripcionExpropiacion':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5})
         }
 
 class FormCreateApartment(forms.ModelForm):

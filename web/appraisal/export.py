@@ -31,13 +31,13 @@ def export(request,forms,appraisal,realEstate):
 
     def excel_find(workbook,term):
         for sheet in workbook:
-            for row in range(1,100):
+            for row in range(1,400):
                 for col in range(1,100):
                    cv = sheet.cell(row=row,column=col).value
 
     def excel_find_replace(workbook,term,rep):
         for sheet in workbook:
-            for row in range(1,100):
+            for row in range(1,400):
                 for col in range(1,100):
                    cv = sheet.cell(row=row,column=col).value
                    if cv == term:
@@ -49,7 +49,6 @@ def export(request,forms,appraisal,realEstate):
     for field in fields:
         if not isinstance(field,ManyToOneRel):
             field_name = field.deconstruct()[0]
-            print(field_name)
             if field_name == 'tasadorUser':
                 if isinstance(appraisal.tasadorUser,type(None)):
                     excel_find_replace(wb,field_name,'')
@@ -102,17 +101,30 @@ def export(request,forms,appraisal,realEstate):
     else:
         excel_find_replace(wb,'generalDescription',realEstate.apartment.generalDescription)
 
-    #img = openpyxl.drawing.Image('test.jpg')
-    #img.anchor(ws.cell('A1'))
-    #ws.add_image(img)
+    excel_find_replace(wb,'descripcionSectorAll',appraisal.descripcionSector+'\n'+appraisal.descripcionPlanoRegulador+'\n'+appraisal.descripcionExpropiacion)
+
+    ws = wb.worksheets[0]
+
+    # Find where valuation table starts
+    for i, row in enumerate(ws.rows):
+        if row[2].value == "propertyAddress":
+            ws.insert_rows(i,1)
+            break
+            #ws.append((cell.value for cell in row[1:100]))
 
     # Map image
-    r = requests.get("https://maps.googleapis.com/maps/api/staticmap?center={{realestate.addressStreet}} {{realestate.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{realestate.lat}},{{ realestate.lng}}")
+    r = requests.get("https://maps.googleapis.com/maps/api/staticmap?center="+\
+    	realEstate.addressStreet+" "+\
+    	realEstate.addressNumber+"&zoom=16&size=900x530&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C"+\
+    	str(realEstate.lat)+","+str(realEstate.lng))
     lf = tempfile.NamedTemporaryFile()
     lf.write(r.content)
-    img = drawing.image(lf)
-    img.anchor(ws.cell('A1'))
-    ws.add_image(img)
+    img = drawing.image.Image(lf)
+    print(img)
+    print(wb.worksheets)
+    print(wb.worksheets[0])
+    img.anchor = "D31"
+    wb.worksheets[0].add_image(img)
 
     response = HttpResponse(
         content=save_virtual_workbook(wb),
