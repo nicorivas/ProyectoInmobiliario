@@ -20,6 +20,11 @@
         <a class="nav-link" href="/create/">Crear tasación</a>
       </li>
       {% endif %}
+      {% if perms.appraisal.add_appraisal %}
+      <li class="nav-item">
+        <a class="nav-link" href="/evaluation/">Evaluar tasación</a>
+      </li>
+      {% endif %}
     </ul>
     {% endif %}
   </div>

@@ -1,5 +1,5 @@
 <table class="table table-borderless">
-    <h5 class="card-title">Tasaciones</h5>
+    <h5 class="card-title">Tasadores</h5>
     <thead>
       <tr>
         <th scope="col">Tasador</th>
@@ -10,20 +10,25 @@
     </thead>
     <tbody>
       {% for tasador in lista %}
-      <tr id="{{tasador.user.pk}}" class="tasaciones">
-        <td>
-        {{ tasador.user.first_name }} {{ tasador.user.last_name }}
-        </td>
-        <td>
-           {{ tasador.activeAppraisals }}
-        </td>
-        <td>
-            {{ tasador.lateAppraisals }}
-        </td>
-         <td>
-           {{ tasador.doneAppraisals }}
-        </td>
-      </tr>
+
+        <div class="form-group">
+                <tr id="{{tasador.user.pk}}">
+                    <td>
+                        <button type='submit' value="{{tasador.user.pk}}" class="tasaciones appraiser">
+                            {{ tasador.user.first_name }} {{ tasador.user.last_name }}</button>
+                    </td>
+
+                    <td>
+                        {{ tasador.activeAppraisals }}
+                    </td>
+                    <td>
+                        {{ tasador.lateAppraisals }}
+                    </td>
+                    <td>
+                        {{ tasador.doneAppraisals }}
+                    </td>
+            </tr>
+      </div>
       {% endfor %}
     </tbody>
   </table>
