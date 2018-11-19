@@ -1,20 +1,18 @@
 <div class="card-body">
 
     <div class="form-group">
+      <label for="id_map">
+        Plano de ubicación
+      </label>
+      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{realestate.addressStreet}} {{realestate.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{realestate.lat}},{{ realestate.lng}}"></p>
+    </div>
+
+    <div class="form-group">
       <label for="id_sectorDescription">
         Descripcion del sector
       </label>
       <textarea class="form-control" id="id_sectorDescription" cols="80" rows="5"></textarea>
     </div>
-
-    <!--
-    <div class="form-group">
-      <label for="id_map">
-        Plano de ubicación
-      </label>
-      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{ building.addressStreet }} {{building.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{ building.lat }},{{ building.lon }}"></p>
-    </div>
-    -->
 
     <div class="form-group">
       <label for="id_planoRegulador">

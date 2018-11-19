@@ -136,17 +136,20 @@ class Appraisal(models.Model):
         (OTHER, "Otro")
     ]
     solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
-
     solicitanteOtro = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
+
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
     clienteRut = models.CharField("Cliente RUT",max_length=10,blank=True,null=True)
+
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
     propietarioRut = models.CharField("Propietario RUT",max_length=10,blank=True,null=True)
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
+
     rol = models.CharField("Rol",max_length=20,blank=True,null=True)
+
     SIN_DATOS = 0
     DEFINITIVO = 1
     MATRIZ = 2
@@ -166,6 +169,7 @@ class Appraisal(models.Model):
         (NO_ENROLADO, "No enrolado")
     ]
     rolType = models.IntegerField("Tipo rol", choices=rolTypeChoices, blank=True,null=False,default=0)
+    
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
     visadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_visador')
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)

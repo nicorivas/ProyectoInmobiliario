@@ -10,6 +10,7 @@ from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
+from user.models import UserProfile
 
 import reversion
 from copy import deepcopy
@@ -35,14 +36,11 @@ from create import create
 
 import viz.maps as maps
 import appraisal.related as related
+from appraisal.export import *
 
 from django.db.models import Avg, StdDev
 
 import json
-
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
-from openpyxl import load_workbook
 
 import datetime
 import requests
@@ -216,40 +214,6 @@ def comment(forms,appraisal):
             conflict=conflict)
         comment.save()
     return True
-
-def export(request,forms,appraisal):
-    module_dir = os.path.dirname(__file__)  # get current directory
-    file_path = os.path.join(module_dir,'static/appraisal/santander-template.xls')
-
-    def excel_find(workbook,term):
-        for sheet in workbook:
-            for row in range(1,100):
-                for col in range(1,100):
-                   cv = sheet.cell(row=row,column=col).value
-
-    def excel_find_replace(workbook,term,rep):
-        for sheet in workbook:
-            for row in range(1,100):
-                for col in range(1,100):
-                   cv = sheet.cell(row=row,column=col).value
-                   if cv == term:
-                       sheet.cell(row=row,column=col).value = rep
-
-    wb = load_workbook(filename=file_path)
-
-    model_instance = form_appraisal.save(commit=False)
-
-    fields = Appraisal._meta.get_fields()
-    for field in fields:
-        field_name = field.deconstruct()[0]
-        excel_find_replace(wb,field_name,getattr(model_instance,field_name))
-
-    response = HttpResponse(
-        content=save_virtual_workbook(wb),
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.xlsx"'
-
-    return response
 
 def assign_visador(request,forms,appraisal):
     if forms['appraisal'].is_valid():
@@ -609,7 +573,7 @@ def view_appraisal(request, **kwargs):
         if 'btn_save' in request_post.keys():
             ret = save(request,forms,appraisal,realestate)
         elif 'btn_export' in request_post.keys():
-            ret = export(request,forms,appraisal)
+            ret = export(request,forms,appraisal,realestate)
         elif 'btn_delete' in request_post.keys():
             ret = delete(request,appraisal)
         elif 'btn_finish' in request_post.keys():

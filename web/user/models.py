@@ -44,6 +44,14 @@ class UserProfile(models.Model):
             return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
 
     @property
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+
+    @property
+    def rut_verbose(self):
+        return "16.017.511-7"
+
+    @property
     def badge(self):
         if self.user.is_superuser:
             return '<div class="badge badge-dark">Superuser</div>'

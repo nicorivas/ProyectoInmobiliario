@@ -75,7 +75,6 @@ def getSimilarRealEstate(realestate):
                 d1 = float(pow(realestate.house.terrainSquareMeters - house.terrainSquareMeters,2))
                 d2 = float(pow(realestate.house.builtSquareMeters - house.builtSquareMeters,2))
                 d3 = 1000000000.0*float(pow(house.latlng[0] - realestate.latlng[0],2)+pow(house.latlng[1] - realestate.latlng[1],2))
-                print(d1,d2,d3)
                 
                 ds.append([0,0])
                 ds[i][0] = house.pk
