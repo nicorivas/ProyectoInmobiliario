@@ -14,14 +14,15 @@ def get_appraisalEvaluations(request):
         print(appraisalEvaluation.appraisalEvaluationMean)
         return evaluationForm
     except AppraisalEvaluation.DoesNotExist:
-        return
+        return "Zooom"
 
 
 def appraiserEvaluationView(request):
     evaluationForm = EvaluationForm()
+    print(evaluationForm)
     if request.method == 'POST':
         if request.method == 'POST':
-            #print(request.POST)
+            print(request.POST)
             if 'delete' in request.POST:
                 # Handle the delete button, next to every appraisal
                 id = int(request.POST['appraisal_id'])
@@ -54,6 +55,7 @@ def appraiserEvaluationView(request):
                                                 'generalQuality':_generalQuality,
                                                 'commentText':_commentText,
                                                 'commentFeedback':_commentFeedback})
+                    print(evaluation.pk)
                     print(evaluation, created)
                     print(evaluation.appraisalEvaluationMean)
 
