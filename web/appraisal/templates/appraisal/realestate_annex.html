@@ -10,21 +10,29 @@
             <div class="custom-file">
               {{forms.photos.photos}}
               <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
-              <div class="invalid-feedback">
-                Debe seleccionar un archivo
-              </div>
             </div>
           </div>
           <div class="col-md-4">
             {{forms.photos.description}}
-            <div class="invalid-feedback">
-              Debe ingresar una descripción
-            </div>
           </div>
           <div class="col-md">
             <button name='btn_upload_photo' class="btn btn-primary">Agregar foto</button>
           </div>
         </div>
+
+        <script>
+          $('#id_photos').change(function() {
+            //var i = $(this).prev('label').clone();
+            console.log('a')
+            if ($('#id_photos')[0].files.length == 1) {
+              var file = $('#id_photos')[0].files[0].name;
+              console.log(file)
+              $('.custom-file-label').text(file);
+            } else {
+              $('.custom-file-label').text('Múltiples fotos');
+            }
+          });
+        </script>
 
         <!-- Gallery -->
         <div class="container-fluid">
@@ -63,8 +71,69 @@
 
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Documentos adjuntos</h5>
-        <button class="btn btn-primary">Adjuntar documento</button>
+        <h5 class="card-title">Documentos</h5>
+
+        <!-- Form to insert a picture -->
+        <div class="form-group row mb-4">
+          <div class="col-md-4">
+            <div class="custom-file">
+              {{forms.documents.documents}}
+              <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            {{forms.documents.description}}
+          </div>
+          <div class="col-md">
+            <button name='btn_upload_document' class="btn btn-primary">Agregar documento</button>
+          </div>
+        </div>
+
+        <script>
+          $('#id_documents').change(function() {
+            //var i = $(this).prev('label').clone();
+            var filesn = $('#id_documents')[0].files.length
+            if (filesn == 1) {
+              var file = $('#id_documents')[0].files[0].name;
+              $('.custom-file-label').text(file);
+            } else {
+              $('.custom-file-label').text(filesn+' archivos');
+            }
+          });
+        </script>
+
+        <!-- Gallery -->
+        <div class="container-fluid">
+          <div class="row">
+            {% for document in appraisal.documents.all %}
+            <div class="card mr-2 mb-2" style="width: 16rem;">
+              <a class="document_show" data-url="{{document.photo.url}}" data-id="{{document.id}}">
+                <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{document.thumbnail.url}}"/>
+              </a>
+              <div class="card-body">
+                <input name="document_description_{{document.id}}" class="form-control form-control-sm in_description" style="display:none;">
+                <p class="card-title description">
+                  {{document.description}}
+                </p>
+                <p class="card-text" style="text-align:right">
+                  <a class="btn btn-sm document_show" data-url="{{document.document.url}}" data-id="{{document.id}}">
+                    <i class="material-icons">zoom_in</i>
+                  </a>
+                  <button type="button" class="btn btn-sm edit_document" style="padding:0px; border:0px;">
+                    <i class="material-icons">edit</i>
+                  </button>
+                  <button name="btn_save_document" value="{{document.id}}" class="btn btn-sm save_document" style="padding:0px; border:0px; display:none;">
+                    <i class="material-icons">save</i>
+                  </button>
+                  <button name="btn_delete_document" value="{{document.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -92,7 +161,9 @@
 </script>
 
 <script>
+  
   $(document).ready(function() {
+
     $('.edit_photo').click(function() {
       card = $(this).closest('.card-body')
       p = card.find('.description')
@@ -105,6 +176,20 @@
       btn = card.find('.save_photo')
       btn.toggle()
     })
+
+    $('.edit_document').click(function() {
+      card = $(this).closest('.card-body')
+      p = card.find('.description')
+      description = p.html()
+      p.empty()
+      input = card.find('.in_description')
+      input.val(description.trim())
+      input.toggle()
+      $(this).toggle()
+      btn = card.find('.save_document')
+      btn.toggle()
+    })
+    
   })
 
   $(document).on('click','.photo_show',function(){
@@ -123,6 +208,29 @@
               $('#photo').attr("src",url);
               $('#photo_id').val(id);
               $('#modalPhoto').modal('show');
+          },
+          error:function(){
+              console.log('error')
+          },
+      });
+  });
+
+  $(document).on('click','.document_show',function(){
+      var url = $(this).data('url');
+      var id = $(this).data('id');
+      $.ajax({
+          url:'',
+          type:'POST',
+          data:{
+              'url':url,
+              'id':id,
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success:function(data){
+              console.log(id)
+              $('#document').attr("src",url);
+              $('#document_id').val(id);
+              $('#modalDocument').modal('show');
           },
           error:function(){
               console.log('error')

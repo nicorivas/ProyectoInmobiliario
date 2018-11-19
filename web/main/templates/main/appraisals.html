@@ -1,16 +1,23 @@
-        <script>
-          function timeCreated(string) {
-            var s = moment(string).format("D MMM HH:MM");
-            document.write(s)
-          }
-        </script>
+<script>
+  function timeCreated(string) {
+    var s = moment(string).format("D MMM HH:MM");
+    document.write(s)
+  }
+</script>
 
-        <script>
-          function timeLeft(string) {
-            var m = moment(string);
-            document.write(m.fromNow());
-          }
-        </script>
+<script>
+  function timeLeft(string) {
+    var m = moment(string);
+    document.write(m.fromNow());
+  }
+</script>
+
+<script>
+  function timeFinished(string) {
+    var s = moment(string).format("D MMM HH:MM");
+    document.write(s)
+  }
+</script>
 
 <div class="container" style="max-width:100%">
 
@@ -138,16 +145,16 @@
 
   <h5 class="card-title">Tasaciones finalizadas</h5>
 
-  <table class="table table-borderless">
+  <table class="table table-sm table-borderless">
     <thead>
       <tr>
         <th scope="col">ID</th>
-        <th scope="col">Tipo</th>
+        <th scope="col">Cliente</th>
+        <th scope="col" style="text-align:center;">T.</th>
         <th scope="col">Dirección</th>
         <th scope="col">Tasador</th>
-        <th scope="col">Fecha creación</th>
-        <th scope="col">Fecha término</th>
-        <th scope="col"></th>
+        <!--<th scope="col">Fecha creación</th>-->
+        <th scope="col">Entregada</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -158,7 +165,10 @@
           {{ appraisal.id }}
         </td>
         <td>
-          {{ appraisal.realEstate.get_propertyType_display }}
+          {{ appraisal.solicitanteVerbose }}
+        </td>
+        <td style="text-align:center;">
+          <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
         </td>
         <td>
           <a class="text-dark" href={{appraisal.url}}>
@@ -166,25 +176,30 @@
           </a>
         </td>
         <td>
-          {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name }}
+          <span style="vertical-align: middle;">
+            {% if appraisal.visadorUser %}
+              {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name }}
+            {% else %}
+            -
+            {% endif %}
+          </span>
         </td>
+        <!--
         <td>
           {{appraisal.timeCreated | date:"D d M, H:i"}}
         </td>
+        -->
         <td>
-          {{appraisal.timeFinished | date:"D d M, H:i"}}
+          <script>timeFinished("{{appraisal.timeFinished | date:"c"}}");</script>
         </td>
-        <td>
-        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm">
-          visibility
+        <td style="text-align:right;">
+          <button id='btn-vis' onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" class="btn btn-dark btn-sm btn-delete">
+            visibility
           </button>
-        </td>
-        <td>
           {% if perms.appraisal.assign_visador %}
-          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="{{appraisal.tasadorUser.id}}"
-                  value="{{appraisal.id}}" class="btn btn-dark btn-sm evaluateAppraisal">
-          evaluar
-        </button>
+          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="{{appraisal.tasadorUser.id}}" value="{{appraisal.id}}" class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal">
+            assessment
+          </button>
         </td>
         {% endif %}
       </tr>
@@ -201,6 +216,10 @@
 <script>
 
   $(document).ready(function($) {
+
+    $('.btn-evaluate').tooltip({'title':'Evaluar'})
+
+
     $(".clickable-row").hover(
       function() {
         $(this).addClass('table-secondary')

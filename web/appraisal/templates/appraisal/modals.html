@@ -1,3 +1,6 @@
+<form class="cmxform" action="" method="post" id="form_create_apartment" action novalidate="novalidate">
+{% csrf_token %}
+
 <div class="modal fade" id="modalExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -35,6 +38,8 @@
     </div>
   </div>
 </div>
+
+</form>
 
 
 
@@ -93,7 +98,6 @@
         </button>
       </div>
       <div class="modal-body">
-
         <table class="table table-sm">
           <thead class="thead-light">
             <tr>
@@ -374,6 +378,27 @@
       </div>
       <div class="modal-body">
         <img id="photo" class="img-fluid rounded" src=""/>
+      </div>
+      <div class="modal-footer">
+        <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <!--<button class="btn btn-danger" name="btn_delete_photo">Borrar</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalDocument" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Documento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img id="document" class="img-fluid rounded" src=""/>
       </div>
       <div class="modal-footer">
         <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->

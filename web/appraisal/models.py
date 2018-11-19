@@ -21,6 +21,17 @@ class Photo(models.Model):
         format='JPEG',
         options={'quality': 60})
 
+class Document(models.Model):
+    document = models.ImageField(upload_to='test/',default='no-img.jpg')
+    description = models.CharField("Descripción",
+        max_length=200,
+        blank=True,
+        null=True)
+    thumbnail = ImageSpecField(source='document',
+        processors=[ResizeToFill(400, 400)],
+        format='JPEG',
+        options={'quality': 60})
+
 @reversion.register()
 class Appraisal(models.Model):
     '''
@@ -161,6 +172,8 @@ class Appraisal(models.Model):
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
 
     photos = models.ManyToManyField(Photo)
+
+    documents = models.ManyToManyField(Document)
 
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 

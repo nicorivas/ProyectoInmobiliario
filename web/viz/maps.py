@@ -9,8 +9,6 @@ def mapReferences(references,realestate):
     p = gmap("AIzaSyAKZ-wutxLGtqlojKj00BwHKFlH5dkr47c", map_options,plot_width=1000,plot_height=400)
     lat = np.array(references.values_list('lat',flat=True))
     lng = np.array(references.values_list('lng',flat=True))
-    print('lat',lat)
-    print('lng',lng)
     source = ColumnDataSource(data=dict(
         lat=lat,
         lon=lng)
