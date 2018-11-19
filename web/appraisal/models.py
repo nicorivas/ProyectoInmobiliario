@@ -181,6 +181,10 @@ class Appraisal(models.Model):
 
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 
+    descripcionSector = models.TextField("Descripción sector",max_length=10000,default="",null=True,blank=True)
+    descripcionPlanoRegulador = models.TextField("Descripción plano regulador",max_length=10000,default="",null=True,blank=True)
+    descripcionExpropiacion = models.TextField("Descripción expropiación",max_length=10000,default="",null=True,blank=True)
+
     # valor
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
