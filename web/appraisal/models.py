@@ -178,7 +178,8 @@ class Appraisal(models.Model):
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 
     # valor
-    valorUF = models.FloatField("Valor UF",blank=True,null=True)
+    valorUF = models.FloatField("Valor UF", blank=True,null=True)
+
 
     @property
     def status_verbose(self):
@@ -299,7 +300,7 @@ class Comment(models.Model):
 
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
+    appraisal = models.OneToOneField(Appraisal, null=True, on_delete=models.CASCADE)
     onTime = models.IntegerField("Puntualidad", blank=True,null=False,default=0)
     completeness = models.IntegerField("Completitud", blank=True,null=False,default=0)
     generalQuality = models.IntegerField("Calidad General", blank=True,null=False,default=0)
