@@ -30,10 +30,10 @@ class FormRealEstate(forms.ModelForm):
             'destinoSII',
             'usoActual',
             'usoFuturo',
-            'permisoEdificacion',
-            'permisoEdificacionDate',
-            'recepcionFinal',
-            'recepcionFinalDate',
+            'permisoEdificacionNo',
+            'permisoEdificacionFecha',
+            'recepcionFinalNo',
+            'recepcionFinalFecha',
             'expropiacion',
             'viviendaSocial',
             'desmontable',
@@ -65,10 +65,10 @@ class FormRealEstate(forms.ModelForm):
             'destinoSII': forms.Select(attrs=class_se_bs),
             'usoActual': forms.Select(attrs=class_se_bs),
             'usoFuturo': forms.Select(attrs=class_se_bs),
-            'permisoEdificacion': forms.TextInput(attrs=class_bs),
-            'permisoEdificacionDate': forms.TextInput(attrs={'class':"form-control form-control-sm datetimepicker-input",'data-target':'#datetimepicker1'}),
-            'recepcionFinal': forms.TextInput(attrs=class_bs),
-            'recepcionFinalDate': forms.DateTimeInput(attrs=class_dp_m_bs),
+            'permisoEdificacionNo': forms.TextInput(attrs=class_bs),
+            'permisoEdificacionFecha': forms.TextInput(attrs={'class':"form-control form-control-sm datetimepicker-input",'data-target':'#datetimepicker1'}),
+            'recepcionFinalNo': forms.TextInput(attrs=class_bs),
+            'recepcionFinalFecha': forms.DateTimeInput(attrs=class_dp_m_bs),
             'expropiacion': forms.Select(attrs=class_se_bs),
             'viviendaSocial': forms.Select(attrs=class_se_bs),
             'desmontable': forms.Select(attrs=class_se_bs),
@@ -261,6 +261,32 @@ class FormCreateHouse(forms.ModelForm):
             'marketPrice': forms.NumberInput(attrs=class_bs)
             }
 
+class FormCreateTerrain(forms.ModelForm):
+    class Meta:
+        model = Terrain
+        fields = [
+            'name',
+            'frente',
+            'fondo',
+            'topography',
+            'shape',
+            'rol',
+            'area',
+            'UFPerArea'
+            ]
+        class_bs = {'class':"form-control form-control-sm terrains"}
+        class_bs_right = {'class':"form-control form-control-sm terrains",'style':'text-align:right;'}
+        widgets = {
+            'name': forms.TextInput(attrs=class_bs),
+            'frente': forms.NumberInput(attrs=class_bs),
+            'fondo': forms.NumberInput(attrs=class_bs),
+            'topography': forms.Select(attrs=class_bs),
+            'shape': forms.Select(attrs=class_bs),
+            'rol': forms.TextInput(attrs=class_bs),
+            'area': forms.NumberInput(attrs=class_bs_right),
+            'UFPerArea': forms.NumberInput(attrs=class_bs_right)
+            }
+
 class FormCreateConstruction(forms.ModelForm):
     class Meta:
         model = Construction
@@ -277,6 +303,7 @@ class FormCreateConstruction(forms.ModelForm):
             'UFPerArea'
             ]
         class_bs = {'class':"form-control form-control-sm constructions"}
+        class_bs_right = {'class':"form-control form-control-sm terrains",'style':'text-align:right;'}
         widgets = {
             'name': forms.TextInput(attrs=class_bs),
             'material': forms.Select(attrs=class_bs),
@@ -286,33 +313,8 @@ class FormCreateConstruction(forms.ModelForm):
             'state': forms.Select(attrs=class_bs),
             'quality': forms.Select(attrs=class_bs),
             'rol': forms.TextInput(attrs=class_bs),
-            'area': forms.NumberInput(attrs=class_bs),
-            'UFPerArea': forms.NumberInput(attrs=class_bs)
-            }     
-
-class FormCreateTerrain(forms.ModelForm):
-    class Meta:
-        model = Terrain
-        fields = [
-            'name',
-            'frente',
-            'fondo',
-            'topography',
-            'shape',
-            'rol',
-            'area',
-            'UFPerArea'
-            ]
-        class_bs = {'class':"form-control form-control-sm constructions"}
-        widgets = {
-            'name': forms.TextInput(attrs=class_bs),
-            'frente': forms.NumberInput(attrs=class_bs),
-            'fondo': forms.NumberInput(attrs=class_bs),
-            'topography': forms.Select(attrs=class_bs),
-            'shape': forms.Select(attrs=class_bs),
-            'rol': forms.TextInput(attrs=class_bs),
-            'area': forms.NumberInput(attrs=class_bs),
-            'UFPerArea': forms.NumberInput(attrs=class_bs)
+            'area': forms.NumberInput(attrs=class_bs_right),
+            'UFPerArea': forms.NumberInput(attrs=class_bs_right)
             }
 
 class FormCreateAsset(forms.ModelForm):
@@ -323,14 +325,27 @@ class FormCreateAsset(forms.ModelForm):
             'value'
             ]
         class_bs = {'class':"form-control form-control-sm constructions"}
+        class_bs_right = {'class':"form-control form-control-sm terrains",'style':'text-align:right;'}
         widgets = {
             'name': forms.TextInput(attrs=class_bs),
-            'value': forms.NumberInput(attrs=class_bs)
+            'value': forms.NumberInput(attrs=class_bs_right)
             } 
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
     photos = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={'class':"custom-file-input",'multiple': True}))
+    description = forms.CharField(
+        label='Descripción',
+        max_length=60,
+        required=False,
+        widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
+
+class FormDocuments(forms.Form):
+    class_bs = {'class':"form-control form-control-sm"}
+    documents = forms.FileField(
         required=False,
         widget=forms.ClearableFileInput(
             attrs={'class':"custom-file-input",'multiple': True}))

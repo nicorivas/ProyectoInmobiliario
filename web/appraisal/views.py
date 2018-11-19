@@ -8,8 +8,9 @@ from realestate.models import RealEstate, Construction, Terrain, Asset
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
-from appraisal.models import Appraisal, Comment, Photo
+from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
+from user.models import UserProfile
 
 import reversion
 from copy import deepcopy
@@ -25,6 +26,7 @@ from .forms import FormHouse
 from .forms import FormAppraisal
 from .forms import FormComment
 from .forms import FormPhotos
+from .forms import FormDocuments
 from .forms import FormCreateApartment
 from .forms import FormCreateHouse
 from .forms import FormCreateConstruction
@@ -34,14 +36,11 @@ from create import create
 
 import viz.maps as maps
 import appraisal.related as related
+from appraisal.export import *
 
 from django.db.models import Avg, StdDev
 
 import json
-
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
-from openpyxl import load_workbook
 
 import datetime
 import requests
@@ -216,40 +215,6 @@ def comment(forms,appraisal):
         comment.save()
     return True
 
-def export(forms):
-    module_dir = os.path.dirname(__file__)  # get current directory
-    file_path = os.path.join(module_dir,'static/appraisal/test.xlsx')
-
-    def excel_find(workbook,term):
-        for sheet in workbook:
-            for row in range(1,100):
-                for col in range(1,100):
-                   cv = sheet.cell(row=row,column=col).value
-
-    def excel_find_replace(workbook,term,rep):
-        for sheet in workbook:
-            for row in range(1,100):
-                for col in range(1,100):
-                   cv = sheet.cell(row=row,column=col).value
-                   if cv == term:
-                       sheet.cell(row=row,column=col).value = rep
-
-    wb = load_workbook(filename=file_path)
-
-    model_instance = form_appraisal.save(commit=False)
-
-    fields = Appraisal._meta.get_fields()
-    for field in fields:
-        field_name = field.deconstruct()[0]
-        excel_find_replace(wb,field_name,getattr(model_instance,field_name))
-
-    response = HttpResponse(
-        content=save_virtual_workbook(wb),
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.xlsx"'
-
-    return response
-
 def assign_visador(request,forms,appraisal):
     if forms['appraisal'].is_valid():
         appraisal.visadorUser = User.objects.get(pk=request.POST.dict()['visador'])
@@ -272,14 +237,27 @@ def upload_photo(request,forms,appraisal):
             appraisal.photos.add(photo)
         save_appraisal(request, forms, 'Added picture(s)')
 
+def upload_document(request,forms,appraisal):
+    if forms['documents'].is_valid() and forms['appraisal'].is_valid():
+        for document_file in request.FILES.getlist('documents'):
+            document = Document()
+            document.document = document_file
+            document.description = forms['documents'].cleaned_data['description']
+            document.save()
+            appraisal.documents.add(document)
+        save_appraisal(request, forms, 'Added document(s)')
+
 def delete_photo(request,forms,appraisal):
-    #appraisal.photos.remove(request.POST['photo_id'])
     appraisal.photos.remove(request.POST['btn_delete_photo'])
     if forms['appraisal'].is_valid():
         save_appraisal(request, forms, 'Removed picture(s)')
 
+def delete_document(request,forms,appraisal):
+    appraisal.documents.remove(request.POST['btn_delete_document'])
+    if forms['appraisal'].is_valid():
+        save_appraisal(request, forms, 'Removed document(s)')
+
 def save_photo(request,forms,appraisal):
-    #appraisal.photos.remove(request.POST['photo_id'])
     try:
         photo_id = request.POST['btn_save_photo']
         photo = Photo.objects.get(id=photo_id)
@@ -287,6 +265,16 @@ def save_photo(request,forms,appraisal):
         photo.save()
         save_appraisal(request, forms, 'Chaged photo description')
     except Photo.DoesNotExist:
+        return
+
+def save_document(request,forms,appraisal):
+    try:
+        document_id = request.POST['btn_save_document']
+        document = Document.objects.get(id=document_id)
+        document.description = request.POST['document_description_'+str(document_id)]
+        document.save()
+        save_appraisal(request, forms, 'Chaged document description')
+    except Document.DoesNotExist:
         return
 
 def add_realestate(request,forms,appraisal,realestate):
@@ -326,7 +314,8 @@ def add_realestate(request,forms,appraisal,realestate):
                 realestate.addressRegion,
                 form.cleaned_data['addressCommune'],
                 form.cleaned_data['addressStreet'],
-                form.cleaned_data['addressNumber'])
+                form.cleaned_data['addressNumber'],
+                form.cleaned_data['addressNumber2'])
             house.sourceUrl = form.cleaned_data['sourceUrl']
             house.sourceId = form.cleaned_data['sourceId']
             house.sourceName = form.cleaned_data['sourceName']
@@ -568,6 +557,8 @@ def view_appraisal(request, **kwargs):
         forms['createConstruction'] = FormCreateConstruction(request_post,prefix='c')
         forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
         forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
+        forms['photos'] = FormPhotos(request_post,request.FILES)
+        forms['documents'] = FormDocuments(request_post,request.FILES,prefix='docs')
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             forms['property'] = FormApartment(request_post,instance=realestate.apartment)
             forms['building'] = FormBuilding(request_post,instance=realestate.apartment.building_in)
@@ -577,11 +568,12 @@ def view_appraisal(request, **kwargs):
             forms['property'] = FormHouse(request_post,instance=realestate.house)
             house_new = House()
             forms['createRealEstate'] = FormCreateHouse(request_post,prefix='vc',instance=house_new)
-        forms['photos'] = FormPhotos(request_post,request.FILES)
 
         # Switch to action
         if 'btn_save' in request_post.keys():
             ret = save(request,forms,appraisal,realestate)
+        elif 'btn_export' in request_post.keys():
+            ret = export(request,forms,appraisal,realestate)
         elif 'btn_delete' in request_post.keys():
             ret = delete(request,appraisal)
         elif 'btn_finish' in request_post.keys():
@@ -608,10 +600,16 @@ def view_appraisal(request, **kwargs):
             ret = assign_visador(request,forms,appraisal)
         elif 'btn_upload_photo' in request_post.keys():
             ret = upload_photo(request,forms,appraisal)
+        elif 'btn_upload_document' in request_post.keys():
+            ret = upload_document(request,forms,appraisal)
         elif 'btn_delete_photo' in request_post.keys():
             ret = delete_photo(request,forms,appraisal)
+        elif 'btn_delete_document' in request_post.keys():
+            ret = delete_document(request,forms,appraisal)
         elif 'btn_save_photo' in request_post.keys():
             ret = save_photo(request,forms,appraisal)
+        elif 'btn_save_document' in request_post.keys():
+            ret = save_document(request,forms,appraisal)
         else:
             ret = False
 
@@ -684,6 +682,7 @@ def view_appraisal(request, **kwargs):
         'appraisal': FormAppraisal(instance=appraisal,label_suffix=''),
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix=''),
+        'documents':FormDocuments(label_suffix='docs'),
         'realestate':FormRealEstate(instance=realestate,label_suffix='')}
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')

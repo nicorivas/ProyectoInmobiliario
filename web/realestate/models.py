@@ -280,19 +280,24 @@ class RealEstate(models.Model):
         blank=True,
         null=True)
 
-    permisoEdificacion = models.CharField("Permiso edificación",
-        max_length=10,
-        blank=True,
+    permisoEdificacionNo = models.CharField("Permiso edificación",
+        max_length=20,
+        default=0,
         null=True)
-    permisoEdificacionDate = models.DateField("Permiso edificación fecha",
-        blank=True,
+    permisoEdificacionFecha = models.DateField("Fecha permiso edificación",
+        default='2006-10-25',
+        null=True)
+    permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificación",
+        max_digits=7,
+        decimal_places=2,
+        default=0,
         null=True)
 
-    recepcionFinal = models.CharField("Recepcion final",
+    recepcionFinalNo = models.CharField("Recepcion final",
         max_length=10,
         blank=True,
         null=True)
-    recepcionFinalDate = models.DateField("Recepcion final fecha",
+    recepcionFinalFecha = models.DateField("Recepcion final fecha",
         blank=True,
         null=True)
 
@@ -335,19 +340,6 @@ class RealEstate(models.Model):
     acogidaLey = models.IntegerField("Acogida a",
         choices=acogidaLeyChoices,
         blank=True,
-        null=True)
-
-    permisoEdificacionNo = models.CharField("Numero permiso edificacion",
-        max_length=20,
-        default=0,
-        null=True)
-    permisoEdificacionFecha = models.DateField("Fecha permiso edificacion",
-        default='2006-10-25',
-        null=True)
-    permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificacion",
-        max_digits=7,
-        decimal_places=2,
-        default=0,
         null=True)
     
     USE = (

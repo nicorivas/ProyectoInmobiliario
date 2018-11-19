@@ -1,7 +1,54 @@
+#table_terrains {
+	font-size: 0.85em;
+}
+
 #table_constructions {
+	font-size: 0.85em;
+}
+
+#table_assets {
 	font-size: 0.85em;
 }
 
 .td-center {
 	text-align: center;
+}
+
+#table_terrains .form-control-sm {
+	padding: 0rem 0.3rem;
+	font-size: 0.7rem;
+	border-radius: 0.0rem;
+}
+
+#table_terrains td {
+	padding-top: .2rem;
+    padding-bottom: .2rem;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+}
+
+#table_constructions .form-control-sm {
+	padding: 0rem 0.3rem;
+	font-size: 0.7rem;
+	border-radius: 0.0rem;
+}
+
+#table_constructions td {
+	padding-top: .2rem;
+    padding-bottom: .2rem;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+}
+
+#table_assets .form-control-sm {
+	padding: 0rem 0.3rem;
+	font-size: 0.7rem;
+	border-radius: 0.0rem;
+}
+
+#table_assets td {
+	padding-top: .2rem;
+    padding-bottom: .2rem;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
 }

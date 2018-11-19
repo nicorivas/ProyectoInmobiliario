@@ -230,33 +230,34 @@
 </script>
 
 <script>
-   $.formUtils.addValidator({
-      name : 'rut',
-      validatorFunction : function(rut, $el, config, language, $form) {
-         function dv(T){
-            var M=0,S=1;
-            for(;T;T=Math.floor(T/10))
-               S=(S+T%10*(9-M++%6))%11;
-            return S?S-1:'k';
-         };
-         if (rut.length < 2) return false
-         rut = rut.split('.').join("");
-         rut = rut.split('-').join("");
-         var digv = rut.charAt(rut.length-1);
-         n = rut.substring(0,rut.length-1)
-         return (dv(n) == digv);
-         rut = parseInt(rut);
-         if (isNaN(rut)) {
-            return false
-         }
-         return true
-      },
-      errorMessage : 'Rut invalido',
-      errorMessageKey: 'badRut'
-   });
-</script>
+  function valid_rut(rut) {
+    function dv(T) {
+      var M=0,S=1;
+      for (;T;T=Math.floor(T/10)) {
+        S=(S+T%10*(9-M++%6))%11;
+      }
+      return S?S-1:'k';
+    };
+    if (rut.length < 2) return false
+    rut = rut.split('.').join("");
+    rut = rut.split('-').join("");
+    var digv = rut.charAt(rut.length-1);
+    n = rut.substring(0,rut.length-1)
+    return (dv(n) == digv);
+    rut = parseInt(rut);
+    if (isNaN(rut)) {
+      return false
+    }
+    return true
+  }
+  
+  jQuery.validator.addMethod("rut",
+    function(value, element) {
+      return this.optional(element) || valid_rut(value);
+    },
+    "El rut no es válido"
+  );
 
-<script>
   $("#form_create").validate({
     rules: {
       "addressStreet_create": "required",
@@ -264,7 +265,7 @@
       "addressCommune_create": "required",
       "addressRegion_create": "required",
       "cliente_create": "required",
-      "clienteRut_create": "required",
+      "clienteRut_create": "rut",
       "solicitanteCodigo_create": "required",
       "appraisalTimeFrame_create": "required"
     },
@@ -277,7 +278,6 @@
       "addressCommune_create": "Campo requerido",
       "addressRegion_create": "Campo requerido",
       "cliente_create": "Campo requerido",
-      "clienteRut_create": "Campo requerido",
       "solicitanteCodigo_create": "Campo requerido",
       "appraisalTimeFrame_create": "Campo requerido"
     },
