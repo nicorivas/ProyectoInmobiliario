@@ -699,6 +699,8 @@ def view_appraisal(request, **kwargs):
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
 
     # Select communes for create building
+    print(realestate)
+    print(realestate.addressCommune)
     communes = Commune.objects.only('name').filter(region=realestate.addressRegion).order_by('name')
     commune = Commune.objects.only('name').get(name__icontains=realestate.addressCommune)
     forms['createRealEstate'].fields['addressCommune'].queryset = communes
@@ -712,9 +714,6 @@ def view_appraisal(request, **kwargs):
             for field in form.fields:
                 form.fields[field].widget.attrs['readonly'] = True
                 form.fields[field].widget.attrs['disabled'] = True
-
-    valuationRealEstate = []
-    valuationRealEstate = realestate.valuationRealEstate.all()
 
     htmlBits = {
         'unitUF':'<small>(U.F.)</small>',
@@ -736,7 +735,6 @@ def view_appraisal(request, **kwargs):
         'appraisal_history': appraisal_history,
         'comments': comments,
         'plot_map':plot_map,
-        'valuationRealEstate':valuationRealEstate,
         'htmlBits':htmlBits
         }
 

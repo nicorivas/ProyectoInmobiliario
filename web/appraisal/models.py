@@ -142,10 +142,10 @@ class Appraisal(models.Model):
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
 
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
-    clienteRut = models.CharField("Cliente RUT",max_length=10,blank=True,null=True)
+    clienteRut = models.CharField("Cliente RUT",max_length=13,blank=True,null=True)
 
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
-    propietarioRut = models.CharField("Propietario RUT",max_length=10,blank=True,null=True)
+    propietarioRut = models.CharField("Propietario RUT",max_length=13,blank=True,null=True)
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
 
     rol = models.CharField("Rol",max_length=20,blank=True,null=True)

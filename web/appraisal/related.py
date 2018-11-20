@@ -15,9 +15,10 @@ def getSimilarRealEstate(realestate):
         url_key = '&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
         response = requests.get(url+''+url_address+''+url_key)
         response_json = response.json()
-        response_results = response_json['results'][0]['geometry']['location']
-        realestate.lat = response_results['lat']
-        realestate.lng = response_results['lng']
+        if len(response_json['results']) > 0:
+            response_results = response_json['results'][0]['geometry']['location']
+            realestate.lat = response_results['lat']
+            realestate.lng = response_results['lng']
         #realestate.save()
 
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:

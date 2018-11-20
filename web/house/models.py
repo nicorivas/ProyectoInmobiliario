@@ -7,12 +7,16 @@ import datetime
 
 class House(RealEstate):
 
-    addressNumber2 = models.TextField("Lote",max_length=10,null=True,blank=True)
+    addressNumber2 = models.TextField("Lote",max_length=30,null=True,blank=True)
     bedrooms = models.PositiveSmallIntegerField("Dormitorios",null=True,blank=True)
     bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)
     builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)
     terrainSquareMeters = models.DecimalField("Superficie terreno",max_digits=7,decimal_places=2,null=True,blank=True)
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
+
+    @property
+    def addressVerboseNoRegionNoCommune(self):
+        return self.addressStreet+' '+str(self.addressNumber)+' '+str(self.addressNumber2)
 
     @property 
     def builtSquareMetersVerbose(self):

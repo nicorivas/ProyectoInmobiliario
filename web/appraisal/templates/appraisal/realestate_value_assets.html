@@ -67,19 +67,19 @@
               {{ter.name}}
             </td>
             <td id='td_frente' style="font-size:0.85em;">
-              {{ter.frente}}
+              {{ter.frente|default_if_none:"-"}}
             </td>
             <td id='td_fondo' style="font-size:0.85em;">
-              {{ter.fondo}}
+              {{ter.fondo|default_if_none:"-"}}
             </td>
             <td id='td_topography' style="font-size:0.85em;">
-              {{ter.get_topography_display}}
+              {{ter.get_topography_display|default_if_none:"-"}}
             </td>
             <td id='td_shape' style="font-size:0.85em;">
-              {{ter.get_shape_display}}
+              {{ter.get_shape_display|default_if_none:"-"}}
             </td>
             <td id='td_rol' style="font-size:0.85em;">
-              {{ter.rol}}
+              {{ter.rol|default_if_none:"-"}}
             </td>
             <td class="td_area">
               <input id="id_terrainArea" type="number" name="t-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.area}}">
@@ -121,19 +121,19 @@
               {{forms.createTerrain.name}}
             </td>
             <td>
-              {{forms.createTerrain.frente}}
+              {{forms.createTerrain.frente|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createTerrain.fondo}}
+              {{forms.createTerrain.fondo|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createTerrain.topography}}
+              {{forms.createTerrain.topography|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createTerrain.shape}}
+              {{forms.createTerrain.shape|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createTerrain.rol}}
+              {{forms.createTerrain.rol|default_if_none:"-"}}
             </td>            
             <td class="td_area">
               {{forms.createTerrain.area}}
@@ -245,22 +245,22 @@
               {{con.get_material_display}}
             </td>
             <td id='td_year' style="font-size:0.85em;">
-              {{con.year|date:'Y'}}
+              {{con.year|date:'Y'|default_if_none:"-"}}
             </td>
             <td id='td_prenda' style="font-size:0.85em;">
-              {{con.get_prenda_display}}
+              {{con.get_prenda_display|default_if_none:"-"}}
             </td>
             <td id='td_recepcion' style="font-size:0.85em;">
-              {{con.get_recepcion_display}}
+              {{con.get_recepcion_display|default_if_none:"-"}}
             </td>
-            <td id='td_recepcion' style="font-size:0.85em;">
-              {{con.get_quality_display}}
+            <td id='td_quality' style="font-size:0.85em;">
+              {{con.get_quality_display|default_if_none:"-"}}
             </td>
-            <td id='td_recepcion' style="font-size:0.85em;">
-              {{con.get_state_display}}
+            <td id='td_state' style="font-size:0.85em;">
+              {{con.get_state_display|default_if_none:"-"}}
             </td>
-            <td id='td_recepcion' style="font-size:0.85em;">
-              {{con.rol}}
+            <td id='td_rol' style="font-size:0.85em;">
+              {{con.rol|default_if_none:"-"}}
             </td>
             <td class="td_area">
               <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}">
@@ -305,25 +305,25 @@
               {{forms.createConstruction.material}}
             </td>
             <td>
-              {{forms.createConstruction.year}}
+              {{forms.createConstruction.year|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createConstruction.prenda}}
+              {{forms.createConstruction.prenda|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createConstruction.recepcion}}
+              {{forms.createConstruction.recepcion|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createConstruction.quality}}
+              {{forms.createConstruction.quality|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createConstruction.state}}
+              {{forms.createConstruction.state|default_if_none:"-"}}
             </td>
             <td>
-              {{forms.createConstruction.rol}}
+              {{forms.createConstruction.rol|default_if_none:"-"}}
             </td>
             <td class="td_area">
-              {{forms.createConstruction.area}}
+              {{forms.createConstruction.area|default_if_none:"-"}}
             </td>
             <td class="td_pesos">
               <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
@@ -418,7 +418,7 @@
               <input id="id_assetPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td class="td_UF">
-              <input id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}">
+              <input name="a-value" id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}">
             </td>
             <td>
             </td>
@@ -795,6 +795,30 @@
       cell.empty()
       cell.append('{{forms.createConstruction.recepcion|escapejs}}')
       cell.find('#id_c-recepcion option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_quality')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.quality|escapejs}}')
+      cell.find('#id_c-quality option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_state')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.state|escapejs}}')
+      cell.find('#id_c-state option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_rol')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.rol|escapejs}}')
+      cell.find('#id_c-rol option').filter(function() {
         return $(this).text() == text; 
       }).prop('selected', true);
 
