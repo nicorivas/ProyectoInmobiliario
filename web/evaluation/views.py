@@ -19,7 +19,6 @@ def get_appraisalEvaluations(request):
 
 def appraiserEvaluationView(request):
     evaluationForm = EvaluationForm()
-    print(evaluationForm)
     if request.method == 'POST':
         if request.method == 'POST':
             print(request.POST)
@@ -35,7 +34,6 @@ def appraiserEvaluationView(request):
                 print(request.POST.dict())
                 ret = assign_visadorNF(request)
             if 'evaluadorAppraisal_id' in request.POST.keys():
-                print(get_appraisalEvaluations(request))
                 evaluationForm = EvaluationForm(request.POST)
                 if evaluationForm.is_valid():
                     evaluationForm.save()
@@ -50,17 +48,26 @@ def appraiserEvaluationView(request):
                                             appraisal=appraisal,
                                             user=appraiser,
                                             defaults={
+                                                "appraisal":appraisal,
+                                                'user':appraiser,
                                                 'onTime':_onTime,
                                                 'completeness':_completeness,
                                                 'generalQuality':_generalQuality,
                                                 'commentText':_commentText,
                                                 'commentFeedback':_commentFeedback})
-                    print(evaluation.pk)
+
                     print(evaluation, created)
                     print(evaluation.appraisalEvaluationMean)
 
 
     appraisals_active, appraisals_finished = userAppraisals(request)
+    for i in appraisals_finished: #Asegurarse de que toda tasación tenga una evaluación
+        try:
+            x = AppraisalEvaluation.objects.get(appraisal=i)
+        except AppraisalEvaluation.DoesNotExist:
+            x = AppraisalEvaluation(appraisal=i)
+            x.save()
+
     tasadores = list(User.objects.filter(groups__name__in=['tasador']))
     visadores = list(User.objects.filter(groups__name__in=['visador']))
     lista = appraiserWork(tasadores)
