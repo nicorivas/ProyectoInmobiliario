@@ -46,7 +46,7 @@ def appraiserEvaluationView(request):
                     appraiser = User.objects.get(pk=request.POST['evaluador_id'])
                     evaluation, created = AppraisalEvaluation.objects.update_or_create(
                                             appraisal=appraisal,
-                                            user=appraiser,
+                                            #user=appraiser,
                                             defaults={
                                                 "appraisal":appraisal,
                                                 'user':appraiser,
