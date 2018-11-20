@@ -197,7 +197,10 @@
             visibility
           </button>
           {% if perms.appraisal.assign_visador %}
-          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="{{appraisal.tasadorUser.id}}" value="{{appraisal.id}}" class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal">
+          <button data-toggle="modal" data-target="#evaluateAppraisal" type="button" id="{{appraisal.tasadorUser.id}}" value="{{appraisal.id}}"
+                  class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal" data-ontime="{{appraisal.appraisalevaluation.onTime}}"
+                  data-completeness="{{appraisal.appraisalevaluation.completeness}}" data-commenttext="{{appraisal.appraisalevaluation.commentText}}"
+                  data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}" data-commentfeedback="{{appraisal.appraisalevaluation.commentFeedback}}">
             assessment
           </button>
         </td>
@@ -271,5 +274,16 @@
       var id2 = $(this).attr('id');
       $('#evaluadorAppraisal_id').val(id);
       $('#evaluador_id').val(id2);
+
+      var ontime = $(this).data('ontime');
+      $('#id_onTime').val(ontime);
+      var completeness = $(this).data('completeness');
+      $('#id_completeness').val(completeness);
+      var generalQ = $(this).data('generalquality');
+      $('#id_generalQuality').val(generalQ);
+      var comment = $(this).data('commenttext');
+      $('#id_commentText').val(comment);
+      var feedback = $(this).data('commentfeedback');
+      $('#id_commentFeedback').val(feedback);
       });
 </script>

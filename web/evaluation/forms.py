@@ -4,7 +4,6 @@ from appraisal.models import AppraisalEvaluation
 
 class EvaluationForm(forms.ModelForm):
 
-
     class Meta:
         model = AppraisalEvaluation
         fields = [
