@@ -4,6 +4,42 @@ from region.models import Region
 from neighborhood.models import Neighborhood
 
 
+class Terrain(models.Model):
+    '''
+    Parts of the terrain
+    '''
+    name = models.CharField("Nombre",max_length=300,default="",blank=True)
+
+    frente = models.FloatField("Frente",blank=True,null=True)
+
+    fondo = models.FloatField("Fondo",blank=True,null=True)
+
+    TOPOGRAPHY_CHOICES = (
+        (0, 'Plano'),
+        (1, 'Semiplano'),
+        (2, 'Pendiente'),
+        (3, 'Pendiente abrupta')
+    )
+    topography = models.IntegerField("Topografía",choices=TOPOGRAPHY_CHOICES,blank=True,null=True)
+
+    SHAPE_CHOICES = (
+        (0, 'Regular'),
+        (1, 'Irregular'),
+    )
+    shape = models.IntegerField("Forma",choices=SHAPE_CHOICES,blank=True,null=True)
+
+    area = models.FloatField("Area",
+        blank=True,
+        null=False,
+        default=0)
+
+    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
+
+    UFPerArea = models.FloatField("UF per Area",
+        blank=True,
+        null=False,
+        default=0)
+
 class Construction(models.Model):
     '''
     Parts of a RealEstate, such as balconies or other parts of a house.
@@ -37,6 +73,7 @@ class Construction(models.Model):
         (MATERIAL_OTRO, "Otros")]
     material = models.CharField(
         max_length=2,
+        blank=True,
         choices=MATERIAL_CHOICES,
         default=MATERIAL_UNKNOWN)
     
@@ -68,7 +105,8 @@ class Construction(models.Model):
         (RECEPCION_NR, "N/R")]
     recepcion = models.IntegerField(
         choices=RECEPCION_CHOICES,
-        default=RECEPCION_NR)
+        default=RECEPCION_NR,
+        blank=True)
 
     area = models.FloatField("Area",
         blank=True,
@@ -76,42 +114,6 @@ class Construction(models.Model):
         default=0)
 
     UFPerArea = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
-
-class Terrain(models.Model):
-    '''
-    Parts of the terrain
-    '''
-    name = models.CharField("Nombre",max_length=300,default="",blank=True)
-
-    frente = models.FloatField("Frente",blank=True,null=True)
-
-    fondo = models.FloatField("Fondo",blank=True,null=True)
-
-    TOPOGRAPHY_CHOICES = (
-        (0, 'Plano'),
-        (1, 'Semiplano'),
-        (2, 'Pendiente'),
-        (3, 'Pendiente abrupta')
-    )
-    topography = models.IntegerField("Topografía",choices=TOPOGRAPHY_CHOICES,blank=True,null=True)
-
-    SHAPE_CHOICES = (
-        (0, 'Regular'),
-        (1, 'Irregular'),
-    )
-    shape = models.IntegerField("Forma",choices=SHAPE_CHOICES,blank=True,null=True)
-
-    area = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
-
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
-
-    UFPerArea = models.FloatField("UF per Area",
         blank=True,
         null=False,
         default=0)
@@ -176,9 +178,9 @@ class RealEstate(models.Model):
 
     marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
 
-    constructions = models.ManyToManyField(Construction)
-
     terrains = models.ManyToManyField(Terrain)
+
+    constructions = models.ManyToManyField(Construction)
 
     assets = models.ManyToManyField(Asset)
 
@@ -282,15 +284,15 @@ class RealEstate(models.Model):
 
     permisoEdificacionNo = models.CharField("Permiso edificación",
         max_length=20,
-        default=0,
+        blank=True,
         null=True)
     permisoEdificacionFecha = models.DateField("Fecha permiso edificación",
-        default='2006-10-25',
+        blank=True,
         null=True)
     permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificación",
         max_digits=7,
         decimal_places=2,
-        default=0,
+        blank=True,
         null=True)
 
     recepcionFinalNo = models.CharField("Recepcion final",
@@ -419,15 +421,17 @@ class RealEstate(models.Model):
 
     @property
     def addressVerboseNoRegion(self):
-        # Returns whole address in a nice format
         if self.addressCommune == None:
             return self.addressStreet+' '+str(self.addressNumber)
         else:
             return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name
 
     @property
+    def addressVerboseNoRegionNoCommune(self):
+        return self.addressStreet+' '+str(self.addressNumber)
+
+    @property
     def addressShort(self):
-        # Returns whole address in a nice format
         return self.addressStreet+' '+str(self.addressNumber)
 
     @property

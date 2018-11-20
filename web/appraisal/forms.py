@@ -199,7 +199,6 @@ class FormCreateApartment(forms.ModelForm):
     class Meta:
         model = Apartment
         fields = [
-            'propertyType',
             'addressCommune',
             'addressStreet',
             'addressNumber',
@@ -216,7 +215,6 @@ class FormCreateApartment(forms.ModelForm):
             ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'propertyType':forms.Select(attrs=class_bs),
             'addressCommune': forms.Select(attrs=class_bs),
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
@@ -236,7 +234,6 @@ class FormCreateHouse(forms.ModelForm):
     class Meta:
         model = House
         fields = [
-            'propertyType',
             'addressCommune',
             'addressStreet',
             'addressNumber',
@@ -252,7 +249,6 @@ class FormCreateHouse(forms.ModelForm):
             ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'propertyType':forms.Select(attrs={'class':"form-control form-control-sm sourceName",'readonly':'readonly'}),
             'addressCommune': forms.Select(attrs=class_bs),
             'addressStreet': forms.TextInput(attrs=class_bs),
             'addressNumber': forms.TextInput(attrs=class_bs),
