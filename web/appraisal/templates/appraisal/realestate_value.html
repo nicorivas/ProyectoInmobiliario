@@ -121,7 +121,11 @@
           <tr>
             <td scope="col"></td>
             <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
+            {% if not appraisal.finished %}
             <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0,75"></td>
+            {% else %}
+            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0,75" disabled></td>
+            {% endif %}
             <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
             <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
             <td scope="col"></td>
@@ -311,34 +315,27 @@
             <td class="td_sre_market_price_per_total_square_meters" style="text-align:right;">{{ o.apartment.marketPricePerTotalSquareMeters }}</td>
             {% endif %}
             <td style="padding:0em;text-align:right;">
+              {% if not appraisal.finished %}
               <button type="button" class="btn btn-sm removeValuationRealEstate" name="btn_valuation_add_realestate" value="{{o.id}}" style="padding:0px; border:0px;">
                 <i class="material-icons">delete</i>
               </button>
+              {% endif %}
             </td>
             <td></td>
           </tr>
           {% endfor %}
 
+          {% if not appraisal.finished %}
           <tr>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td style="padding:0em;text-align:right;">
+            <td colspan="12" style="padding:0em;text-align:right;">
               <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#addRealEstate" style="padding:0px; border:0px; text-align:right;">
                 <i class="material-icons">add_box</i>
               </button>
             </td>
             <td></td>
           </tr>
+          {% endif %}
 
           <tr class="table-primary">
             <td></td>
@@ -367,6 +364,7 @@
 
 </div>
 
+{% if not appraisal.finished %}
 <div class="card ml-4 mr-4 mt-4 rounded-0">
   <div class="card-header" id="header">
     <div class="row">
@@ -561,6 +559,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <!--
 <div class="card ml-4 mr-4 mt-4 rounded-0">

@@ -24,11 +24,12 @@
     <button class="btn btn-outline-primary mr-2" type="button" data-toggle="modal" data-target="#modalExport">Resumir</button>
     {% endif %}
     {% if appraisal.finished %}
-    <button name="btn_export" class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+    <button name="btn_export"  class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+    <button name="btn_restore" class="btn btn-outline-dark">Restaurar</button>
     {% else %}
     <button name="btn_export" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
     <button name="btn_finish" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalFinish">Finalizar</button>
-    <button name="btn_save" class="btn btn-outline-dark mr-2" name="save" style="font-family:Material Icons;font-size:1em;">save</button>
+    <button name="btn_save" class="btn btn-outline-dark mr-2" style="font-family:Material Icons;font-size:1em;">save</button>
     <button name="btn_delete" class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalDelete" style="font-family:Material Icons;font-size:1em;">delete</button>
     {% endif %}
   </nav>
@@ -133,9 +134,9 @@
 
   </div>
 
-</form>
-
 {% include "appraisal/modals.html" %}
+
+</form>
 
 <!-- Script to go back to the same tab when refreshing webpage -->
 <script>

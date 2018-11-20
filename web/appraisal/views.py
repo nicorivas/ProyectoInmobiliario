@@ -176,7 +176,6 @@ def save(request,forms,appraisal,realEstate):
             print('errors',forms['property'].errors)
             print('errors',forms['realestate'].errors)
             print('errors',forms['appraisal'].errors)
-            print(forms['appraisal'])
     else:
         return False
 
@@ -186,14 +185,24 @@ def delete(request,appraisal):
     return render(request,'appraisal/deleted.html',context)
 
 def finish(request,forms, appraisal):
-    for name, form in forms.items():
-        if not form.is_valid():
-            print(form.errors)
-            return False
-    appraisal.timeFinished = datetime.datetime.now()
-    appraisal.state = Appraisal.STATE_FINISHED
-    save_appraisal(request,forms,'Finished')
-    return False
+    if forms['property'].is_valid() and \
+       forms['realestate'].is_valid() and \
+       forms['appraisal'].is_valid():
+        appraisal.timeFinished = datetime.datetime.now()
+        appraisal.state = Appraisal.STATE_FINISHED
+        save_appraisal(request,forms,'Finished')
+        return True
+    else:
+        print('errors',forms['property'].errors)
+        print('errors',forms['realestate'].errors)
+        print('errors',forms['appraisal'].errors)
+        return False
+
+def restore(request,forms, appraisal):
+    appraisal.timeFinished = None
+    appraisal.state = Appraisal.STATE_ACTIVE
+    save_appraisal(request,forms,'Restored')
+    return True
 
 def comment(forms,appraisal):
     '''
@@ -578,6 +587,8 @@ def view_appraisal(request, **kwargs):
             ret = delete(request,appraisal)
         elif 'btn_finish' in request_post.keys():
             ret = finish(request,forms,appraisal)
+        elif 'btn_restore' in request_post.keys():
+            ret = restore(request,forms,appraisal)
         elif 'btn_comment' in request_post.keys():
             ret = comment(forms,appraisal)
         elif 'btn_add_realestate' in request_post.keys():
@@ -699,14 +710,10 @@ def view_appraisal(request, **kwargs):
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
 
     # Select communes for create building
-    print(realestate)
-    print(realestate.addressCommune)
     communes = Commune.objects.only('name').filter(region=realestate.addressRegion).order_by('name')
     commune = Commune.objects.only('name').get(name__icontains=realestate.addressCommune)
     forms['createRealEstate'].fields['addressCommune'].queryset = communes
     forms['createRealEstate'].fields['addressCommune'].initial = commune
-
-    #print('form initial',forms['realestate'])
 
     # Disable fields if appraisal is finished
     if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:
