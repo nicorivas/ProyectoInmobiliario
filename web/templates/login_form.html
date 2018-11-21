@@ -2,6 +2,11 @@
 	<div class="card-body">
 		<form class="needs-validation" method="post" action="/" novalidate>
 			{% csrf_token %}
+        	{% if form_login.errors %}
+        	<div class="alert alert-danger">
+        		Usuario y/o contraseña inválidos
+        	</div>
+        	{% endif %}
 			<div class="form-group">
 				<label for="">Usuario</label>
 				{{form_login.username}}
