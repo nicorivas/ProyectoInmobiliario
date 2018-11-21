@@ -1,5 +1,5 @@
 from django.views.generic import FormView
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 
 from appraisal.models import Appraisal
@@ -8,6 +8,9 @@ from .forms import AuthenticationFormB
 from django.contrib.auth import authenticate, login
 
 def home(request):
+
+	if request.user.is_authenticated:
+		return redirect('main/')
 
 	if request.method == 'POST':
 		# Login

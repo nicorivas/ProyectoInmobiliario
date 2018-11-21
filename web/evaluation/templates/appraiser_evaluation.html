@@ -17,12 +17,20 @@
 <script>
     $('.appraiser').click(function() {
         var id = $(this).data('value');
+
+        // Colorear el fondo del usuario clickeado
         $("#table_appraisers tr").each(function() {
             $(this).css("background-color","#fff")
             $(this).find('a').css('color','')
         })
         $(this).closest('tr').css("background-color","rgb(233, 234, 239)")
         $(this).css('color','#000')
+
+        // Mostrar divs (al principio están escondidos)
+        $("#div_activas").show()
+        $("#div_previas").show()
+
+        // Mostrar sólo filas del usuario seleccionado
         $('.activas').attr('hidden');
         $('.activas').hide();
         $('.previas').attr('hidden');
@@ -35,6 +43,8 @@
         $('#'+id).show();
         $('.'+id).removeAttr('hidden');
         $('.'+id).show();
+
+        // Mostrar mensaje si es que no hay tasaciones de ese tipo
         if ($('.'+id).filter($(".activas")).length == 0) {
             $("#div_no_activas").show();
             $("#table_activas").hide();
@@ -52,11 +62,16 @@
         $('.activas').hide();
         $('.previas').attr('hidden');
         $('.previas').hide();
+
         $("#div_no_activas").hide();
         $("#table_activas").show();
         $("#div_no_previas").hide();
         $("#table_previas").show();
+
         $(".appraiser2").trigger('click');
+
+        $("#div_activas").hide()
+        $("#div_previas").hide()
     });
 </script>
 
