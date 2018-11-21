@@ -1,44 +1,49 @@
 {% extends 'main/base.html' %}
+
 {% load static %}
 
 {% block content %}
 
-
-
-<div class="container">
-    <div class="col-8">
-        <div class="card">
-            <div class="card-body">
-                {% include 'appraiser_list.html' %}
-            </div>
+<div class="container mb-4" style="max-width:100%">
+    <div class="card">
+        <div class="card-body">
+            {% include 'appraiser_list.html' %}
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-                <div class="card-body">
-                    {% include "main/appraisals.html" %}
-                </div>
-        </div>
-
-    </div>
-</div>
+{% include "main/appraisals.html" %}
 
 <script>
- $('.appraiser').click(function() {
-    var id = $(this).val();
-    console.log(id);
-    $('.activas').attr('hidden');
-    $('.activas').hide();
-    $('.previas').attr('hidden');
-    $('.previas').hide();
-    $('#'+id).removeAttr('hidden');
-    $('#'+id).show();
-    $('.'+id).removeAttr('hidden');
-    $('.'+id).show();
-});
+    $('.appraiser').click(function() {
+        var id = $(this).data('value');
+        $("#table_appraisers tr").each(function() {
+            $(this).css("background-color","#fff")
+            $(this).find('a').css('color','')
+        })
+        $(this).closest('tr').css("background-color","rgb(233, 234, 239)")
+        $(this).css('color','#000')
+        $('.activas').attr('hidden');
+        $('.activas').hide();
+        $('.previas').attr('hidden');
+        $('.previas').hide();
+        $("#div_no_activas").hide();
+        $("#div_no_previas").hide();
+        $("#table_activas").show();
+        $("#table_previas").show();
+        $('#'+id).removeAttr('hidden');
+        $('#'+id).show();
+        $('.'+id).removeAttr('hidden');
+        $('.'+id).show();
+        if ($('.'+id).filter($(".activas")).length == 0) {
+            $("#div_no_activas").show();
+            $("#table_activas").hide();
+        }
+        if ($('.'+id).filter($(".previas")).length == 0) {
+            $("#div_no_previas").show();
+            $("#table_previas").hide();
+        }
+    });
 </script>
 
 <script>
@@ -47,9 +52,12 @@
         $('.activas').hide();
         $('.previas').attr('hidden');
         $('.previas').hide();
-});
+        $("#div_no_activas").hide();
+        $("#table_activas").show();
+        $("#div_no_previas").hide();
+        $("#table_previas").show();
+        $(".appraiser2").trigger('click');
+    });
 </script>
-
-
 
 {% endblock %}
