@@ -27,7 +27,11 @@
 
   <h5 class="card-title">Tasaciones activas</h5>
 
-  <table class="table table-sm table-borderless">
+  <div class="alert alert-primary" role="alert" id="div_no_activas" style="display: none;">
+    No hay tasaciones activas
+  </div>
+
+  <table class="table table-sm table-borderless" id="table_activas">
     <thead>
       <tr>
         <th scope="col" style="width:1em">ID</th>
@@ -145,7 +149,11 @@
 
   <h5 class="card-title">Tasaciones finalizadas</h5>
 
-  <table class="table table-sm table-borderless">
+  <div class="alert alert-primary" role="alert" id="div_no_previas" style="display: none;">
+    No hay tasaciones finalizadas
+  </div>
+
+  <table class="table table-sm table-borderless" id="table_previas">
     <thead>
       <tr>
         <th scope="col" style="width:1em">ID</th>

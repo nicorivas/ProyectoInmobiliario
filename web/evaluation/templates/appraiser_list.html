@@ -1,4 +1,4 @@
-<table class="table table-sm table-borderless">
+<table class="table table-borderless" id="table_appraisers">
     <h5 class="card-title">Tasadores</h5>
     <thead>
         <tr>
@@ -22,9 +22,9 @@
             <tr id="{{tasador.user.pk}}">
                 <td></td>
                 <td>
-                    <button type='submit' value="{{tasador.user.pk}}" class="btn btn-light appraiser">
+                    <a href="javascript:;" data-value="{{tasador.user.pk}}" class="appraiser">
                         {{ tasador.user.first_name }} {{ tasador.user.last_name }}
-                    </button>
+                    </a>
                 </td>
                 <td style="text-align:center;">
                     {{ tasador.activeAppraisals }}
