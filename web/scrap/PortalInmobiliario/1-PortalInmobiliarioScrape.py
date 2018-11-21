@@ -80,7 +80,7 @@ for region in regions:
 
 
         search=codecs.open(path+com+'_urls_PI.txt', 'r', "utf-8")
-        buildings = codecs.open(path + str(date) + '_properties_PI.json', 'w', "utf-8")
+        buildings = codecs.open(path + com + '_properties_PI.json', 'w', "utf-8")
 
         index = 0
         b_directory = []
@@ -89,7 +89,7 @@ for region in regions:
             for item in base_building_search_PI(url):
                 buildings.write("%s\n" % item)
                 b_directory.append(item)
-                buildings2 = codecs.open(path + com + '_properties_PI.json', 'w', "utf-8")
+                buildings2 = codecs.open(path + com + '_properties_PI2.json', 'w', "utf-8")
                 json.dump(b_directory, buildings2, ensure_ascii=False, indent=1)
                 buildings2.close()
             index += 1
