@@ -56,20 +56,19 @@ for region in regions:
         com = com.strip().replace(' ', '-')
         date = str(datetime.datetime.now().replace(microsecond=0).isoformat().replace(':', '-'))
         base_path = base_dir + com + '/PI/'
-        done = codecs.open(base_path + 'done.txt', 'w', "utf-8")
+        #done = codecs.open(base_path + 'done.txt', 'w', "utf-8")
         path2 = base_path + date
         print(com)
         os.makedirs(path2)
         try:
             print(os.path.isfile(base_path + 'done.txt'))
             done = codecs.open(base_path + 'done.txt', 'r', "utf-8")
-            print('Not')
+            continue
             #continue
         except FileNotFoundError:
             print('Continue')
 
         buildings = codecs.open(base_path + str(com) + '_properties_PI.json', 'r', "utf-8-sig")
-        #buildings = json.loads(base_path + str(com) + '_properties_PI.json')
         error_list = codecs.open(path2 + '/' + str(com) +'_error_list_PI.json', 'w', "utf-8-sig")
         done_list = codecs.open(base_dir + 'list_done.json', 'w', 'utf-8-sig')
         building = []
@@ -81,11 +80,9 @@ for region in regions:
         counter = 0
 
         for prop in buildings:
-            print(prop)
             print('/')
             prop = ast.literal_eval(prop)
             print(prop)
-            continue
             url = prop[1]
             type = prop[0]
             state = prop[2]
