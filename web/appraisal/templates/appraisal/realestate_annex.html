@@ -4,6 +4,7 @@
       <div class="card-body">
         <h5 class="card-title">Fotografías</h5>
 
+        {% if not appraisal.finished %}
         <!-- Form to insert a picture -->
         <div class="form-group row mb-4">
           <div class="col-md-4">
@@ -33,6 +34,7 @@
             }
           });
         </script>
+        {% endif %}
 
         <!-- Gallery -->
         <div class="container-fluid">
@@ -51,6 +53,7 @@
                   <a class="btn btn-sm photo_show" data-url="{{photo.photo.url}}" data-id="{{photo.id}}">
                     <i class="material-icons">zoom_in</i>
                   </a>
+                  {% if not appraisal.finished %}
                   <button type="button" class="btn btn-sm edit_photo" style="padding:0px; border:0px;">
                     <i class="material-icons">edit</i>
                   </button>
@@ -60,6 +63,7 @@
                   <button name="btn_delete_photo" value="{{photo.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
                     <i class="material-icons">delete</i>
                   </button>
+                  {% endif %}
                 </p>
               </div>
             </div>
@@ -73,7 +77,8 @@
       <div class="card-body">
         <h5 class="card-title">Documentos</h5>
 
-        <!-- Form to insert a picture -->
+        <!-- Form to insert a document -->
+        {% if not appraisal.finished %}
         <div class="form-group row mb-4">
           <div class="col-md-4">
             <div class="custom-file">
@@ -101,8 +106,9 @@
             }
           });
         </script>
+        {% endif %}
 
-        <!-- Gallery -->
+        <!-- Documents -->
         <div class="container-fluid">
           <div class="row">
             {% for document in appraisal.documents.all %}
@@ -119,6 +125,7 @@
                   <a class="btn btn-sm document_show" data-url="{{document.document.url}}" data-id="{{document.id}}">
                     <i class="material-icons">zoom_in</i>
                   </a>
+                  {% if not appraisal.finished %}
                   <button type="button" class="btn btn-sm edit_document" style="padding:0px; border:0px;">
                     <i class="material-icons">edit</i>
                   </button>
@@ -128,6 +135,7 @@
                   <button name="btn_delete_document" value="{{document.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
                     <i class="material-icons">delete</i>
                   </button>
+                  {% endif %}
                 </p>
               </div>
             </div>

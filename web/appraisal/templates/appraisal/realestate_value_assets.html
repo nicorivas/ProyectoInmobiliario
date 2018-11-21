@@ -82,7 +82,7 @@
               {{ter.rol|default_if_none:"-"}}
             </td>
             <td class="td_area">
-              <input id="id_terrainArea" type="number" name="t-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.area}}">
+              <input id="id_terrainArea" type="number" name="t-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.area}}" {{appraisal.finished|yesno:"disabled,"}}>
             </td>
             <td class="td_pesos">
               <input id="id_terrainPesos" class="form-control form-control-sm constructions" style="text-align:right;" readonly="true">
@@ -94,8 +94,9 @@
               <input id="id_terrainPesosPerArea" class="form-control form-control-sm constructions" style="text-align:right;" readonly="true">
             </td>
             <td class="td_UFPerArea">
-              <input id="id_terrainUFPerArea" type="number" name="t-UFPerArea" step="any" class="form-control form-control-sm constructions" style="text-align:right;" value="{{ter.UFPerArea}}">
+              <input id="id_terrainUFPerArea" type="number" name="t-UFPerArea" step="any" class="form-control form-control-sm constructions" style="text-align:right;" value="{{ter.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
             </td>
+            {% if appraisal.active %}
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm save_terrain" name="btn_valuation_add_terrain" style="padding:0px; border:0px; display: none;">
                 <i class="material-icons">save</i>
@@ -107,6 +108,7 @@
                 <i class="material-icons">delete</i>
               </button>
             </td>
+            {% endif %}
             <td></td>
           </tr>
           {% endfor %}
@@ -160,6 +162,7 @@
           </tr>
 
           <!-- This row only contains the add button -->
+          {% if appraisal.active %}
           <tr>
             <td></td>
             <td colspan="13" style="padding:0em;text-align:right;">
@@ -169,6 +172,7 @@
             </td>
             <td></td>
           </tr>
+          {% endif %}
 
           <!-- Totals -->
           <tr class="table-secondary">
@@ -263,7 +267,7 @@
               {{con.rol|default_if_none:"-"}}
             </td>
             <td class="td_area">
-              <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}">
+              <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}" {{appraisal.finished|yesno:"disabled,"}}>
             </td>
             <td class="td_pesos">
               <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
@@ -275,9 +279,10 @@
               <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td class="td_UFPerArea">
-              <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}">
+              <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
             </td>
             <td style="padding:0em;text-align:right;">
+              {% if appraisal.active %}
               <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
                 <i class="material-icons">save</i>
               </button>
@@ -287,6 +292,7 @@
               <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
                 <i class="material-icons">delete</i>
               </button>
+              {% endif %}
             </td>
             <td></td>
           </tr>
@@ -346,6 +352,7 @@
           </tr>
 
           <!-- This row only contains the add button -->
+          {% if appraisal.active %}
           <tr>
             <td></td>
             <td colspan="15" style="padding:0em;text-align:right;">
@@ -355,6 +362,7 @@
             </td>
             <td></td>
           </tr>
+          {% endif %}
 
           <!-- Subtotals of constructions -->
           <tr class="table-secondary">
@@ -418,12 +426,13 @@
               <input id="id_assetPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
             </td>
             <td class="td_UF">
-              <input name="a-value" id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}">
+              <input name="a-value" id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}" {{appraisal.finished|yesno:"disabled,"}}>
             </td>
             <td>
             </td>
             <td>
             </td>
+            {% if appraisal.active %}
             <td style="padding:0em;text-align:right;">
               <button class="btn btn-sm save_asset" name="btn_valuation_add_asset" style="padding:0px; border:0px; display: none;">
                 <i class="material-icons">save</i>
@@ -435,6 +444,7 @@
                 <i class="material-icons">delete</i>
               </button>
             </td>
+            {% endif %}
             <td></td>
           </tr>
           {% endfor %}
@@ -467,6 +477,7 @@
           </tr>
 
           <!-- This row only contains the add button -->
+          {% if appraisal.active %}
           <tr>
             <td></td>
             <td colspan="7" style="padding:0em;text-align:right;">
@@ -476,6 +487,7 @@
             </td>
             <td></td>
           </tr>
+          {% endif %}
 
           <tr class="table-secondary">
             <td></td>
