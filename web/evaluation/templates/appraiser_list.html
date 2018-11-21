@@ -1,34 +1,43 @@
-<table class="table table-borderless">
+<table class="table table-sm table-borderless">
     <h5 class="card-title">Tasadores</h5>
     <thead>
-      <tr>
-        <th scope="col">Tasador</th>
-        <th scope="col">Activas</th>
-        <th scope="col">Atrasadas</th>
-        <th scope="col">Entregadas </th>
-      </tr>
+        <tr>
+            <th></th>
+            <th scope="col" style="width:20em;"></th>
+            <th scope="col" style="text-align:center;" colspan="3">Tasaciones</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th></th>
+            <th scope="col" style="width:20em;">Nombre</th>
+            <th scope="col" style="width:10em;text-align:center;">Activas</th>
+            <th scope="col" style="width:10em;text-align:center;">Atrasadas</th>
+            <th scope="col" style="width:10em;text-align:center;">Entregadas </th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
-      {% for tasador in lista %}
-
+        {% for tasador in lista %}
         <div class="form-group">
-                <tr id="{{tasador.user.pk}}">
-                    <td>
-                        <button type='submit' value="{{tasador.user.pk}}" class="btn appraiser">
-                            {{ tasador.user.first_name }} {{ tasador.user.last_name }}</button>
-                    </td>
-
-                    <td>
-                        {{ tasador.activeAppraisals }}
-                    </td>
-                    <td>
-                        {{ tasador.lateAppraisals }}
-                    </td>
-                    <td>
-                        {{ tasador.doneAppraisals }}
-                    </td>
+            <tr id="{{tasador.user.pk}}">
+                <td></td>
+                <td>
+                    <button type='submit' value="{{tasador.user.pk}}" class="btn btn-light appraiser">
+                        {{ tasador.user.first_name }} {{ tasador.user.last_name }}
+                    </button>
+                </td>
+                <td style="text-align:center;">
+                    {{ tasador.activeAppraisals }}
+                </td>
+                <td style="text-align:center;">
+                    {{ tasador.lateAppraisals }}
+                </td>
+                <td style="text-align:center;">
+                    {{ tasador.doneAppraisals }}
+                </td>
+                <td></td>
             </tr>
-      </div>
-      {% endfor %}
+        </div>
+        {% endfor %}
     </tbody>
-  </table>
+</table>

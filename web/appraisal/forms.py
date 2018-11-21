@@ -1,7 +1,7 @@
 from django import forms
 from realestate.models import RealEstate, Construction, Terrain, Asset
 from apartment.models import Apartment
-from appraisal.models import Appraisal
+from appraisal.models import Appraisal, Rol
 from building.models import Building
 from house.models import House
 from region.models import Region
@@ -158,8 +158,6 @@ class FormAppraisal(forms.ModelForm):
             'propietario',
             'propietarioRut',
             'propietarioReferenceSII',
-            'rol',
-            'rolType',
             'visadorEmpresa',
             'visadorEmpresaMail',
             'valorUF',
@@ -169,10 +167,11 @@ class FormAppraisal(forms.ModelForm):
             'descripcionPlanoRegulador',
             'descripcionExpropiacion'
         ]
-        attrs = {'class':"form-control form-control-sm"}
+        attrs = {'class':"form-control"}
+        attrs_sm = {'class':"form-control form-control-sm"}
         attrs_check = {'class':"form-check-input"}
         attrs_req = {'class':"form-control form-control-sm",'data-validation':"required"}
-        attrs_rut = {'class':"form-control form-control-sm",'data-validation':"rut"}
+        attrs_rut = {'class':"form-control",'data-validation':"rut"}
         widgets = {
             'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=attrs),
             'solicitanteCodigo': forms.TextInput(attrs=attrs),
@@ -183,8 +182,6 @@ class FormAppraisal(forms.ModelForm):
             'propietario': forms.TextInput(attrs=attrs),
             'propietarioRut': forms.TextInput(attrs=attrs_rut),
             'propietarioReferenceSII': forms.CheckboxInput(attrs=attrs_check),
-            'rol': forms.TextInput(attrs=attrs),
-            'rolType': forms.Select(choices=Appraisal.rolTypeChoices,attrs=attrs),
             'visadorEmpresa': forms.TextInput(attrs=attrs),
             'visadorEmpresaMail': forms.EmailInput(attrs=attrs),
             'valorUF': forms.TextInput(attrs={'class':"form-control text-right",'lang':"es-ES"}),
@@ -331,6 +328,19 @@ class FormCreateAsset(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs=class_bs),
             'value': forms.NumberInput(attrs=class_bs_right)
+            }
+
+class FormCreateRol(forms.ModelForm):
+    class Meta:
+        model = Rol
+        fields = [
+            'code',
+            'state'
+            ]
+        class_bs = {'class':"form-control"}
+        widgets = {
+            'code': forms.TextInput(attrs=class_bs),
+            'state': forms.Select(choices=Rol.rolTypeChoices,attrs=class_bs),
             } 
 
 class FormPhotos(forms.Form):

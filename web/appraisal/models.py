@@ -32,6 +32,28 @@ class Document(models.Model):
         format='JPEG',
         options={'quality': 60})
 
+class Rol(models.Model):
+    code = models.CharField("Rol",max_length=20,blank=True,null=True)
+    SIN_DATOS = 0
+    DEFINITIVO = 1
+    MATRIZ = 2
+    EN_TRAMITE = 3
+    PREASIGNADO = 4
+    BIEN_COMUN = 5
+    USO_Y_GOCE = 6
+    NO_ENROLADO = 7
+    rolTypeChoices = [
+        (SIN_DATOS, "Sin datos"),
+        (DEFINITIVO, "Definitivo"),
+        (MATRIZ, "Matriz"),
+        (EN_TRAMITE, "En trámite"),
+        (PREASIGNADO, "Preasignado"),
+        (BIEN_COMUN, "Bien común"),
+        (USO_Y_GOCE, "Uso y Goce"),
+        (NO_ENROLADO, "No enrolado")
+    ]
+    state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default=0)
+
 @reversion.register()
 class Appraisal(models.Model):
     '''
@@ -147,33 +169,13 @@ class Appraisal(models.Model):
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
     propietarioRut = models.CharField("Propietario RUT",max_length=13,blank=True,null=True)
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
-
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
-
-    SIN_DATOS = 0
-    DEFINITIVO = 1
-    MATRIZ = 2
-    EN_TRAMITE = 3
-    PREASIGNADO = 4
-    BIEN_COMUN = 5
-    USO_Y_GOCE = 6
-    NO_ENROLADO = 7
-    rolTypeChoices = [
-        (SIN_DATOS, "Sin datos"),
-        (DEFINITIVO, "Definitivo"),
-        (MATRIZ, "Matriz"),
-        (EN_TRAMITE, "En trámite"),
-        (PREASIGNADO, "Preasignado"),
-        (BIEN_COMUN, "Bien común"),
-        (USO_Y_GOCE, "Uso y Goce"),
-        (NO_ENROLADO, "No enrolado")
-    ]
-    rolType = models.IntegerField("Tipo rol", choices=rolTypeChoices, blank=True,null=False,default=0)
     
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
     visadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_visador')
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
+
+    roles = models.ManyToManyField(Rol)
 
     photos = models.ManyToManyField(Photo)
 

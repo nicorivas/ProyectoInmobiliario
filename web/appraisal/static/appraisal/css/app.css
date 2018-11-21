@@ -52,3 +52,18 @@
     padding-left: 0.1rem;
     padding-right: 0.1rem;
 }
+
+input[type="text"] {
+    border-color: #777;
+    background-color: #fff;
+}
+
+select.form-control {
+    border-color: #777;
+}
+
+input[type="text"]:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}

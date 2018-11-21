@@ -8,7 +8,7 @@ from realestate.models import RealEstate, Construction, Terrain, Asset
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
-from appraisal.models import Appraisal, Comment, Photo, Document
+from appraisal.models import Appraisal, Comment, Photo, Document, Rol
 from commune.models import Commune
 from user.models import UserProfile
 
@@ -32,6 +32,7 @@ from .forms import FormCreateHouse
 from .forms import FormCreateConstruction
 from .forms import FormCreateTerrain
 from .forms import FormCreateAsset
+from .forms import FormCreateRol
 from create import create
 
 import viz.maps as maps
@@ -694,7 +695,8 @@ def view_appraisal(request, **kwargs):
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix=''),
         'documents':FormDocuments(label_suffix='docs'),
-        'realestate':FormRealEstate(instance=realestate,label_suffix='')}
+        'realestate':FormRealEstate(instance=realestate,label_suffix=''),
+        'rol':FormCreateRol(label_suffix='r')}
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
