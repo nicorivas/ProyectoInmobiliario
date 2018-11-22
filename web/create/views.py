@@ -83,7 +83,7 @@ def view_create(request):
                 addressCommune = form_create.cleaned_data['addressCommune_create']
                 addressStreet = form_create.cleaned_data['addressStreet_create']
                 addressNumber = form_create.cleaned_data['addressNumber_create']
-                addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
+                addressNumber2 = form_create.cleaned_data['addressNumber2_create']
 
                 # check if building exists
                 building = None
@@ -109,11 +109,11 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        number=addressNumberFlat,
+                        addressNumber2=addressNumber2,
                         propertyType=RealEstate.TYPE_APARTMENT)
                 except Apartment.DoesNotExist:
                     # flat does not exist, so create it
-                    realEstate = create.apartment_create(building,addressNumberFlat)
+                    realEstate = create.apartment_create(building,addressNumber2)
                 except MultipleObjectsReturned:
                     # error
                     context = {'error_message': 'Apartment is repeated'}

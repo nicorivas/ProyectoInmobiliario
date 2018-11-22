@@ -431,6 +431,15 @@ class RealEstate(models.Model):
         return self.addressStreet+' '+str(self.addressNumber)
 
     @property
+    def addressOrCoords(self):
+        # Returns whole address in a nice format
+        print('addressStreet',self.addressStreet)
+        if self.addressStreet != '':
+            return self.addressStreet+' '+str(self.addressNumber)
+        else:
+            return '('+self.latlng_verbose+')'
+
+    @property
     def addressShort(self):
         return self.addressStreet+' '+str(self.addressNumber)
 

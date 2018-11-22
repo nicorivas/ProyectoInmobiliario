@@ -16,6 +16,9 @@
   <div id="avaluos" class="collapse show" aria-labelledby="heading">
     <div class="card-body" style="padding:0em;margin:0em;">
 
+      <!-- Terrains, only activated when real estate is house !-->
+      {% if realestate.is_house %}
+
       <table id="table_terrains" class="table table-sm mb-0 mt-2">
 
         <thead class="thead table-warning">
@@ -32,8 +35,6 @@
 
         <tbody>
 
-          <!-- Terrains, only activated when real estate is house !-->
-          {% if realestate.is_house %}
           <tr class="table-warning">
             <td></td>
             <td style="width:1.0em;"></td>
@@ -188,11 +189,10 @@
             <td></td>
             <td></td>
           </tr>
-          {% endif %}
         </tbody>
       </table>
 
-
+      {% endif %}
 
       <table id="table_constructions" class="table table-sm mt-2 mb-0">
 
@@ -504,18 +504,18 @@
         </tbody>
       </table>
 
-      <table>
+      <table id="table_totals" class="table table-sm mt-2">
         </tbody>
 
           <!-- Grand total -->
 
           <tr class="table-primary">
             <td></td>
-            <td style="text-align:right;padding-right:3em;width:70em;">Valor tasador</td>
-            <td id='id_totalPesos' style="text-align:right;width:7em;"></td>
-            <td id='id_totalUF' style="text-align:right;width:7em;"></td>
-            <td style="width:8em;"></td>
-            <td style="width:8em;"></td>
+            <td style="text-align:right;padding-right:3em;width:60em;">Valor tasador</td>
+            <td id='id_totalPesos' style="text-align:right;width:8em;"></td>
+            <td id='id_totalUF' style="text-align:right;width:8em;"></td>
+            <td style="width:7em;"></td>
+            <td style="width:7em;"></td>
             <td style="width:6em;"></td>
             <td></td>
           </tr>
@@ -663,7 +663,7 @@
       if (!($(this).hasClass('tr_asset'))) return
       if ($(this).attr('id') == 'id_input') return
       if ($(this).attr('id') == 'tr_create_asset') return
-      pesos = parseFloat($(this).find("#id_assetPesos").val());
+      pesos = parseFloatEs($(this).find("#id_assetPesos").val());
       if (!isNaN(pesos)) {
         sumPesos += pesos;
       }
@@ -686,12 +686,16 @@
 
   function assetsTableComputeTotalsGlobal() {
     var sumPesos = 0
-    sumPesos += parseFloatEs($('#id_ptotalTerrPesos').text().trim());
+    if (!{{realestate.is_apartment}}) {
+      sumPesos += parseFloatEs($('#id_ptotalTerrPesos').text().trim());
+    }
     sumPesos += parseFloatEs($('#id_ptotalConstPesos').text().trim());
     sumPesos += parseFloatEs($('#id_ptotalAssetsPesos').text().trim());
 
     var sumUF = 0
-    sumUF += parseFloatEs($('#id_ptotalTerrUF').text().trim());
+    if (!{{realestate.is_apartment}}) {
+      sumUF += parseFloatEs($('#id_ptotalTerrUF').text().trim());
+    }
     sumUF += parseFloatEs($('#id_ptotalConstUF').text().trim());
     sumUF += parseFloatEs($('#id_ptotalAssetsUF').text().trim());
 
@@ -726,23 +730,27 @@
   }
 
   function assetsTableComputeTotals() {
-    assetsTableComputeTotalsTerrains();
+    if (!{{realestate.is_apartment}}) {
+      assetsTableComputeTotalsTerrains();
+    }
     assetsTableComputeTotalsConstructions();
     assetsTableComputeTotalsAssets();
     assetsTableComputeTotalsGlobal();
   }
 
   function assetsTableUpdateRows() {
-    $('#table_terrains tr').each(function() {
-      if ($(this).hasClass('tr_terrain')) {
-        uf = UF_IN_PESOS;
-        area = parseFloat($(this).find(".td_area").find('input').val());
-        UFPerArea = parseFloat($(this).find(".td_UFPerArea").find('input').val());
-        $(this).find('.td_pesosPerArea').find('input').val(pesosFormat(UFPerArea*uf));
-        $(this).find('.td_pesos').find('input').val(pesosFormat(UFPerArea*uf*area));
-        $(this).find('.td_UF').find('input').val(UFFormat(UFPerArea*area));
-      }
-    });
+    if (!{{realestate.is_apartment}}) {
+      $('#table_terrains tr').each(function() {
+        if ($(this).hasClass('tr_terrain')) {
+          uf = UF_IN_PESOS;
+          area = parseFloat($(this).find(".td_area").find('input').val());
+          UFPerArea = parseFloat($(this).find(".td_UFPerArea").find('input').val());
+          $(this).find('.td_pesosPerArea').find('input').val(pesosFormat(UFPerArea*uf));
+          $(this).find('.td_pesos').find('input').val(pesosFormat(UFPerArea*uf*area));
+          $(this).find('.td_UF').find('input').val(UFFormat(UFPerArea*area));
+        }
+      });
+    }
     $('#table_constructions tr').each(function() {
       uf = UF_IN_PESOS;
       area = parseFloat($(this).find(".td_area").find('input').val());

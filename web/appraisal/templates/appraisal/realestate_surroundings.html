@@ -1,26 +1,41 @@
-<div class="card-body">
+<div class="row ml-4 mr-4 mt-5">
+<div class="col">
 
-    <div class="form-group">
-      <label for="id_map">
-        Plano de ubicación
-      </label>
-      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{realestate.addressStreet}} {{realestate.addressNumber}}&zoom=15&size=520x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{realestate.lat}},{{ realestate.lng}}"></p>
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">Plano de ubicación</p>
     </div>
+    <div class="col-6">
+      <p><img src="https://maps.googleapis.com/maps/api/staticmap?center={{realestate.addressStreet}} {{realestate.addressNumber}}&zoom=15&size=600x300&maptype=roadmap&key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&markers=color:blue%7Clabel:A%7C{{realestate.lat}},{{ realestate.lng}}"></p>
+    </div>
+  </div>
 
-    <div class="form-group">
-      {{forms.appraisal.descripcionSector.label_tag}}
+  <div class="row mb-4">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.appraisal.descripcionSector.label}}</p>
+    </div>
+    <div class="col-6">
       {{forms.appraisal.descripcionSector}}
     </div>
+  </div>
 
-    <div class="form-group">
-      {{forms.appraisal.descripcionPlanoRegulador.label_tag}}
+  <div class="row mb-4">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.appraisal.descripcionPlanoRegulador.label}}</p>
+    </div>
+    <div class="col-6">
       {{forms.appraisal.descripcionPlanoRegulador}}
     </div>
+  </div>
 
-    <div class="form-group">
-      {{forms.appraisal.descripcionExpropiacion.label_tag}}
+  <div class="row mb-5">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.appraisal.descripcionExpropiacion.label}}</p>
+    </div>
+    <div class="col-6">
       {{forms.appraisal.descripcionExpropiacion}}
     </div>
+  </div>
 
     <!--
 
@@ -116,5 +131,5 @@
     <div class="card-header">Otros servicios</div>
     </div>
     -->
-
-  </div>
+</div>
+</div>

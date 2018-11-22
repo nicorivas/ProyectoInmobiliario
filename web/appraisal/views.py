@@ -144,6 +144,30 @@ def save(request,forms,appraisal,realEstate):
             forms['property'].save()
             forms['realestate'].save()
             save_appraisal(request,forms,'Saved')
+
+            # Check roles
+
+            rol_codes = request.POST.getlist('r-code')
+            rol_states = request.POST.getlist('r-state')
+            rol_ids = request.POST.getlist('r-id')
+            rol_deletes = request.POST.getlist('r-delete')
+            print(request.POST)
+            for i, rol_code in enumerate(rol_codes):
+                if int(rol_ids[i]) > 0:
+                    rol = appraisal.roles.all().get(id=rol_ids[i])
+                    if int(rol_deletes[i]):
+                        rol.delete()
+                    else:
+                        rol.code = rol_code
+                        rol.state = rol_states[i]
+                        rol.save()
+                else:
+                    if int(rol_deletes[i]): continue
+                    rol = Rol(code=rol_code,state=rol_states[i])
+                    rol.save()
+                    appraisal.roles.add(rol)
+                    appraisal.save()
+
             re_ids = request.POST.getlist('valuationRealEstateRow')
             re_ids_re = request.POST.getlist('valuationRealEstateRemove')
             for i, re_id in enumerate(re_ids):
@@ -165,6 +189,29 @@ def save(request,forms,appraisal,realEstate):
             forms['property'].save()
             forms['realestate'].save()
             save_appraisal(request,forms,'Saved')
+
+            # Check roles
+            rol_codes = request.POST.getlist('r-code')
+            rol_states = request.POST.getlist('r-state')
+            rol_ids = request.POST.getlist('r-id')
+            rol_deletes = request.POST.getlist('r-delete')
+            print(request.POST)
+            for i, rol_code in enumerate(rol_codes):
+                if int(rol_ids[i]) > 0:
+                    rol = appraisal.roles.all().get(id=rol_ids[i])
+                    if int(rol_deletes[i]):
+                        rol.delete()
+                    else:
+                        rol.code = rol_code
+                        rol.state = rol_states[i]
+                        rol.save()
+                else:
+                    if int(rol_deletes[i]): continue
+                    rol = Rol(code=rol_code,state=rol_states[i])
+                    rol.save()
+                    appraisal.roles.add(rol)
+                    appraisal.save()
+
             re_ids = request.POST.getlist('valuationRealEstateRow')
             re_ids_re = request.POST.getlist('valuationRealEstateRemove')
             for i, re_id in enumerate(re_ids):
@@ -569,6 +616,7 @@ def view_appraisal(request, **kwargs):
         forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
         forms['photos'] = FormPhotos(request_post,request.FILES)
         forms['documents'] = FormDocuments(request_post,request.FILES,prefix='docs')
+        forms['rol'] = FormCreateRol(request_post,prefix='r')
         if realestate.propertyType == RealEstate.TYPE_APARTMENT:
             forms['property'] = FormApartment(request_post,instance=realestate.apartment)
             forms['building'] = FormBuilding(request_post,instance=realestate.apartment.building_in)
@@ -695,8 +743,8 @@ def view_appraisal(request, **kwargs):
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix=''),
         'documents':FormDocuments(label_suffix='docs'),
-        'realestate':FormRealEstate(instance=realestate,label_suffix=''),
-        'rol':FormCreateRol(label_suffix='r')}
+        'realestate':FormRealEstate(instance=realestate,label_suffix='')
+        }
     if realestate.propertyType == RealEstate.TYPE_APARTMENT:
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
@@ -710,6 +758,15 @@ def view_appraisal(request, **kwargs):
         forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
+
+    forms['rol'] = []
+    for i, rol in enumerate(appraisal.roles.all()):
+        forms['rol'].append(FormCreateRol(instance=rol,prefix='r'))
+    if len(appraisal.roles.all()) == 0:
+        rol = Rol()
+        rol.save()
+        appraisal.roles.add(rol)
+        forms['rol'].append(FormCreateRol(instance=rol,prefix='r'))
 
     # Select communes for create building
     communes = Commune.objects.only('name').filter(region=realestate.addressRegion).order_by('name')

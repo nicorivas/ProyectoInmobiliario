@@ -3,6 +3,7 @@
   var UF_IN_PESOS = 0.0;
 
   function pesosFormat(number) {
+    if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
       if (number.length > 0) {
@@ -17,6 +18,7 @@
   }
 
   function UFFormat(number) {
+    if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
       if (number.length > 0) {
@@ -31,6 +33,7 @@
   }
 
   function percentFormat(number) {
+    if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
       if (number.length > 0) {
@@ -45,9 +48,9 @@
   }
 
   function areaFormat(number) {
+    if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
-      console.log(number)
       if (number.length > 0) {
         if (isNaN(parseFloat(number))) return '-'
         return parseFloat(number).toLocaleString('es',{maximumFractionDigits:1,minimumFractionDigits:1}); 
@@ -60,6 +63,7 @@
   }
 
   function floatFormat(number) {
+    if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
       if (number.length > 0) {
@@ -177,22 +181,22 @@
           <tr>
             <td></td>
             <td>
-              <input id="id_value_rent_month" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_month" class="form-control text-right" disabled>
             </td>
             <td>
-              <input id="id_value_rent_months" class="form-control form-control-sm text-center" disabled>
+              <input id="id_value_rent_months" class="form-control text-center" disabled>
             </td>
             <td>
-              <input id="id_value_rent_year" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_year" class="form-control text-right" disabled>
             </td>
             <td>
-              <input id="id_value_rent_rate" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_rate" class="form-control text-right" disabled>
             </td>
             <td>
-              <input id="id_value_rent_per_area" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent_per_area" class="form-control text-right" disabled>
             </td>
             <td>
-              <input id="id_value_rent" class="form-control form-control-sm text-right" disabled>
+              <input id="id_value_rent" class="form-control text-right" disabled>
             </td>
             <td></td>
           </tr>
@@ -227,7 +231,7 @@
           <tr>
             <!--<th scope="col">lat/lng</th>-->
             <th></th>
-            <th scope="col" style="width: 1em;text-align:right;"></th>
+            <th scope="col" style="width: 1em;text-align:right;">#</th>
             <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
             <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
             <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
@@ -301,7 +305,6 @@
             <td class="td_sre_area_2" style="text-align:right;" >{{ o.house.terrainSquareMetersVerbose }}</td>
             {% elif o.is_apartment %}
             <td style="text-align:center;">{{ o.apartment.bedrooms }}</td>
-            <td style="text-align:center;">{{ o.apartment.bathrooms }}</td>
             <td style="text-align:center;">{{ o.apartment.bathrooms }}</td>
             <td class="td_sre_area_1" style="text-align:right;" >{{ o.apartment.usefulSquareMetersVerbose }}</td>
             <td class="td_sre_area_2" style="text-align:right;" >{{ o.apartment.terraceSquareMetersVerbose }}</td>
@@ -462,7 +465,7 @@
               <small>{{forloop.counter}}.</small>
             </td>
             <td scope="row">
-              {{r.realestate.addressStreet}} {{r.realestate.addressNumber}}
+              {{r.realestate.addressOrCoords }}
             </td>
             <td style="text-align:center;">
               <i class="{{r.realestate.get_propertyTypeIcon }}"></i>
@@ -533,19 +536,25 @@
             <td></td>
             <td></td>
             {% if realestate.is_apartment %}
-            <td style="text-align:right;">{{ averages.usefulSquareMeters__avg | floatformat:1}} &plusmn; 
-                <small>{{ stds.usefulSquareMeters__stddev | floatformat:1 }}</small></td>
-            <td style="text-align:right;">{{ averages.terraceSquareMeters__avg | floatformat:1 }} &plusmn; 
-                <small>{{ stds.terraceSquareMeters__stddev | floatformat:1 }}</small></td>
-            <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }} &plusmn; 
-                <small>{{ stds.marketPrice__stddev | floatformat:1 }}</small></td>
+            <td style="text-align:right;">{{ averages.usefulSquareMeters__avg | floatformat:1}}
+              <!--<small>&plusmn; {{ stds.usefulSquareMeters__stddev | floatformat:1 }}</small>-->
+            </td>
+            <td style="text-align:right;">{{ averages.terraceSquareMeters__avg | floatformat:1 }}
+              <!--<small>&plusmn; {{ stds.terraceSquareMeters__stddev | floatformat:1 }}</small>-->
+            </td>
+            <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }}
+              <!--<small>&plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</small>-->
+            </td>
             {% elif realestate.is_house %}
-            <td style="text-align:right;">{{ averages.builtSquareMeters__avg | floatformat:1}} &plusmn; 
-                <small>{{ stds.builtSquareMeters__stddev | floatformat:1 }}</small></td>
-            <td style="text-align:right;">{{ averages.terrainSquareMeters__avg | floatformat:1 }} &plusmn; 
-                <small>{{ stds.terrainSquareMeters__stddev | floatformat:1 }}</small></td>
-            <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }} &plusmn; 
-                <small>{{ stds.marketPrice__stddev | floatformat:1 }}</small></td>
+            <td style="text-align:right;">{{ averages.builtSquareMeters__avg | floatformat:1}}
+              <!--<small>&plusmn; {{ stds.builtSquareMeters__stddev | floatformat:1 }}</small>-->
+            </td>
+            <td style="text-align:right;">{{ averages.terrainSquareMeters__avg | floatformat:1 }}
+              <!--<small>&plusmn; {{ stds.terrainSquareMeters__stddev | floatformat:1 }}</small>-->
+            </td>
+            <td style="text-align:right;">{{ averages.marketPrice__avg | floatformat:1 }}
+              <!--<small>&plusmn; {{ stds.marketPrice__stddev | floatformat:1 }}</small>-->
+            </td>
             {% endif %}
             <td></td>
             <td></td>
@@ -611,27 +620,59 @@
 
 <script>
 
-  function formatNumbers() {
-    str = $("#id_valorUF").val();
-    if (str.length == 0) {
-      $("#id_valorUF").val('');
-    } else {
-      var valorUF = parseFloat($("#id_valorUF").val());
-      $("#id_valorUF").val(UFFormat(valorUF));
-    }
+  function mainValuesUnformat() {
+    $("#id_valorUF").val(function() {
+      return parseFloatEs($(this).val());
+    })
+    $("#in_value_market").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#in_value_liquid_UF").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#in_value_liquid").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#in_value_safe_UF").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#in_value_safe").val(function() {
+      return parseFloatEs($(this).val());
+    });
   }
 
-  function computeValues() {
+  function mainValuesFormat() {
+    $("#id_valorUF").val(function() {
+      return UFFormat($(this).val());
+    });
+    $("#in_value_market").val(function() {
+      return pesosFormat($(this).val());
+    });
+    $("#in_value_liquid_UF").val(function() {
+      return UFFormat($(this).val());
+    });
+    $("#in_value_liquid").val(function() {
+      return pesosFormat($(this).val());
+    });
+    $("#in_value_safe_UF").val(function() {
+      return UFFormat($(this).val());
+    });
+    $("#in_value_safe").val(function() {
+      return pesosFormat($(this).val());
+    });
+  }
+
+  function mainValuesCompute() {
     // Main valuation prices
-    var valorUF = parseFloatEs($("#id_valorUF").val());
-    var liquidez = parseFloatEs($("#liquidity").val());
-    var seguroUF = parseFloatEs($("#id_totalSeguroUF").text());
+    var valorUF = parseFloat($("#id_valorUF").val());
+    var liquidez = parseFloat($("#liquidity").val());
+    var seguroUF = parseFloat($("#id_totalSeguroUF").text());
     if (!isNaN(valorUF)) {
-      $("liquidity").val(floatFormat(liquidez))
-      $("#id_valorUF").val(UFFormat(valorUF));
-      $("#in_value_market").val(pesosFormat(valorUF*UF_IN_PESOS));
-      $("#in_value_liquid_UF").val(UFFormat(valorUF*liquidez));
-      $("#in_value_liquid").val(pesosFormat(valorUF*liquidez*UF_IN_PESOS));
+      $("liquidity").val(liquidez)
+      $("#id_valorUF").val(valorUF);
+      $("#in_value_market").val(valorUF*UF_IN_PESOS);
+      $("#in_value_liquid_UF").val(valorUF*liquidez);
+      $("#in_value_liquid").val(valorUF*liquidez*UF_IN_PESOS);
     } else {
       $("#in_value_market").val('');
       $("#in_value_liquid_UF").val('');
@@ -639,27 +680,49 @@
       $("#in_value_safe_UF").val('');
       $("#in_value_safe").val('');
     }
-    var seguroUF = parseFloatEs($("#id_totalSeguroUF").text());
+
+    // Value seguro is taken from valuation of assets total
+    var seguroUF = parseFloat($("#id_totalSeguroUF").text());
     if (!isNaN(seguroUF)) {
-      $("#in_value_safe_UF").val(UFFormat(seguroUF));
-      $("#in_value_safe").val(pesosFormat(seguroUF*UF_IN_PESOS));
+      $("#in_value_safe_UF").val(seguroUF);
+      $("#in_value_safe").val(seguroUF*UF_IN_PESOS);
     } else {
       $("#in_value_safe_UF").val('');
       $("#in_value_safe").val('');
     }
     
+
+  }
+
+  function rentValuesUnformat() {
+    $("#id_value_rent_month").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#id_value_rent_year").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#id_value_rent_per_area").val(function() {
+      return parseFloatEs($(this).val());
+    });
+    $("#id_value_rent").val(function() {
+      return parseFloatEs($(this).val());
+    });
+  }
+
+  function rentValuesCompute() {
     // Rent prices
+    var valorUF = parseFloat($("#id_valorUF").val());
     var months = 11
     var rate = 0.06
     var area = 10.0
     $("#id_value_rent_months").val(months)
-    $("#id_value_rent_rate").val(percentFormat(rate))
+    $("#id_value_rent_rate").val(rate)
     if (!isNaN(valorUF)) {
-      $("#id_value_rent_month").val(UFFormat(valorUF*0.005))
+      $("#id_value_rent_month").val(valorUF*0.005)
       var value_rent_month = valorUF*0.005
-      $("#id_value_rent_year").val(UFFormat(value_rent_month*months))
-      $("#id_value_rent_per_area").val(UFFormat(rate*area))
-      $("#id_value_rent").val(UFFormat(value_rent_month*months/rate))
+      $("#id_value_rent_year").val(value_rent_month*months)
+      $("#id_value_rent_per_area").val(rate*area)
+      $("#id_value_rent").val(value_rent_month*months/rate)
     } else {
       $("#id_value_rent_month").val('');
       $("#id_value_rent_year").val('');
@@ -668,60 +731,131 @@
     }
   }
 
+  function rentValuesFormat() {
+    $("#id_value_rent_month").val(function() {
+      return UFFormat($(this).val());
+    });
+    $("#id_value_rent_year").val(function() {
+      return UFFormat($(this).val());
+    });
+    $("#id_value_rent_per_area").val(function() {
+      return floatFormat($(this).val());
+    });
+    $("#id_value_rent").val(function() {
+      return UFFormat($(this).val());
+    });
+  }
+
+  function update() {
+    // Order of these functions is crucial.
+    // First we need to unformat everything, so we can
+    // compute (and some values are used in more than 
+    // one function), and then reformat.
+    mainValuesUnformat();
+    rentValuesUnformat();
+    selectedRealEstateTableUnformat();
+
+    mainValuesCompute();
+    rentValuesCompute();
+    selectedRealEstateTableCompute();
+
+    mainValuesFormat();
+    rentValuesFormat();
+    selectedRealEstateTableFormat();
+  }
+
   $("#id_valorUF").change(function () {
-    computeValues();
+    update();
   });
 
   $("#liquidity").change(function () {
-    computeValues()
+    update();
   });
-
-  $("#id_valorUF").focus(function () {
-    computeValues()
-  });
-
-  $("#id_valorUF").focusout(function () {
-    computeValues()
-  });
-
-  function remove(val) {
-    /*
-    Remove the row from the valuation list.
-    Add the button to add row in MarketList, if it is there.
-    */
-    row_valuation = $('#trValuationRealEstate_'+val);
-    row_valuation.find('#in_valuationRealEstateRemove').attr('value',1)
-    row_valuation.toggle();
-    row_market = $('#trMarketRealEstate_'+val);
-    row_market.find('.btn').show();
-    row_market.removeClass('table-success');
-    selectedRealEstateTableCompute();
-  }
 
 
   //-----------------------------------------------------------------------
 
 
-  function selectedRealEstateTableFormat() {
+  function selectedRealEstateTableUnformat() {
+    // Remove spanish format of all real estate tables.
     $('#table_selected_real_estate tr').each(function() {
       if (!$(this).hasClass('sre')) return
-      uf = UF_IN_PESOS;
-      area1 = parseFloat($(this).find("[class$=area_1]").html());
-      console.log('area1',area1)
-      $(this).find("[class$=area_1]").html(areaFormat(area1))
-      area2 = parseFloat($(this).find("[class$=area_2]").html());
-      $(this).find("[class$=area_2]").html(areaFormat(area2))
-      market_price = parseFloat($(this).find("[class$=market_price]").html());
-      $(this).find("[class$=market_price]").html(UFFormat(market_price))
+      $(this).find("[class$=area_1]").html(function() {
+        return parseFloatEs($(this).html())
+      })
+      $(this).find("[class$=area_2]").html(function() {
+        return parseFloatEs($(this).html())
+      })
+      $(this).find("[class$=market_price]").html(function() {
+        return parseFloatEs($(this).html())
+      })
       if ({{realestate.is_apartment}}) {
-        tmp = $(this).find('[class$=market_price_per_useful_square_meters]').html()
-        $(this).find('[class$=market_price_per_useful_square_meters]').html(UFFormat(tmp))
+        $(this).find('[class$=market_price_per_useful_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        })
       } else if ({{realestate.is_house}}) {
-        tmp = $(this).find('[class$=market_price_per_built_square_meters]').html()
-        $(this).find('[class$=market_price_per_built_square_meters]').html(UFFormat(tmp))
+        $(this).find('[class$=market_price_per_built_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        })
       }
-      tmp = $(this).find('[class$=market_price_per_total_square_meters]').html()
-      $(this).find('[class$=market_price_per_total_square_meters]').html(UFFormat(tmp))
+      $(this).find('[class$=market_price_per_total_square_meters]').html(function() {
+        return parseFloatEs($(this).html())
+      })
+    });
+
+    $('#table_references_real_estate tr').each(function() {
+      $(this).find('[class$=market_price]').html(function() {
+        return parseFloatEs($(this).html())
+      });
+      $(this).find('[class$=area_1]').html(function() {
+        return parseFloatEs($(this).html())
+      });
+      $(this).find('[class$=area_2]').html(function() {
+        return parseFloatEs($(this).html())
+      });
+      if ({{realestate.is_apartment}}) {
+        $(this).find('[class$=market_price_per_useful_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        })
+        $(this).find('[class$=market_price_per_total_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        });
+      } else if ({{realestate.is_house}}) {
+        $(this).find('[class$=market_price_per_built_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        })
+        $(this).find('[class$=market_price_per_total_square_meters]').html(function() {
+          return parseFloatEs($(this).html())
+        })
+      }
+    });
+  }
+
+  function selectedRealEstateTableFormat() {
+    // Format numbers of tables in spanish, dots for thousands and coma for decimals.
+    $('#table_selected_real_estate tr').each(function() {
+      if (!$(this).hasClass('sre')) return
+      $(this).find("[class$=area_1]").html(function() {
+        return areaFormat($(this).html())
+      })
+      $(this).find("[class$=area_2]").html(function() {
+        return areaFormat($(this).html())
+      })
+      $(this).find("[class$=market_price]").html(function() {
+        return UFFormat($(this).html())
+      })
+      if ({{realestate.is_apartment}}) {
+        $(this).find("[class$=market_price_per_useful_square_meters]").html(function() {
+          return UFFormat($(this).html())
+        })
+      } else if ({{realestate.is_house}}) {
+        $(this).find("[class$=market_price_per_built_square_meters]").html(function() {
+          return UFFormat($(this).html())
+        })
+      }
+      $(this).find("[class$=market_price_per_total_square_meters]").html(function() {
+        return UFFormat($(this).html())
+      })
     });
 
     $('#table_references_real_estate tr').each(function() {
@@ -750,13 +884,33 @@
         })
       }
     });
+
+    $('#vreUsefulSquareMetersAvg').text(function() {
+      return floatFormat($(this).text())
+    })
+    $('#vreTerraceSquareMetersAvg').text(function() {
+      return floatFormat($(this).text())
+    })
+    $('#vreMarketPriceAvg').text(function() {
+      return floatFormat($(this).text())
+    })
+    $('#vreMarketPricePerUsefulSquareMetersAvg').text(function() {
+      return floatFormat($(this).text())
+    })
+    $('#vreMarketPricePerTotalSquareMetersAvg').text(function() {
+      return floatFormat($(this).text())
+    })
   }
 
   function selectedRealEstateTableCompute() {
 
     // Update valuation price in rows of tables of current real estate
-    var valorUF = parseFloatEs($("#id_valorUF").val());
-    $(".td_c_market_price").text(valorUF)
+    var valorUF = parseFloat($("#id_valorUF").val());
+    if (isNaN(valorUF)) {
+      $(".td_c_market_price").text('-')
+    } else {
+      $(".td_c_market_price").text(valorUF)
+    }
     
     if ({{realestate.is_house}}) {
       var builtSquareMeters = {{realestate.house.builtSquareMeters|default:0}}
@@ -816,22 +970,43 @@
       var avgUsefulSquareMeters = sumUsefulSquareMeters/c;
       var avgTerraceSquareMeters = sumTerraceSquareMeters/c;
       var avgMarketPrice = sumMarketPrice/c;
-      $('#vreUsefulSquareMetersAvg').text(areaFormat(avgUsefulSquareMeters))
-      $('#vreTerraceSquareMetersAvg').text(areaFormat(avgTerraceSquareMeters))
-      $('#vreMarketPriceAvg').text(UFFormat(avgMarketPrice))
-      $('#vreMarketPricePerUsefulSquareMetersAvg').text(floatFormat(avgMarketPrice/avgUsefulSquareMeters))
-      $('#vreMarketPricePerTotalSquareMetersAvg').text(floatFormat(avgMarketPrice/(avgUsefulSquareMeters+avgTerraceSquareMeters)))
+      $('#vreUsefulSquareMetersAvg').text(avgUsefulSquareMeters)
+      $('#vreTerraceSquareMetersAvg').text(avgTerraceSquareMeters)
+      $('#vreMarketPriceAvg').text(avgMarketPrice)
+      $('#vreMarketPricePerUsefulSquareMetersAvg').text(avgMarketPrice/avgUsefulSquareMeters)
+      $('#vreMarketPricePerTotalSquareMetersAvg').text(avgMarketPrice/(avgUsefulSquareMeters+avgTerraceSquareMeters))
     }
   }
 
+  function remove(val) {
+    /*
+    Remove the row from the valuation list.
+    Add the button to add row in MarketList, if it is there.
+    */
+    row_valuation = $('#trValuationRealEstate_'+val);
+    if (row_valuation.hasClass('just-added')) {
+      row_valuation.remove();
+      row_market = $('#trMarketRealEstate_'+val);
+      row_market.find('.btn').show();
+      row_market.removeClass('table-success');
+    } else {
+      row_valuation.find('#in_valuationRealEstateRemove').attr('value',1)
+      row_valuation.toggle();
+    }
+
+    update();
+  }
 
   $(document).ready(
     function() {
-      formatNumbers();
       
       var propertyType = {{realestate.propertyType}}
       $("#id_vc-propertyType").val(propertyType);
 
+      mainValuesCompute();
+      mainValuesFormat();
+      rentValuesCompute();
+      rentValuesFormat();
       selectedRealEstateTableCompute();
       selectedRealEstateTableFormat();
 
@@ -862,30 +1037,29 @@
           hiddenInput2+
           newRow.html()+'</tr>');
         // Add event handler to button created in new row
-        $('.remove').click(function(){
+        $("#trValuationRealEstate_"+rid).find('.remove').click(function(){
           var rid = $(this).val();
           remove(rid);
         })
+        $("#trValuationRealEstate_"+rid).addClass('just-added')
 
         // Modify clicked row to remove the add button
         btn = row.find('.btn')
         btn.hide()
         
-        // Recompute the averages
-        averages();
-
       });
 
       $.getJSON('https://mindicador.cl/api', 
         function(data) {
           UF_IN_PESOS = data.uf.valor
+          mainValuesUnformat();
+          mainValuesCompute();
+          mainValuesFormat();
           assetsTableUpdateRows();
-          computeValues();
           assetsTableComputeTotals();
         }).fail(function() {
           console.log('Error al consumir la API!');
-        }
-      );
-    })
+        });
+    });
 </script>
 

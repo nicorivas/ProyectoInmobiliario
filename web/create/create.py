@@ -52,7 +52,7 @@ def appraisal_create(realEstate, timeFrame, user, solicitante, solicitanteCodigo
         reversion.set_comment('Created')
     return appraisal
 
-def apartment_create(building_in,addressNumberFlat):
+def apartment_create(building_in,addressNumber2):
     '''
     Given a building and a flat number, create an apartment.
     '''
@@ -61,8 +61,8 @@ def apartment_create(building_in,addressNumberFlat):
         addressCommune=building_in.addressCommune,
         addressStreet=building_in.addressStreet,
         addressNumber=building_in.addressNumber,
-        building_in=building_in,
-        number=addressNumberFlat)
+        addressNumber2=addressNumber2,
+        building_in=building_in)
     apartments = Apartment.objects.all()
     if len(apartments) == 0:
         apartmentId = 1
