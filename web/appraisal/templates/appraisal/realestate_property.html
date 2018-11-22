@@ -1,469 +1,377 @@
-<div class="row ml-4 mr-4 mt-4">
+<div class="row ml-4 mr-4 mt-5">
 <div class="col">
 
   <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">Ubicación</p>
+    </div>
     <div class="col-4">
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">Lat/Lng</label>
-        <div class="col-sm-9">
-          <input type="text" class="form-control form-control-sm" value="{{realestate.lat|floatformat:6}},{{realestate.lng|floatformat:6}}" disabled>
-        </div>
+      <div class="form-group">
+        <label>Lat/Lng</label>
+        <input type="text" class="form-control" value="{{realestate.lat|floatformat:6}},{{realestate.lng|floatformat:6}}" disabled>
       </div>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-4">
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">{{forms.realestate.addressStreet.label_tag}}</label>
-        <div class="col-sm-9">
-          {{forms.realestate.addressStreet}}
-        </div>
-      </div>
+    <div class="col-2">
     </div>
-    <div class="col-3">
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">{{forms.realestate.addressNumber.label_tag}}</label>
-        <div class="col-sm-9">
-          {{forms.realestate.addressNumber}}
-        </div>
+    <div class="col-4">
+      <div class="form-group">
+        <label>{{forms.realestate.addressStreet.label_tag}}</label>
+        {{forms.realestate.addressStreet}}
       </div>
     </div>
     <div class="col-2">
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.addressNumber2.label_tag}}</label>
-        <div class="col-sm-8">
-          {{forms.property.addressNumber2}}
-        </div>
+      <div class="form-group">
+        <label>{{forms.realestate.addressNumber.label_tag}}</label>
+        {{forms.realestate.addressNumber}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        <label>{{forms.property.addressNumber2.label_tag}}</label>
+        {{forms.property.addressNumber2}}
       </div>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-4">
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">{{forms.realestate.addressCommune.label_tag}}</label>
-        <div class="col-sm-9">
-          {{forms.realestate.addressCommune}}
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        <label>{{forms.realestate.addressCommune.label_tag}}</label>
+        {{forms.realestate.addressCommune}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        <label>{{forms.realestate.addressRegion.label_tag}}</label>
+        {{forms.realestate.addressRegion}}
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">Características generales</p>
+    </div>
+    <div class="col-1">
+      <div class="form-group">
+        <label>{{forms.property.bedrooms.label_tag}}</label>
+        {{forms.property.bedrooms}}
+      </div>
+    </div>
+    <div class="col-1">
+      <div class="form-group">
+        <label>{{forms.property.bathrooms.label_tag}}</label>
+        {{forms.property.bathrooms}}
+      </div>
+    </div>
+    {% if realestate.is_apartment %}
+    <div class="col-1">
+      <div class="form-group">
+        <label>{{forms.property.floor.label_tag}}</label>
+        {{forms.property.floor}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        <label>{{forms.property.orientation.label_tag}}</label>
+        {{forms.property.orientation}}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">Superficie</p>
+    </div>
+    {% if realestate.is_house %}
+    <div class="col-2">
+      <div class="form-group">
+        <label>Construida</label>
+        {{forms.property.builtSquareMeters}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        <label>Terreno</label>
+        {{forms.property.terrainSquareMeters}}
+      </div>
+    </div>
+    {% endif %}
+    {% if realestate.is_apartment %}
+    <div class="col-2">
+      <div class="form-group">
+        <label>Útil</label>
+        {{forms.property.usefulSquareMeters}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        <label>Terraza</label>
+        {{forms.property.terraceSquareMeters}}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.property.generalDescription.label_tag}}</p>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        {{forms.property.generalDescription}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.realestate.programa.label_tag}}</p>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        {{forms.realestate.programa}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">{{forms.realestate.estructuraTerminaciones.label_tag}}</p>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        {{forms.realestate.estructuraTerminaciones}}
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-2">
+      <p class="font-weight-bold text-right">Antecedentes técnico-legales</p>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.mercadoObjetivo.label_tag}}
+        {{forms.realestate.mercadoObjetivo}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.anoConstruccion.label_tag}}
+        {{forms.realestate.anoConstruccion}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.vidaUtilRemanente.label_tag}}
+        <div class="input-group">
+          {{forms.realestate.vidaUtilRemanente}}
+          <div class="input-group-append">
+            <div class="input-group-text">años</div>
+          </div>
         </div>
       </div>
     </div>
     <div class="col-3">
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label-sm text-right">{{forms.realestate.addressRegion.label_tag}}</label>
-        <div class="col-sm-9">
-          {{forms.realestate.addressRegion}}
+      <div class="form-group">
+        {{forms.realestate.avaluoFiscal.label_tag}}
+        {{forms.realestate.avaluoFiscal}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.dfl2.label_tag}}
+        {{forms.realestate.dfl2}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.selloVerde.label_tag}}
+        {{forms.realestate.selloVerde}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.copropiedadInmobiliaria.label_tag}}
+        {{forms.realestate.copropiedadInmobiliaria}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.ocupante.label_tag}}
+        {{forms.realestate.ocupante}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.acogidaLey.label_tag}}
+        {{forms.realestate.acogidaLey}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.tipoBien.label_tag}}
+        {{forms.realestate.tipoBien}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.destinoSII.label_tag}}
+        {{forms.realestate.destinoSII}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.usoActual.label_tag}}
+        {{forms.realestate.usoActual}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.permisoEdificacionNo.label_tag}}
+        {{forms.realestate.permisoEdificacionNo}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        <label>Fecha</label>
+        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            {{forms.realestate.permisoEdificacionFecha}}
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card bg-light mb-4">
+  <script type="text/javascript">
+    $(function () {
+        $('#datetimepicker1').datetimepicker({
+        format: 'YYYY-MM-DD'
+      });
+    });
+  </script>
 
-    <div class="card-header">
-      Características generales
+  <div class="row">
+    <div class="col-2">
     </div>
-
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4">
-          <!-- Fields -->
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.bedrooms.label_tag}}</label>
-            <div class="col-lg-4">
-              {{forms.property.bedrooms}}
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.bathrooms.label_tag}}</label>
-            <div class="col-lg-4">
-              {{forms.property.bathrooms}}
-            </div>
-          </div>
-
-          {% if realestate.is_apartment %}
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.floor.label_tag}}</label>
-            <div class="col-4">
-              {{forms.property.floor}}
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">{{forms.property.orientation.label_tag}}</label>
-            <div class="col-lg-4">
-              {{forms.property.orientation}}
-            </div>
-          </div>
-          {% endif %}
-
-          <label class="col-sm-4 col-form-label-sm font-weight-bold">Superficie</label>
-
-          {% if realestate.is_house %}
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Construida</label>
-            <div class="col-lg-5">
-              <div class="input-group input-group-sm">
-                {{forms.property.builtSquareMeters}}
-                <div class="input-group-append">
-                  <div class="input-group-text">m2</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Terreno</label>
-            <div class="col-lg-5">
-              <div class="input-group input-group-sm">
-                {{forms.property.terrainSquareMeters}}
-                <div class="input-group-append">
-                  <div class="input-group-text">m2</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-
-          {% if realestate.is_apartment %}
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Útil</label>
-            <div class="col-lg-5">
-              <div class="input-group input-group-sm">
-                {{forms.property.usefulSquareMeters}}
-                <div class="input-group-append">
-                  <div class="input-group-text">m2</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group row align-middle">
-            <label class="col-sm-4 col-form-label-sm text-right">Terraza</label>
-            <div class="col-lg-5">
-              <div class="input-group input-group-sm">
-                {{forms.property.terraceSquareMeters}}
-                <div class="input-group-append">
-                  <div class="input-group-text">m2</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-
-        </div>
-
-        <div class="col-md-8">
-          <!-- Description -->
-          <label class="col-sm-4 col-form-label-sm font-weight-bold">{{forms.property.generalDescription.label_tag}}</label>
-          {{forms.property.generalDescription}}
-        </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.recepcionFinalNo.label_tag}}
+        {{forms.realestate.recepcionFinalNo}}
       </div>
     </div>
-
-  </div>
-
-  <div class="card bg-light mb-4">
-
-    <div class="card-header">
-      Características de construcción
-    </div>
-
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Fields -->
-          <div class="form-group row align-middle">
-            <label class="col-sm-12 col-form-label-sm">{{forms.realestate.programa.label_tag}}</label>
-            <div class="col-lg-12">
-              {{forms.realestate.programa}}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Fields -->
-          <div class="form-group row align-middle">
-            <label class="col-sm-12 col-form-label-sm">{{forms.realestate.estructuraTerminaciones.label_tag}}</label>
-            <div class="col-lg-12">
-              {{forms.realestate.estructuraTerminaciones}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-
-  <div class="card bg-light mb-1">
-    <div class="card-header">
-      Antecedentes técnico-legales
-    </div>
-    <div class="card-body">
-      <div class="card-text">
-
-        <div class="row">
-          <div class="col-6">
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.mercadoObjetivo.label_tag}}
-              </label>
-              <div class="col-lg-4">
-                {{forms.realestate.mercadoObjetivo}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.anoConstruccion.label_tag}}
-              </label>
-              <div class="col-4">
-                <div class="form-group row align-middle">
-                  <div class="col-lg-12">
-                    <div class="input-group date" id="datetimepicker10" data-target-input="nearest">
-                      {{forms.realestate.anoConstruccion}}
-                      <div class="input-group-append" data-target="#datetimepicker10" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <script type="text/javascript">
-                $(function () {
-                  console.log('10')
-                  $('#datetimepicker10').datetimepicker({
-                    format: 'Y'
-                  });
-                });
-              </script>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.vidaUtilRemanente.label_tag}}
-              </label>
-              <div class="col-lg-4">
-                <div class="input-group input-group-sm">
-                  {{forms.realestate.vidaUtilRemanente}}
-                  <div class="input-group-append">
-                    <div class="input-group-text">años</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.avaluoFiscal.label_tag}}
-              </label>
-              <div class="col-lg-4">
-                <div class="input-group input-group-sm">
-                  {{forms.realestate.avaluoFiscal}}
-                  <div class="input-group-append">
-                    <div class="input-group-text">$</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.dfl2.label_tag}}
-              </label>
-              <div class="col-lg-4">
-                {{forms.realestate.dfl2}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.selloVerde.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.selloVerde}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.copropiedadInmobiliaria.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.copropiedadInmobiliaria}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.ocupante.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.ocupante}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.acogidaLey.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.acogidaLey}}
-              </div>
-            </div>
-  
-          </div>
-          <div class="col-6">
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.tipoBien.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.tipoBien}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.destinoSII.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.destinoSII}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.usoActual.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.usoActual}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.usoFuturo.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.usoFuturo}}
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-7">
-                <div class="form-group row align-middle">
-                  <label class="col-sm-7 col-form-label-sm text-right">
-                    {{forms.realestate.permisoEdificacionNo.label_tag}}
-                  </label>
-                  <div class="col-lg-5">
-                    {{forms.realestate.permisoEdificacionNo}}
-                  </div>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="form-group row align-middle">
-                  <div class="col-lg-10">
-                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                      {{forms.realestate.permisoEdificacionFecha}}
-                      <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <script type="text/javascript">
-              $(function () {
-                console.log('1')
-                $('#datetimepicker1').datetimepicker({
-                  format: 'YYYY-MM-DD'
-                });
-              });
-            </script>
-
-            <div class="row">
-              <div class="col-7">
-                <div class="form-group row align-middle">
-                  <label class="col-sm-7 col-form-label-sm text-right">
-                    {{forms.realestate.recepcionFinalNo.label_tag}}
-                  </label>
-                  <div class="col-lg-5">
-                    {{forms.realestate.recepcionFinalNo}}
-                  </div>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="form-group row align-middle">
-                  <div class="col-lg-10">
-                    <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-                      {{forms.realestate.recepcionFinalFecha}}
-                      <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <script type="text/javascript">
-                $(function () {
-                  console.log('2')
-                  $('#datetimepicker2').datetimepicker({
-                    format: 'YYYY-MM-DD'
-                  });
-                });
-              </script>
-              
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.expropiacion.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.expropiacion}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.viviendaSocial.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.viviendaSocial}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.adobe.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.adobe}}
-              </div>
-            </div>
-
-            <div class="form-group row align-middle">
-              <label class="col-sm-4 col-form-label-sm text-right">
-                {{forms.realestate.desmontable.label_tag}}
-              </label>
-              <div class="col-lg-3">
-                {{forms.realestate.desmontable}}
-              </div>
-            </div>
-          
+    <div class="col-2">
+      <div class="form-group">
+        <label>Fecha</label>
+        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+            {{forms.realestate.recepcionFinalFecha}}
+            <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script type="text/javascript">
+    $(function () {
+        $('#datetimepicker2').datetimepicker({
+        format: 'YYYY-MM-DD'
+      });
+    });
+  </script>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.expropiacion.label_tag}}
+        {{forms.realestate.expropiacion}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.viviendaSocial.label_tag}}
+        {{forms.realestate.viviendaSocial}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.adobe.label_tag}}
+        {{forms.realestate.adobe}}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.desmontable.label_tag}}
+        {{forms.realestate.desmontable}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{forms.realestate.usoFuturo.label_tag}}
+        {{forms.realestate.usoFuturo}}
+      </div>
+    </div>
+  </div>
+
 </div>
 </div>

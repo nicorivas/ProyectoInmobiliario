@@ -42,10 +42,11 @@ class FormRealEstate(forms.ModelForm):
             'mercadoObjetivo'
         ]
 
-        class_bs = {'class':"form-control form-control-sm"}
-        class_dp_y_bs = {'class':"form-control form-control-sm datetimepicker-input"}
-        class_dp_m_bs = {'class':"form-control form-control-sm datetimepicker-input"}
-        class_se_bs = {'class':"custom-select custom-select-sm"}
+        class_bs = {'class':"form-control"}
+        class_bs_sm = {'class':"form-control form-control-sm"}
+        class_dp_y_bs = {'class':"form-control"}
+        class_dp_m_bs = {'class':"form-control"}
+        class_se_bs = {'class':"custom-select"}
 
         widgets = {
             'addressStreet': forms.TextInput(attrs=class_bs),
@@ -53,10 +54,10 @@ class FormRealEstate(forms.ModelForm):
             'addressCommune': forms.Select(attrs=class_bs),
             'addressRegion': forms.Select(attrs=class_bs),
             'anoConstruccion': forms.TextInput(attrs=class_dp_y_bs),
-            'programa': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
-            'estructuraTerminaciones': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':10}),
+            'programa': forms.Textarea(attrs={'class':"form-control",'rows':5}),
+            'estructuraTerminaciones': forms.Textarea(attrs={'class':"form-control",'rows':10}),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
-            'avaluoFiscal': forms.NumberInput(attrs={'class':"form-control form-control-sm",'lang':"es"}),
+            'avaluoFiscal': forms.NumberInput(attrs={'class':"form-control",'lang':"es"}),
             'dfl2': forms.Select(attrs=class_se_bs),
             'selloVerde': forms.Select(attrs=class_se_bs),
             'copropiedadInmobiliaria': forms.Select(attrs=class_se_bs),
@@ -66,7 +67,7 @@ class FormRealEstate(forms.ModelForm):
             'usoActual': forms.Select(attrs=class_se_bs),
             'usoFuturo': forms.Select(attrs=class_se_bs),
             'permisoEdificacionNo': forms.TextInput(attrs=class_bs),
-            'permisoEdificacionFecha': forms.TextInput(attrs={'class':"form-control form-control-sm datetimepicker-input",'data-target':'#datetimepicker1'}),
+            'permisoEdificacionFecha': forms.TextInput(attrs={'class':"form-control"}),
             'recepcionFinalNo': forms.TextInput(attrs=class_bs),
             'recepcionFinalFecha': forms.DateTimeInput(attrs=class_dp_m_bs),
             'expropiacion': forms.Select(attrs=class_se_bs),
@@ -74,7 +75,7 @@ class FormRealEstate(forms.ModelForm):
             'desmontable': forms.Select(attrs=class_se_bs),
             'adobe': forms.Select(attrs=class_se_bs),
             'acogidaLey': forms.Select(attrs=class_se_bs),
-            'mercadoObjetivo': forms.Select(attrs={'class':"custom-select custom-select-sm"})
+            'mercadoObjetivo': forms.Select(attrs={'class':"custom-select"})
         }
         
     def __init__(self, *args, **kwargs):
@@ -109,7 +110,8 @@ class FormApartment(forms.ModelForm):
             'orientation',
             'generalDescription'
         ]
-        class_bs = {'class':"form-control form-control-sm"}
+        class_bs = {'class':"form-control"}
+        class_bs_sm = {'class':"form-control form-control-sm"}
         widgets = {
             'addressNumber2': forms.TextInput(attrs=class_bs),
             'floor': forms.NumberInput(attrs=class_bs),
@@ -117,7 +119,7 @@ class FormApartment(forms.ModelForm):
             'bathrooms': forms.NumberInput(attrs=class_bs),
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
             'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
-            'orientation': forms.Select(attrs={'class':"custom-select custom-select-sm"}),
+            'orientation': forms.Select(attrs={'class':"custom-select"}),
             'generalDescription': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':15})
         }
 

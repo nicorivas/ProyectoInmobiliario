@@ -58,11 +58,30 @@ input[type="text"] {
     background-color: #fff;
 }
 
+input[type="number"] {
+    border-color: #777;
+    background-color: #fff;
+}
+
 select.form-control {
     border-color: #777;
 }
 
+select.custom-select {
+    border-color: #777;
+}
+
+textarea.form-control {
+    border-color: #777;
+}
+
 input[type="text"]:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+input[type="number"]:disabled {
     background-color: transparent;
     border: 1px solid #ddd;
     color: #666;

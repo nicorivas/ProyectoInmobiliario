@@ -1,5 +1,5 @@
 
-<div class="row ml-4 mt-4 mr-4 mb-4">
+<div class="row ml-4 mt-5 mr-4 mb-4">
 <div class="col">
 
   <div class="row">
@@ -145,28 +145,47 @@
     </div>
   </div>
 
-  <div class="row mt-4">
-    <div class="col-2" id="id_title">
-      <p class="font-weight-bold text-right">Roles</p>
+  {% for form in forms.rol %}
+  {% if forloop.counter == 1%}
+  <div class="row rol_row mt-4">
+  {% else %}
+  <div class="row rol_row">
+  {% endif %}
+    <input type="hidden" name="r-id" id="rol_id" value="{{form.instance.id}}">
+    <input type="hidden" name="r-delete" id="rol_delete" value="0">
+    <div class="col-2 text-right" id="id_title">
+      {% if forloop.counter == 1%}
+      <label class="font-weight-bold text-right">Roles</label><br>
+      <button type="button" class="btn btn-secondary add_rol" id="id_btn">
+        Agregar
+      </button>
+      {% endif %}
     </div>
     <div class="col-3">
       <div class="form-group" id="id_codigo">
+        {% if forloop.counter == 1%}
         <label>Código</label>
-        {{forms.rol.code}}
+        {% endif %}
+        {{form.code}}
       </div>
     </div>
     <div class="col-2">
       <div class="form-group" id="id_estado">
+        {% if forloop.counter == 1%}
         <label>Estado</label>
-        {{forms.rol.state}}
+        {% endif %}
+        {{form.state}}
       </div>
     </div>
-    <div class="col-1" id="id_div_btn">
-      <button type="button" class="btn btn-secondary add_rol" id="id_btn" style="margin-top:2em;">
-        Añadir
+    <div class="col-1">
+      {% if forloop.counter > 1%}
+      <button type="button" class="btn btn-secondary remove_rol">
+        Borrar
       </button>
+      {% endif %}
     </div>
   </div>
+  {% endfor %}
 
 </div>
 </div>
@@ -175,16 +194,36 @@
 
   $('.add_rol').click(
     function() {
-      var row = $(this).closest('.row');
+      var row = $('.rol_row');
+      console.log(row.length)
+      if (row.length > 1) {
+        row = row.last();
+      }
       var newRow = row.clone();
       newRow.removeClass('mt-4')
       newRow.find('#id_title').html('')
+      newRow.find('#rol_id').val(-1)
       newRow.find('#id_codigo').find('label').hide()
       newRow.find('#id_estado').find('label').hide()
       newRow.find('#id_div_btn').html('')
-      row.find('#id_btn').appendTo(newRow.find('#id_div_btn'));
-      newRow.find('#id_btn').removeAttr('style')
+      newRow.find('#id_r-code').val('')
+      newRow.find('#id_r-state').val(0)
       row.after(newRow);
+      $('.remove_rol').click(
+        function() {
+          var row = $(this).closest('.row');
+          row.find('#rol_delete').val(1)
+          row.hide()
+        }
+      );
+    }
+  );
+
+  $('.remove_rol').click(
+    function() {
+      var row = $(this).closest('.row');
+      row.find('#rol_delete').val(1)
+      row.hide()
     }
   );
 
