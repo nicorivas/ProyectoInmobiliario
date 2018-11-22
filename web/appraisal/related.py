@@ -31,6 +31,7 @@ def getSimilarRealEstate(realestate):
                 bedrooms=realestate.apartment.bedrooms,
                 bathrooms=realestate.apartment.bathrooms,
                 usefulSquareMeters__isnull=False,
+                terraceSquareMeters__isnull=False,
                 marketPrice__isnull=False).exclude(marketPrice=0)
 
             ds = []

@@ -10,6 +10,10 @@
 	font-size: 0.85em;
 }
 
+#table_totals {
+    font-size: 0.85em;
+}
+
 .td-center {
 	text-align: center;
 }
@@ -53,12 +57,30 @@
     padding-right: 0.1rem;
 }
 
+#table_totals .form-control-sm {
+    padding: 0rem 0.3rem;
+    font-size: 0.7rem;
+    border-radius: 0.0rem;
+}
+
+#table_totals td {
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+}
+
 input[type="text"] {
     border-color: #777;
     background-color: #fff;
 }
 
 input[type="number"] {
+    border-color: #777;
+    background-color: #fff;
+}
+
+input[type="url"] {
     border-color: #777;
     background-color: #fff;
 }
@@ -82,6 +104,12 @@ input[type="text"]:disabled {
 }
 
 input[type="number"]:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+input[type="url"]:disabled {
     background-color: transparent;
     border: 1px solid #ddd;
     color: #666;

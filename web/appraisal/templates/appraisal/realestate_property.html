@@ -195,7 +195,12 @@
     <div class="col-3">
       <div class="form-group">
         {{forms.realestate.avaluoFiscal.label_tag}}
-        {{forms.realestate.avaluoFiscal}}
+        <div class="input-group">
+          {{forms.realestate.avaluoFiscal}}
+          <div class="input-group-append">
+            <div class="input-group-text">$</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
