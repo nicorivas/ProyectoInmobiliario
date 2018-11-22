@@ -310,7 +310,7 @@ class Comment(models.Model):
 
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE)
+    appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
     onTime = models.IntegerField("Puntualidad", blank=True,null=False,default=0)
     completeness = models.IntegerField("Completitud", blank=True,null=False,default=0)
     generalQuality = models.IntegerField("Calidad General", blank=True,null=False,default=0)
