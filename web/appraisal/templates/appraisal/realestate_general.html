@@ -178,7 +178,11 @@
       </div>
     </div>
     <div class="col-1">
-      {% if forloop.counter > 1%}
+      {% if forloop.counter == 1%}
+      <button type="button" class="btn btn-secondary remove_rol" style="display:none;">
+        Borrar
+      </button>
+      {% else %}
       <button type="button" class="btn btn-secondary remove_rol">
         Borrar
       </button>
@@ -194,7 +198,7 @@
 
   $('.add_rol').click(
     function() {
-      var row = $('.rol_row');
+      var row = $('.rol_row:visible');
       console.log(row.length)
       if (row.length > 1) {
         row = row.last();
@@ -209,6 +213,7 @@
       newRow.find('#id_r-code').val('')
       newRow.find('#id_r-state').val(0)
       row.after(newRow);
+      newRow.find('.remove_rol').show()
       $('.remove_rol').click(
         function() {
           var row = $(this).closest('.row');

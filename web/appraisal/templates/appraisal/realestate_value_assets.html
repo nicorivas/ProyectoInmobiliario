@@ -16,6 +16,9 @@
   <div id="avaluos" class="collapse show" aria-labelledby="heading">
     <div class="card-body" style="padding:0em;margin:0em;">
 
+      <!-- Terrains, only activated when real estate is house !-->
+      {% if realestate.is_house %}
+
       <table id="table_terrains" class="table table-sm mb-0 mt-2">
 
         <thead class="thead table-warning">
@@ -32,8 +35,6 @@
 
         <tbody>
 
-          <!-- Terrains, only activated when real estate is house !-->
-          {% if realestate.is_house %}
           <tr class="table-warning">
             <td></td>
             <td style="width:1.0em;"></td>
@@ -188,11 +189,10 @@
             <td></td>
             <td></td>
           </tr>
-          {% endif %}
         </tbody>
       </table>
 
-
+      {% endif %}
 
       <table id="table_constructions" class="table table-sm mt-2 mb-0">
 
