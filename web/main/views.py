@@ -5,6 +5,7 @@ from django.db.models import Q
 from user.views import userAppraisals
 from appraisal.models import Appraisal
 from django.contrib.auth.models import User
+from user.views import appraiserWork, visadorWork
 
 import reversion
 from copy import deepcopy
@@ -52,12 +53,16 @@ def main(request):
 
 
     tasadores = User.objects.filter(groups__name__in=['tasador'])
+    tasadores_info = appraiserWork(tasadores)
     visadores = User.objects.filter(groups__name__in=['visador'])
+    visadores_info = visadorWork(visadores)
+
     appraisals_active, appraisals_finished = userAppraisals(request)
+
     context = {
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
-        'tasadores':tasadores, 'visadores':visadores}
+        'tasadores':tasadores_info, 'visadores':visadores_info}
 
     return render(request, 'main/index.html', context)
 

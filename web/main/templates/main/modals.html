@@ -46,17 +46,17 @@
               </thead>
               <tbody>
 
-                {% for user in visadores %}
+                {% for visador in visadores %}
                 <tr>
                   <th scope="col">
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{user.id}}" checked>
                       <label class="form-check-label" for="visador_radio">
-                        {{user.first_name}} {{user.last_name}}
+                        {{visador.user.first_name}} {{visador.user.last_name}}
                       </label>
                     </div>
                   </th>
-                  <th scope="col">{{user.first_name}}</th>
+                  <th scope="col">{{visador.activeAppraisals}}</th>
                 </tr>
                 {% endfor %}
 
@@ -96,18 +96,17 @@
           </thead>
           <tbody>
 
-              {% csrf_token %}
-            {% for user in tasadores %}
+            {% for tasador in tasadores %}
             <tr>
               <th scope="col">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{user.id}}" checked>
                   <label class="form-check-label" for="tasador_radio">
-                    {{user.first_name}} {{user.last_name}}
+                    {{tasador.user.first_name}} {{tasador.user.last_name}}
                   </label>
                 </div>
               </th>
-              <th scope="col">10</th>
+              <th scope="col">{{tasador.activeAppraisals}}</th>
             </tr>
             {% endfor %}
 

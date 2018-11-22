@@ -65,6 +65,16 @@ def appraiserWork(tasadores):
                       'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
     return list
 
+def visadorWork(visadores):
+    list = []
+    for users in visadores:
+        activeAppraisals = Appraisal.objects.filter(visadorUser=users)
+        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+        doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
+        list.append({'user': users, 'activeAppraisals':len(activeAppraisals),
+                      'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
+    return list
+
 
 @login_required(login_url='user/login')
 def view_profile(request, pk=None):

@@ -114,3 +114,21 @@ input[type="url"]:disabled {
     border: 1px solid #ddd;
     color: #666;
 }
+
+select.form-control:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+select.custom-select:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+textarea.form-control:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}

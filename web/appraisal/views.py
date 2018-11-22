@@ -252,11 +252,12 @@ def restore(request,forms, appraisal):
     save_appraisal(request,forms,'Restored')
     return True
 
-def comment(forms,appraisal):
+def comment(request,forms,appraisal):
     '''
     Create comment based on the field commentText of the form.
     '''
     if forms['comment'].is_valid():
+        print('comment')
         text = forms['comment'].cleaned_data['commentText']
         conflict = forms['comment'].cleaned_data['commentConflict']
         if conflict:
@@ -270,6 +271,8 @@ def comment(forms,appraisal):
             appraisal=appraisal,
             conflict=conflict)
         comment.save()
+    else:
+        print(forms['comment'].errors)
     return True
 
 def assign_visador(request,forms,appraisal):
@@ -606,6 +609,8 @@ def view_appraisal(request, **kwargs):
 
         request_post = clean_request_post(request.POST.copy())
 
+        print(request_post)
+
         # Process forms
         forms = {}
         forms['appraisal'] = FormAppraisal(request_post,request.FILES,instance=appraisal)
@@ -639,7 +644,8 @@ def view_appraisal(request, **kwargs):
         elif 'btn_restore' in request_post.keys():
             ret = restore(request,forms,appraisal)
         elif 'btn_comment' in request_post.keys():
-            ret = comment(forms,appraisal)
+            print('comment')
+            ret = comment(request,forms,appraisal)
         elif 'btn_add_realestate' in request_post.keys():
             ret = add_realestate(request,forms,appraisal,realestate)
         elif 'btn_valuation_add_realestate' in request_post.keys():
@@ -777,9 +783,15 @@ def view_appraisal(request, **kwargs):
     # Disable fields if appraisal is finished
     if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:
         for key, form in forms.items():
-            for field in form.fields:
-                form.fields[field].widget.attrs['readonly'] = True
-                form.fields[field].widget.attrs['disabled'] = True
+            if isinstance(form,type([])):
+                for f in form:
+                    for field in f.fields:
+                        f.fields[field].widget.attrs['readonly'] = True
+                        f.fields[field].widget.attrs['disabled'] = True
+            else:
+                for field in form.fields:
+                    form.fields[field].widget.attrs['readonly'] = True
+                    form.fields[field].widget.attrs['disabled'] = True
 
     htmlBits = {
         'unitUF':'<small>(U.F.)</small>',
