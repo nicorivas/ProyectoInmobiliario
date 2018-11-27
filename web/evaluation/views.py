@@ -47,6 +47,9 @@ def appraiserEvaluationView(request):
                 _onTime = evaluationForm.cleaned_data['onTime']
                 _completeness = evaluationForm.cleaned_data['completeness']
                 _generalQuality = evaluationForm.cleaned_data['generalQuality']
+                _correctSurface = evaluationForm.cleaned_data['correctSurface']
+                _homologatedReferences = evaluationForm.cleaned_data['homologatedReferences']
+                _completeNormative = evaluationForm.cleaned_data['completeNormative']
                 _commentText = evaluationForm.cleaned_data['commentText']
                 _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
                 appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
@@ -60,6 +63,9 @@ def appraiserEvaluationView(request):
                                             'onTime':_onTime,
                                             'completeness':_completeness,
                                             'generalQuality':_generalQuality,
+                                            'correctSurface': _correctSurface ,
+                                            'completeNormative': _completeNormative,
+                                            'homologatedReferences': _homologatedReferences,
                                             'commentText':_commentText,
                                             'commentFeedback':_commentFeedback})
                 #evaluationForm.save()

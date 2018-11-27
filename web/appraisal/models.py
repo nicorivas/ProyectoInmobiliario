@@ -311,13 +311,28 @@ class Comment(models.Model):
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
-    onTime = models.IntegerField("Puntualidad", blank=True,null=False,default=0)
-    completeness = models.IntegerField("Completitud", blank=True,null=False,default=0)
-    generalQuality = models.IntegerField("Calidad General", blank=True,null=False,default=0)
+    completeness = models.BooleanField("Aceptación del informe completo (50%)", blank=True, null=False)
+    onTime = models.BooleanField("Entrega a tiempo (25%)", blank=True, null=False)
+    correctSurface = models.BooleanField("Superficies correctas -hasta un 5% de error- (15%)", blank=True, null=False)
+    completeNormative = models.BooleanField("Normativa Completa y correcta (5%)", blank=True, null=False)
+    homologatedReferences = models.BooleanField("Referencias Homologables si las hubieran (2,5%)", blank=True, null=False)
+    generalQuality = models.BooleanField("Calidad General -peso, imagenes claras configuración- (2,5%)", blank=True,null=False)
     commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)
     commentFeedback = models.CharField("Feedback de la tasación", null=False, blank=True, max_length=500)
 
     @property
-    def appraisalEvaluationMean(self):
-        evaluationMean = (self.onTime + self.completeness + self.generalQuality)/3.0
-        return evaluationMean
+    def evaluationResult(self):
+        grade = 0.0
+        if self.completeness:
+            grade += 0.5
+        if self.onTime:
+            grade += 0.25
+        if self.correctSurface:
+            grade += 0.15
+        if self.completeNormative:
+            grade += 0.05
+        if self.homologatedReferences:
+            grade += 0.025
+        if self.generalQuality:
+            grade += 0.025
+        return grade
