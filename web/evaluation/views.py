@@ -69,8 +69,7 @@ def appraiserEvaluationView(request):
                                             'commentText':_commentText,
                                             'commentFeedback':_commentFeedback})
                 #evaluationForm.save()
-                print(evaluation, created)
-                print(evaluation.appraisalEvaluationMean)
+                print(evaluation.evaluationResult)
 
 
     tasadores = list(User.objects.filter(groups__name__in=['tasador']))

@@ -215,6 +215,9 @@
                   data-target="#evaluateAppraisal" 
                   data-ontime="{{appraisal.appraisalevaluation.onTime}}"
                   data-completeness="{{appraisal.appraisalevaluation.completeness}}"
+                  data-correctsurface = "{{appraisal.appraisalevaluation.correctSurface}}"
+                  data-completenormative = "{{appraisal.appraisalevaluation.completeNormative}}"
+                  data-homologatedreferences = "{{appraisal.appraisalevaluation.homologatedReferences}}"
                   data-commenttext="{{appraisal.appraisalevaluation.commentText}}"
                   data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}"
                   data-commentfeedback="{{appraisal.appraisalevaluation.commentFeedback}}"
@@ -283,25 +286,64 @@
   $(document).on('click','.asignarVisador',function(){
       var id = $(this).val();
       $('#visadorAppraisal_id').val(id);
-      });
+  });
+</script>
+
+
+<script>
+     //Handles the click true/false value of the appraisal evaluation form
+
+  $('#evaluateAppraisal input').on('click',function(){
+      var id = $(this).val();
+      if (id == 'False'){
+      $(this).val('True');
+      }
+      else {
+      $(this).val('False');
+      }
+  });
 </script>
 
 <script>
+    //Loads database values of the appraisal evaluation
+
+    //gives appraisal and appraiser id to the input so the view knows with appraisal and appraiser is receiving
+
   $(document).on('click','.evaluateAppraisal',function(){
       var id = $(this).val();
       var id2 = $(this).attr('id');
       $('#evaluadorAppraisal_id').val(id);
       $('#evaluador_id').val(id2);
 
+      console.log($(this).val());
+
+      //takes the value of the data base in the data tags of the input and paste it in the corresponding appraisal evaluation
       var ontime = $(this).data('ontime');
       $('#id_onTime').val(ontime);
       var completeness = $(this).data('completeness');
       $('#id_completeness').val(completeness);
       var generalQ = $(this).data('generalquality');
       $('#id_generalQuality').val(generalQ);
+      var correctS = $(this).data('correctsurface');
+      $('#id_correctSurface').val(correctS);
+      var completeN = $(this).data('completenormative');
+      $('#id_completeNormative').val(completeN);
+      var homologatedR = $(this).data('homologatedreferences');
+      $('#id_homologatedReferences').val(homologatedR);
       var comment = $(this).data('commenttext');
       $('#id_commentText').val(comment);
       var feedback = $(this).data('commentfeedback');
       $('#id_commentFeedback').val(feedback);
+
+      //this section makes the True values shows a checked and the false value unchecked
+      $( '#evaluateAppraisal input' ).each(function( index ) {
+        var v = $(this).val();
+          if (v == "False"){
+            $(this).removeAttr('checked');
+          }
+          else{
+            $('#evaluateAppraisal input').attr('checked');
+          }
+        });
       });
 </script>

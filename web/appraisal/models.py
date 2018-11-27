@@ -323,12 +323,15 @@ class Comment(models.Model):
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
-    completeness = models.BooleanField("Aceptación del informe completo (50%)", blank=True, null=False)
-    onTime = models.BooleanField("Entrega a tiempo (25%)", blank=True, null=False)
-    correctSurface = models.BooleanField("Superficies correctas -hasta un 5% de error- (15%)", blank=True, null=False)
-    completeNormative = models.BooleanField("Normativa Completa y correcta (5%)", blank=True, null=False)
-    homologatedReferences = models.BooleanField("Referencias Homologables si las hubieran (2,5%)", blank=True, null=False)
-    generalQuality = models.BooleanField("Calidad General -peso, imagenes claras configuración- (2,5%)", blank=True,null=False)
+    completeness = models.BooleanField("Aceptación del informe completo (50%)", blank=True, null=False, default=True)
+    onTime = models.BooleanField("Entrega a tiempo (25%)", blank=True, null=False, default=True)
+    correctSurface = models.BooleanField("Superficies correctas -hasta un 5% de error- (15%)", blank=True,
+                                         null=False, default=True)
+    completeNormative = models.BooleanField("Normativa Completa y correcta (5%)", blank=True, null=False, default=True)
+    homologatedReferences = models.BooleanField("Referencias Homologables si las hubieran (2,5%)", blank=True,
+                                                null=False, default=True)
+    generalQuality = models.BooleanField("Calidad General -peso, imagenes claras configuración- (2,5%)",
+                                         blank=True,null=False, default=True)
     commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)
     commentFeedback = models.CharField("Feedback de la tasación", null=False, blank=True, max_length=500)
 

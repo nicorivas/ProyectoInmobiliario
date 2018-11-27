@@ -4,6 +4,7 @@ from appraisal.models import AppraisalEvaluation
 
 class EvaluationForm(forms.ModelForm):
 
+
     class Meta:
         model = AppraisalEvaluation
         fields = [
@@ -15,14 +16,14 @@ class EvaluationForm(forms.ModelForm):
             'homologatedReferences'
         ]
 
-        class_bs = {'class':"form-control"}
+        class_bs = {'class': 'required checkbox form-control'}
         widgets = {
             'onTime': forms.CheckboxInput(attrs=class_bs),
             'completeness': forms.CheckboxInput(attrs=class_bs),
             'generalQuality': forms.CheckboxInput(attrs=class_bs),
             'correctSurface': forms.CheckboxInput(attrs=class_bs),
             'completeNormative': forms.CheckboxInput(attrs=class_bs),
-            'homologatedReference': forms.CheckboxInput(attrs=class_bs)
+            'homologatedReferences': forms.CheckboxInput(attrs=class_bs)
         }
 
     commentText = forms.CharField(label='Comentarios', max_length=500, widget=forms.Textarea, required=False)
