@@ -609,8 +609,6 @@ def view_appraisal(request, **kwargs):
 
         request_post = clean_request_post(request.POST.copy())
 
-        print(request_post)
-
         # Process forms
         forms = {}
         forms['appraisal'] = FormAppraisal(request_post,request.FILES,instance=appraisal)
@@ -644,7 +642,6 @@ def view_appraisal(request, **kwargs):
         elif 'btn_restore' in request_post.keys():
             ret = restore(request,forms,appraisal)
         elif 'btn_comment' in request_post.keys():
-            print('comment')
             ret = comment(request,forms,appraisal)
         elif 'btn_add_realestate' in request_post.keys():
             ret = add_realestate(request,forms,appraisal,realestate)

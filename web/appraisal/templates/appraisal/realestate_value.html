@@ -62,18 +62,18 @@
     }
   }
 
-  function floatFormat(number) {
+  function floatFormat(number,c=1) {
     if (isNaN(number)) return '-'
     if (typeof number === 'string') {
       number = number.trim()
       if (number.length > 0) {
         if (isNaN(parseFloat(number))) return '-'
-        return parseFloat(number).toLocaleString('es',{maximumFractionDigits:1,minimumFractionDigits:1}); 
+        return parseFloat(number).toLocaleString('es',{maximumFractionDigits:c,minimumFractionDigits:c}); 
       } else {
         return '-'
       }
     } else {
-      return number.toLocaleString('es',{maximumFractionDigits:1 ,minimumFractionDigits:1}); 
+      return number.toLocaleString('es',{maximumFractionDigits:c ,minimumFractionDigits:c}); 
     }
   }
 
@@ -126,9 +126,9 @@
             <td scope="col"></td>
             <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
             {% if not appraisal.finished %}
-            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0,75"></td>
+            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75"></td>
             {% else %}
-            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0,75" disabled></td>
+            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75" disabled></td>
             {% endif %}
             <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
             <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
@@ -639,6 +639,9 @@
     $("#in_value_safe").val(function() {
       return parseFloatEs($(this).val());
     });
+    $("#liquidity").val(function() {
+      return parseFloatEs($(this).val());
+    });
   }
 
   function mainValuesFormat() {
@@ -659,6 +662,9 @@
     });
     $("#in_value_safe").val(function() {
       return pesosFormat($(this).val());
+    });
+    $("#liquidity").val(function() {
+      return floatFormat($(this).val(),c=2);
     });
   }
 
@@ -682,7 +688,7 @@
     }
 
     // Value seguro is taken from valuation of assets total
-    var seguroUF = parseFloat($("#id_totalSeguroUF").text());
+    var seguroUF = parseFloatEs($("#id_totalSeguroUF").text());
     if (!isNaN(seguroUF)) {
       $("#in_value_safe_UF").val(seguroUF);
       $("#in_value_safe").val(seguroUF*UF_IN_PESOS);

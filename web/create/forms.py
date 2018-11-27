@@ -7,103 +7,148 @@ from django.core.exceptions import ValidationError
 import datetime
 
 
+class AppraisalFileForm(forms.Form):
+    archivo = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={'class':"custom-file-input",'multiple': False}))
+
 class AppraisalCreateForm(forms.Form):
 
-    tipoTasacion_create = forms.ChoiceField(
+    tipoTasacion = forms.ChoiceField(
         label="Tipo Pedido",
         choices=Appraisal.tipoTasacion_choices)
-    tipoTasacion_create.widget.attrs.update({'class': "form-control"})
+    tipoTasacion.widget.attrs.update({'class': "form-control"})
 
-    objetivo_create = forms.ChoiceField(
-        label="Objetivo",
+    finalidad = forms.ChoiceField(
+        label="Finalidad",
         choices=Appraisal.objective_choices)
-    objetivo_create.widget.attrs.update({'class': "form-control"})
+    finalidad.widget.attrs.update({'class': "form-control"})
 
-    visita_create = forms.ChoiceField(
+    visita = forms.ChoiceField(
         label="Visita",
         choices=Appraisal.visit_choices)
-    visita_create.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
+    visita.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
 
-    solicitante_create = forms.ChoiceField(
+    solicitante = forms.ChoiceField(
         label="Solicitante",
         choices=Appraisal.petitioner_choices)
-    solicitante_create.widget.attrs.update({'class': "form-control"})
+    solicitante.widget.attrs.update({'class': "form-control"})
 
-    solicitanteOther_create = forms.CharField(max_length=100, label="Otro", required=False)
-    solicitanteOther_create.widget.attrs.update({'class': "form-control"})
+    solicitanteOther = forms.CharField(max_length=100, label="Otro", required=False)
+    solicitanteOther.widget.attrs.update({'class': "form-control"})
 
-    solicitanteCodigo_create = forms.CharField(max_length=100, label="Solicitante Código", required=False)
-    solicitanteCodigo_create.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
+    solicitanteCodigo = forms.CharField(max_length=100, label="Código", required=False)
+    solicitanteCodigo.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
 
-    cliente_create = forms.CharField(
+    solicitanteSucursal = forms.CharField(max_length=100, label="Sucursal", required=False)
+    solicitanteSucursal.widget.attrs.update({'class': "form-control", 'data-validation':"required"})
+
+    solicitanteEjecutivo = forms.CharField(
         max_length=100,
-        label="Nombre Cliente", required=False)
-    cliente_create.widget.attrs.update({'class': "form-control",'data-validation':"required"})
-
-    clienteRut_create = forms.CharField(
+        label="Ejecutivo",
+        required=False)
+    solicitanteEjecutivo.widget.attrs.update({'class': "form-control"})
+    solicitanteEjecutivoEmail = forms.EmailField(
         max_length=100,
-        label="Rut Cliente", required=False)
-    clienteRut_create.widget.attrs.update({'class': "form-control",'data-validation':"required rut"})
+        label="Email",
+        required=False)
+    solicitanteEjecutivoEmail.widget.attrs.update({'class': "form-control"})
+    solicitanteEjecutivoTelefono = forms.CharField(
+        max_length=20,
+        label="Teléfono",
+        required=False)
+    solicitanteEjecutivoTelefono.widget.attrs.update({'class': "form-control"})
 
-    propertyType_create = forms.ChoiceField(
+    cliente = forms.CharField(label="Nombre cliente", max_length=100, required=False)
+    cliente.widget.attrs.update({'class': "form-control"})
+    clienteRut = forms.CharField(label="Rut cliente", max_length=100, required=False)
+    clienteRut.widget.attrs.update({'class': "form-control"})
+    clienteEmail = forms.EmailField(label="Email cliente", max_length=100, required=False)
+    clienteEmail.widget.attrs.update({'class': "form-control"})
+    clienteTelefono = forms.CharField(label="Teléfono cliente", max_length=100, required=False)
+    clienteTelefono.widget.attrs.update({'class': "form-control"})
+
+    propietario = forms.CharField(label="Nombre propietario", max_length=100, required=False)
+    propietario.widget.attrs.update({'class': "form-control"})
+    propietarioRut = forms.CharField(label="Rut propietario", max_length=100, required=False)
+    propietarioRut.widget.attrs.update({'class': "form-control"})
+    propietarioEmail = forms.EmailField(label="Email propietario", max_length=100, required=False)
+    propietarioEmail.widget.attrs.update({'class': "form-control"})
+    propietarioTelefono = forms.CharField(label="Teléfono propietario", max_length=100, required=False)
+    propietarioTelefono.widget.attrs.update({'class': "form-control"})
+
+    contacto = forms.CharField(label="Nombre contacto", max_length=100, required=False)
+    contacto.widget.attrs.update({'class': "form-control",'data-validation':"required"})
+    contactoRut = forms.CharField(label="Rut contacto", max_length=100, required=False)
+    contactoRut.widget.attrs.update({'class': "form-control"})
+    contactoEmail = forms.EmailField(label="Email contacto", max_length=100, required=False)
+    contactoEmail.widget.attrs.update({'class': "form-control"})
+    contactoTelefono = forms.CharField(label="Teléfono contacto", max_length=100, required=False)
+    contactoTelefono.widget.attrs.update({'class': "form-control"})
+
+    propertyType = forms.ChoiceField(
         label="Tipo propiedad",
         choices=RealEstate.propertyType_choices,
         initial=RealEstate.TYPE_HOUSE)
-    propertyType_create.widget.attrs.update({'class':"form-control"})
+    propertyType.widget.attrs.update({'class':"form-control"})
 
-    addressRegion_create = forms.ModelChoiceField(
+    addressRegion = forms.ModelChoiceField(
         label="Región",
         queryset=Region.objects.only('name').all())
-    addressRegion_create.widget.attrs.update({'class':"form-control"})
+    addressRegion.widget.attrs.update({'class':"form-control"})
 
     # We need all possible communes to be there initially, so that when we validate the form,
     # it finds the choice.
-    addressCommune_create = forms.ModelChoiceField(
+    addressCommune = forms.ModelChoiceField(
         label="Comuna",
         queryset=Commune.objects.only('name').all())
-    addressCommune_create.widget.attrs.update({'class':"form-control"})
+    addressCommune.widget.attrs.update({'class':"form-control"})
 
-    addressStreet_create = forms.CharField(
+    addressStreet = forms.CharField(
         max_length=200,
         label="Calle")
-    addressStreet_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
-    addressNumber_create = forms.CharField(max_length=6,label="Número")
-    addressNumber_create.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressNumber = forms.CharField(max_length=30,label="Número")
+    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
-    addressNumber2_create = forms.CharField(max_length=6,label="Depto.",required=False)
-    addressNumber2_create.widget.attrs.update({'class':"form-control"})
+    addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
+    addressNumber2.widget.attrs.update({'class':"form-control"})
 
-    appraisalTimeFrame_create = forms.DateTimeField(
-        initial=datetime.datetime.now().strftime("%Y-%m-%d"),
-        label="Plazo",
+    appraisalTimeRequest = forms.DateTimeField(label="Fecha solicitud",
         widget=forms.DateTimeInput(
             attrs={'class': "form-control datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
-    appraisalTimeFrame_create.input_formats = ['%d/%m/%Y %H:%M']
+    appraisalTimeRequest.input_formats = ['%d/%m/%Y']
+    appraisalTimeDue = forms.DateTimeField(label="Fin de plazo",
+        widget=forms.DateTimeInput(
+            attrs={'class': "form-control datetimepicker-input",
+                   'data-target':"#datetimepicker2"}))
+    appraisalTimeDue.input_formats = ['%d/%m/%Y %H:%M']
     
-    appraisalPrice_create = forms.FloatField(label="Precio",required=False)
-    appraisalPrice_create.widget.attrs.update({'class': "form-control"})
+    appraisalPrice = forms.FloatField(label="Precio",required=False)
+    appraisalPrice.widget.attrs.update({'class': "form-control"})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.fields['addressCommune_create'].queryset = []
+        #self.fields['addressCommune'].queryset = []
 
     def clean(self):
-        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].replace('.','')
-        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].replace('-','')
-        self.cleaned_data['clienteRut_create'] = self.cleaned_data['clienteRut_create'].lower()
-        if self.cleaned_data.get('addressStreet_create')=="":
+        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].replace('.','')
+        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].replace('-','')
+        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].lower()
+        if self.cleaned_data.get('addressStreet')=="":
             raise forms.ValidationError('No name!')
-        if self.cleaned_data.get('addressStreet_create')=="":
+        if self.cleaned_data.get('addressStreet')=="":
             raise forms.ValidationError('No name!')
-        if self.cleaned_data.get('propertyType_create') == RealEstate.TYPE_APARTMENT:
-            if self.cleaned_data.get('addressNumberFlat_create').strip()=="":
+        if self.cleaned_data.get('propertyType') == RealEstate.TYPE_APARTMENT:
+            if self.cleaned_data.get('addressNumberFlat').strip()=="":
                 raise forms.ValidationError('No hay número de departamento (quizás puso sólo un espacio)')
         return self.cleaned_data
 
-    def clean_appraisalTimeFrame_create(self):
-        data = self.cleaned_data['appraisalTimeFrame_create']
+    def clean_appraisalTimeFrame(self):
+        data = self.cleaned_data['appraisalTimeFrame']
         # Check date is not in past.
         if data.replace(tzinfo=None) < datetime.datetime.now().replace(tzinfo=None):
             raise forms.ValidationError(('Plazo se debe fijar en el futuro'), code='invalid')

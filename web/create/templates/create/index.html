@@ -10,81 +10,304 @@
       <div class="col-md-2">
       </div>
       <div class="col-md-10">
-         <h5 class="mb-4">Crear tasación</h5>
+         <h5 class="mb-4">Ingresar tasación</h5>
       </div>
    </div>
-      <form class="needs-validation" action="/create/" method="post" id="form_create" data-commune-url="{% url 'ajax_load_communes' %}" novalidate>
+      <form class="needs-validation" action="/create/" method="post" id="form_file"
+      data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
         {% csrf_token %}
 
-         <div class="row mb-4">
-            
-            <div class="col-md-2 text-right">
-               <p class="font-weight-bold">Solicitud</p>
+        <div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Solicitud</p>
+          </div>
+          <div class="col-md-5">
+            <div class="form-group">
+              <div class="custom-file">
+                {{form_file.archivo}}
+                <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+              </div>
             </div>
-            
+          </div>
+          <div class="col-1">
+            <button id="populate" class="btn btn-primary">Importar</button>
+          </div>
+        </div>
+
+        <script>
+          $('#id_archivo').change(function() {
+            if ($('#id_archivo')[0].files.length == 1) {
+              var file = $('#id_archivo')[0].files[0].name;
+              $('.custom-file-label').text(file);
+            } else {
+              $('.custom-file-label').text('Múltiples archivos');
+            }
+          });
+        </script>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold"></p>
+          </div>
+          <div class="col-md-6">
+            <div class="alert alert-warning" role="alert" id="id_import_alert" style="display:none;">
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <form class="needs-validation" action="/create/" method="post" id="form"
+      data-commune-url="{% url 'ajax_load_communes' %}" data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+          </div>
             <div class="col-md-2" id="petitioner">
                <div class="form-group">
                   <label>Institución</label>
-                  {{form_create.solicitante_create}}
+                  {{form.solicitante}}
                </div>
             </div>
             <div class="col-md-2" id="other" hidden>
                <div class="form-group">
-                  {{form_create.solicitanteOther_create.label_tag}}
-                  {{form_create.solicitanteOther_create}}
+                  {{form.solicitanteOther.label_tag}}
+                  {{form.solicitanteOther}}
                </div>
             </div>
-
+            <div class="col-md-2">
+               <div class="form-group" id="code">
+                  <label>Sucursal</label>
+                  {{form.solicitanteSucursal}}
+               </div>
+            </div>
             <div class="col-md-2">
                <div class="form-group" id="code">
                   <label>Código</label>
-                  {{form_create.solicitanteCodigo_create}}
+                  {{form.solicitanteCodigo}}
                </div>
             </div>
 
-            <div class="col-md-2">
-               <div class="form-group">
-                  {{form_create.appraisalTimeFrame_create.label_tag}}
-                  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                     {{form_create.appraisalTimeFrame_create}}
-                     <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <script type="text/javascript">
-               $(function () {
-                  $('#datetimepicker1').datetimepicker({
-                     locale: 'es',
-                     icons: {
-                        time: "far fa-clock",
-                        date: "far fa-calendar-alt",
-                        up: "fas fa-arrow-up",
-                        down: "fas fa-arrow-down"
-                     }
-                  });
-               });
-            </script>
-         </div>
+        </div>
 
-         <div class="row mb-4">
+        <div class="row">
+          <div class="col-md-2 text-right">
+          </div>
+          <div class="col-md-4" id="petitioner">
+            <div class="form-group">
+              <label>Ejecutivo</label>
+              {{form.solicitanteEjecutivo}}
+            </div>
+          </div>
+          <div class="col-md-2" id="petitioner">
+            <div class="form-group">
+              <label>Email</label>
+              {{form.solicitanteEjecutivoEmail}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              {{form.appraisalTimeRequest.label_tag}}
+              <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                {{form.appraisalTimeRequest}}
+                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script type="text/javascript">
+            $(function () {
+              $('#datetimepicker1').datetimepicker({
+                locale: 'es',
+                icons: {
+                  time: "far fa-clock",
+                  date: "far fa-calendar-alt",
+                  up: "fas fa-arrow-up",
+                  down: "fas fa-arrow-down"
+                }
+              });
+            });
+          </script>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              {{form.appraisalTimeDue.label_tag}}
+              <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                {{form.appraisalTimeDue}}
+                <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script type="text/javascript">
+            $(function () {
+              $('#datetimepicker2').datetimepicker({
+                locale: 'es',
+                icons: {
+                  time: "far fa-clock",
+                  date: "far fa-calendar-alt",
+                  up: "fas fa-arrow-up",
+                  down: "fas fa-arrow-down"
+                }
+              });
+            });
+          </script>
+
+          <div class="col-md-2" id="petitioner">
+            <div class="form-group">
+              <label>Teléfono</label>
+              {{form.solicitanteEjecutivoTelefono}}
+            </div>
+          </div>
+          
+        </div>
+
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Tasación</p>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Tipo</label>
+              {{form.tipoTasacion}}
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Finalidad</label>
+              {{form.finalidad}}
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Visita</label>
+              {{form.visita}}
+            </div>
+          </div>
+        </div>
+
+         <hr/>
+
+         <div class="row">
             <div class="col-md-2 text-right">
                <p class="font-weight-bold">Cliente</p>
             </div>
             <div class="col-md-4">
                <div class="form-group">
                   <label>Nombre</label>
-                  {{form_create.cliente_create}}
+                  {{form.cliente}}
                </div>
             </div>
             <div class="col-md-2">
                <div class="form-group">
                   <label>Rut</label>
-                  {{form_create.clienteRut_create}}
+                  {{form.clienteRut}}
                </div>
             </div>
          </div>
+
+         <div class="row">
+            <div class="col-md-2 text-right">
+            </div>
+            <div class="col-md-4">
+               <div class="form-group">
+                  <label>Email</label>
+                  {{form.clienteEmail}}
+               </div>
+            </div>
+            <div class="col-md-2">
+               <div class="form-group">
+                  <label>Teléfono</label>
+                  {{form.clienteTelefono}}
+               </div>
+            </div>
+         </div>
+
+         <hr/>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Propietario</p>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              <label>Nombre</label>
+              {{form.propietario}}
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="form-group">
+              <label>Rut</label>
+              {{form.propietarioRut}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              <label>Email</label>
+              {{form.propietarioEmail}}
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="form-group">
+              <label>Teléfono</label>
+              {{form.propietarioTelefono}}
+            </div>
+          </div>
+        </div>
+
+         <hr/>
+
+         <div class="row">
+            <div class="col-md-2 text-right">
+               <p class="font-weight-bold">Contacto</p>
+            </div>
+            <div class="col-md-4">
+               <div class="form-group">
+                  <label>Nombre</label>
+                  {{form.contacto}}
+               </div>
+            </div>
+            <div class="col-md-2">
+               <div class="form-group">
+                  <label>Rut</label>
+                  {{form.contactoRut}}
+               </div>
+            </div>
+         </div>
+
+         <div class="row">
+            <div class="col-md-2 text-right">
+            </div>
+            <div class="col-md-4">
+               <div class="form-group">
+                  <label>Email</label>
+                  {{form.contactoEmail}}
+               </div>
+            </div>
+            <div class="col-md-2">
+               <div class="form-group">
+                  <label>Teléfono</label>
+                  {{form.contactoTelefono}}
+               </div>
+            </div>
+         </div>
+
+         <hr/>
 
          <div class="row" id="propertyType">
             <div class="col-md-2 text-right">
@@ -93,25 +316,7 @@
             <div class="col-md-2">
                <div class="form-group">
                   <label>Tipo</label>
-                  {{form_create.propertyType_create}}
-               </div>
-            </div>
-            <div class="col-md-2">
-               <div class="form-group">
-                  <label>Tasación</label>
-                  {{form_create.tipoTasacion_create}}
-               </div>
-            </div>
-            <div class="col-md-2">
-               <div class="form-group">
-                  <label>Objetivo Tasación</label>
-                  {{form_create.objetivo_create}}
-               </div>
-            </div>
-            <div class="col-md-2">
-               <div class="form-group">
-                  <label>Visita</label>
-                  {{form_create.visita_create}}
+                  {{form.propertyType}}
                </div>
             </div>
          </div>
@@ -120,14 +325,14 @@
          <div class="col-md-2 text-right"></div>
          <div class="col-md-2">
             <div class="form-group">
-               {{form_create.addressRegion_create.label_tag}}
-               {{form_create.addressRegion_create}}
+               {{form.addressRegion.label_tag}}
+               {{form.addressRegion}}
             </div>
          </div>
          <div class="col-md-2">
             <div class="form-group">
-               {{form_create.addressCommune_create.label_tag}}
-               {{form_create.addressCommune_create}}
+               {{form.addressCommune.label_tag}}
+               {{form.addressCommune}}
             </div>
          </div>
       </div>
@@ -136,22 +341,22 @@
          <div class="col-md-2 text-right"></div>
          <div class="col-md-4">
             <div class="form-group">
-               {{form_create.addressStreet_create.label_tag}}
-               {{form_create.addressStreet_create}}
+               {{form.addressStreet.label_tag}}
+               {{form.addressStreet}}
             </div>
          </div>
 
          <div class="col-md-1">
             <div class="form-group">
-               {{form_create.addressNumber_create.label_tag}}
-               {{form_create.addressNumber_create}}
+               {{form.addressNumber.label_tag}}
+               {{form.addressNumber}}
             </div>
          </div>
 
-         <div class="col-md-1" id="div_addressNumber2_create">
+         <div class="col-md-1" id="div_addressNumber2">
             <div class="form-group">
-               {{form_create.addressNumber2_create.label_tag}}
-               {{form_create.addressNumber2_create}}
+               {{form.addressNumber2.label_tag}}
+               {{form.addressNumber2}}
             </div>
          </div>
       </div>
@@ -159,9 +364,9 @@
       <!--
       <div class="form-group row">
          <div class="col-md-2">
-            {{form_create.appraisalPrice_create.label_tag}}
+            {{form.appraisalPrice.label_tag}}
             <div class="input-group">
-               {{form_create.appraisalPrice_create}}
+               {{form.appraisalPrice}}
                <div class="input-group-append">
                   <div class="input-group-text">UF</div>
                </div>
@@ -184,38 +389,32 @@
    </form>
 </div>
 
+<!--
 <script>
- $("#id_addressRegion_create").change(function () {
-    // get the url of the `load_cities` view
-    var url = $("#form_create").attr("data-commune-url");
-    // get the selected country ID from the HTML input
+ $("#id_addressRegion").change(function () {
+    var url = $("#form").attr("data-commune-url");
     var regionId = $(this).val();
-    // initialize an AJAX request
     $.ajax({
-      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
       url: url,
-      // add the country id to the GET parameters
       data: {
        'region': regionId
     },
     success: function (data) {
-        // `data` is the return of the `load_cities` view function
-        // replace the contents of the city input with the data that came from the server
-        console.log(data)
-        $("#id_addressCommune_create").html($.trim(data));
+        $("#id_addressCommune").html($.trim(data));
      }
   });
  });
 </script>
+-->
 
 <script>
 
   function showApartmentNumber() {
     var type = $("#propertyType option:selected");
     if (type.val() == 2) {
-      $("#div_addressNumber2_create").find('label').html('Depto.');
+      $("#div_addressNumber2").find('label').html('Dpto.');
     } else {
-      $("#div_addressNumber2_create").find('label').html('Lote');
+      $("#div_addressNumber2").find('label').html('Unidad');
     }
   }
 
@@ -258,34 +457,45 @@
     "El rut no es válido"
   );
 
-  $("#form_create").validate({
+  $("#form").validate({
     rules: {
-      "addressStreet_create": "required",
-      "addressNumber_create": "required",
-      "addressCommune_create": "required",
-      "addressRegion_create": "required",
-      "cliente_create": "required",
-      "clienteRut_create": "rut",
-      "solicitanteCodigo_create": "required",
-      "appraisalTimeFrame_create": "required"
+      "addressStreet": "required",
+      "addressNumber": "required",
+      "addressCommune": "required",
+      "addressRegion": "required",
+      "cliente": "required",
+      "clienteRut": "rut",
+      "contacto": "required",
+      "solicitanteCodigo": "required",
+      "appraisalTimeFrame": "required"
     },
     groups: {
-      "appraisalTimeFrame_create": "date"
+      "appraisalTimeFrame": "date"
     },
     messages: {
-      "addressStreet_create": "Campo requerido",
-      "addressNumber_create": "Requerido",
-      "addressCommune_create": "Campo requerido",
-      "addressRegion_create": "Campo requerido",
-      "cliente_create": "Campo requerido",
-      "solicitanteCodigo_create": "Campo requerido",
-      "appraisalTimeFrame_create": "Campo requerido"
+      "addressStreet": "Campo requerido",
+      "addressNumber": "Requerido",
+      "addressCommune": "Campo requerido",
+      "addressRegion": "Campo requerido",
+      "cliente": "Campo requerido",
+      "solicitanteCodigo": "Campo requerido",
+      "clienteEmail": {
+        email: "Email debe tener formato nombre@dominio.com"
+      },
+      "contactoEmail": {
+        email: "Email debe tener formato nombre@dominio.com"
+      },
+      "solicitanteEjecutivoEmail": {
+        email: "Email debe tener formato nombre@dominio.com"
+      },
+      "appraisalTimeFrame": "Campo requerido"
     },
     errorPlacement: function(error, element) {
-      if (element.attr("id") == "id_appraisalTimeFrame_create") {
+      if (element.attr("id") == "id_appraisalTimeRequest") {
         error.insertAfter("#datetimepicker1");
+      } else if (element.attr("id") == "id_appraisalTimeDue") {
+        error.insertAfter("#datetimepicker2");
       } else {
-        console.log('b')
         error.insertAfter(element);
       }
     }
@@ -299,18 +509,114 @@
     $('#other').removeAttr('hidden');
     $('#other').show();
     $('#other').attr('required','required');
-    $('#id_solicitanteCodigo_create').removeAttr('data-validation','required');
+    $('#id_solicitanteCodigo').removeAttr('data-validation','required');
     $('#code').removeAttr('class', 'form-group has-error');
     $('.help-block').hide();
-    $('#id_solicitanteCodigo_create').removeAttr('style');
+    $('#id_solicitanteCodigo').removeAttr('style');
     $('#code').attr('class', 'form-group');
  } else {
     $('#other').hide();
     $('#other').removeAttr('required');
     $('#other').val('');
-    $('#id_solicitanteCodigo_create').attr('data-validation','required');
+    $('#id_solicitanteCodigo').attr('data-validation','required');
  }
 });
+</script>
+
+<script>
+  $(document).ready(function() {
+
+    $('#id_import_alert').hide()
+
+    var formatFields = function() {
+      $('#id_addressStreet').val(function() {
+        return toTitleCase($(this).val())
+      })
+      $('#id_contacto').val(function() {
+        return toTitleCase($(this).val())
+      })
+      $('#id_cliente').val(function() {
+        return toTitleCase($(this).val())
+      })
+      $('#id_solicitanteEjecutivo').val(function() {
+        return toTitleCase($(this).val())
+      })
+      $('#id_solicitanteSucursal').val(function() {
+        return toTitleCase($(this).val())
+      })
+      $('#id_clienteEmail').val(function() {
+        return $(this).val().toLowerCase()
+      })
+      $('#id_contactoEmail').val(function() {
+        return $(this).val().toLowerCase()
+      })
+    }
+
+    var populateFromFile = function () {
+      var form = document.getElementById('form_file');
+      var formData = new FormData(form);
+      var url = $("#form_file").attr("data-populate-from-file-url");
+      $.ajax({
+          url: url,
+          type: 'post',
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+          error: function () {
+              alert("Error al procesar archivo.");
+              return false;
+          },
+          success: function (data) {
+            $('#id_solicitanteCodigo').val('')
+            $('#id_addressNumber').val('')
+            $('#id_addressNumber2').val('')
+            $('#id_addressCommune').empty()
+            for (var i in data['commune_data']) {
+              $('#id_addressCommune').append(new Option(data['commune_data'][i][1], data['commune_data'][i][0], false, false));
+            }
+            for (var field in data) {
+              $('#id_'+field).val(data[field]);
+            }
+            console.log(data.solicitante)
+            if (data.solicitante == 3) {
+              // ITAU: warn about things we don't do
+              $('#id_import_alert').show()
+              $('#id_import_alert').html('Observaciones al importar de Itaú: banco no provee código.\
+                Se han ignorado campos. De antecedentes del cliente: N° Cuenta, Personería, Detalle de cuenta.\
+                Del bien: Estado, Valor estimado, Otros datos, Antecedentes. \
+                Tipo, finalidad y visita no han sido rellenados.')
+            } else if (data.solicitante == 2) {
+              $('#id_import_alert').show()
+              $('#id_import_alert').html('Observaciones al importar de Santander. Se han ignorado los campos: seguimiento, coordinar antes de (fecha), visitar propiedad antes de (fecha), nombre propietario, rut propietario, localidad, rubro, grupo, nombre formalizador, email formalizador y centro de costo.')
+            } else {
+              $('#id_import_alert').hide()
+            }
+            formatFields();
+          }
+      });
+      return false;
+    }
+    $("#populate").on("click", function (e) {
+      e.preventDefault();
+      populateFromFile();
+    });
+  })
+
+  function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
+  $("#id_solicitanteEjecutivo").focusout(function() {
+    console.log('a');
+    $(this).val(toTitleCase($(this).val()));
+  })
+
 </script>
 
 {% endblock %}

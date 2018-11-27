@@ -63,10 +63,11 @@ class Appraisal(models.Model):
     realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
         verbose_name="Propiedad")
 
+    timeRequest = models.DateTimeField("Time created",blank=True,null=True)
+    timeDue = models.DateTimeField("Time due",blank=True,null=True)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
-    timeDue = models.DateTimeField("Time due",blank=True,null=True)
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
 
     STATE_IMPORTED = 0
@@ -135,7 +136,7 @@ class Appraisal(models.Model):
         (VENTA, 'Venta'),
         (LIQUIDACION, 'Liquidación' ),
     ]
-    objetivo = models.IntegerField("Objetivo", choices=objective_choices,blank=True,null=True)
+    finalidad = models.IntegerField("Finalidad", choices=objective_choices,blank=True,null=True)
 
     OTHER = 0
     BCI = 1
@@ -158,16 +159,27 @@ class Appraisal(models.Model):
         (OTHER, "Otro")
     ]
     solicitante = models.IntegerField("Solicitante", choices=petitioner_choices, blank=True, null=True)
-    solicitanteOtro = models.CharField("Solicitante", max_length=100, choices=petitioner_choices, blank=True, null=True)
+    solicitanteOtro = models.CharField("Solicitante", max_length=100, blank=True, null=True)
     solicitanteSucursal = models.CharField("Solicitante sucursal",max_length=100,blank=True,null=True)
-    solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
+    solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
+    solicitanteEjecutivoEmail = models.CharField("Solicitante email",max_length=100,blank=True,null=True)
+    solicitanteEjecutivoTelefono = models.CharField("Solicitante teléfono",max_length=20,blank=True,null=True)
 
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
     clienteRut = models.CharField("Cliente RUT",max_length=13,blank=True,null=True)
+    clienteEmail = models.CharField("Cliente Email",max_length=100,blank=True,null=True)
+    clienteTelefono = models.CharField("Cliente Teléfono",max_length=20,blank=True,null=True)
+
+    contacto = models.CharField("Contacto",max_length=100,blank=True,null=True)
+    contactoRut = models.CharField("Contacto RUT",max_length=13,blank=True,null=True)
+    contactoEmail = models.CharField("Contacto Email",max_length=100,blank=True,null=True)
+    contactoTelefono = models.CharField("Contacto Teléfono",max_length=20,blank=True,null=True)
 
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
     propietarioRut = models.CharField("Propietario RUT",max_length=13,blank=True,null=True)
+    propietarioEmail = models.CharField("Contacto Email",max_length=100,blank=True,null=True)
+    propietarioTelefono = models.CharField("Contacto Teléfono",max_length=20,blank=True,null=True)
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
     
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
