@@ -144,7 +144,7 @@ class RealEstate(models.Model):
         default=TYPE_OTHER)
 
     addressStreet = models.CharField("Calle",max_length=300,default="",blank=True,)
-    addressNumber = models.CharField("Número",max_length=10,default=0,blank=True,)
+    addressNumber = models.CharField("Número",max_length=30,default=0,blank=True,)
     addressCommune = models.ForeignKey(Commune,
         on_delete=models.CASCADE,
         verbose_name="Comuna",

@@ -23,14 +23,9 @@
 
         <script>
           $('#id_photos').change(function() {
-            //var i = $(this).prev('label').clone();
-            console.log('a')
             if ($('#id_photos')[0].files.length == 1) {
               var file = $('#id_photos')[0].files[0].name;
-              console.log(file)
               $('.custom-file-label').text(file);
-            } else {
-              $('.custom-file-label').text('Múltiples fotos');
             }
           });
         </script>

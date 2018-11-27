@@ -1,6 +1,54 @@
 <div class="row ml-4 mr-4 mt-5">
 <div class="col">
 
+  {% for form in forms.rol %}
+  {% if forloop.counter == 1%}
+  <div class="row rol_row mt-4">
+  {% else %}
+  <div class="row rol_row">
+  {% endif %}
+    <input type="hidden" name="r-id" id="rol_id" value="{{form.instance.id}}">
+    <input type="hidden" name="r-delete" id="rol_delete" value="0">
+    <div class="col-2 text-right" id="id_title">
+      {% if forloop.counter == 1%}
+      <label class="font-weight-bold text-right">Roles</label><br>
+      <button type="button" class="btn btn-secondary add_rol" id="id_btn">
+        Agregar
+      </button>
+      {% endif %}
+    </div>
+    <div class="col-3">
+      <div class="form-group" id="id_codigo">
+        {% if forloop.counter == 1%}
+        <label>Código</label>
+        {% endif %}
+        {{form.code}}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group" id="id_estado">
+        {% if forloop.counter == 1%}
+        <label>Estado</label>
+        {% endif %}
+        {{form.state}}
+      </div>
+    </div>
+    <div class="col-1">
+      {% if forloop.counter == 1%}
+      <button type="button" class="btn btn-secondary remove_rol" style="display:none;">
+        Borrar
+      </button>
+      {% else %}
+      <button type="button" class="btn btn-secondary remove_rol">
+        Borrar
+      </button>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <hr/>
+
   <div class="row">
     <div class="col-2">
       <p class="font-weight-bold text-right">Ubicación</p>

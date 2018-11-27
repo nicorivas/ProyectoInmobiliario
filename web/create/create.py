@@ -28,24 +28,54 @@ def address_to_coordinates(address):
             resp_json_payload['results'][0]['geometry']['location']['lng']
             ]
 
-def appraisal_create(realEstate, timeFrame, user, solicitante, solicitanteCodigo, cliente, clienteRut, tipoTasacion,
-                     objetivo,  visita, price):
+def appraisal_create(realEstate,
+    solicitante=None,
+    solicitanteOtro=None,
+    solicitanteSucursal=None,
+    solicitanteCodigo=None,
+    solicitanteEjecutivo=None,
+    solicitanteEjecutivoEmail=None,
+    solicitanteEjecutivoTelefono=None,
+    timeDue=None,
+    timeRequest=None,
+    tipoTasacion=None,
+    finalidad=None,
+    visita=None,
+    cliente=None,
+    clienteRut=None,
+    clienteEmail=None,
+    clienteTelefono=None,
+    contacto=None,
+    contactoEmail=None,
+    contactoTelefono=None,
+    user=None,
+    price=None):
     '''
     Create appraisal, given a ...?
     '''
-    timeDue = timeFrame
     appraisal = Appraisal(
         realEstate=realEstate,
+        solicitante=solicitante,
+        solicitanteOtro=solicitanteOtro,
+        solicitanteSucursal=solicitanteSucursal,
+        solicitanteCodigo=solicitanteCodigo,
+        solicitanteEjecutivo=solicitanteEjecutivo,
+        solicitanteEjecutivoEmail=solicitanteEjecutivoEmail,
+        solicitanteEjecutivoTelefono=solicitanteEjecutivoTelefono,
         timeCreated=datetime.datetime.now(),
         timeDue=timeDue,
-        price=price,
-        solicitante=solicitante,
-        solicitanteCodigo=solicitanteCodigo,
+        timeRequest=timeRequest,
+        tipoTasacion=tipoTasacion,
+        finalidad=finalidad,
+        visita=visita,
         cliente=cliente,
         clienteRut=clienteRut,
-        tipoTasacion=tipoTasacion,
-        objetivo=objetivo,
-        visita=visita)
+        clienteEmail=clienteEmail,
+        clienteTelefono=clienteTelefono,
+        contacto=contacto,
+        contactoEmail=contactoEmail,
+        contactoTelefono=contactoTelefono,
+        price=price)
     with reversion.create_revision():
         appraisal.save()
         reversion.set_user(user)
@@ -117,8 +147,9 @@ def house_create(addressRegion,addressCommune,addressStreet,addressNumber,addres
         houseId = int(House.objects.all().order_by('-id')[0].id)+1
     else:
         houseId = 1
-    house.propertyType = RealEstate.TYPE_HOUSE
     house.id = houseId
+
+    house.propertyType = RealEstate.TYPE_HOUSE
 
     # get lat lon
     address = '{} {}, {}, {}'.format(addressStreet,addressNumber,addressCommune,addressRegion)
@@ -128,4 +159,5 @@ def house_create(addressRegion,addressCommune,addressStreet,addressNumber,addres
         house.lon = latlng[1]
 
     house.save()
+
     return house
