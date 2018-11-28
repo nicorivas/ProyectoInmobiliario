@@ -141,7 +141,7 @@
           <thead class="thead-light">
             <tr>
               <th scope="col">Categoría</th>
-              <th scope="col">Puntaje</th>
+              <th scope="col">Cumplió</th>
             </tr>
           </thead>
           <tbody>
@@ -152,9 +152,6 @@
                </td>
                <td id="onTime">
                   {{evaluationForm.onTime}}
-               </td>
-                 <td>
-                 {{appraisal.appraisalevaluation.onTime}}
                </td>
               </tr>
               <tr>
@@ -171,6 +168,30 @@
                 </td>
                 <td id="generalQuality">
                   {{evaluationForm.generalQuality}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                   {{evaluationForm.correctSurface.label}}
+                </td>
+                <td id="correctSurface">
+                  {{evaluationForm.correctSurface}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                   {{evaluationForm.completeNormative.label}}
+                </td>
+                <td id="completeNormative">
+                  {{evaluationForm.completeNormative}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                   {{evaluationForm.homologatedReferences.label}}
+                </td>
+                <td id="homologatedReferences">
+                  {{evaluationForm.homologatedReferences}}
                 </td>
               </tr>
               <tr>
@@ -202,7 +223,6 @@
     </div>
   </div>
 </div>
-
 
 
 <div class="modal fade" id="logbook" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
