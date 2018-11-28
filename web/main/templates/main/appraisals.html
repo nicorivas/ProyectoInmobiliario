@@ -307,7 +307,7 @@
 <script>
     //Loads database values of the appraisal evaluation
 
-    //gives appraisal and appraiser id to the input so the view knows with appraisal and appraiser is receiving
+    //gives appraisal and appraiser id to the input so the view knows wich appraisal and appraiser is receiving
 
   $(document).on('click','.evaluateAppraisal',function(){
       var id = $(this).val();
@@ -315,7 +315,6 @@
       $('#evaluadorAppraisal_id').val(id);
       $('#evaluador_id').val(id2);
 
-      console.log($(this).val());
 
       //takes the value of the data base in the data tags of the input and paste it in the corresponding appraisal evaluation
       var ontime = $(this).data('ontime');
@@ -335,7 +334,7 @@
       var feedback = $(this).data('commentfeedback');
       $('#id_commentFeedback').val(feedback);
 
-      //this section makes the True values shows a checked and the false value unchecked
+      //this section makes the True values shows as checked and the false value as unchecked
       $( '#evaluateAppraisal input' ).each(function( index ) {
         var v = $(this).val();
           if (v == "False"){
