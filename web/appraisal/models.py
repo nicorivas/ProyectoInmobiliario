@@ -10,6 +10,38 @@ from imagekit.processors import ResizeToFill
 import datetime
 import reversion
 
+class Comment(models.Model):
+    event_choices = (
+        (1, "Contacto validado"),
+        (2, "Asignación aceptada"),
+        (3, "Acuerdo visita"),
+        (4, "Propiedad visitada"),
+        (5, "Informe enviado a UT"),
+        (6, "Informe validado a UT"),
+        (7, "Validación administrativa"),
+        (8, "Entregado al cliente"),
+        (9, "Cliente validado"),
+        (10, "Contabilización"),
+        (11, "Recepción física"),
+        (12, "Envío planilla para pago"),
+        (13, "Recepción facturación"),
+        (14, "Facturado"),
+        (15, "Pagado"),
+        (16, "Fondos disponibles"),
+        (17, "Cobranza"),
+        (18, "Abortado"),
+        (19, "Incidencia"),
+        (20, "Corección informe"),
+        (21, "Observación visador"),
+        (22, "Objeción"),
+        (0, "Otro")
+    )
+    event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    text = models.CharField("Comment",max_length=500)
+    conflict = models.BooleanField("Incidencia",default=False)
+    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
+
 class Photo(models.Model):
     photo = models.ImageField(upload_to='test/',default='no-img.jpg')
     description = models.CharField("Descripción",
@@ -193,6 +225,8 @@ class Appraisal(models.Model):
 
     documents = models.ManyToManyField(Document)
 
+    comments = models.ManyToManyField(Comment)
+
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 
     descripcionSector = models.TextField("Descripción sector",max_length=10000,default="",null=True,blank=True)
@@ -312,13 +346,6 @@ class Appraisal(models.Model):
         for field_name in self._meta.get_fields():
             value = getattr(self, field_name.name)
             yield (field_name.name, value)
-
-class Comment(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    text = models.CharField("Comment",max_length=500)
-    appraisal = models.ForeignKey(Appraisal, null=True, on_delete=models.CASCADE)
-    conflict = models.BooleanField("Incidencia",default=False)
-    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
 
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

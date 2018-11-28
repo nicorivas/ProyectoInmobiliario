@@ -1,7 +1,7 @@
 from django import forms
 from realestate.models import RealEstate, Construction, Terrain, Asset
 from apartment.models import Apartment
-from appraisal.models import Appraisal, Rol
+from appraisal.models import Appraisal, Rol, Comment
 from building.models import Building
 from house.models import House
 from region.models import Region
@@ -392,6 +392,7 @@ class FormDocuments(forms.Form):
         widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
 
 class FormComment(forms.Form):
-    commentText = forms.CharField(label='Comment',max_length=500,widget=forms.Textarea,required=False)
-    commentConflict = forms.BooleanField(label='Conflict',required=False)
-    commentText.widget.attrs.update({'class':"form-control",'rows':3})
+    text = forms.CharField(label='Comentario',max_length=500,widget=forms.Textarea,required=False)
+    text.widget.attrs.update({'class':"form-control",'rows':3})
+    event = forms.ChoiceField(choices=Comment.event_choices,label='Evento',required=True)
+    event.widget.attrs.update({'class':"form-control"})
