@@ -3,13 +3,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from user.views import userAppraisals
-from appraisal.models import Appraisal
+from appraisal.models import Appraisal, Comment
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 
-import reversion
+import reversion, datetime
 from copy import deepcopy
 from reversion.models import Version
+from appraisal.forms import FormComment
 
 
 def save_appraisalNF(appraisal, request, comment):
@@ -66,3 +67,33 @@ def main(request):
 
     return render(request, 'main/index.html', context)
 
+def logbook(request):
+    '''
+    '''
+    id = int(request.GET['id'])
+    appraisal = Appraisal.objects.get(id=id)
+    form = FormComment(label_suffix='')
+
+    return render(request,'main/logbook.html',{'appraisal':appraisal,'form':form})
+
+def comment(request):
+    '''
+    '''
+    print('comment')
+    print(request.POST)
+    id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=id)
+    comment = Comment(
+        user=request.user,
+        text=request.POST['text'],
+        event=int(request.POST['event']),
+        timeCreated=datetime.datetime.now(),
+        appraisal=appraisal)
+    comment.save()
+
+    appraisal.comments.add(comment)
+    appraisal.save()
+
+    form = FormComment(label_suffix='')
+
+    return render(request,'main/logbook.html',{'appraisal':appraisal,'form':form})

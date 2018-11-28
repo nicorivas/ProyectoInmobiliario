@@ -129,11 +129,15 @@
         {% endif %}
         </td>
         <td>
+        <button type="button" class="btn btn-sm btn-dark logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
+                data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        <!--
+        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        -->
+          comment
+        </button>
         <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
           delete
-        </button>
-        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-          comment
         </button>
         </td>
       </tr>
@@ -238,11 +242,35 @@
 {% include "main/modals.html" %}
 
 <script>
+  var comment = function () {
+    var form = document.getElementById('form_comment');
+    var formData = new FormData(form);
+    var url = $("#form_comment").attr("data-comment-url");
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        error: function () {
+          alert("Error.");
+          return false;
+        },
+        success: function (data) {
+          console.log(data)
+          alert("Success.");
+        }
+    });
+    return false;
+  }
+</script>
+
+<script>
 
   $(document).ready(function($) {
 
     $('.btn-evaluate').tooltip({'title':'Evaluar'})
-
 
     $(".clickable-row").hover(
       function() {
@@ -252,7 +280,43 @@
         $(this).removeClass('table-secondary')
       }
     );
+
+    $(".logbook").on("click", function (e) {
+      console.log('logbook click')
+      e.preventDefault();
+      id = $(this).val()
+      getLogbookData(id);
+    });
+
+    console.log($("#comment"))
+
+    $("#comment").on("click", function (e) {
+      console.log('comment')
+      e.preventDefault();
+      comment();
+    });
+
   });
+
+  function getLogbookData(id) {
+    var btn = $('#logbook_'+id);
+    console.log(btn)
+    var url = btn.attr("data-logbook-url");
+    $.ajax({
+        url: url,
+        type: 'get',
+        data: {'id':id},
+        error: function () {
+            alert("Error al procesar archivo.");
+            return false;
+        },
+        success: function (data) {
+          $('#logbook').find('#historial').html($.trim(data))
+          $('#logbook').modal('show')
+        }
+    });
+    return false;
+  }
 
   $(document).on('click','.delete_appraisal',function(){
       var id = $(this).data('id');
@@ -276,10 +340,9 @@
 
 <script>
   $(document).on('click','.asignarTasador',function(){
-      var id = $(this).val();
-      $('#tasadorAppraisal_id').val(id);
-      });
-
+    var id = $(this).val();
+    $('#tasadorAppraisal_id').val(id);
+  });
 </script>
 
 <script>
