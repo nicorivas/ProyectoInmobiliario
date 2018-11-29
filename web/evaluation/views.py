@@ -76,6 +76,7 @@ def appraiserEvaluationView(request):
     visadores = list(User.objects.filter(groups__name__in=['visador']))
     lista = appraiserWork(tasadores)
     context = {'appraisals_active': appraisals_active,
-        'appraisals_finished': appraisals_finished, 'evaluationForm': evaluationForm, 'lista':lista,
-                'tasadores': tasadores,'visadores': visadores,}
+               'appraisals_finished': appraisals_finished,
+               'evaluationForm': evaluationForm, 'lista':lista,
+               'tasadores': tasadores,'visadores': visadores,}
     return render(request, 'appraiser_evaluation.html', context)

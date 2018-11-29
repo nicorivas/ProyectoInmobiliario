@@ -38,6 +38,7 @@
       <tr>
         <th scope="col" style="width:1em">ID</th>
         <th scope="col" style="width:10em">Cliente</th>
+        <th scope="col" style="width:10em">Cliente Código</th>
         <th scope="col" style="width:1em;text-align:center;">T.</th>
         <th scope="col" style="width:19em;">Dirección</th>
         <th scope="col" style="width:10em;">Tasador</th>
@@ -55,7 +56,10 @@
           {{ appraisal.id }}
         </td>
         <td>
-          {{ appraisal.solicitanteVerbose }}
+          {{ appraisal.solicitanteVerbose}}
+        </td>
+        <td>
+          {{ appraisal.solicitanteCodigo }}
         </td>
         <td style="text-align:center;">
           <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
@@ -162,6 +166,7 @@
       <tr>
         <th scope="col" style="width:1em">ID</th>
         <th scope="col" style="width:10em">Cliente</th>
+        <th scope="col" style="width:10em">Cliente Código</th>
         <th scope="col" style="width:1em;text-align:center;">T.</th>
         <th scope="col" style="width:19em">Dirección</th>
         <th scope="col" style="width:10em">Tasador</th>
@@ -179,6 +184,9 @@
         </td>
         <td>
           {{ appraisal.solicitanteVerbose }}
+        </td>
+        <td>
+          {{ appraisal.solicitanteCodigo }}
         </td>
         <td style="text-align:center;">
           <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
@@ -421,7 +429,7 @@
 <script>
     //Loads database values of the appraisal evaluation
 
-    //gives appraisal and appraiser id to the input so the view knows with appraisal and appraiser is receiving
+    //gives appraisal and appraiser id to the input so the view knows wich appraisal and appraiser is receiving
 
   $(document).on('click','.evaluateAppraisal',function(){
       var id = $(this).val();
@@ -429,7 +437,6 @@
       $('#evaluadorAppraisal_id').val(id);
       $('#evaluador_id').val(id2);
 
-      console.log($(this).val());
 
       //takes the value of the data base in the data tags of the input and paste it in the corresponding appraisal evaluation
       var ontime = $(this).data('ontime');
@@ -449,7 +456,7 @@
       var feedback = $(this).data('commentfeedback');
       $('#id_commentFeedback').val(feedback);
 
-      //this section makes the True values shows a checked and the false value unchecked
+      //this section makes the True values shows as checked and the false value as unchecked
       $( '#evaluateAppraisal input' ).each(function( index ) {
         var v = $(this).val();
           if (v == "False"){
