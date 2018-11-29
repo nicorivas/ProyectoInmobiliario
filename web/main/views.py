@@ -12,6 +12,9 @@ from copy import deepcopy
 from reversion.models import Version
 from appraisal.forms import FormComment
 
+from evaluation.forms import EvaluationForm
+from appraisal.models import AppraisalEvaluation
+
 
 def save_appraisalNF(appraisal, request, comment):
     print('save_appraisal')
@@ -37,7 +40,7 @@ def assign_visadorNF(request):
 
 @login_required(login_url='/user/login')
 def main(request):
-
+    evaluationForm = EvaluationForm()
     if request.method == 'POST':
         print(request.POST)
         if 'delete' in request.POST:
@@ -51,6 +54,35 @@ def main(request):
         if 'btn_assign_visador' in request.POST.keys():
             print(request.POST.dict())
             ret = assign_visadorNF(request)
+        if 'evaluadorAppraisal_id' in request.POST.keys():
+            evaluationForm = EvaluationForm(request.POST)
+            if evaluationForm.is_valid():
+                _onTime = evaluationForm.cleaned_data['onTime']
+                _completeness = evaluationForm.cleaned_data['completeness']
+                _generalQuality = evaluationForm.cleaned_data['generalQuality']
+                _correctSurface = evaluationForm.cleaned_data['correctSurface']
+                _homologatedReferences = evaluationForm.cleaned_data['homologatedReferences']
+                _completeNormative = evaluationForm.cleaned_data['completeNormative']
+                _commentText = evaluationForm.cleaned_data['commentText']
+                _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
+                appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
+                appraiser = User.objects.get(pk=request.POST['evaluador_id'])
+                evaluation, created = AppraisalEvaluation.objects.update_or_create(
+                                        appraisal=appraisal,
+                                        #user=appraiser,
+                                        defaults={
+                                            "appraisal":appraisal,
+                                            'user':appraiser,
+                                            'onTime':_onTime,
+                                            'completeness':_completeness,
+                                            'generalQuality':_generalQuality,
+                                            'correctSurface': _correctSurface ,
+                                            'completeNormative': _completeNormative,
+                                            'homologatedReferences': _homologatedReferences,
+                                            'commentText':_commentText,
+                                            'commentFeedback':_commentFeedback})
+                #evaluationForm.save()
+                print(evaluation.evaluationResult)
 
 
     tasadores = User.objects.filter(groups__name__in=['tasador'])
@@ -61,6 +93,7 @@ def main(request):
     appraisals_active, appraisals_finished = userAppraisals(request)
 
     context = {
+        'evaluationForm': evaluationForm,
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
         'tasadores':tasadores_info, 'visadores':visadores_info}

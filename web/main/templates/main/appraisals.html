@@ -36,6 +36,7 @@
       <tr>
         <th scope="col" style="width:1em">ID</th>
         <th scope="col" style="width:10em">Cliente</th>
+        <th scope="col" style="width:10em">Cliente Código</th>
         <th scope="col" style="width:1em;text-align:center;">T.</th>
         <th scope="col" style="width:19em;">Dirección</th>
         <th scope="col" style="width:10em;">Tasador</th>
@@ -53,7 +54,10 @@
           {{ appraisal.id }}
         </td>
         <td>
-          {{ appraisal.solicitanteVerbose }}
+          {{ appraisal.solicitanteVerbose}}
+        </td>
+        <td>
+          {{ appraisal.solicitanteCodigo }}
         </td>
         <td style="text-align:center;">
           <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
@@ -162,6 +166,7 @@
       <tr>
         <th scope="col" style="width:1em">ID</th>
         <th scope="col" style="width:10em">Cliente</th>
+        <th scope="col" style="width:10em">Cliente Código</th>
         <th scope="col" style="width:1em;text-align:center;">T.</th>
         <th scope="col" style="width:19em">Dirección</th>
         <th scope="col" style="width:10em">Tasador</th>
@@ -179,6 +184,9 @@
         </td>
         <td>
           {{ appraisal.solicitanteVerbose }}
+        </td>
+        <td>
+          {{ appraisal.solicitanteCodigo }}
         </td>
         <td style="text-align:center;">
           <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
