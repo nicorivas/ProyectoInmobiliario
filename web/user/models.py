@@ -5,16 +5,22 @@ from region.models import Region
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
+import datetime
 
+class Notification(models.Model):
+    ntype = models.CharField(max_length=100, default='')
+    appraisal_id = models.IntegerField(null=True)
+    comment_id = models.IntegerField(null=True)
+    time_created = models.DateTimeField("Time created",blank=True,null=True)
 
 class UserProfile(models.Model):
-    rut = models.CharField('RUT', max_length=14, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', primary_key=True)
     first_name = models.CharField(max_length=100, default='')
     last_name = models.CharField(max_length=100, default='')
     email = models.EmailField(unique=True, blank=False, default='')
     address =  models.CharField(max_length=100, default='')
     phone = models.IntegerField(default=0)
+    rut = models.CharField('RUT', max_length=14, null=True)
     addressStreet = models.CharField("Calle",max_length=300,default="")
     addressNumber = models.CharField("Numero",max_length=10)
     addressCommune = models.ForeignKey(Commune,
@@ -29,6 +35,7 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
         to_field='code')
+    notifications = models.ManyToManyField(Notification)
 
     @property
     def has_address(self):
@@ -66,6 +73,38 @@ class UserProfile(models.Model):
         else:
             return ''
     
+    def removeNotification(self,ntype="",appraisal_id="",comment_id=""):
+        if ntype == "comment":
+            notifications = self.notifications.all().filter(appraisal_id=appraisal_id)
+            for notification in notifications:
+                self.notifications.remove(notification)
+
+    def addNotification(self,ntype="",appraisal_id="",comment_id=""):
+        n = Notification(ntype=ntype,appraisal_id=appraisal_id,comment_id=comment_id,time_created=datetime.datetime.now(datetime.timezone.utc))
+        n.save()
+        self.notifications.add(n)
+
+    def hasNotificationAppraisal(self,id):
+        '''
+        Check if there is a notification for this user
+        related to the appraisal given by the id
+        '''
+        for notification in self.notifications.all():
+            if notification.ntype == "comment":
+                if notification.appraisal_id == id:
+                    return True
+        return False
+
+    def hasNotificationComment(self,id):
+        '''
+        Check if there is a notification for this user
+        related to the comment given by the id
+        '''
+        for notification in self.notifications.all():
+            if notification.ntype == "comment":
+                if notification.comment_id == id:
+                    return True
+        return False
 
     def __str__(self):
         return self.user.username

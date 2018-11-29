@@ -578,7 +578,6 @@
             for (var field in data) {
               $('#id_'+field).val(data[field]);
             }
-            console.log(data.solicitante)
             if (data.solicitante == 3) {
               // ITAU: warn about things we don't do
               $('#id_import_alert').show()
@@ -615,7 +614,6 @@
   }
 
   $("#id_solicitanteEjecutivo").focusout(function() {
-    console.log('a');
     $(this).val(toTitleCase($(this).val()));
   })
 

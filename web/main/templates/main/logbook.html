@@ -1,49 +1,34 @@
-<div class="row">
-  <div class="col-12">
-
-
-    {% if appraisal.active or appraisal.paused %}
-    <form id="form_comment" data-comment-url="{% url 'ajax_comment_url' %}">
-      {% csrf_token %}
-      <input name="appraisal_id" type="hidden" value="{{appraisal.id}}">
-      <div class="form-group">
-        {{ form.event.label_tag}}
-        {{ form.event }}
+{% load custom_tags %}
+{% for comment in comments %}
+{% has_notification_comment request.user comment.id as hnc %}
+{% if hnc %}
+<div class="card mb-1 border-primary border-3" id="comment_{{comment.id}}">
+{% else %}
+<div class="card mb-1" id="comment_{{comment.id}}">
+{% endif %}
+  <div class="card-header">
+    <div class="row">
+      <div class="col-7">
+        <p style="margin-bottom:0em;">
+          <span class="badge badge-secondary" style="font-size: 1em;">{{comment.get_event_display}}</span>
+          {{comment.user.first_name}} {{comment.user.last_name}}
+        </p>
       </div>
-      <div class="form-group">
-        {{ form.text.label_tag }}
-        {{ form.text }}
-      </div>
-      <div class="form-group row">
-        <div class="col-12">
-          <button class="btn btn-dark btn-block" name="btn_comment" id="comment">Comentar</button>
-        </div>
-      </div>
-    </form>
-    {% endif %}
-
-    <hr/>
-
-    {% for comment in appraisal.comments.all %}
-    {% if comment.conflict %}
-    <div class="card mb-1 border-danger">
-    {% else %}
-    <div class="card mb-1">
-    {% endif %}
-      {% if comment.conflict %}
-      <div class="card-header bg-danger">
-      {% else %}
-      <div class="card-header">
-      {% endif %}
-        <span class="font-weight-bold">{{comment.get_event_display}}</span>
-        {{comment.user.first_name}} {{comment.user.last_name}}
-        <small class="card-subtitle mb-2">{{comment.timeCreated}}</small>
-      </div>
-      <div class="card-body">
-        <small>{{comment.text}}</small>
+      <div class="col-5 text-right">
+        <small>{{comment.timeCreated}}</small>
+        <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="{{comment.id}}" class="btn btn-dark btn-sm delete_comment ml-3" style="
+        padding-top:0em;
+        padding-bottom:0em;
+        font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+          delete
+        </button>
       </div>
     </div>
-    {% endfor %}
-
   </div>
+  {% if comment.hasText %}
+  <div class="card-body">
+    <small>{{comment.text}}</small>
+  </div>
+  {% endif %}
 </div>
+{% endfor %}
