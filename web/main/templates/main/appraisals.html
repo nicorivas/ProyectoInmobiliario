@@ -19,6 +19,8 @@
   }
 </script>
 
+{% load custom_tags %}
+
 <div class="container" style="max-width:100%">
 
 <div class="card mb-4" id="div_activas">
@@ -133,11 +135,9 @@
         {% endif %}
         </td>
         <td>
-        <button type="button" class="btn btn-sm btn-dark logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
+        {% has_notification_appraisal request.user appraisal.id as hna %}
+        <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn-logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
                 data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        <!--
-        <button onclick="location.href='{{appraisal.url}}?tab=logbook'" type="button" id="button_delete" class="btn btn-dark btn-sm" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        -->
           comment
         </button>
         <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
@@ -250,78 +250,125 @@
 {% include "main/modals.html" %}
 
 <script>
+
   var comment = function () {
     var form = document.getElementById('form_comment');
     var formData = new FormData(form);
     var url = $("#form_comment").attr("data-comment-url");
+    $('#logbook').find('#loading').toggle()
     $.ajax({
         url: url,
         type: 'post',
         data: formData,
         processData: false,
         contentType: false,
-        dataType: 'json',
         error: function () {
-          alert("Error.");
+          $('#logbook').find('#loading').toggle()
+          alert("Error al comentar.");
           return false;
         },
         success: function (data) {
-          console.log(data)
-          alert("Success.");
+          $('#logbook').find('#historial').html($.trim(data))
+          $('#logbook').find('#loading').toggle()
+        },
+        complete: function (data) {
+          registerCommentDeleteButtons();
         }
     });
     return false;
   }
-</script>
 
-<script>
+  var registerCommentDeleteButtons = function() {
+    $(".delete_comment").on('click',function() {
+      console.log('hola')
+      console.log($(this))
+      var comment_id = $(this).data('id');
+      var appraisal_id = $(this).data('appraisal-id');
+      var url = $(this).data('delete-comment-url');
+      console.log(url)
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'comment_id':comment_id,'appraisal_id':appraisal_id},
+        error: function () {
+          alert("Error al eliminar comentario.");
+          return false;
+        },
+        success: function (data) {
+          $('#comment_'+data.comment_id).fadeOut()
+        }
+      });
+    })
+  }
 
   $(document).ready(function($) {
 
+    // Tooltips.
+
     $('.btn-evaluate').tooltip({'title':'Evaluar'})
 
-    $(".clickable-row").hover(
-      function() {
-        $(this).addClass('table-secondary')
-      },
-      function() {
-        $(this).removeClass('table-secondary')
-      }
-    );
-
-    $(".logbook").on("click", function (e) {
-      console.log('logbook click')
-      e.preventDefault();
-      id = $(this).val()
+    $(".btn-logbook").on("click", function (event) {
+      // Opens logbook modal, and gets the data of the comments
+      // from an AJAX request. Also changes a hidden input to
+      // the appraisal id to have at the post request.
+      event.preventDefault();
+      id = $(this).val(); // button has id of appraisal
+      $("#in_appraisal_id").val(id); // hidden input
+      // remove notification style, if there.
+      $(this).removeClass('btn-not');
+      //$(this).addClass('btn-dark');
       getLogbookData(id);
     });
 
-    console.log($("#comment"))
-
-    $("#comment").on("click", function (e) {
-      console.log('comment')
-      e.preventDefault();
+    $("#comment").on("click", function (event) {
+      // Click of comment button in comment form.
+      event.preventDefault();
       comment();
     });
+
+    $('#logbook').on('hidden.bs.modal', function (e) {
+      // When the logbook modal is closed, we delete the notifications
+      // related to this appraisal. For that we need AJAX
+      var appraisal_id = $("#in_appraisal_id").val();
+      var url = "{% url 'ajax_logbook_close_url' %}";
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        error: function () {
+            alert("Error al cerrar la bitacora.");
+            return false;
+        },
+        success: function (data) {
+          // everything is done in the view
+        },
+        complete: function (data) {
+          // everything is done in the view
+        }
+      });
+      return false;
+    })
 
   });
 
   function getLogbookData(id) {
     var btn = $('#logbook_'+id);
-    console.log(btn)
     var url = btn.attr("data-logbook-url");
     $.ajax({
-        url: url,
-        type: 'get',
-        data: {'id':id},
-        error: function () {
-            alert("Error al procesar archivo.");
-            return false;
-        },
-        success: function (data) {
-          $('#logbook').find('#historial').html($.trim(data))
-          $('#logbook').modal('show')
-        }
+      url: url,
+      type: 'get',
+      data: {'id':id},
+      error: function () {
+          alert("Error al abrir la bitacora.");
+          return false;
+      },
+      success: function (data) {
+        $('#logbook').find('#historial').html($.trim(data));
+        $('#logbook').modal('show');
+      },
+      complete: function (data) {
+        registerCommentDeleteButtons();
+      }
     });
     return false;
   }
@@ -347,17 +394,21 @@
 </script>
 
 <script>
+
   $(document).on('click','.asignarTasador',function(){
+    // Assigns to a hidden input in the tasador modal the value of the
+    // appraisal, to have in the post request.
     var id = $(this).val();
     $('#tasadorAppraisal_id').val(id);
   });
-</script>
 
-<script>
   $(document).on('click','.asignarVisador',function(){
-      var id = $(this).val();
-      $('#visadorAppraisal_id').val(id);
+    // Assigns to a hidden input in the visador modal the value of the
+    // appraisal, to have it in the post request.
+    var id = $(this).val();
+    $('#visadorAppraisal_id').val(id);
   });
+
 </script>
 
 

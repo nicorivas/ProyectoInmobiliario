@@ -42,6 +42,13 @@ class Comment(models.Model):
     conflict = models.BooleanField("Incidencia",default=False)
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
 
+    @property
+    def hasText(self):
+        if self.text == "" or self.text == None:
+            return False
+        else:
+            return True
+
 class Photo(models.Model):
     photo = models.ImageField(upload_to='test/',default='no-img.jpg')
     description = models.CharField("Descripción",
