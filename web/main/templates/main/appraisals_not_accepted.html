@@ -1,0 +1,87 @@
+{% load custom_tags %}
+
+<thead>
+  <tr>
+    <th scope="col" style="width:1em">ID</th>
+    <th scope="col" style="width:8em">Cliente</th>
+    <th scope="col" style="width:8em">Código</th>
+    <th scope="col" style="width:1em;text-align:center;">T.</th>
+    <th scope="col" style="width:19em;">Dirección</th>
+    <th scope="col" style="width:11em;">Tasador</th>
+    <th scope="col" style="width:11em;">Visador</th>
+    <th scope="col" style="width:8em;">Creada</th>
+    <th scope="col" style="width:8em;">Entrega</th>
+    <th scope="col" style="width:5em;"></th>
+  </tr>
+</thead>
+<tbody>
+  {% for appraisal in appraisals_not_accepted %}
+  <tr class='not_accepted {{appraisal.tasadorUser.id}}' id="tr_not_accepted-{{appraisal.id}}">
+    <td>
+      {{ appraisal.id }}
+    </td>
+    <td>
+      {{ appraisal.solicitanteVerbose }}
+    </td>
+    <td>
+      {{ appraisal.solicitanteCodigo }}
+    </td>
+    <td style="text-align:center;">
+      <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
+    </td>
+    <td>
+      <a href="{{appraisal.url}}">
+        {{ appraisal.realEstate.addressVerboseNoRegion }}
+      </a>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-auto">
+          <span style="vertical-align: middle;">
+          {% if appraisal.tasadorUser %}
+            {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
+          {% else %}
+          -
+          {% endif %}
+          </span>
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-auto">
+          <span style="vertical-align: middle;">
+          {% if appraisal.visadorUser %}
+            {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
+          {% else %}
+          -
+          {% endif %}
+          </span>
+        </div>
+      </div>
+    </td>
+    <td class="Creada">
+      {{appraisal.timeCreated | date:"d/m/Y"}}
+    </td>
+    <td>
+    {% if appraisal.daysLeft > 3 %}
+      <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% elif appraisal.daysLeft > 1 %}
+      <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% else %}
+      <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% endif %}
+    </td>
+    <td>
+      {% has_notification_appraisal request.user appraisal.id as hna %}
+      <button type="button" class="btn btn-sm btn-dark btn-accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}"
+              style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        thumb_up
+      </button>
+      <button type="button" class="btn btn-dark btn-sm btn-reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        thumb_down
+      </button>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>

@@ -1,3 +1,4 @@
+<!--
 <script>
   function timeCreated(string) {
     var s = moment(string).format("D MMM HH:MM");
@@ -18,230 +19,69 @@
     document.write(s)
   }
 </script>
+-->
 
 {% load custom_tags %}
 
 <div class="container" style="max-width:100%">
 
-<div class="card mb-4" id="div_activas">
+<!-- NOT ASSIGNED -->
 
+{% if request.user|has_group:"asignador" or user.is_superuser %} 
+
+<div class="card mb-4" id="div_not_assigned" style="font-size:0.9em;">
   <div class="card-body">
-
-  <h5 class="card-title">Tasaciones activas</h5>
-
-  <div class="alert alert-primary" role="alert" id="div_no_activas" style="display: none;">
-    No hay tasaciones activas
-  </div>
-
-  <table class="table table-sm table-borderless" id="table_activas">
-    <thead>
-      <tr>
-        <th scope="col" style="width:1em">ID</th>
-        <th scope="col" style="width:10em">Cliente</th>
-        <th scope="col" style="width:10em">Cliente Código</th>
-        <th scope="col" style="width:1em;text-align:center;">T.</th>
-        <th scope="col" style="width:19em;">Dirección</th>
-        <th scope="col" style="width:10em;">Tasador</th>
-        <th scope="col" style="width:10em;">Visador</th>
-        <th scope="col" style="width:1em;text-align:center;">E.</th>
-        <th scope="col" style="width:8em;">Creada</th>
-        <th scope="col" style="width:8em;">Entrega</th>
-        <th scope="col" style="width:5em;"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for appraisal in appraisals_active %}
-      <tr class='activas {{appraisal.tasadorUser.id}}'  id="app-{{appraisal.tasadorUser.id}}">
-        <td>
-          {{ appraisal.id }}
-        </td>
-        <td>
-          {{ appraisal.solicitanteVerbose}}
-        </td>
-        <td>
-          {{ appraisal.solicitanteCodigo }}
-        </td>
-        <td style="text-align:center;">
-          <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
-        </td>
-        <td>
-          <a href="{{appraisal.url}}">
-            {{ appraisal.realEstate.addressVerboseNoRegion }}
-          </a>
-        </td>
-        <td>
-          <div class="row">
-            <div class="col-auto">
-              <span style="vertical-align: middle;">
-              {% if appraisal.tasadorUser %}
-                {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
-              {% else %}
-              -
-              {% endif %}
-              </span>
-            </div>
-            {% if perms.appraisal.assign_tasador %}
-            {% if appraisal.active %}
-            <div class="col text-right">
-              <button type="button" class="btn btn-sm asignarTasador" data-toggle="modal" data-target="#asignarTasador"
-                      value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-                person_add
-              </button>
-            </div>
-            {% endif %}
-            {% endif %}
-          </div>
-        </td>
-        <td>
-          <div class="row">
-            <div class="col-auto">
-              <span style="vertical-align: middle;">
-              {% if appraisal.visadorUser %}
-                {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name }}
-              {% else %}
-              -
-              {% endif %}
-              </span>
-            </div>
-            {% if perms.appraisal.assign_visador %}
-            {% if appraisal.active %}
-            <div class="col text-right">
-              <button type="button" class="btn btn-sm asignarVisador" data-toggle="modal" data-target="#asignarVisador"
-                      value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-                person_add
-              </button>
-            </div>
-            {% endif %}
-            {% endif %}
-          </div>
-        </td>
-        <td style="text-align:center;">
-          {% if appraisal.active %}
-          <i class="fas fa-play"></i>
-          {% elif appraisal.paused %}
-          <i class="fas fa-pause"></i>
-          {% endif %}
-        </td>
-        <td class="Creada">
-          <script>timeCreated("{{appraisal.timeCreated | date:"c"}}");</script>
-        </td>
-        <td>
-        {% if appraisal.daysLeft > 3 %}
-          <p style="margin-bottom:0em;" class="font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
-        {% elif appraisal.daysLeft > 1 %}
-          <p style="margin-bottom:0em;" class="text-warning font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
-        {% else %}
-          <p style="margin-bottom:0em;" class="text-danger font-weight-bold"><script>timeLeft("{{appraisal.timeDue|date:"c"}}");</script></p>
-        {% endif %}
-        </td>
-        <td>
-        {% has_notification_appraisal request.user appraisal.id as hna %}
-        <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn-logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
-                data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-          comment
-        </button>
-        <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-          delete
-        </button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <h5 class="card-title">Tasaciones por asignar</h5>
+    <div class="alert alert-primary mb-0" role="alert" id="div_alert_not_assigned" style="display:none;">
+      No hay tasaciones por asignar
+    </div>
+    <table class="table table-sm table-borderless" id="table_not_assigned" style="display:none;">
+      {% include 'main/appraisals_not_assigned.html' %}
+    </table>
   </div>
 </div>
 
-<div class="card mb-4" id="div_previas">
+{% endif %}
 
+<!-- NOT ACCEPTED -->
+
+<div class="card mb-4" id="div_not_accepted" style="font-size:0.9em;">
   <div class="card-body">
-
-  <h5 class="card-title">Tasaciones finalizadas</h5>
-
-  <div class="alert alert-primary" role="alert" id="div_no_previas" style="display: none;">
-    No hay tasaciones finalizadas
+    <h5 class="card-title">Tasaciones por aceptar</h5>
+    <div class="alert alert-primary mb-0" role="alert" id="div_alert_not_accepted" style="display:none;">
+      No tiene tasaciones por aceptar
+    </div>
+    <table class="table table-sm table-borderless" id="table_not_accepted" style="display:none;">
+      {% include 'main/appraisals_not_accepted.html' %}      
+    </table>
   </div>
+</div>
 
-  <table class="table table-sm table-borderless" id="table_previas">
-    <thead>
-      <tr>
-        <th scope="col" style="width:1em">ID</th>
-        <th scope="col" style="width:10em">Cliente</th>
-        <th scope="col" style="width:10em">Cliente Código</th>
-        <th scope="col" style="width:1em;text-align:center;">T.</th>
-        <th scope="col" style="width:19em">Dirección</th>
-        <th scope="col" style="width:10em">Tasador</th>
-        <!--<th scope="col">Fecha creación</th>-->
-        <th scope="col" style="width:10em">Entregada</th>
-        <th scope="col" style="width:17em"></th>
-        <th scope="col" style="width:5em"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for appraisal in appraisals_finished %}
-      <tr class="previas {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
-        <td>
-          {{ appraisal.id }}
-        </td>
-        <td>
-          {{ appraisal.solicitanteVerbose }}
-        </td>
-        <td>
-          {{ appraisal.solicitanteCodigo }}
-        </td>
-        <td style="text-align:center;">
-          <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
-        </td>
-        <td>
-          <a href={{appraisal.url}}>
-            {{ appraisal.realEstate.addressVerboseNoRegion }}
-          </a>
-        </td>
-        <td>
-          <span style="vertical-align: middle;">
-            {% if appraisal.tasadorUser %}
-              {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
-            {% else %}
-            -
-            {% endif %}
-          </span>
-        </td>
-        <!--
-        <td>
-          {{appraisal.timeCreated | date:"D d M, H:i"}}
-        </td>
-        -->
-        <td>
-          <script>timeFinished("{{appraisal.timeFinished | date:"c"}}");</script>
-        </td>
-        <td>
-        </td>
-        <td style="text-align:right;">
-          <button id='btn-vis' onclick="location.href='{{appraisal.url}}'" type="button" class="btn btn-dark btn-sm btn-delete" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-            visibility
-          </button>
-          {% if perms.appraisal.assign_visador %}
-          <button type="button" id="{{appraisal.tasadorUser.id}}" 
-                  value="{{appraisal.id}}"
-                  class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal"
-                  data-toggle="modal"
-                  data-target="#evaluateAppraisal" 
-                  data-ontime="{{appraisal.appraisalevaluation.onTime}}"
-                  data-completeness="{{appraisal.appraisalevaluation.completeness}}"
-                  data-correctsurface = "{{appraisal.appraisalevaluation.correctSurface}}"
-                  data-completenormative = "{{appraisal.appraisalevaluation.completeNormative}}"
-                  data-homologatedreferences = "{{appraisal.appraisalevaluation.homologatedReferences}}"
-                  data-commenttext="{{appraisal.appraisalevaluation.commentText}}"
-                  data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}"
-                  data-commentfeedback="{{appraisal.appraisalevaluation.commentFeedback}}"
-                  style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-            assessment
-          </button>
-        </td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<!-- ACTIVE -->
+
+<div class="card mb-4" id="div_active" style="font-size:0.9em;">
+  <div class="card-body">
+    <h5 class="card-title">Tasaciones activas</h5>
+    <div class="alert alert-primary" role="alert" id="div_alert_active" style="display: none;">
+      No hay tasaciones activas
+    </div>
+    <table class="table table-sm table-borderless" id="table_active" style="display:none;">
+      {% include 'main/appraisals_active.html' %}
+    </table>
+  </div>
+</div>
+
+<!-- FINISHED -->
+
+<div class="card mb-4" id="div_finished" style="font-size:0.9em;">
+  <div class="card-body">
+    <h5 class="card-title">Tasaciones finalizadas</h5>
+    <div class="alert alert-primary" role="alert" id="div_alert_finished" style="display: none;">
+      No hay tasaciones finalizadas
+    </div>
+    <table class="table table-sm table-borderless" id="table_finished" style="display: none;">
+      {% include 'main/appraisals_finished.html' %}
+    </table>
   </div>
 </div>
 
@@ -280,12 +120,9 @@
 
   var registerCommentDeleteButtons = function() {
     $(".delete_comment").on('click',function() {
-      console.log('hola')
-      console.log($(this))
       var comment_id = $(this).data('id');
       var appraisal_id = $(this).data('appraisal-id');
       var url = $(this).data('delete-comment-url');
-      console.log(url)
       $.ajax({
         url: url,
         type: 'get',
@@ -301,13 +138,11 @@
     })
   }
 
-  $(document).ready(function($) {
+  var assignTableActions = function() {
 
-    // Tooltips.
-
-    $('.btn-evaluate').tooltip({'title':'Evaluar'})
-
-    $(".btn-logbook").on("click", function (event) {
+    $(".btn_logbook").unbind()
+    $(".btn_logbook").off()
+    $(".btn_logbook").on("click", function (event) {
       // Opens logbook modal, and gets the data of the comments
       // from an AJAX request. Also changes a hidden input to
       // the appraisal id to have at the post request.
@@ -319,6 +154,320 @@
       //$(this).addClass('btn-dark');
       getLogbookData(id);
     });
+    
+    $(".btn_delete_appraisal").unbind()
+    $(".btn_delete_appraisal").off()
+    $(".btn_delete_appraisal").on("click", function (event) {
+      // Called on click of delete button in the active table.
+      var id = $(this).data('id');
+      $.ajax({
+          url:'',
+          type:'POST',
+          data:{
+              'id':id,
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          error:function(){
+              alert('Error al borrar tasación.');
+          },
+          success:function(data){
+              $('#appraisal_id').val(id);
+              $('#modalDelete').modal('show');
+          }
+      });
+    });
+
+    // --------------------------------------------------------------------------------------------
+    // Assign functions are called in the 'not_assigned' table, when
+    // the corresponding buttons are clicked.
+
+    $(".btn_assign_tasador_modal").unbind()
+    $(".btn_assign_tasador_modal").off()
+    $(".btn_assign_tasador_modal").on("click", function (event) {
+      // Assigns to a hidden input in the tasador modal the value of the
+      // appraisal, to have in the post request.
+      var id = $(this).val();
+      console.log(id)
+      $('#modal_assign_tasador_appraisal_id').val(id);
+    });
+
+    $(".btn_assign_visador_modal").unbind()
+    $(".btn_assign_visador_modal").off()
+    $(".btn_assign_visador_modal").on("click", function (event) {
+      // Assigns to a hidden input in the visador modal the value of the
+      // appraisal, to have it in the post request.
+      var id = $(this).val();
+      table = $(this).closest("table").attr("id")
+      $('#modal_assign_visador_appraisal_id').val(id);
+      $('#modal_assign_visador_source_table').val(table)
+    });
+
+    $("#btn_assign_tasador").unbind()
+    $("#btn_assign_tasador").off()
+    $("#btn_assign_tasador").on("click", function (event) {
+      // Button clicked in the modal. Call an AJAX to assign a tasador
+      // to the appraisal, and returns the 'not_accepted' table back,
+      // to be replaced.
+      var appraisal_id = $('#modal_assign_tasador_appraisal_id').val();
+      var url = "{% url 'ajax_assign_tasador_url' %}";
+      var formData = $('#form_assign_tasador').serialize();
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        error: function () {
+          alert("Error al asignar tasador.");
+          return false;
+        },
+        success: function (data) {
+          removeRow("not_assigned",appraisal_id)
+          replaceTable("not_accepted",data)
+          assignTableActions()
+          $("#modal_assign_tasador").modal('hide')
+        }
+      });
+    });
+
+    $("#btn_assign_visador").unbind()
+    $("#btn_assign_visador").off()
+    $("#btn_assign_visador").on("click", function (event) {
+      // Button clicked in the modal. Call an AJAX to assign a visador
+      // to the appraisal, and returns the 'not_assigned' table back,
+      // to be replaced.
+      var source_table = $('#modal_assign_visador_source_table').val();
+      var url = "{% url 'ajax_assign_visador_url' %}";
+      var formData = $('#form_assign_visador').serialize();
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        error: function () {
+          alert("Error al asignar visador.");
+          return false;
+        },
+        success: function (data) {
+          if (source_table == "table_not_assigned") {
+            replaceTable("not_assigned",data)
+          } else if (source_table == "table_active") {
+            replaceTable("active",data)
+          }
+          assignTableActions()
+          $("#modal_assign_visador").modal('hide')
+        }
+      });
+    });
+
+    // --------------------------------------------------------------------------------------------
+    // Unassign functions are available in the 'active' table, to unassign
+    // the current tasador or visador, and therefore put back the appraisal
+    // in the 'not_assigned' table.
+
+    $(".btn_unassign_tasador_modal").unbind()
+    $(".btn_unassign_tasador_modal").off()
+    $(".btn_unassign_tasador_modal").on("click", function (event) {
+      // Show the modal (via bootsrap), and set the corresponding variable inside the modal
+      // to the appraisal id, which is the value of the button clicked.
+      var id = $(this).val();
+      $('#modal_unassign_tasador_appraisal_id').val(id);
+    });
+
+    $(".btn_unassign_visador_modal").unbind()
+    $(".btn_unassign_visador_modal").off()
+    $(".btn_unassign_visador_modal").on("click", function (event) {
+      // Show the modal (via bootsrap), and set the corresponding variable inside the modal
+      // to the appraisal id, which is the value of the button clicked.
+      var id = $(this).val();
+      $('#modal_unassign_visador_appraisal_id').val(id);
+    });
+
+    $("#btn_unassign_tasador").unbind()
+    $("#btn_unassign_tasador").off()
+    $("#btn_unassign_tasador").on("click", function (event) {
+      // Button clicked in the modal. Call an AJAX to unassign the tasador
+      // of the appraisal, and returns the 'not_assigned' table back,
+      // to be replaced.
+      var appraisal_id = $('#modal_unassign_tasador_appraisal_id').val();
+      var url = "{% url 'ajax_unassign_tasador_url' %}";
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        error: function () {
+            alert("Error al desasignar tasador.");
+            return false;
+        },
+        success: function (data) {
+          removeRow("active",appraisal_id)
+          replaceTable("not_assigned",data)
+          assignTableActions()
+          $("#modal_unassign_tasador").modal('hide')
+        }
+      });
+    });
+
+    $("#btn_unassign_visador").unbind()
+    $("#btn_unassign_visador").off()
+    $("#btn_unassign_visador").on("click", function (event) {
+      // Button clicked in the modal. Call an AJAX to unassign the tasador
+      // of the appraisal, and returns the 'not_assigned' table back,
+      // to be replaced.
+      var appraisal_id = $('#modal_unassign_visador_appraisal_id').val();
+      var url = "{% url 'ajax_unassign_visador_url' %}";
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        error: function () {
+            alert("Error al desasignar visador.");
+            return false;
+        },
+        success: function (data) {
+          replaceTable("active",data)
+          assignTableActions()
+          $("#modal_unassign_visador").modal('hide')
+        }
+      });
+    });
+
+    $(".btn-accept").unbind()
+    $(".btn-accept").off()
+    $(".btn-accept").on("click", function (event) {
+      // Button to accept an appraisals that has been requested.
+      event.preventDefault();
+      appraisal_id = $(this).val(); // button has id of appraisal
+      url = "{% url 'ajax_accept_appraisal_url' %}"
+      rows = $('#table_not_accepted tr').length;
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        dataType: 'html',
+        error: function() {
+          alert("Error al aceptar tasación.");
+          return false;
+        },
+        success: function (data) {
+          removeRow("not_accepted",appraisal_id)
+          replaceTable("active",data)
+          assignTableActions();
+        },
+        complete: function (data) {
+          // everything is done in the view
+        }
+      })
+    });
+
+    $(".btn-reject").unbind()
+    $(".btn-reject").off()
+    $(".btn-reject").on("click", function (event) {
+      // Button to reject an appraisals that has been requested.
+      event.preventDefault();
+      appraisal_id = $(this).val(); // button has id of appraisal
+      url = "{% url 'ajax_reject_appraisal_url' %}"
+      rows_not_accepted = $('#table_not_accepted tr').length;
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        dataType: 'html',
+        error: function() {
+          alert("Error al rechazar tasación.");
+          return false;
+        },
+        success: function (data) {
+          if (rows_not_accepted > 2) {
+            $("#tr_not_accepted-"+appraisal_id).fadeOut()
+          } else {
+            $("#table_not_accepted").fadeOut()
+            $("#div_alert_not_accepted").fadeToggle()
+          }
+          $("#table_not_assigned").html($.trim(data))
+          if (rows_not_assigned <= 2) {
+            $("#table_not_assigned").fadeToggle()
+            $("#div_alert_not_assigned").fadeToggle()
+          }
+          assignTableActions();
+        },
+        complete: function (data) {
+          // everything is done in the view
+        }
+      })
+    });
+  }
+
+  var removeRow = function(table_name,appraisal_id) {
+    // Remove row from table. Takes into account if this is
+    // the last row remaining, in that case it hides the whole
+    // table and shows the no elements alert div.
+    var nrows = $("#table_"+table_name+" tr").length;
+    if (nrows > 2) {
+      $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
+    } else {
+      $("#table_"+table_name).fadeOut()
+      $("#div_alert_"+table_name).fadeToggle()
+    }
+  }
+
+  var replaceTable = function(table_name,data) {
+    // Replaces a table, usuallhy from data from AJAX. Takes
+    // into account the size of the table and hides the 
+    // alert of no elements if the table returned has elements.
+    $("#table_"+table_name).html($.trim(data))
+    var nrows = $("#table_"+table_name+" tr").length;
+    if (nrows == 1) {
+      $("#table_"+table_name).fadeToggle()
+      $("#div_alert_"+table_name).fadeToggle()
+    }
+  }
+
+  $(document).ready(function($) {
+
+    // Show or hide tables or empty warnings
+
+    appraisals_not_assigned_n = {{appraisals_not_assigned|length}}
+    if (appraisals_not_assigned_n > 0) {
+      $("#table_not_assigned").toggle()
+    } else {
+      $("#div_alert_not_assigned").toggle()
+    }
+
+    appraisals_not_accepted_n = {{appraisals_not_accepted|length}}
+    if (appraisals_not_accepted_n > 0) {
+      $("#table_not_accepted").toggle()
+    } else {
+      $("#div_alert_not_accepted").toggle()
+    }
+
+    appraisals_active_n = {{appraisals_active|length}}
+    if (appraisals_active_n > 0) {
+      $("#table_active").toggle()
+    } else {
+      $("#div_alert_active").toggle()
+    }
+
+    appraisals_finished_n = {{appraisals_finished|length}}
+    if (appraisals_finished_n > 0) {
+      $("#table_finished").toggle()
+    } else {
+      $("#div_alert_finished").toggle()
+    }
+
+    // Tooltips.
+
+    $('.btn-evaluate').tooltip({'title':'Evaluar'})
+
+    $('.btn_delete_appraisal').tooltip({'title':'Borrar'})
+
+    $('.btn_logbook').tooltip({'title':'Bitácora'})
+
+    $('.btn_asignar_tasador').tooltip({'title':'Desasignar'})
+
+    $('.btn_asignar_visador').tooltip({'title':'Desasignar'})
+
+
+    // Actions.
+
+    assignTableActions()
 
     $("#comment").on("click", function (event) {
       // Click of comment button in comment form.
@@ -373,44 +522,7 @@
     return false;
   }
 
-  $(document).on('click','.delete_appraisal',function(){
-      var id = $(this).data('id');
-      $.ajax({
-          url:'',
-          type:'POST',
-          data:{
-              'id':id,
-              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-          },
-          success:function(data){
-              $('#appraisal_id').val(id);
-              $('#modalDelete').modal('show');
-          },
-          error:function(){
-              console.log('error')
-          },
-      });
-  });
 </script>
-
-<script>
-
-  $(document).on('click','.asignarTasador',function(){
-    // Assigns to a hidden input in the tasador modal the value of the
-    // appraisal, to have in the post request.
-    var id = $(this).val();
-    $('#tasadorAppraisal_id').val(id);
-  });
-
-  $(document).on('click','.asignarVisador',function(){
-    // Assigns to a hidden input in the visador modal the value of the
-    // appraisal, to have it in the post request.
-    var id = $(this).val();
-    $('#visadorAppraisal_id').val(id);
-  });
-
-</script>
-
 
 <script>
      //Handles the click true/false value of the appraisal evaluation form

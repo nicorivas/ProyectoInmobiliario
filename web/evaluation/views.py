@@ -18,7 +18,7 @@ def get_appraisalEvaluations(request):
 
 
 def appraiserEvaluationView(request):
-    appraisals_active, appraisals_finished = userAppraisals(request)
+    appraisals_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
     for i in appraisals_finished: #Asegurarse de que toda tasación tenga una evaluación
         try:
             x = AppraisalEvaluation.objects.get(appraisal=i)

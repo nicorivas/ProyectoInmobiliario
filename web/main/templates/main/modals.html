@@ -25,8 +25,56 @@
 
 
 
+<div class="modal fade" id="modal_assign_tasador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Seleccione un tasador</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post" id="form_assign_tasador">
+          {% csrf_token %}
+          <table class="table table-sm table-borderless">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Tasaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tasador in tasadores %}
+              <tr>
+                <th scope="col">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{tasador.user.id}}">
+                    <label class="form-check-label" for="tasador_radio">
+                      {{tasador.user.first_name}} {{tasador.user.last_name}}
+                    </label>
+                  </div>
+                </th>
+                <th scope="col">{{tasador.activeAppraisals}}</th>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="modal-footer">
+            <input id="modal_assign_tasador_appraisal_id" name="appraisal_id" type="hidden" value="">
+            <button name="btn_unassign_tasador" class="btn btn-danger mr-5">Desasignar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" id="btn_assign_tasador" name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-<div class="modal fade" id="asignarVisador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+
+
+<div class="modal fade" id="modal_assign_visador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -36,7 +84,8 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="" method="post" id="form">
+        <form action="" method="post" id="form_assign_visador">
+          {% csrf_token %}
             <table class="table table-sm">
               <thead class="thead-light">
                 <tr>
@@ -50,7 +99,7 @@
                 <tr>
                   <th scope="col">
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{user.id}}" checked>
+                      <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{visador.user.id}}" checked>
                       <label class="form-check-label" for="visador_radio">
                         {{visador.user.first_name}} {{visador.user.last_name}}
                       </label>
@@ -64,9 +113,10 @@
             </table>
 
               <div class="modal-footer">
-                  <input id="visadorAppraisal_id" name="visadorAppraisal_id" type="hidden" value="">
+                <input id="modal_assign_visador_appraisal_id" name="appraisal_id" type="hidden" value="">
+                <input id="modal_assign_visador_source_table" name="source_table" type="hidden" value="">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button name="btn_assign_visador" class="btn btn-primary">Asignar</button>
+                <button type="button" id="btn_assign_visador" name="btn_assign_visador" class="btn btn-primary">Asignar</button>
               </div>
           </form>
         </div>
@@ -76,51 +126,55 @@
 
 
 
-<div class="modal fade" id="asignarTasador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="modal_unassign_tasador" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Seleccione un tasador</h5>
+        <h5 class="modal-title">Desasignar tasador</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-    <form action="" method="post" id="form">
-        <table class="table table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tasaciones</th>
-            </tr>
-          </thead>
-          <tbody>
-
-            {% for tasador in tasadores %}
-            <tr>
-              <th scope="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{user.id}}" checked>
-                  <label class="form-check-label" for="tasador_radio">
-                    {{tasador.user.first_name}} {{tasador.user.last_name}}
-                  </label>
-                </div>
-              </th>
-              <th scope="col">{{tasador.activeAppraisals}}</th>
-            </tr>
-            {% endfor %}
-
-          </tbody>
-        </table>
-          <div class="modal-footer">
-              <input id="tasadorAppraisal_id" name="tasadorAppraisal_id" type="hidden" value="">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-              <button name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
-          </div>
-     </form>
+          <p>¿Esta seguro de que desea desasignar el tasador?</p>
+          <p>Un nuevo tasador deberá confirmar la asignación.</p>
+      </div>
+      <div class="modal-footer">
+        <form action="" method="post" id="form">
+          {% csrf_token %}
+          <input id="modal_unassign_tasador_appraisal_id" name="appraisal_id" type="hidden" value="2">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" name="btn_unassign_tasador" id="btn_unassign_tasador" value="">Desasignar</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="modal_unassign_visador" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Desasignar visador</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <p>¿Esta seguro de que desea desasignar el visador?</p>
+          <p>Un nuevo visador deberá confirmar la asignación.</p>
+      </div>
+      <div class="modal-footer">
+        <form action="" method="post" id="form">
+          {% csrf_token %}
+          <input id="modal_unassign_visador_appraisal_id" name="appraisal_id" type="hidden" value="2">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" name="btn_unassign_visador" id="btn_unassign_visador" value="">Desasignar</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -136,7 +190,7 @@
       </div>
       <div class="modal-body">
        <form action="" method="post" id="form">
-           {% csrf_token %}
+        {% csrf_token %}
         <table class="table table-sm">
           <thead class="thead-light">
             <tr>
@@ -213,10 +267,10 @@
           </tbody>
         </table>
         <div class="modal-footer">
-            <input id="evaluadorAppraisal_id" name="evaluadorAppraisal_id" type="hidden" value="">
-            <input id="evaluador_id" name="evaluador_id" type="hidden" value="">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            <button name="btn_evaluate_appraisal" class="btn btn-primary">Evaluar</button>
+          <input id="evaluadorAppraisal_id" name="evaluadorAppraisal_id" type="hidden" value="">
+          <input id="evaluador_id" name="evaluador_id" type="hidden" value="">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button name="btn_evaluate_appraisal" class="btn btn-primary">Evaluar</button>
         </div>
        </form>
       </div>
@@ -239,6 +293,7 @@
           <div class="col-12">
 
             <form id="form_comment" data-comment-url="{% url 'ajax_comment_url' %}">
+
               {% csrf_token %}
               <input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
               <div class="form-group">

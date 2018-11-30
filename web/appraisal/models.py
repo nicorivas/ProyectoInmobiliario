@@ -13,6 +13,7 @@ import reversion
 class Comment(models.Model):
     event_choices = (
         (1, "Contacto validado"),
+        (23, "Asignado"),
         (2, "Asignación aceptada"),
         (3, "Acuerdo visita"),
         (4, "Propiedad visitada"),
@@ -110,10 +111,12 @@ class Appraisal(models.Model):
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
 
     STATE_IMPORTED = 0
+    STATE_NOTASSIGNED = 4
     STATE_ACTIVE = 1
     STATE_PAUSED = 2
     STATE_FINISHED = 3
     STATES = (
+        (STATE_NOTASSIGNED,'not assigned'),
         (STATE_ACTIVE,'active'),
         (STATE_FINISHED,'finished'),
         (STATE_PAUSED,'paused'),
@@ -222,6 +225,7 @@ class Appraisal(models.Model):
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
     
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
+
     visadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_visador')
     visadorEmpresa = models.CharField("Visador empresa",max_length=100,blank=True,null=True)
     visadorEmpresaMail = models.EmailField("Visador empresa mail",max_length=100,blank=True,null=True)
@@ -336,7 +340,10 @@ class Appraisal(models.Model):
         else:
             for choice in self.petitioner_choices:
                 if self.solicitante == choice[0]:
-                    return choice[1]
+                    if choice[1] == "Banco Internacional":
+                        return "Internacional"
+                    else:
+                        return choice[1]
             return '-'
 
     @property

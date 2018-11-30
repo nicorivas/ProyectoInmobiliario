@@ -240,7 +240,9 @@ def populate_from_file(request):
                 data['contacto'] = ws['C26'].value.strip()
                 data['contactoEmail'] = ws['C28'].value.strip()
                 data['contactoTelefono'] = ws['C30'].value.strip()
-                tipo = ws['C37'].value.strip()
+                tipo = ws['C37'].value
+                if isinstance(tipo,type('')):
+                    tipo = tipo.strip()
                 if tipo == 'CASAS':
                     data['propertyType'] = RealEstate.TYPE_HOUSE
                 elif tipo == 'DEPARTAMENTOS':
@@ -312,7 +314,6 @@ def populate_from_file(request):
                         data['solicitanteEjecutivo'] += ' '+text[i+c].strip()
                         c += 1
                 elif 'Nombre Ejecutivo' in line.strip():
-                    print('hola')
                     data['solicitanteEjecutivo'] = text[i+1].strip()
                 elif 'Telefono Ejecutivo' in line.strip():
                     data['solicitanteEjecutivoTelefono'] = text[i+1].strip()

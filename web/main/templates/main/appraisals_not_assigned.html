@@ -1,0 +1,103 @@
+{% load custom_tags %}
+
+<thead>
+  <tr>
+    <th scope="col" style="width:1em">ID</th>
+    <th scope="col" style="width:8em">Cliente</th>
+    <th scope="col" style="width:8em">Código</th>
+    <th scope="col" style="width:1em;text-align:center;">T.</th>
+    <th scope="col" style="width:19em;">Dirección</th>
+    <th scope="col" style="width:11em;">Tasador</th>
+    <th scope="col" style="width:11em;">Visador</th>
+    <th scope="col" style="width:8em;">Creada</th>
+    <th scope="col" style="width:8em;">Entrega</th>
+    <th scope="col" style="width:5em;"></th>
+  </tr>
+</thead>
+<tbody>
+  {% for appraisal in appraisals_not_assigned %}
+  <tr class='activas {{appraisal.tasadorUser.id}}' id="tr_not_assigned-{{appraisal.id}}">
+    <td>
+      {{ appraisal.id }}
+    </td>
+    <td>
+      {{ appraisal.solicitanteVerbose }}
+    </td>
+    <td>
+      {{ appraisal.solicitanteCodigo }}
+    </td>
+    <td style="text-align:center;">
+      <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
+    </td>
+    <td>
+      <a href="{{appraisal.url}}">
+        {{ appraisal.realEstate.addressVerboseNoRegion }}
+      </a>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-auto">
+          <span style="vertical-align: middle;">
+          {% if appraisal.tasadorUser %}
+            {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
+          {% else %}
+          -
+          {% endif %}
+          </span>
+        </div>
+        {% if perms.appraisal.assign_tasador %}
+        <div class="col text-right">
+          <button type="button" class="btn btn-sm btn-light btn_assign_tasador_modal" data-toggle="modal" data-target="#modal_assign_tasador"
+                  value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+            person_add
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-auto">
+          <span style="vertical-align: middle;">
+          {% if appraisal.visadorUser %}
+            {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
+          {% else %}
+          -
+          {% endif %}
+          </span>
+        </div>
+        {% if perms.appraisal.assign_visador %}
+        <div class="col text-right">
+          <button type="button" class="btn btn-sm btn-light btn_assign_visador_modal" data-toggle="modal" data-target="#modal_assign_visador"
+                  value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+            person_add
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </td>
+    <td class="Creada">
+      {{appraisal.timeCreated | date:"d/m/Y"}}
+    </td>
+    <td>
+    {% if appraisal.daysLeft > 3 %}
+      <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% elif appraisal.daysLeft > 1 %}
+      <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% else %}
+      <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+    {% endif %}
+    </td>
+    <td>
+      {% has_notification_appraisal request.user appraisal.id as hna %}
+      <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
+              data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        assignment
+      </button>
+      <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        delete
+      </button>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>

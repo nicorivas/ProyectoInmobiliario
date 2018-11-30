@@ -16,12 +16,14 @@
       </div>
       <div class="col-5 text-right">
         <small>{{comment.timeCreated}}</small>
+        {% if request.user|has_group:"asignador" or user.is_superuser %} 
         <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="{{comment.id}}" class="btn btn-dark btn-sm delete_comment ml-3" style="
         padding-top:0em;
         padding-bottom:0em;
         font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
           delete
         </button>
+        {% endif %}
       </div>
     </div>
   </div>

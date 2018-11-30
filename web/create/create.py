@@ -76,10 +76,8 @@ def appraisal_create(realEstate,
         contactoEmail=contactoEmail,
         contactoTelefono=contactoTelefono,
         price=price)
-    with reversion.create_revision():
-        appraisal.save()
-        reversion.set_user(user)
-        reversion.set_comment('Created')
+    appraisal.state = Appraisal.STATE_NOTASSIGNED
+    appraisal.save()
     return appraisal
 
 def apartment_create(building_in,addressNumber2):

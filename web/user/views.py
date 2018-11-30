@@ -22,18 +22,18 @@ def userAppraisals(request):
     apps = Appraisal.objects.defer('photos')
     try:
         if request.user.groups.values_list('name', flat=True)[0]=='tasador':
-            appraisals_active = apps.filter(tasadorUser=request.user).filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-            appraisals_finished = apps.filter(tasadorUser=request.user).filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+            appraisals = apps.filter(tasadorUser=request.user)
         elif request.user.groups.values_list('name',flat=True)[0]=='visador':
-            appraisals_active = apps.filter(visadorUser=request.user).filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-            appraisals_finished = apps.filter(visadorUser=request.user).filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+            appraisals = apps.filter(visadorUser=request.user)
         else:
-            appraisals_active = apps.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-            appraisals_finished = apps.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+            appraisals = apps.all()
     except IndexError:
-        appraisals_active = apps.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-        appraisals_finished = apps.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
-    return [appraisals_active, appraisals_finished]
+        appraisals = apps.all()
+
+    appraisals_not_assigned = appraisals.filter(state=Appraisal.STATE_NOTASSIGNED).order_by('timeCreated')
+    appraisals_active = appraisals.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+    appraisals_finished = appraisals.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+    return [appraisals_not_assigned, appraisals_active, appraisals_finished]
 
 def save_appraisalNF(appraisal, request, comment):
     print('save_appraisal')

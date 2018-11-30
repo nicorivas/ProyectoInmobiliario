@@ -17,44 +17,54 @@ from evaluation.forms import EvaluationForm
 from appraisal.models import AppraisalEvaluation
 
 
-def save_appraisalNF(appraisal, request, comment):
-    print('save_appraisal')
-    with reversion.create_revision():
-        appraisal.save()
-        reversion.set_user(request.user)
-        reversion.set_comment(comment)
-        return
+def assign_tasador(appraisal_id,tasador_id,user_id):
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    tasador = User.objects.get(id=tasador_id)
+    user = User.objects.get(id=user_id)
 
-def assign_tasadorNF(request):
-    print(request.POST)
-    pk = request.POST.dict()['tasadorAppraisal_id'];
-    appraisal = Appraisal.objects.get(pk=pk)
-    appraisal.tasadorUser = User.objects.get(pk=request.POST.dict()['tasador'])
-    save_appraisalNF(appraisal, request,'Changed tasador')
+    appraisal.tasadorUser = tasador
+    comment = Comment(event=23,user=user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
+    comment.text = "Tasación asignada a "+tasador.user.full_name
+    comment.save()
+    appraisal.comments.add(comment)
+    appraisal.save()
     return
 
-def assign_visadorNF(request):
-    appraisal = Appraisal.objects.get(pk=request.POST.dict()['visadorAppraisal_id'])
-    appraisal.visadorUser = User.objects.get(pk=request.POST.dict()['visador'])
-    save_appraisalNF(appraisal, request,'Changed visador')
+def unassign_tasador(appraisal_id):
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.tasadorUser = None
+    appraisal.state = Appraisal.STATE_NOTASSIGNED
+    appraisal.save()
+    return
+
+def assign_visador(appraisal_id,visador_id,user_id):
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    visador = User.objects.get(id=visador_id)
+    user = User.objects.get(id=user_id)
+
+    appraisal.visadorUser = visador
+    comment = Comment(event=23,user=user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
+    comment.text = "Tasación asignada a "+visador.user.full_name
+    comment.save()
+    appraisal.comments.add(comment)
+    appraisal.save()
+    return
+
+def unassign_visador(appraisal_id):
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.visadorUser = None
+    appraisal.save()
     return
 
 @login_required(login_url='/user/login')
 def main(request):
     evaluationForm = EvaluationForm()
     if request.method == 'POST':
-        print(request.POST)
         if 'delete' in request.POST:
             # Handle the delete button, next to every appraisal
             id = int(request.POST['appraisal_id'])
             appraisal = Appraisal.objects.get(pk=id)
             appraisal.delete()
-        if 'btn_assign_tasador' in request.POST.keys():
-            print(request.POST.dict())
-            ret = assign_tasadorNF(request)
-        if 'btn_assign_visador' in request.POST.keys():
-            print(request.POST.dict())
-            ret = assign_visadorNF(request)
         if 'evaluadorAppraisal_id' in request.POST.keys():
             evaluationForm = EvaluationForm(request.POST)
             if evaluationForm.is_valid():
@@ -92,8 +102,11 @@ def main(request):
     visadores_info = visadorWork(visadores)
 
     # Get appraisals that this user can see
-
-    appraisals_active, appraisals_finished = userAppraisals(request)
+    #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
+    appraisals_not_assigned = appraisals_get_not_assigned()
+    appraisals_not_accepted = appraisals_get_not_accepted(request.user)
+    appraisals_active = appraisals_get_active(request.user)
+    appraisals_finished = appraisals_get_finished(request.user)
 
     # Form to create a comment
 
@@ -101,6 +114,8 @@ def main(request):
 
     context = {
         'evaluationForm': evaluationForm,
+        'appraisals_not_assigned': appraisals_not_assigned,
+        'appraisals_not_accepted': appraisals_not_accepted,
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
         'tasadores':tasadores_info,
@@ -109,7 +124,156 @@ def main(request):
 
     return render(request, 'main/index.html', context)
 
-def logbook(request):
+def appraisals_get_not_assigned():
+    appraisals = Appraisal.objects.select_related().filter(state=Appraisal.STATE_NOTASSIGNED)
+    appraisals_not_assigned = appraisals.filter(tasadorUser__isnull=True).order_by('timeCreated')
+    appraisals_not_assigned.only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumber",
+        "realEstate__addressCommune__name")
+    return appraisals_not_assigned
+
+def appraisals_get_not_accepted(user):
+    appraisals = Appraisal.objects.select_related().filter(state=Appraisal.STATE_NOTASSIGNED)
+    appraisals_not_accepted = appraisals.filter(tasadorUser__isnull=False).order_by('timeCreated').order_by('timeCreated')
+    if not user.is_superuser:
+        appraisals_not_accepted = appraisals_not_accepted.filter(Q(tasadorUser=user)|Q(visadorUser=user))
+    appraisals_not_accepted.select_related().only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumber",
+        "realEstate__addressCommune__name")
+    return appraisals_not_accepted
+
+def appraisals_get_active(user):
+    appraisals_active = Appraisal.objects.select_related().filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
+    if not user.is_superuser:
+        appraisals_active = appraisals_active.filter(Q(tasadorUser=user)|Q(visadorUser=user))
+    appraisals_active.select_related().only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumner",
+        "realEstate__addressCommune__name")
+    return appraisals_active
+
+def appraisals_get_finished(user):
+    appraisals_finished = Appraisal.objects.select_related().filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+    if not user.is_superuser:
+        appraisals_finished = appraisals_finished.filter(Q(tasadorUser=user)|Q(visadorUser=user))
+    appraisals_finished.select_related().only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumner",
+        "realEstate__addressCommune__name")
+    return appraisals_finished
+
+def ajax_assign_tasador(request):
+    '''
+    Assign a tasador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding modal, which has a form where you can select the user.
+    '''
+    assign_tasador(int(request.POST['appraisal_id']),int(request.POST['tasador']),int(request.user.id))
+    appraisals_not_accepted = appraisals_get_not_accepted(request.user)
+    return render(request,'main/appraisals_not_accepted.html',{'appraisals_not_accepted':appraisals_not_accepted})
+
+def ajax_assign_visador(request):
+    '''
+    Assign a visador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding modal, which has a form where you can select the user.
+    Button an be called from two tables, so different appraisals must be gotten
+    to modify the correct table.
+    '''
+    assign_visador(int(request.POST['appraisal_id']),int(request.POST['visador']),int(request.user.id))
+    if request.POST['source_table'] == 'table_not_assigned':
+        appraisals_not_assigned = appraisals_get_not_assigned()
+        return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
+    elif request.POST['source_table'] == 'table_active':
+        appraisals_active = appraisals_get_active(request.user)
+        return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active})
+
+def ajax_unassign_tasador(request):
+    '''
+    Unassign a tasador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding confirmation modal.
+    '''
+    unassign_tasador(int(request.GET['appraisal_id']))
+    appraisals_not_assigned = appraisals_get_not_assigned()
+    return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
+
+def ajax_unassign_visador(request):
+    '''
+    Unassign a tasador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding confirmation modal.
+    '''
+    unassign_visador(int(request.GET['appraisal_id']))
+    appraisals_active = appraisals_get_active(request.user)
+    return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active})
+
+def ajax_accept_appraisal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.state = Appraisal.STATE_ACTIVE
+
+    comment = Comment(event=2,user=request.user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
+    comment.save()
+    appraisal.comments.add(comment)
+    appraisal.save()
+
+    appraisals_active = appraisals_get_active(request.user)
+
+    return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active})
+
+def ajax_reject_appraisal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.state = Appraisal.STATE_NOTASSIGNED
+    appraisal.tasadorUser = None
+    appraisal.save()
+
+    appraisals = Appraisal.objects.filter(state=Appraisal.STATE_NOTASSIGNED)
+    appraisals_not_assigned = appraisals.filter(tasadorUser__isnull=True).order_by('timeCreated')
+    if request.user.groups.filter(name='tasador').exists():
+        appraisals_not_assigned = appraisals_not_assigned.filter(tasadorUser=request.user)
+
+    return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
+
+
+def ajax_logbook(request):
     '''
     Called when opening the logbook modal, through AJAX. Returns the comments of the relevant appraisal.
     '''
@@ -120,17 +284,16 @@ def logbook(request):
 
     return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments})
 
-def logbook_close(request):
+def ajax_logbook_close(request):
     '''
-    Called when closing the logbook modal, through AJAX.
-    Deletes notifications.
+    Called when closing the logbook modal, through AJAX. Deletes notifications.
     '''
     appraisal_id = int(request.GET['appraisal_id'])
     request.user.user.removeNotification(ntype="comment",appraisal_id=appraisal_id)
 
     return HttpResponse('')
 
-def comment(request):
+def ajax_comment(request):
     '''
     Make a comment. This is an AJAX request called when the button comment is pressed.
     It should return the list of comments in logbook.html.
@@ -168,7 +331,7 @@ def comment(request):
 
     return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments})
 
-def delete_comment(request):
+def ajax_delete_comment(request):
     '''
     Called from AJAX when the button of delete in all comments is pressed. It just deletes
     the comment and DOES NOT return a new list: the comment is just hidden via javascript
