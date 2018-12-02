@@ -3,7 +3,8 @@ import re
 import sys
 import os
 import django
-sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
+#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
+sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -13,10 +14,13 @@ from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
+from region.models import Region
 from user.models import UserProfile
 
 
 file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
+file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
+
 
 addresses = ["Las Violetas 2152, Dpto. 407", "Av. La Florida N° 9650 Casa 60","Luis Pereira 1621, Dpto E",
 "Manuel Calro Vial N° 8549", "Lo Lopez N° 1469", "Río Teno n1069 (Sitio 12 Manzana 35)", "Santa Isabel n° 797, dp 1016","diogenes 332",
@@ -59,6 +63,10 @@ def importAppraisalSantander(request):
             return (d + m + s)*multiplier
         except ValueError:
             return tude
+
+    def get_commune_name(commune):
+        name = commune
+        return name
 
     def excel_find_import(workbook1, workbook2, term, once=False):
         for sheet in workbook1.sheetnames:
@@ -120,9 +128,10 @@ def importAppraisalSantander(request):
 
 
     if propertyType == "Casa":
-
         house = House.objects.get(addressStreet=address['addressStreet'],
-                                  )
+                                  addressNumber=address['addressNumber'],
+                                  addressNumber2=address['addressNumber2'],
+                                  addressCommune=Commune.objects.get(name=addressCommune.lower()))
         print(house)
     ''' 
     appraisal = Appraisal(state=0,
@@ -166,7 +175,7 @@ def importAppraisalSantander(request):
     avaluoFiscal,
     valorUF)
 
-importAppraisalSantander(file)
+importAppraisalSantander(file_mac)
 ''' 
 for address in addresses:
     print(address)
