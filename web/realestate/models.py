@@ -262,7 +262,8 @@ class RealEstate(models.Model):
         ('G', 'Hotel, Motel'),
         ('P', 'Administración pública'),
         ('Q', 'Culto'),
-        ('S', 'Salud')
+        ('S', 'Salud'),
+        ('SE', 'Sitio Eriazo')
     )
     destinoSII = models.CharField("Destino según SII",
         max_length=1,
@@ -296,7 +297,7 @@ class RealEstate(models.Model):
         null=True)
 
     recepcionFinalNo = models.CharField("Recepcion final",
-        max_length=10,
+        max_length=20,
         blank=True,
         null=True)
     recepcionFinalFecha = models.DateField("Recepcion final fecha",
