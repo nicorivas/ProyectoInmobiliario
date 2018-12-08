@@ -107,6 +107,7 @@ def main(request):
     appraisals_not_accepted = appraisals_get_not_accepted(request.user)
     appraisals_active = appraisals_get_active(request.user)
     appraisals_finished = appraisals_get_finished(request.user)
+    appraisals_imported = appraisals_get_imported(request.user)
 
     # Form to create a comment
 
@@ -118,6 +119,7 @@ def main(request):
         'appraisals_not_accepted': appraisals_not_accepted,
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
+        'appraisals_imported': appraisals_imported,
         'tasadores':tasadores_info,
         'visadores':visadores_info,
         'form_comment':form_comment}
@@ -177,7 +179,7 @@ def appraisals_get_active(user):
         "tasadorUser",
         "visadorUser",
         "realEstate__addressStreet",
-        "realEstate__addressNumner",
+        "realEstate__addressNumber",
         "realEstate__addressCommune__name")
     return appraisals_active
 
@@ -196,9 +198,29 @@ def appraisals_get_finished(user):
         "tasadorUser",
         "visadorUser",
         "realEstate__addressStreet",
-        "realEstate__addressNumner",
+        "realEstate__addressNumber",
         "realEstate__addressCommune__name")
     return appraisals_finished
+
+def appraisals_get_imported(user):
+    appraisals_imported = Appraisal.objects.select_related().filter(state=Appraisal.STATE_IMPORTED).order_by('timeCreated')
+    if not user.is_superuser:
+        appraisals_imported = appraisals_imported.filter(Q(tasadorUser=user)|Q(visadorUser=user))
+    appraisals_imported.select_related().only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumber",
+        "realEstate__addressCommune__name")
+    print(appraisals_imported)
+    return appraisals_imported
 
 def ajax_assign_tasador(request):
     '''

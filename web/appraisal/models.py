@@ -304,6 +304,7 @@ class Appraisal(models.Model):
                 self.realEstate.apartment.id,
                 self.id)
         elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
+            print(self.realEstate.addressRegion)
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),

@@ -3,8 +3,8 @@ import re
 import sys
 import os
 import django
-sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
-#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web')
+#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
+sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -207,6 +207,7 @@ def importAppraisalSantander(file):
                                       addressNumber=address['addressNumber'],
                                       addressNumber2=address['addressNumber2'],
                                       addressCommune=Commune.objects.get(name=addressCommune))
+            house.addressRegion = Commune.objects.get(name=addressCommune).region
             house.copropiedadInmobiliaria = copropiedadInmobiliaria
             house.ocupante = ocupante
             house.tipoBien = tipoBien
@@ -231,14 +232,17 @@ def importAppraisalSantander(file):
             house.vidaUtil = vidaUtil
             house.acogidaLey = acogidaLey
             house.dfl2 = dfl2
-            house.save
+            house.save()
+            print(house.id)
             print("existe")
+            print(house.addressRegion)
         except ObjectDoesNotExist:
             house = House(name=address['addressStreet']+' '+address['addressNumber']+' '+address['addressNumber2'],
                             addressStreet=address['addressStreet'],
                             addressNumber=address['addressNumber'],
                             addressNumber2=address['addressNumber2'],
                             addressCommune=Commune.objects.get(name=addressCommune),
+                            addressRegion=Commune.objects.get(name=addressCommune).region,
                             propertyType=RealEstate.TYPE_HOUSE,
                             lat=lat,
                             lng=lng,
@@ -270,47 +274,46 @@ def importAppraisalSantander(file):
             house.save()
 
             print("no existe")
-            try:
-                appraisal = Appraisal.objects.get(realEstate=house,
-                                                  valorUF=valorUF,
-                                                  tipoTasacion=1,
-                                                  state=0,
-                                                  source=1,
-                                                  solicitanteCodigo=solicitanteCodigo,
-                                                  timeFinished=timeModified
+        try:
+            appraisal = Appraisal.objects.get(realEstate=house,
+                                              valorUF=valorUF,
+                                              tipoTasacion=1,
+                                              state=0,
+                                              source=1,
+                                              solicitanteCodigo=solicitanteCodigo,
+                                              timeFinished=timeModified
                                                   )
-                appraisal.solicitante = 2
-                appraisal.solicitanteOtro = id
-                appraisal.solicitanteSucursal = solicitanteSucursal
-                appraisal.solicitanteEjecutivo = solicitanteEjecutivo
-                appraisal.cliente = cliente
-                appraisal.clienteRut = clienteRut
-                appraisal.propietario = propietario
-                appraisal.propietarioRut = propietarioRut
-                # appraisal.tasadorUser=tasadorUser
-                appraisal.descripcionSector = descripcionSectorAll
-                appraisal.save()
+            appraisal.solicitante = 2
+            appraisal.solicitanteOtro = id
+            appraisal.solicitanteSucursal = solicitanteSucursal
+            appraisal.solicitanteEjecutivo = solicitanteEjecutivo
+            appraisal.cliente = cliente
+            appraisal.clienteRut = clienteRut
+            appraisal.propietario = propietario
+            appraisal.propietarioRut = propietarioRut
+            #appraisal.tasadorUser=tasadorUser
+            appraisal.descripcionSector = descripcionSectorAll
+            appraisal.save()
 
-            except ObjectDoesNotExist:
-                appraisal = Appraisal(state=0,
-                                      source=1,
-                                      tipoTasacion=1,
-                                      solicitante=2,
-                                      realEstate=house,
-                                      solicitanteCodigo=solicitanteCodigo,
-                                      solicitanteOtro=id,
-                                      timeFinished=timeModified,
-                                      solicitanteSucursal=solicitanteSucursal,
-                                      solicitanteEjecutivo=solicitanteEjecutivo,
-                                      cliente=cliente,
-                                      clienteRut=clienteRut,
-                                      propietario=propietario,
-                                      propietarioRut=propietarioRut,
-                                      #tasadorUser=tasadorUser,
-                                      descripcionSector=descripcionSectorAll,
-                                      valorUF=valorUF
-                                      )
-                appraisal.save()
+        except ObjectDoesNotExist:
+            appraisal = Appraisal(state=0,
+                                  source=1,
+                                  tipoTasacion=1,
+                                  solicitante=2,
+                                  realEstate=house,
+                                  solicitanteCodigo=solicitanteCodigo,
+                                  solicitanteOtro=id,
+                                  timeFinished=timeModified,
+                                  solicitanteSucursal=solicitanteSucursal,
+                                  solicitanteEjecutivo=solicitanteEjecutivo,
+                                  cliente=cliente,
+                                  clienteRut=clienteRut,
+                                  propietario=propietario,
+                                  propietarioRut=propietarioRut,
+                                  #tasadorUser=tasadorUser,
+                                  descripcionSector=descripcionSectorAll,                                      valorUF=valorUF
+                                    )
+            appraisal.save()
 
     if propertyType == "Departamento":
         try:
@@ -331,20 +334,17 @@ file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
 
 
-#importAppraisalSantander(file)
+#importAppraisalSantander(file_mac)
 
 def excel_find_general(file, term):
     # finds data by term in appraisal file
     wb = load_workbook(filename=file, read_only=True, data_only=True)
-    for sheet in wb.sheetnames:
-        print(sheet)
-        for row in range(120, 200):
-            print(row)
-            for col in range(1, 100):
-                print(col)
-                cv = wb.get_sheet_by_name(sheet).cell(row=row, column=col).value
-                if cv == term:
-                    print('Found it')
-                    return cv
+    ws = wb.worksheets[0]
+    for row in range(120, 200):
+        for col in range(1, 25):
+            cv = ws.cell(row=row, column=col).value
+            if cv == term:
+                print('Found it')
+                return cv
 
-excel_find_general(file, "PROPIEDAD ANALIZADA")
+excel_find_general(file_mac, "PROPIEDAD ANALIZADA")
