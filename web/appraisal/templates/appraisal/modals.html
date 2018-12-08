@@ -79,91 +79,12 @@
   </div>
 </div>
 
-
-<div class="modal fade" id="asignarVisador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Seleccione un visador</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table class="table table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tasaciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in visadores %}
-            <tr>
-              <th scope="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{user.id}}" checked>
-                  <label class="form-check-label" for="visador_radio">
-                    {{user.first_name}} {{user.last_name}}
-                  </label>
-                </div>
-              </th>
-              <th scope="col">10</th>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button name="btn_assign_visador" class="btn btn-primary">Asignar</button>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" id="modal_assign_tasador" tabindex="-2" role="dialog" aria-hidden="true">
+  {% include 'main/modals_assign_tasador.html' %}
 </div>
 
-
-<div class="modal fade" id="asignarTasador" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Seleccione un tasador</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        <table class="table table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tasaciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in tasadores %}
-            <tr>
-              <th scope="col">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{user.id}}" checked>
-                  <label class="form-check-label" for="tasador_radio">
-                    {{user.first_name}} {{user.last_name}}
-                  </label>
-                </div>
-              </th>
-              <th scope="col">10</th>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button name="btn_assign_tasador" class="btn btn-primary">Asignar</button>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" id="modal_assign_visador" tabindex="-2" role="dialog" aria-hidden="true">
+  {% include 'main/modals_assign_visador.html' %}
 </div>
 
 
@@ -346,7 +267,7 @@
 
 
 
-<div class="modal fade" id="modalPhoto" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
+<div class="modal fade" id="modal_photo" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -357,10 +278,41 @@
       </div>
       <div class="modal-body">
         <img id="photo" class="img-fluid rounded" src=""/>
+        <div class="form-group row">
+          <div class="col-6">
+            {{forms.photos.photos.label_tag}}
+            <div class="custom-file">
+              {{forms.photos.photos}}
+              <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+            </div>
+          </div>
+          <div class="col-6">
+            {{forms.photos.category.label_tag}}
+            {{forms.photos.category}}
+          </div>
+        </div>
+        <div class="form-group row mb-4">
+          <div class="col-12">
+            {{forms.photos.description.label_tag}}
+            {{forms.photos.description}}
+          </div>
+        </div>
+        <script>
+          $('#id_photos').change(function() {
+            if ($('#id_photos')[0].files.length == 1) {
+              var file = $('#id_photos')[0].files[0].name;
+              $('.custom-file-label').text(file);
+            }
+          });
+        </script>
       </div>
       <div class="modal-footer">
         <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button id='btn_upload_photo' class="btn btn-primary ld-ext-right">
+          Agregar foto
+          <div class="ld ld-ring ld-spin"></div>
+        </button>
         <!--<button class="btn btn-danger" name="btn_delete_photo">Borrar</button>-->
       </div>
     </div>

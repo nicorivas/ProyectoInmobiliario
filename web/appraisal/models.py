@@ -14,6 +14,32 @@ class Comment(models.Model):
     event_choices = (
         (1, "Contacto validado"),
         (23, "Asignado"),
+        (24, "Tasación ingresada"),
+        (2, "Asignación aceptada"),
+        (3, "Visita acordada"),
+        (4, "Propiedad visitada"),
+        (5, "Informe enviado a UT"),
+        (6, "Informe validado a UT"),
+        (7, "Validación administrativa"),
+        (8, "Entregado al cliente"),
+        (9, "Cliente validado"),
+        (10, "Contabilización"),
+        (11, "Recepción física"),
+        (12, "Envío planilla para pago"),
+        (13, "Recepción facturación"),
+        (14, "Facturado"),
+        (15, "Pagado"),
+        (16, "Fondos disponibles"),
+        (17, "Cobranza"),
+        (18, "Abortado"),
+        (19, "Incidencia"),
+        (20, "Corección informe"),
+        (21, "Observación visador"),
+        (22, "Objeción"),
+        (0, "Otro")
+    )
+    event_choices_form = (
+        (1, "Contacto validado"),
         (2, "Asignación aceptada"),
         (3, "Acuerdo visita"),
         (4, "Propiedad visitada"),
@@ -74,6 +100,7 @@ class Document(models.Model):
 
 class Rol(models.Model):
     code = models.CharField("Rol",max_length=20,blank=True,null=True)
+    NULL = ''
     SIN_DATOS = 0
     DEFINITIVO = 1
     MATRIZ = 2
@@ -83,6 +110,7 @@ class Rol(models.Model):
     USO_Y_GOCE = 6
     NO_ENROLADO = 7
     rolTypeChoices = [
+        (NULL,"---------"),
         (SIN_DATOS, "Sin datos"),
         (DEFINITIVO, "Definitivo"),
         (MATRIZ, "Matriz"),
@@ -92,7 +120,7 @@ class Rol(models.Model):
         (USO_Y_GOCE, "Uso y Goce"),
         (NO_ENROLADO, "No enrolado")
     ]
-    state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default=0)
+    state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default='')
 
 @reversion.register()
 class Appraisal(models.Model):
@@ -137,10 +165,12 @@ class Appraisal(models.Model):
 
     price = models.FloatField("Precio tasación",blank=True,null=True)
 
+    NONE = ''
     SIN_VISITA = 0
     COMPLETA = 1
     EXTERIOR = 2
     visit_choices = [
+        (NONE,'---------'),
         (SIN_VISITA, 'Sin Visita'),
         (COMPLETA, 'Completa'),
         (EXTERIOR, 'Solo Exterior')
@@ -148,6 +178,7 @@ class Appraisal(models.Model):
     visita = models.IntegerField("Visita", choices=visit_choices, blank=True,null=True)
 
     # generales
+    NONE = ''
     OTRA = 0
     INMOBILIARIA = 1
     REVISION = 2
@@ -155,6 +186,7 @@ class Appraisal(models.Model):
     PILOTO = 4
     TERRENO = 5
     tipoTasacion_choices = [
+        (NONE,'---------'),
         (INMOBILIARIA, 'Hipotecaria'),
         (REVISION, 'Revisión'),
         (ESCRITORIO, 'Escritorio'),
@@ -164,6 +196,7 @@ class Appraisal(models.Model):
     ]
     tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
 
+    NONE = ''
     OTRO = 0
     GARANTIA = 1
     CREDITO = 2
@@ -171,6 +204,7 @@ class Appraisal(models.Model):
     VENTA = 4
     LIQUIDACION = 5
     objective_choices = [
+        (NONE,'---------'),
         (OTRO, 'Otro'),
         (GARANTIA, 'Garantía'),
         (CREDITO, 'Crédito'),
@@ -180,6 +214,7 @@ class Appraisal(models.Model):
     ]
     finalidad = models.IntegerField("Finalidad", choices=objective_choices,blank=True,null=True)
 
+    NONE = ''
     OTHER = 0
     BCI = 1
     SANTANDER = 2
@@ -190,6 +225,7 @@ class Appraisal(models.Model):
     SCOTIABANK = 7
     BICE = 8
     petitioner_choices = [
+        (NONE,'---------'),
         (BCI, "BCI"),
         (SANTANDER, "Santander"),
         (ITAU, "Itaú"),
@@ -232,6 +268,8 @@ class Appraisal(models.Model):
 
     roles = models.ManyToManyField(Rol)
 
+    orderFile = models.FileField("Documento pedido",upload_to='orders/',null=True,blank=True)
+
     photos = models.ManyToManyField(Photo)
 
     documents = models.ManyToManyField(Document)
@@ -255,6 +293,13 @@ class Appraisal(models.Model):
     @property
     def hasTasador(self):
         print(self.tasadorUser)
+
+    @property
+    def not_assigned(self):
+        if self.state == self.STATE_NOTASSIGNED:
+            return True
+        else:
+            return False
 
     @property
     def finished(self):
@@ -293,14 +338,13 @@ class Appraisal(models.Model):
             return "-"
         address = self.realEstate.address_dict
         if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
-            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/{}/".format(
+            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
                 slugify(address['street']),
                 slugify(address['number']),
                 self.realEstate.propertyType,
                 self.realEstate.apartment.building_in.id,
-                self.realEstate.apartment.addressNumber2,
                 self.realEstate.apartment.id,
                 self.id)
         elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:

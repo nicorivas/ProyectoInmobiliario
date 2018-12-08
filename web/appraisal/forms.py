@@ -370,14 +370,35 @@ class FormCreateRol(forms.ModelForm):
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
     photos = forms.FileField(
+        label="Archivo",
         required=False,
         widget=forms.ClearableFileInput(
-            attrs={'class':"custom-file-input",'multiple': True}))
+            attrs={'class':"custom-file-input",'multiple': False}))
+
+    NULL = ''
+    PHOTO_CATEGORY_ENTORNO = 0
+    PHOTO_CATEGORY_EMPLAZAMIENTO = 1
+    PHOTO_CATEGORY_FACHADA = 2
+    PHOTO_CATEGORY_ESPACIOS_COMUNES = 3
+    PHOTO_CATEGORY_OTHER = 4
+    PHOTO_CATEGORIES = (
+        (NULL,'---------'),
+        (PHOTO_CATEGORY_ENTORNO,'Entorno'),
+        (PHOTO_CATEGORY_EMPLAZAMIENTO,'Emplazamiento'),
+        (PHOTO_CATEGORY_FACHADA,'Fachada'),
+        (PHOTO_CATEGORY_ESPACIOS_COMUNES,'Espacios comunes'),
+        (PHOTO_CATEGORY_OTHER,'Otra')
+        )
+    category = forms.ChoiceField(
+        label='Categoría',
+        required=False,
+        choices=PHOTO_CATEGORIES,
+        widget=forms.Select(attrs={'class':"form-control"}))
     description = forms.CharField(
         label='Descripción',
         max_length=60,
         required=False,
-        widget=forms.TextInput(attrs={'size':20,'class':"form-control",'placeholder':'Descripción'}))
+        widget=forms.TextInput(attrs={'size':20,'class':"form-control"}))
 
 class FormDocuments(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}
@@ -394,5 +415,6 @@ class FormDocuments(forms.Form):
 class FormComment(forms.Form):
     text = forms.CharField(label='Comentario',max_length=500,widget=forms.Textarea,required=False)
     text.widget.attrs.update({'class':"form-control",'rows':3})
-    event = forms.ChoiceField(choices=Comment.event_choices,label='Evento',required=True)
+    event = forms.ChoiceField(choices=Comment.event_choices_form,label='Evento',required=True)
     event.widget.attrs.update({'class':"form-control"})
+

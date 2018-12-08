@@ -9,8 +9,8 @@
     {% csrf_token %}
 
     <div class="alert alert-danger" role="alert">
-    <h4>Error!</h4>
-    <h5 class="text-center">{{ message }}</h5>
+    <h4 class="text-center mb-4">ERROR</h4>
+    <h5 class="text-center">{{ error_message }}</h5>
 
     {{ form_create.propertyType_create.errors }}
     {{ form_create.addressRegion_create.errors }}

@@ -130,11 +130,13 @@ class RealEstate(models.Model):
     ''' Bien raíz '''
 
     # more to be added
+    TYPE_NONE = ''
     TYPE_OTHER = 0
     TYPE_HOUSE = 1
     TYPE_APARTMENT = 2
     TYPE_BUILDING = 3
     propertyType_choices = [
+        (TYPE_NONE,'---------'),
         (TYPE_HOUSE, "Casa"),
         (TYPE_APARTMENT, "Departamento"),
         (TYPE_BUILDING, "Edificio"),

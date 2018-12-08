@@ -13,8 +13,9 @@
          <h5 class="mb-4">Ingresar tasación</h5>
       </div>
    </div>
-      <form class="needs-validation" action="/create/" method="post" id="form_file"
-      data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
+
+    <form class="needs-validation" action="/create/" method="post" id="form" enctype="multipart/form-data"
+      data-commune-url="{% url 'ajax_load_communes' %}" data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
         {% csrf_token %}
 
         <div class="row">
@@ -24,7 +25,7 @@
           <div class="col-md-5">
             <div class="form-group">
               <div class="custom-file">
-                {{form_file.archivo}}
+                {{form.archivo}}
                 <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
               </div>
             </div>
@@ -54,12 +55,6 @@
             </div>
           </div>
         </div>
-
-      </form>
-
-      <form class="needs-validation" action="/create/" method="post" id="form"
-      data-commune-url="{% url 'ajax_load_communes' %}" data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
-        {% csrf_token %}
 
         <div class="row">
           <div class="col-md-2 text-right">
@@ -100,10 +95,21 @@
               {{form.solicitanteEjecutivo}}
             </div>
           </div>
-          <div class="col-md-2" id="petitioner">
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+          </div>
+          <div class="col-md-4" id="petitioner">
             <div class="form-group">
               <label>Email</label>
               {{form.solicitanteEjecutivoEmail}}
+            </div>
+          </div>
+          <div class="col-md-2" id="petitioner">
+            <div class="form-group">
+              <label>Teléfono</label>
+              {{form.solicitanteEjecutivoTelefono}}
             </div>
           </div>
         </div>
@@ -111,7 +117,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               {{form.appraisalTimeRequest.label_tag}}
               <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
@@ -136,7 +142,7 @@
             });
           </script>
 
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               {{form.appraisalTimeDue.label_tag}}
               <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
@@ -160,14 +166,6 @@
               });
             });
           </script>
-
-          <div class="col-md-2" id="petitioner">
-            <div class="form-group">
-              <label>Teléfono</label>
-              {{form.solicitanteEjecutivoTelefono}}
-            </div>
-          </div>
-          
         </div>
 
         <hr/>
@@ -319,6 +317,12 @@
                   {{form.propertyType}}
                </div>
             </div>
+            <div class="col-md-2">
+               <div class="form-group">
+                  <label>Rol</label>
+                  {{form.rol}}
+               </div>
+            </div>
          </div>
 
       <div class="row">
@@ -410,6 +414,7 @@
 <script>
 
   function showApartmentNumber() {
+    console.log('a')
     var type = $("#propertyType option:selected");
     if (type.val() == 2) {
       $("#div_addressNumber2").find('label').html('Dpto.');
@@ -426,9 +431,6 @@
     showApartmentNumber();
   });
 
-</script>
-
-<script>
   function valid_rut(rut) {
     function dv(T) {
       var M=0,S=1;
@@ -457,7 +459,7 @@
     "El rut no es válido"
   );
 
-  $("#form").validate({
+  a = {
     rules: {
       "addressStreet": "required",
       "addressNumber": "required",
@@ -467,10 +469,18 @@
       "clienteRut": "rut",
       "contacto": "required",
       "solicitanteCodigo": "required",
-      "appraisalTimeFrame": "required"
+      "appraisalTimeRequest": {
+        required: true,
+        date: true
+      },
+      "appraisalTimeDue": "required",
+      "tipoTasacion": "required",
+      "finalidad": "required",
+      "visita": "required",
+      "propertyType":"required"
     },
     groups: {
-      "appraisalTimeFrame": "date"
+      "appraisalTimeRequest": "date"
     },
     messages: {
       "addressStreet": "Campo requerido",
@@ -488,7 +498,12 @@
       "solicitanteEjecutivoEmail": {
         email: "Email debe tener formato nombre@dominio.com"
       },
-      "appraisalTimeFrame": "Campo requerido"
+      "appraisalTimeFrame": "Campo requerido",
+      "tipoTasacion": "Campo requerido",
+      "finalidad": "Campo requerido",
+      "visita": "Campo requerido",
+      "propertyType": "Campo requerido",
+      "appraisalTimeDue": "Campo requerido"
     },
     errorPlacement: function(error, element) {
       if (element.attr("id") == "id_appraisalTimeRequest") {
@@ -499,31 +514,29 @@
         error.insertAfter(element);
       }
     }
-  });
-</script>
+  }
 
-<script>
+  $("#form").validate(a);
+
   $('#petitioner').on('change', function() {
-  var object = $("#petitioner option:selected");
-  if (object.val() == 0 ) {
-    $('#other').removeAttr('hidden');
-    $('#other').show();
-    $('#other').attr('required','required');
-    $('#id_solicitanteCodigo').removeAttr('data-validation','required');
-    $('#code').removeAttr('class', 'form-group has-error');
-    $('.help-block').hide();
-    $('#id_solicitanteCodigo').removeAttr('style');
-    $('#code').attr('class', 'form-group');
- } else {
-    $('#other').hide();
-    $('#other').removeAttr('required');
-    $('#other').val('');
-    $('#id_solicitanteCodigo').attr('data-validation','required');
- }
-});
-</script>
+    var object = $("#petitioner option:selected");
+    if (object.val() == 0 ) {
+      $('#other').removeAttr('hidden');
+      $('#other').show();
+      $('#other').attr('required','required');
+      $('#id_solicitanteCodigo').removeAttr('data-validation','required');
+      $('#code').removeAttr('class', 'form-group has-error');
+      $('.help-block').hide();
+      $('#id_solicitanteCodigo').removeAttr('style');
+      $('#code').attr('class', 'form-group');
+   } else {
+      $('#other').hide();
+      $('#other').removeAttr('required');
+      $('#other').val('');
+      $('#id_solicitanteCodigo').attr('data-validation','required');
+   }
+  });
 
-<script>
   $(document).ready(function() {
 
     $('#id_import_alert').hide()
@@ -541,6 +554,9 @@
       $('#id_solicitanteEjecutivo').val(function() {
         return toTitleCase($(this).val())
       })
+      $('#id_solicitanteEjecutivoEmail').val(function() {
+        return $(this).val().toLowerCase()
+      })
       $('#id_solicitanteSucursal').val(function() {
         return toTitleCase($(this).val())
       })
@@ -553,9 +569,9 @@
     }
 
     var populateFromFile = function () {
-      var form = document.getElementById('form_file');
+      var form = document.getElementById('form');
       var formData = new FormData(form);
-      var url = $("#form_file").attr("data-populate-from-file-url");
+      var url = $("#form").attr("data-populate-from-file-url");
       $.ajax({
           url: url,
           type: 'post',
@@ -571,10 +587,6 @@
             $('#id_solicitanteCodigo').val('')
             $('#id_addressNumber').val('')
             $('#id_addressNumber2').val('')
-            $('#id_addressCommune').empty()
-            for (var i in data['commune_data']) {
-              $('#id_addressCommune').append(new Option(data['commune_data'][i][1], data['commune_data'][i][0], false, false));
-            }
             for (var field in data) {
               $('#id_'+field).val(data[field]);
             }
@@ -586,12 +598,19 @@
                 Del bien: Estado, Valor estimado, Otros datos, Antecedentes. \
                 Tipo, finalidad y visita no han sido rellenados.')
             } else if (data.solicitante == 2) {
+              // Santander
               $('#id_import_alert').show()
-              $('#id_import_alert').html('Observaciones al importar de Santander. Se han ignorado los campos: seguimiento, coordinar antes de (fecha), visitar propiedad antes de (fecha), nombre propietario, rut propietario, localidad, rubro, grupo, nombre formalizador, email formalizador y centro de costo.')
+              $('#id_import_alert').html('Observaciones al importar de Santander. Se han ignorado los campos: seguimiento, proveedor, estado, coordinar antes de (fecha), visitar propiedad antes de (fecha), localidad, rubro, grupo, nombre formalizador, email formalizador y centro de costo.')
+            } else if (data.solicitante == 5) {
+              // Chile
+              $('#id_import_alert').show()
+              $('#id_import_alert').html('Observaciones al importar de Banco de Chile. Se han ignorado los campos: dirección de contacto, CUI ejecutivo solicitante.')
             } else {
               $('#id_import_alert').hide()
             }
             formatFields();
+            showApartmentNumber();
+            $("#form").valid();
           }
       });
       return false;
