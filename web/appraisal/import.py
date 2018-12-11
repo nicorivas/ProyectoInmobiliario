@@ -45,6 +45,8 @@ def get_clean_address(rawaddress):
         data['addressNumber2'] = None
         if len(d) > 1:
             data['addressNumber2'] = d[-1].strip(". ")
+    if data['addressNumber2']==None:
+        data['addressNumber2'] = ' '
     return data
 
 def excel_find_general(file, term):
@@ -65,11 +67,15 @@ def importAppraisalSantander(file):
 
     def convert(tude):
         #convert degrees, minutes, secods coordiantes into decimals
+
         try:
             multiplier = 1 if tude[-1] in ['N', 'E'] else -1
-            d = float(tude[:-1].split('°')[0])
-            m = float(tude[:-1].split('°')[1].split("'")[0])/60
-            s = float(tude[:-1].split('°')[1].split("'")[1].split('"')[0])/3600
+            d = float(tude[:-1].split('°')[0].replace(',','.'))
+            m = float(tude[:-1].split('°')[1].split("'")[0].replace(',','.'))/60
+            s =tude[:-1].split('°')[1].split("'")[1].split("''")[0].replace(',','.')
+            s = re.sub('[^\d\.]', '', s)
+            s = float(s)/3600
+            print((d + m + s)*multiplier)
             return (d + m + s)*multiplier
         except ValueError:
             return tude
@@ -113,16 +119,20 @@ def importAppraisalSantander(file):
         return(listaSII[destino])
 
     def date_to_datetimefield(rawdate):
-        finalDate = rawdate.split('//')[-1].strip(' ').split('-')[-1] + '-' + \
-                             rawdate.split('//')[-1].strip(' ').split('-')[-2] + \
-                             '-' + rawdate.split('//')[-1].strip(' ').split('-')[-3]
+        try:
+            finalDate = rawdate.split('//')[-1].strip(' ').split('-')[-1] + '-' + \
+                                 rawdate.split('//')[-1].strip(' ').split('-')[-2] + \
+                                 '-' + rawdate.split('//')[-1].strip(' ').split('-')[-3]
+        except IndexError:
+            finalDate = "1" + "-" + "1" + "-" +rawdate.split(' ')[-1]
         return parse_date(finalDate)
 
     def boolean_null_choices(choice):
         options={
             "S/A":1, "S/Ant.":1,
             "Si":2, "SI":2,
-            "No":3, "NO":3}
+            "No":3, "NO":3,
+            "No Aplica":1, " ":1, "":1}
         return options[choice]
 
     def law_to_database(text):
@@ -134,7 +144,7 @@ def importAppraisalSantander(file):
             'Ley 19667':4,
             'Ley 19727':5,
             'Ley 20251':6,
-            'Ley 6071':7,
+            'Ley 6071':7, 'Ley N° 6071':7,
             'Ninguna':8,
             'Antigüedad':9
         }
@@ -147,7 +157,8 @@ def importAppraisalSantander(file):
             'Rojo':'R',
             'No Aplica':'NA',
             'Verde vencido':'VV',
-            'Sin antecedentes':'SA'}
+            'Sin antecedentes':'SA',
+            'Sin Antecedentes':'SA'}
         return colors[text]
 
     def excel_find_import(workbook1, workbook2, term):
@@ -158,7 +169,11 @@ def importAppraisalSantander(file):
                     cv = workbook1.get_sheet_by_name(sheet).cell(row=row, column=col).value
                     if cv == term:
                         value = workbook2.get_sheet_by_name(sheet).cell(row=row, column=col).value
-                        return value
+                        if value == None:
+                            value = workbook2.get_sheet_by_name(sheet).cell(row=row+1, column=col).value
+                            return value
+                        else:
+                            return value
 
 
     module_dir = os.path.dirname(__file__)  # get current directory
@@ -185,6 +200,8 @@ def importAppraisalSantander(file):
     mercadoObjetivo = boolean_null_choices(excel_find_import(wb, wb2, "mercadoObjetivo"))
     antiguedad = excel_find_import(wb, wb2, "antiguedad")
     vidaUtil = excel_find_import(wb, wb2, "vidaUtil")
+    if vidaUtil != int or float:
+        vidaUtil=0
     avaluoFiscal = excel_find_import(wb, wb2, "avaluoFiscal")
     acogidaLey = law_to_database(excel_find_import(wb, wb2, "acogidaLey"))
     dfl2 = boolean_null_choices(excel_find_import(wb, wb2, "dfl2"))
@@ -212,9 +229,21 @@ def importAppraisalSantander(file):
     terraceSquareMeters = mm2[1]
     #hardcoded for now
     ws2= wb2.worksheets[0]
-    valorUF = round(ws2['BB84'].value,2)
+    try:
+        valorUF = round(ws2['BB84'].value,2)
+    except (TypeError, AttributeError):
+        try:
+            valorUF = round(ws2['BB86'].value, 2)
+        except (TypeError, AttributeError):
+            try:
+                valorUF = round(ws2['BB85'].value, 2)
+            except (TypeError, AttributeError):
+                try:
+                    valorUF = round(ws2['BB87'].value, 2)
+                except (TypeError, AttributeError):
+                    valorUF = round(ws2['BB79'].value, 2)
+
     propertyType = ws2['U5'].value
-    print(valorUF)
 
     if propertyType == "Casa":
         print('Casa')
@@ -253,6 +282,7 @@ def importAppraisalSantander(file):
             house.save()
             print("existe")
         except ObjectDoesNotExist:
+            print(addressCommune)
             house = House(name=address['addressStreet']+' '+address['addressNumber']+' '+address['addressNumber2'],
                             addressStreet=address['addressStreet'],
                             addressNumber=address['addressNumber'],
@@ -297,10 +327,27 @@ def importAppraisalSantander(file):
     elif propertyType == "Departamento":
         print('Departamento')
         try:
+            building = Building.objects.get(
+                addressRegion=Commune.objects.get(name=addressCommune).region,
+                addressCommune=Commune.objects.get(name=addressCommune),
+                addressStreet=address['addressStreet'],
+                addressNumber=address['addressNumber'],
+                propertyType=RealEstate.TYPE_BUILDING)
+        except Building.DoesNotExist:
+            # building does not exist, so create it
+            building = Building(
+                addressRegion=Commune.objects.get(name=addressCommune).region,
+                addressCommune=Commune.objects.get(name=addressCommune),
+                addressStreet=address['addressStreet'],
+                addressNumber=address['addressNumber'],
+                propertyType=RealEstate.TYPE_BUILDING)
+        building.save()
+        try:
             apartment = Apartment.objects.get(addressStreet=address['addressStreet'],
                                                 addressNumber=address['addressNumber'],
                                                 addressNumber2=address['addressNumber2'],
-                                                addressCommune=Commune.objects.get(name=addressCommune))
+                                                addressCommune=Commune.objects.get(name=addressCommune),
+                                                building_in=building)
             apartment.addressRegion = Commune.objects.get(name=addressCommune).region
             apartment.copropiedadInmobiliaria = copropiedadInmobiliaria
             apartment.ocupante = ocupante
@@ -332,9 +379,10 @@ def importAppraisalSantander(file):
             print("existe")
         except ObjectDoesNotExist:
             apartment = Apartment(addressStreet=address['addressStreet'],
-                                    addressNumber=address['addressNumber'],
-                                    addressNumber2=address['addressNumber2'],
-                                    addressCommune=Commune.objects.get(name=addressCommune),
+                                  addressNumber=address['addressNumber'],
+                                  addressNumber2=address['addressNumber2'],
+                                  addressCommune=Commune.objects.get(name=addressCommune),
+                                  building_in=building,
                                   addressRegion=Commune.objects.get(name=addressCommune).region,
                                   propertyType=RealEstate.TYPE_HOUSE,
                                   lat=lat,
@@ -366,6 +414,7 @@ def importAppraisalSantander(file):
                                   usefulSquareMeters=usefulSquareMeters,
                                   terraceSquareMeters=terraceSquareMeters
                                       )
+            apartment.save()
         realEstate = apartment
 
 
@@ -413,8 +462,8 @@ def importAppraisalSantander(file):
 
 
 
-file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777974 (16336209-0) Santa Isabel 797 dp 1016 Santiago.xlsx'
-file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
+file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775967 (77557450-K) Lo Lopez 1469 Cerro Navia Rol 62851 (T 816) Terreno.xlsx'
+file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx'
 
 importAppraisalSantander(file)
 
