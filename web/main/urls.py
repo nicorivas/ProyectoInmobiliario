@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.main, name='main'),
+    path('imported', views.imported_appraisals, name='appraisals_imported'),
     path('ajax/logbook/', views.ajax_logbook, name='ajax_logbook_url'),
     path('ajax/logbook_close/', views.ajax_logbook_close, name='ajax_logbook_close_url'),
     path('ajax/logbook_change_event/', views.ajax_logbook_change_event, name='ajax_logbook_change_event_url'),

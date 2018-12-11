@@ -96,6 +96,7 @@ def main(request):
     appraisals_not_accepted = appraisals_get_not_accepted(request.user)
     appraisals_active = appraisals_get_active(request.user)
     appraisals_finished = appraisals_get_finished(request.user)
+    appraisals_imported = appraisals_get_imported(request.user)
 
     # Form to create a comment
 
@@ -107,9 +108,60 @@ def main(request):
         'appraisals_not_accepted': appraisals_not_accepted,
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
+        'appraisals_imported': appraisals_imported,
         'form_comment':form_comment}
 
     return render(request, 'main/index.html', context)
+
+@login_required(login_url='/user/login')
+def imported_appraisals(request):
+    evaluationForm = EvaluationForm()
+    if request.method == 'POST':
+        if 'evaluadorAppraisal_id' in request.POST.keys():
+            evaluationForm = EvaluationForm(request.POST)
+            if evaluationForm.is_valid():
+                _onTime = evaluationForm.cleaned_data['onTime']
+                _completeness = evaluationForm.cleaned_data['completeness']
+                _generalQuality = evaluationForm.cleaned_data['generalQuality']
+                _correctSurface = evaluationForm.cleaned_data['correctSurface']
+                _homologatedReferences = evaluationForm.cleaned_data['homologatedReferences']
+                _completeNormative = evaluationForm.cleaned_data['completeNormative']
+                _commentText = evaluationForm.cleaned_data['commentText']
+                _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
+                appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
+                appraiser = User.objects.get(pk=request.POST['evaluador_id'])
+                evaluation, created = AppraisalEvaluation.objects.update_or_create(
+                                        appraisal=appraisal,
+                                        #user=appraiser,
+                                        defaults={
+                                            "appraisal":appraisal,
+                                            'user':appraiser,
+                                            'onTime':_onTime,
+                                            'completeness':_completeness,
+                                            'generalQuality':_generalQuality,
+                                            'correctSurface': _correctSurface ,
+                                            'completeNormative': _completeNormative,
+                                            'homologatedReferences': _homologatedReferences,
+                                            'commentText':_commentText,
+                                            'commentFeedback':_commentFeedback})
+                #evaluationForm.save()
+                print(evaluation.evaluationResult)
+
+    # Get appraisals that this user can see
+    #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
+    appraisals_imported = appraisals_get_imported(request.user)
+
+
+    context = {
+        'evaluationForm': evaluationForm,
+        'appraisals_imported': appraisals_imported}
+
+    return render(request, 'main/appraisals_imported.html', context)
+
+
+
+
+
 
 def appraisals_get_not_assigned():
     appraisals = Appraisal.objects.select_related().filter(state=Appraisal.STATE_NOTASSIGNED)
@@ -164,7 +216,7 @@ def appraisals_get_active(user):
         "tasadorUser",
         "visadorUser",
         "realEstate__addressStreet",
-        "realEstate__addressNumner",
+        "realEstate__addressNumber",
         "realEstate__addressCommune__name")
     return appraisals_active
 
@@ -183,9 +235,29 @@ def appraisals_get_finished(user):
         "tasadorUser",
         "visadorUser",
         "realEstate__addressStreet",
-        "realEstate__addressNumner",
+        "realEstate__addressNumber",
         "realEstate__addressCommune__name")
     return appraisals_finished
+
+def appraisals_get_imported(user):
+    appraisals_imported = Appraisal.objects.select_related().filter(state=Appraisal.STATE_IMPORTED).order_by('timeCreated')
+    if not user.is_superuser:
+        appraisals_imported = appraisals_imported.filter(Q(tasadorUser=user)|Q(visadorUser=user))
+    appraisals_imported.select_related().only(
+        "id",
+        "timeCreated",
+        "timeDue",
+        "state",
+        "tipoTasacion",
+        "solicitante",
+        "solicitanteCodigo",
+        "tasadorUser",
+        "visadorUser",
+        "realEstate__addressStreet",
+        "realEstate__addressNumber",
+        "realEstate__addressCommune__name")
+    print(appraisals_imported)
+    return appraisals_imported
 
 def ajax_assign_tasador_modal(request):
     '''
@@ -210,6 +282,7 @@ def ajax_assign_visador_modal(request):
     return render(request,'main/modals_assign_visador.html',
         {'appraisal':appraisal_current,
          'visadores':visadores_info})
+
 
 def ajax_assign_tasador(request):
     '''

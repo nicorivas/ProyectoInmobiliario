@@ -20,72 +20,121 @@
   }
 </script>
 -->
-
+{% extends "main/base.html" %}
+{% load static %}
 {% load custom_tags %}
+{% block head %}
+        <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+        {% load static %}
+        <script>
+          function timeCreated(string) {
+            var s = moment(string).format("D MMM HH:MM");
+            document.write(s)
+          }
+        </script>
 
-<div class="container" style="max-width:100%">
+{% endblock %}
 
-<!-- NOT ASSIGNED -->
-
-{% if request.user|has_group:"asignador" or user.is_superuser %} 
-
-<div class="card mb-4" id="div_not_assigned" style="font-size:0.8em;">
+{% block content %}
+<div class="card mb-4" id="div_imported" style="font-size:0.8em;">
   <div class="card-body">
-    <h5 class="card-title">Tasaciones por asignar</h5>
-    <div class="alert alert-primary mb-0" role="alert" id="div_alert_not_assigned" style="display:none;">
-      No hay tasaciones por asignar
+    <h5 class="card-title">Tasaciones importadas</h5>
+    <div class="alert alert-primary" role="alert" id="div_alert_imported" style="display: none;">
+      No hay tasaciones importadas
     </div>
-    <table class="table table-sm table-borderless" id="table_not_assigned" style="display:none;">
-      {% include 'main/appraisals_not_assigned.html' %}
+    <table class="table table-sm table-borderless" id="table_imported" >
+      <div class="container" style="max-width:100%">
+
+
+        <thead>
+          <tr>
+            <th scope="col" style="width:1em">ID</th>
+            <th scope="col" style="width:8em">Cliente</th>
+            <th scope="col" style="width:8em">Código</th>
+            <th scope="col" style="width:1em;text-align:center;">T.</th>
+            <th scope="col" style="width:19em">Dirección</th>
+            <th scope="col" style="width:11em">Tasador</th>
+            <!--<th scope="col">Fecha creación</th>-->
+            <th scope="col" style="width:11em">Entregada</th>
+            <th scope="col" style="width:17em"></th>
+            <th scope="col" style="width:5em"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for appraisal in appraisals_imported %}
+          <tr class="previas {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
+            <td>
+              {{ appraisal.id }}
+            </td>
+            <td>
+              {{ appraisal.solicitanteVerbose }}
+            </td>
+            <td>
+              {{ appraisal.solicitanteCodigo }}
+            </td>
+            <td style="text-align:center;">
+              <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
+            </td>
+            <td>
+              <a href={{appraisal.url}}>
+                {{ appraisal.realEstate.addressVerboseNoRegion }}
+              </a>
+            </td>
+            <td>
+              <span style="vertical-align: middle;">
+                {% if appraisal.tasadorUser %}
+                  {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
+                {% else %}
+                -
+                {% endif %}
+              </span>
+            </td>
+            <!--
+            <td>
+              {{appraisal.timeCreated | date:"D d M, H:i"}}
+            </td>
+            -->
+            <td>
+              {{appraisal.timeFinished | date }}
+            </td>
+            <td>
+            </td>
+            <td style="text-align:right;">
+              <button id='btn-vis' onclick="location.href='{{appraisal.url}}'" type="button" class="btn btn-dark btn-sm btn-delete" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+                visibility
+              </button>
+              {% if perms.appraisal.assign_visador %}
+              <button type="button" id="{{appraisal.tasadorUser.id}}"
+                      value="{{appraisal.id}}"
+                      class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal"
+                      data-toggle="modal"
+                      data-target="#evaluateAppraisal"
+                      data-ontime="{{appraisal.appraisalevaluation.onTime}}"
+                      data-completeness="{{appraisal.appraisalevaluation.completeness}}"
+                      data-correctsurface = "{{appraisal.appraisalevaluation.correctSurface}}"
+                      data-completenormative = "{{appraisal.appraisalevaluation.completeNormative}}"
+                      data-homologatedreferences = "{{appraisal.appraisalevaluation.homologatedReferences}}"
+                      data-commenttext="{{appraisal.appraisalevaluation.commentText}}"
+                      data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}"
+                      data-commentfeedback="{{appraisal.appraisalevaluation.commentFeedback}}"
+                      style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+                assessment
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+
+
+
+        </div>
     </table>
   </div>
 </div>
-
-{% endif %}
-
-<!-- NOT ACCEPTED -->
-
-<div class="card mb-4" id="div_not_accepted" style="font-size:0.8em;">
-  <div class="card-body">
-    <h5 class="card-title">Tasaciones por aceptar</h5>
-    <div class="alert alert-primary mb-0" role="alert" id="div_alert_not_accepted" style="display:none;">
-      No tiene tasaciones por aceptar
-    </div>
-    <table class="table table-sm table-borderless" id="table_not_accepted" style="display:none;">
-      {% include 'main/appraisals_not_accepted.html' %}      
-    </table>
-  </div>
-</div>
-
-<!-- ACTIVE -->
-
-<div class="card mb-4" id="div_active" style="font-size:0.8em;">
-  <div class="card-body">
-    <h5 class="card-title">Tasaciones activas</h5>
-    <div class="alert alert-primary" role="alert" id="div_alert_active" style="display: none;">
-      No hay tasaciones activas
-    </div>
-    <table class="table table-sm table-borderless" id="table_active" style="display:none;">
-      {% include 'main/appraisals_active.html' %}
-    </table>
-  </div>
-</div>
-
-<!-- FINISHED -->
-
-<div class="card mb-4" id="div_finished" style="font-size:0.8em;">
-  <div class="card-body">
-    <h5 class="card-title">Tasaciones finalizadas</h5>
-    <div class="alert alert-primary" role="alert" id="div_alert_finished" style="display: none;">
-      No hay tasaciones finalizadas
-    </div>
-    <table class="table table-sm table-borderless" id="table_finished" style="display: none;">
-      {% include 'main/appraisals_finished.html' %}
-    </table>
-  </div>
-</div>
-
 {% include "main/modals.html" %}
+{% endblock %}
 
 <script>
 
@@ -180,11 +229,9 @@
     $(".btn_delete_appraisal_modal").off()
     $(".btn_delete_appraisal_modal").on("click", function (event) {
       // Called on click of delete button in the active table.
-      var appraisal_id = $(this).data('id');
-      var source_table = $(this).closest('table').attr('id');
-      $('#modal_delete').find('#appraisal_id').val(appraisal_id);
-      $('#modal_delete').find('#source_table').val(source_table);
+      var id = $(this).data('id');
       $('#modal_delete').modal('show');
+      $('#modal_delete').find('#appraisal_id').val(id);
     });
 
     $("#btn_delete_appraisal").unbind()
@@ -193,8 +240,7 @@
       // Button clicked in the modal. Call an AJAX to unassign the tasador
       // of the appraisal, and returns the 'not_assigned' table back,
       // to be replaced.
-      var appraisal_id = $(this).closest('#modal_delete').find('#appraisal_id').val();
-      var source_table = $(this).closest('#modal_delete').find('#source_table').val();
+      var appraisal_id = $('#appraisal_id').val();
       var url = "{% url 'ajax_delete_appraisal_url' %}";
       btn = $(this);
       btn.addClass('running');
@@ -205,15 +251,12 @@
         data: {'appraisal_id':appraisal_id},
         error: function () {
             alert("Error al borrar tasación.");
-            btn.removeClass('running');
-            btn.prop('disabled', false);
             return false;
         },
         success: function (data) {
           btn.removeClass('running');
           btn.prop('disabled', false);
-          console.log(source_table)
-          removeRow(source_table,appraisal_id)
+          removeRow("active",appraisal_id)
           assignTableActions()
           $("#modal_delete").modal('hide')
         }
@@ -337,7 +380,11 @@
           return false;
         },
         success: function (data) {
-          replaceTable(source_table,data)
+          if (source_table == "table_not_assigned") {
+            replaceTable("not_assigned",data)
+          } else if (source_table == "table_active") {
+            replaceTable("active",data)
+          }
           assignTableActions()
           $("#modal_assign_visador").modal('hide')
           $("#modal_assign_visador").find("#btn_assign_visador").removeClass('running')
@@ -506,18 +553,18 @@
     // Remove row from table. Takes into account if this is
     // the last row remaining, in that case it hides the whole
     // table and shows the no elements alert div.
-    var nrows = $("#"+table_name+" tr").length;
+    var nrows = $("#table_"+table_name+" tr").length;
     if (nrows > 2) {
       $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
     } else {
-      $("#"+table_name).fadeOut()
+      $("#table_"+table_name).fadeOut()
       $("#div_alert_"+table_name).fadeToggle()
     }
   }
 
   var replaceTable = function(table_name,data) {
     // Replaces a table, usuallhy from data from AJAX. Takes
-    // into account the size of the table and hides the 
+    // into account the size of the table and hides the
     // alert of no elements if the table returned has elements.
     $("#table_"+table_name).html($.trim(data))
     var nrows = $("#table_"+table_name+" tr").length;
@@ -704,3 +751,8 @@
         });
       });
 </script>
+
+
+
+
+

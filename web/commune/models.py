@@ -60,5 +60,9 @@ class Commune(models.Model):
     def shortName(self):
         return self.name
 
+    @property
+    def get_region(self):
+        return self.region.code
+
     def __str__(self):
         return self.name
