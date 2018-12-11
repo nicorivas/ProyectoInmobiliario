@@ -3,8 +3,8 @@ import re
 import sys
 import os
 import django
-#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/')
-sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web')
+sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -46,6 +46,20 @@ def get_clean_address(rawaddress):
         if len(d) > 1:
             data['addressNumber2'] = d[-1].strip(". ")
     return data
+
+def excel_find_general(file, term):
+    # finds data by term in appraisal file
+    wb = load_workbook(filename=file, read_only=True, data_only=True)
+    ws = wb.worksheets[0]
+    for row in range(120, 200):
+        for col in range(1, 25):
+            cv = ws.cell(row=row, column=col).value
+            if cv == term:
+                print('Found it')
+                if term == "PROPIEDAD ANALIZADA":
+                    terrainSquareMeters = ws.cell(row=row, column=col+24).value
+                    builtSquareMeters = ws.cell(row=row, column=col + 30).value
+                    return terrainSquareMeters, builtSquareMeters
 
 def importAppraisalSantander(file):
 
@@ -147,8 +161,6 @@ def importAppraisalSantander(file):
                         return value
 
 
-
-
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/santander-template.xlsx')
     wb = load_workbook(filename=file_path)
@@ -193,8 +205,11 @@ def importAppraisalSantander(file):
     descripcionSectorAll = excel_find_import(wb, wb2, "descripcionSectorAll")
     programa = excel_find_import(wb, wb2, "programa")
     estructuraTerminaciones = excel_find_import(wb, wb2, "estructuraTerminaciones")
-    print(avaluoFiscal)
-
+    mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
+    terrainSquareMeters = mm2[0]
+    usefulSquareMeters = mm2[0]
+    builtSquareMeters = mm2[1]
+    terraceSquareMeters = mm2[1]
     #hardcoded for now
     ws2= wb2.worksheets[0]
     valorUF = round(ws2['BB84'].value,2)
@@ -202,6 +217,7 @@ def importAppraisalSantander(file):
     print(valorUF)
 
     if propertyType == "Casa":
+        print('Casa')
         try:
             house = House.objects.get(addressStreet=address['addressStreet'],
                                       addressNumber=address['addressNumber'],
@@ -232,10 +248,10 @@ def importAppraisalSantander(file):
             house.vidaUtil = vidaUtil
             house.acogidaLey = acogidaLey
             house.dfl2 = dfl2
+            house.terrainSquareMeters = terrainSquareMeters
+            house.builtSquareMeters = builtSquareMeters
             house.save()
-            print(house.id)
             print("existe")
-            print(house.addressRegion)
         except ObjectDoesNotExist:
             house = House(name=address['addressStreet']+' '+address['addressNumber']+' '+address['addressNumber2'],
                             addressStreet=address['addressStreet'],
@@ -269,82 +285,139 @@ def importAppraisalSantander(file):
                             antiguedad=antiguedad,
                             vidaUtil=vidaUtil,
                             acogidaLey=acogidaLey,
-                            dfl2=dfl2
+                            dfl2=dfl2,
+                            builtSquareMeters=builtSquareMeters,
+                            terrainSquareMeters=terrainSquareMeters
                                )
             house.save()
 
             print("no existe")
-        try:
-            appraisal = Appraisal.objects.get(realEstate=house,
-                                              valorUF=valorUF,
-                                              tipoTasacion=1,
-                                              state=0,
-                                              source=1,
-                                              solicitanteCodigo=solicitanteCodigo,
-                                              timeFinished=timeModified
-                                                  )
-            appraisal.solicitante = 2
-            appraisal.solicitanteOtro = id
-            appraisal.solicitanteSucursal = solicitanteSucursal
-            appraisal.solicitanteEjecutivo = solicitanteEjecutivo
-            appraisal.cliente = cliente
-            appraisal.clienteRut = clienteRut
-            appraisal.propietario = propietario
-            appraisal.propietarioRut = propietarioRut
-            #appraisal.tasadorUser=tasadorUser
-            appraisal.descripcionSector = descripcionSectorAll
-            appraisal.save()
+        realEstate = house
 
-        except ObjectDoesNotExist:
-            appraisal = Appraisal(state=0,
-                                  source=1,
-                                  tipoTasacion=1,
-                                  solicitante=2,
-                                  realEstate=house,
-                                  solicitanteCodigo=solicitanteCodigo,
-                                  solicitanteOtro=id,
-                                  timeFinished=timeModified,
-                                  solicitanteSucursal=solicitanteSucursal,
-                                  solicitanteEjecutivo=solicitanteEjecutivo,
-                                  cliente=cliente,
-                                  clienteRut=clienteRut,
-                                  propietario=propietario,
-                                  propietarioRut=propietarioRut,
-                                  #tasadorUser=tasadorUser,
-                                  descripcionSector=descripcionSectorAll,                                      valorUF=valorUF
-                                    )
-            appraisal.save()
-
-    if propertyType == "Departamento":
+    elif propertyType == "Departamento":
+        print('Departamento')
         try:
             apartment = Apartment.objects.get(addressStreet=address['addressStreet'],
-                            addressNumber=address['addressNumber'],
-                            addressNumber2=address['addressNumber2'],
-                            addressCommune=Commune.objects.get(name=addressCommune))
+                                                addressNumber=address['addressNumber'],
+                                                addressNumber2=address['addressNumber2'],
+                                                addressCommune=Commune.objects.get(name=addressCommune))
+            apartment.addressRegion = Commune.objects.get(name=addressCommune).region
+            apartment.copropiedadInmobiliaria = copropiedadInmobiliaria
+            apartment.ocupante = ocupante
+            apartment.tipoBien = tipoBien
+            apartment.destinoSII = destinoSII
+            apartment.usoActual = usoActual
+            apartment.usoFuturo = usoFuturo
+            apartment.permisoEdificacionNo = permisoEdificacion
+            apartment.permisoEdificacionFecha = date_to_datetimefield(permisoEdificacion)
+            apartment.recepcionFinalNo = recepcionFinal
+            apartment.recepcionFinalFecha = date_to_datetimefield(recepcionFinal)
+            apartment.expropiacion = expropiacion
+            apartment.viviendaSocial = viviendaSocial
+            apartment.adobe = adobe
+            apartment.desmontable = desmontable
+            apartment.generalDescription = generalDescription
+            apartment.programa = programa
+            apartment.estructuraTerminaciones = estructuraTerminaciones
+            apartment.avaluoFiscal = avaluoFiscal
+            apartment.marketPrice = valorUF
+            apartment.mercadoObjetivo = mercadoObjetivo
+            apartment.antiguedad = antiguedad
+            apartment.vidaUtil = vidaUtil
+            apartment.acogidaLey = acogidaLey
+            apartment.dfl2 = dfl2
+            apartment.usefulSquareMeters = usefulSquareMeters
+            apartment.terraceSquareMeters = terraceSquareMeters
+            apartment.save()
+            print("existe")
         except ObjectDoesNotExist:
             apartment = Apartment(addressStreet=address['addressStreet'],
                                     addressNumber=address['addressNumber'],
                                     addressNumber2=address['addressNumber2'],
-                                    addressCommune=Commune.objects.get(name=addressCommune)
+                                    addressCommune=Commune.objects.get(name=addressCommune),
+                                  addressRegion=Commune.objects.get(name=addressCommune).region,
+                                  propertyType=RealEstate.TYPE_HOUSE,
+                                  lat=lat,
+                                  lng=lng,
+                                  copropiedadInmobiliaria=copropiedadInmobiliaria,
+                                  ocupante=ocupante,
+                                  tipoBien=tipoBien,
+                                  destinoSII=destinoSII,
+                                  usoActual=usoActual,
+                                  usoFuturo=usoFuturo,
+                                  permisoEdificacionNo=permisoEdificacion,
+                                  permisoEdificacionFecha=date_to_datetimefield(permisoEdificacion),
+                                  recepcionFinalNo=recepcionFinal,
+                                  recepcionFinalFecha=date_to_datetimefield(recepcionFinal),
+                                  expropiacion=expropiacion,
+                                  viviendaSocial=viviendaSocial,
+                                  adobe=adobe,
+                                  desmontable=desmontable,
+                                  generalDescription=generalDescription,
+                                  programa=programa,
+                                  estructuraTerminaciones=estructuraTerminaciones,
+                                  avaluoFiscal=avaluoFiscal,
+                                  marketPrice=valorUF,
+                                  mercadoObjetivo=mercadoObjetivo,
+                                  antiguedad=antiguedad,
+                                  vidaUtil=vidaUtil,
+                                  acogidaLey=acogidaLey,
+                                  dfl2=dfl2,
+                                  usefulSquareMeters=usefulSquareMeters,
+                                  terraceSquareMeters=terraceSquareMeters
+                                      )
+        realEstate = apartment
+
+
+    try:
+        appraisal = Appraisal.objects.get(realEstate=realEstate,
+                                            valorUF=valorUF,
+                                            tipoTasacion=1,
+                                            state=0,
+                                            source=1,
+                                            solicitanteCodigo=solicitanteCodigo,
+                                            timeFinished=timeModified
+                                                  )
+        appraisal.solicitante = 2
+        appraisal.solicitanteOtro = id
+        appraisal.solicitanteSucursal = solicitanteSucursal
+        appraisal.solicitanteEjecutivo = solicitanteEjecutivo
+        appraisal.cliente = cliente
+        appraisal.clienteRut = clienteRut
+        appraisal.propietario = propietario
+        appraisal.propietarioRut = propietarioRut
+        #appraisal.tasadorUser=tasadorUser
+        appraisal.descripcionSector = descripcionSectorAll
+        appraisal.save()
+
+    except ObjectDoesNotExist:
+        appraisal = Appraisal(state=0,
+                                source=1,
+                                tipoTasacion=1,
+                                solicitante=2,
+                                realEstate=realEstate,
+                                solicitanteCodigo=solicitanteCodigo,
+                                solicitanteOtro=id,
+                                timeFinished=timeModified,
+                                solicitanteSucursal=solicitanteSucursal,
+                                solicitanteEjecutivo=solicitanteEjecutivo,
+                                cliente=cliente,
+                                clienteRut=clienteRut,
+                                propietario=propietario,
+                                propietarioRut=propietarioRut,
+                                #tasadorUser=tasadorUser,
+                                descripcionSector=descripcionSectorAll,                                      valorUF=valorUF
                                     )
+        appraisal.save()
 
 
 
-file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
+
+file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777974 (16336209-0) Santa Isabel 797 dp 1016 Santiago.xlsx'
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx'
 
+importAppraisalSantander(file)
 
-#importAppraisalSantander(file_mac)
-
-def excel_find_general(file, term):
-    # finds data by term in appraisal file
-    wb = load_workbook(filename=file, read_only=True, data_only=True)
-    ws = wb.worksheets[0]
-    for row in range(120, 200):
-        for col in range(1, 25):
-            cv = ws.cell(row=row, column=col).value
-            if cv == term:
-                print('Found it')
-                return cv
-
-excel_find_general(file_mac, "PROPIEDAD ANALIZADA")
+#test = excel_find_general(file, "PROPIEDAD ANALIZADA")
+#print(test[0])
+#print(test[1])

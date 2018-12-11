@@ -109,11 +109,59 @@ def main(request):
         'appraisals_active': appraisals_active,
         'appraisals_finished': appraisals_finished,
         'appraisals_imported': appraisals_imported,
-        'tasadores':tasadores_info,
-        'visadores':visadores_info,
         'form_comment':form_comment}
 
     return render(request, 'main/index.html', context)
+
+@login_required(login_url='/user/login')
+def imported_appraisals(request):
+    evaluationForm = EvaluationForm()
+    if request.method == 'POST':
+        if 'evaluadorAppraisal_id' in request.POST.keys():
+            evaluationForm = EvaluationForm(request.POST)
+            if evaluationForm.is_valid():
+                _onTime = evaluationForm.cleaned_data['onTime']
+                _completeness = evaluationForm.cleaned_data['completeness']
+                _generalQuality = evaluationForm.cleaned_data['generalQuality']
+                _correctSurface = evaluationForm.cleaned_data['correctSurface']
+                _homologatedReferences = evaluationForm.cleaned_data['homologatedReferences']
+                _completeNormative = evaluationForm.cleaned_data['completeNormative']
+                _commentText = evaluationForm.cleaned_data['commentText']
+                _commentFeedback = evaluationForm.cleaned_data['commentFeedback']
+                appraisal = Appraisal.objects.get(pk=request.POST['evaluadorAppraisal_id'])
+                appraiser = User.objects.get(pk=request.POST['evaluador_id'])
+                evaluation, created = AppraisalEvaluation.objects.update_or_create(
+                                        appraisal=appraisal,
+                                        #user=appraiser,
+                                        defaults={
+                                            "appraisal":appraisal,
+                                            'user':appraiser,
+                                            'onTime':_onTime,
+                                            'completeness':_completeness,
+                                            'generalQuality':_generalQuality,
+                                            'correctSurface': _correctSurface ,
+                                            'completeNormative': _completeNormative,
+                                            'homologatedReferences': _homologatedReferences,
+                                            'commentText':_commentText,
+                                            'commentFeedback':_commentFeedback})
+                #evaluationForm.save()
+                print(evaluation.evaluationResult)
+
+    # Get appraisals that this user can see
+    #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
+    appraisals_imported = appraisals_get_imported(request.user)
+
+
+    context = {
+        'evaluationForm': evaluationForm,
+        'appraisals_imported': appraisals_imported}
+
+    return render(request, 'main/appraisals_imported.html', context)
+
+
+
+
+
 
 def appraisals_get_not_assigned():
     appraisals = Appraisal.objects.select_related().filter(state=Appraisal.STATE_NOTASSIGNED)
