@@ -100,7 +100,6 @@ class Document(models.Model):
 
 class Rol(models.Model):
     code = models.CharField("Rol",max_length=20,blank=True,null=True)
-    NULL = ''
     SIN_DATOS = 0
     DEFINITIVO = 1
     MATRIZ = 2
@@ -110,7 +109,6 @@ class Rol(models.Model):
     USO_Y_GOCE = 6
     NO_ENROLADO = 7
     rolTypeChoices = [
-        (NULL,"---------"),
         (SIN_DATOS, "Sin datos"),
         (DEFINITIVO, "Definitivo"),
         (MATRIZ, "Matriz"),
@@ -120,7 +118,7 @@ class Rol(models.Model):
         (USO_Y_GOCE, "Uso y Goce"),
         (NO_ENROLADO, "No enrolado")
     ]
-    state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default='')
+    state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default=0)
 
 @reversion.register()
 class Appraisal(models.Model):
@@ -129,7 +127,7 @@ class Appraisal(models.Model):
     '''
 
     realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
-        verbose_name="Propiedad")
+        verbose_name="Propiedad",null=True)
 
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
@@ -180,18 +178,20 @@ class Appraisal(models.Model):
     # generales
     NONE = ''
     OTRA = 0
-    INMOBILIARIA = 1
+    HIPOTECARIA = 1
     REVISION = 2
     ESCRITORIO = 3
     PILOTO = 4
     TERRENO = 5
+    AVANCE_DE_OBRA = 6
     tipoTasacion_choices = [
         (NONE,'---------'),
-        (INMOBILIARIA, 'Hipotecaria'),
+        (HIPOTECARIA, 'Hipotecaria'),
         (REVISION, 'Revisión'),
         (ESCRITORIO, 'Escritorio'),
         (PILOTO, 'Piloto'),
         (TERRENO, 'Terreno'),
+        (AVANCE_DE_OBRA,'Avance de obra'),
         (OTRA, 'Otra')
     ]
     tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
@@ -276,6 +276,8 @@ class Appraisal(models.Model):
 
     comments = models.ManyToManyField(Comment)
 
+    commentsOrder = models.CharField("Comentarios pedido",max_length=1000,null=True,blank=True)
+
     valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
 
     descripcionSector = models.TextField("Descripción sector",max_length=10000,default="",null=True,blank=True)
@@ -335,8 +337,26 @@ class Appraisal(models.Model):
     @property
     def url(self):
         if self.realEstate == None:
-            return "-"
+            return "/appraisal/{}/".format(self.id)
         address = self.realEstate.address_dict
+        if self.realEstate.propertyType == RealEstate.TYPE_BUILDING:
+            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
+                slugify(address['region']),
+                slugify(address['commune']),
+                slugify(address['street']),
+                slugify(address['number']),
+                self.realEstate.propertyType,
+                self.realEstate.building.id,
+                self.id)
+        elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
+            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
+                slugify(address['region']),
+                slugify(address['commune']),
+                slugify(address['street']),
+                slugify(address['number']),
+                self.realEstate.propertyType,
+                self.realEstate.house.id,
+                self.id)
         if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
             return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
@@ -347,14 +367,14 @@ class Appraisal(models.Model):
                 self.realEstate.apartment.building_in.id,
                 self.realEstate.apartment.id,
                 self.id)
-        elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
-            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
+        elif self.realEstate.propertyType == RealEstate.TYPE_CONDOMINIUM:
+            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
                 slugify(address['street']),
                 slugify(address['number']),
                 self.realEstate.propertyType,
-                self.realEstate.house.id,
+                self.realEstate.id,
                 self.id)
         else:
             return "error"

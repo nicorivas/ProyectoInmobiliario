@@ -182,9 +182,11 @@
     $(".btn_delete_appraisal_modal").off()
     $(".btn_delete_appraisal_modal").on("click", function (event) {
       // Called on click of delete button in the active table.
-      var id = $(this).data('id');
+      var appraisal_id = $(this).data('id');
+      var source_table = $(this).closest('table').attr('id');
+      $('#modal_delete').find('#appraisal_id').val(appraisal_id);
+      $('#modal_delete').find('#source_table').val(source_table);
       $('#modal_delete').modal('show');
-      $('#modal_delete').find('#appraisal_id').val(id);
     });
 
     $("#btn_delete_appraisal").unbind()
@@ -193,7 +195,8 @@
       // Button clicked in the modal. Call an AJAX to unassign the tasador
       // of the appraisal, and returns the 'not_assigned' table back,
       // to be replaced.
-      var appraisal_id = $('#appraisal_id').val();
+      var appraisal_id = $(this).closest('#modal_delete').find('#appraisal_id').val();
+      var source_table = $(this).closest('#modal_delete').find('#source_table').val();
       var url = "{% url 'ajax_delete_appraisal_url' %}";
       btn = $(this);
       btn.addClass('running');
@@ -204,12 +207,15 @@
         data: {'appraisal_id':appraisal_id},
         error: function () {
             alert("Error al borrar tasación.");
+            btn.removeClass('running');
+            btn.prop('disabled', false);
             return false;
         },
         success: function (data) {
           btn.removeClass('running');
           btn.prop('disabled', false);
-          removeRow("active",appraisal_id)
+          console.log(source_table)
+          removeRow(source_table,appraisal_id)
           assignTableActions()
           $("#modal_delete").modal('hide')
         }
@@ -333,11 +339,7 @@
           return false;
         },
         success: function (data) {
-          if (source_table == "table_not_assigned") {
-            replaceTable("not_assigned",data)
-          } else if (source_table == "table_active") {
-            replaceTable("active",data)
-          }
+          replaceTable(source_table,data)
           assignTableActions()
           $("#modal_assign_visador").modal('hide')
           $("#modal_assign_visador").find("#btn_assign_visador").removeClass('running')
@@ -506,11 +508,11 @@
     // Remove row from table. Takes into account if this is
     // the last row remaining, in that case it hides the whole
     // table and shows the no elements alert div.
-    var nrows = $("#table_"+table_name+" tr").length;
+    var nrows = $("#"+table_name+" tr").length;
     if (nrows > 2) {
       $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
     } else {
-      $("#table_"+table_name).fadeOut()
+      $("#"+table_name).fadeOut()
       $("#div_alert_"+table_name).fadeToggle()
     }
   }

@@ -135,11 +135,13 @@ class RealEstate(models.Model):
     TYPE_HOUSE = 1
     TYPE_APARTMENT = 2
     TYPE_BUILDING = 3
+    TYPE_CONDOMINIUM = 4
     propertyType_choices = [
         (TYPE_NONE,'---------'),
         (TYPE_HOUSE, "Casa"),
         (TYPE_APARTMENT, "Departamento"),
         (TYPE_BUILDING, "Edificio"),
+        (TYPE_CONDOMINIUM, "Condominio"),
         (TYPE_OTHER, "Otro"),]
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
@@ -465,6 +467,8 @@ class RealEstate(models.Model):
             return "apartment"
         elif self.propertyType == self.TYPE_BUILDING:
             return "building"
+        elif self.propertyType == self.TYPE_CONDOMINIUM:
+            return "condominium"
         else:
             return None
 
@@ -476,7 +480,9 @@ class RealEstate(models.Model):
         elif self.propertyType == self.TYPE_APARTMENT:
             return "fas fa-building"
         elif self.propertyType == self.TYPE_BUILDING:
-            return "fas fa-building"
+            return "fas fa-city"
+        elif self.propertyType == self.TYPE_CONDOMINIUM:
+            return "fas fa-torii-gate"
         else:
             return "far fa-times-circle"
     

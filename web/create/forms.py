@@ -121,7 +121,7 @@ class AppraisalCreateForm(forms.Form):
         widget=forms.DateTimeInput(
             attrs={'class': "form-control datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
-    appraisalTimeRequest.input_formats = ['%d/%m/%Y']
+    appraisalTimeRequest.input_formats = ['%d/%m/%Y %H:%M']
     appraisalTimeDue = forms.DateTimeField(label="Fin de plazo",
         widget=forms.DateTimeInput(
             attrs={'class': "form-control datetimepicker-input",
@@ -130,6 +130,9 @@ class AppraisalCreateForm(forms.Form):
     
     appraisalPrice = forms.FloatField(label="Precio",required=False)
     appraisalPrice.widget.attrs.update({'class': "form-control"})
+
+    comments = forms.CharField(max_length=1000,label="Comentarios adicionales",required=False,widget=forms.Textarea)
+    comments.widget.attrs.update({'class':"form-control",'rows':3})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

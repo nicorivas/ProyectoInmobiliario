@@ -31,7 +31,10 @@
             </div>
           </div>
           <div class="col-1">
-            <button id="populate" class="btn btn-primary">Importar</button>
+            <button id="populate" class="btn btn-primary ld-ext-right">
+              Importar
+              <div class="ld ld-ring ld-spin"></div>
+            </button>
           </div>
         </div>
 
@@ -365,6 +368,20 @@
          </div>
       </div>
 
+      <hr/>
+
+         <div class="row">
+            <div class="col-md-2 text-right">
+               <p class="font-weight-bold">Etc.</p>
+            </div>
+            <div class="col-md-6">
+               <div class="form-group">
+                  {{form.comments.label_tag}}
+                  {{form.comments}}
+               </div>
+            </div>
+         </div>
+
       <!--
       <div class="form-group row">
          <div class="col-md-2">
@@ -385,8 +402,11 @@
       <div class="form-group row mt-4">
          <div class="col-md-2">
          </div>
-         <div class="col-md-8">
-            <button class="btn btn-dark btn-block align-bottom">Crear</button>
+         <div class="col-md-6">
+            <button class="btn btn-dark btn-block align-bottom ld-ext-right" id="btn_create">
+              Crear
+              <div class="ld ld-ring ld-spin"></div>
+            </button>
          </div>
       </div>
 
@@ -469,10 +489,7 @@
       "clienteRut": "rut",
       "contacto": "required",
       "solicitanteCodigo": "required",
-      "appraisalTimeRequest": {
-        required: true,
-        date: true
-      },
+      "appraisalTimeRequest": "required",
       "appraisalTimeDue": "required",
       "tipoTasacion": "required",
       "finalidad": "required",
@@ -488,7 +505,14 @@
       "addressCommune": "Campo requerido",
       "addressRegion": "Campo requerido",
       "cliente": "Campo requerido",
+      "contacto": "Campo requerido",
       "solicitanteCodigo": "Campo requerido",
+      "appraisalTimeRequest": "Campo requerido",
+      "appraisalTimeDue": "Campo requerido",
+      "tipoTasacion": "Campo requerido",
+      "finalidad": "Campo requerido",
+      "visita": "Campo requerido",
+      "propertyType": "Campo requerido",
       "clienteEmail": {
         email: "Email debe tener formato nombre@dominio.com"
       },
@@ -498,12 +522,6 @@
       "solicitanteEjecutivoEmail": {
         email: "Email debe tener formato nombre@dominio.com"
       },
-      "appraisalTimeFrame": "Campo requerido",
-      "tipoTasacion": "Campo requerido",
-      "finalidad": "Campo requerido",
-      "visita": "Campo requerido",
-      "propertyType": "Campo requerido",
-      "appraisalTimeDue": "Campo requerido"
     },
     errorPlacement: function(error, element) {
       if (element.attr("id") == "id_appraisalTimeRequest") {
@@ -572,6 +590,9 @@
       var form = document.getElementById('form');
       var formData = new FormData(form);
       var url = $("#form").attr("data-populate-from-file-url");
+      btn = $(this)
+      btn.addClass('running')
+      btn.prop('disabled', true);
       $.ajax({
           url: url,
           type: 'post',
@@ -580,8 +601,10 @@
           contentType: false,
           dataType: 'json',
           error: function () {
-              alert("Error al procesar archivo.");
-              return false;
+            alert("Error al procesar archivo.");
+            btn.removeClass('running')
+            btn.prop('disabled', false);
+            return false;
           },
           success: function (data) {
             $('#id_solicitanteCodigo').val('')
@@ -608,9 +631,16 @@
             } else {
               $('#id_import_alert').hide()
             }
-            formatFields();
-            showApartmentNumber();
-            $("#form").valid();
+            if (data.error) {
+              $('#id_import_alert').show()
+              $('#id_import_alert').html(data['error'])
+            } else {
+              formatFields();
+              showApartmentNumber();
+              $("#form").valid();
+            }
+            btn.removeClass('running')
+            btn.prop('disabled', false);
           }
       });
       return false;
@@ -620,7 +650,17 @@
       e.preventDefault();
       populateFromFile();
     });
-    
+
+    $("#btn_create").on("click", function (e) {
+      if ($("#form").valid()) {
+        $(this).addClass('running');
+        setTimeout(function () { disableButton(); }, 0);
+        //$(this).prop('disabled', true);
+      };
+    });
+    function disableButton() {
+      $("#btn_create").prop('disabled', true);
+    }
   })
 
   function toTitleCase(str) {

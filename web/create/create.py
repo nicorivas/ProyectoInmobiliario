@@ -49,6 +49,7 @@ def appraisal_create(request,realEstate,
     contacto=None,
     contactoEmail=None,
     contactoTelefono=None,
+    commentsOrder=None,
     user=None,
     orderFile=None,
     price=None):
@@ -77,6 +78,7 @@ def appraisal_create(request,realEstate,
         contacto=contacto,
         contactoEmail=contactoEmail,
         contactoTelefono=contactoTelefono,
+        commentsOrder=commentsOrder,
         orderFile=orderFile,
         price=price)
     appraisal.state = Appraisal.STATE_NOTASSIGNED
@@ -86,9 +88,11 @@ def appraisal_create(request,realEstate,
     comment.save()
     appraisal.comments.add(comment)
 
-    rol = Rol(code=rol)
-    rol.save()
-    appraisal.roles.add(rol)
+    print('rol ({})'.format(rol))
+    if len(rol) > 0:
+        rol = Rol(code=rol)
+        rol.save()
+        appraisal.roles.add(rol)
 
     appraisal.save()
     
@@ -173,3 +177,21 @@ def house_create(request,addressRegion,addressCommune,addressStreet,addressNumbe
     house.save()
 
     return house
+
+def real_estate_create(request,addressRegion,addressCommune,addressStreet,addressNumber):
+    '''
+    Given a building and a flat number, create an apartment.
+    '''
+    real_estate = RealEstate(
+        addressRegion=addressRegion,
+        addressCommune=addressCommune,
+        addressStreet=addressStreet,
+        addressNumber=addressNumber)
+    real_estate.propertyType = RealEstate.TYPE_CONDOMINIUM
+    if len(RealEstate.objects.all()) > 0:
+        real_estate_id = int(RealEstate.objects.all().order_by('-id')[0].id)+1
+    else:
+        real_estate_id = 1
+    real_estate.id = real_estate_id
+    real_estate.save()
+    return real_estate

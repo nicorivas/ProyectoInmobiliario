@@ -745,9 +745,17 @@ def view_appraisal(request, **kwargs):
         forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
-    if realestate.propertyType == RealEstate.TYPE_HOUSE:
+    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
         forms['createRealEstate'] = FormCreateHouse(prefix='vc',label_suffix='')
+        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
+        forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
+    elif realestate.propertyType == RealEstate.TYPE_BUILDING:
+        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
+        forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
+    elif realestate.propertyType == RealEstate.TYPE_CONDOMINIUM:
         forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
@@ -762,10 +770,12 @@ def view_appraisal(request, **kwargs):
         forms['rol'].append(FormCreateRol(instance=rol,prefix='r'))
 
     # Select communes for create building
+    '''
     communes = Commune.objects.only('name').filter(region=realestate.addressRegion).order_by('name')
     commune = Commune.objects.only('name').get(name__icontains=realestate.addressCommune)
     forms['createRealEstate'].fields['addressCommune'].queryset = communes
     forms['createRealEstate'].fields['addressCommune'].initial = commune
+    '''
 
     # Disable fields if appraisal is finished
     if appraisal.state == appraisal.STATE_FINISHED or appraisal.state == appraisal.STATE_PAUSED:
