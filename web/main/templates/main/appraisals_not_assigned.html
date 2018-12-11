@@ -47,7 +47,7 @@
         </div>
         {% if perms.appraisal.assign_tasador %}
         <div class="col text-right">
-          <button type="button" class="btn btn-sm btn-light btn_assign_tasador_modal" data-toggle="modal" data-target="#modal_assign_tasador"
+          <button type="button" class="btn btn-sm btn-light btn_assign_tasador_modal"
                   value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
             person_add
           </button>
@@ -68,7 +68,7 @@
         </div>
         {% if perms.appraisal.assign_visador %}
         <div class="col text-right">
-          <button type="button" class="btn btn-sm btn-light btn_assign_visador_modal" data-toggle="modal" data-target="#modal_assign_visador"
+          <button type="button" class="btn btn-sm btn-light btn_assign_visador_modal"
                   value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
             person_add
           </button>
@@ -90,11 +90,11 @@
     </td>
     <td>
       {% has_notification_appraisal request.user appraisal.id as hna %}
-      <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
-              data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        assignment
+      <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}" data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        <span id='icon'>assignment</span>
+        <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
-      <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+      <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
         delete
       </button>
     </td>

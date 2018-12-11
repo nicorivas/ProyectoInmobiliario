@@ -85,6 +85,11 @@ input[type="url"] {
     background-color: #fff;
 }
 
+input[type="file"] {
+    border-color: #777;
+    background-color: #fff;
+}
+
 select.form-control {
     border-color: #777;
 }
@@ -110,6 +115,12 @@ input[type="number"]:disabled {
 }
 
 input[type="url"]:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+input[type="file"]:disabled {
     background-color: transparent;
     border: 1px solid #ddd;
     color: #666;

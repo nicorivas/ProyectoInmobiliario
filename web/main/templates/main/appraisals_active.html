@@ -4,14 +4,14 @@
   <tr>
     <th scope="col" style="width:1em">ID</th>
     <th scope="col" style="width:8em">Cliente</th>
-    <th scope="col" style="width:8em">Código</th>
+    <th scope="col" style="width:6em">Código</th>
     <th scope="col" style="width:1em;text-align:center;">T.</th>
     <th scope="col" style="width:19em;">Dirección</th>
     <th scope="col" style="width:11em;">Tasador</th>
     <th scope="col" style="width:11em;">Visador</th>
     <th scope="col" style="width:1em;text-align:center;">E.</th>
-    <th scope="col" style="width:8em;">Creada</th>
-    <th scope="col" style="width:8em;">Entrega</th>
+    <th scope="col" style="width:5em;">Creada</th>
+    <th scope="col" style="width:7em;">Entrega</th>
     <th scope="col" style="width:5em;"></th>
   </tr>
 </thead>
@@ -92,7 +92,7 @@
       {% endif %}
     </td>
     <td class="Creada">
-      {{appraisal.timeCreated | date:"d/m/Y"}}
+      {{appraisal.timeCreated | date:"d/m"}}
     </td>
     <td>
     {% if appraisal.daysLeft > 3 %}
@@ -107,9 +107,10 @@
     {% has_notification_appraisal request.user appraisal.id as hna %}
     <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
             data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-      assignment
+      <span id='icon'>assignment</span>
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
     </button>
-    <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+    <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal_modal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
       delete
     </button>
     </td>

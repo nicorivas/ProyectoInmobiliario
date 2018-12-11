@@ -76,10 +76,12 @@
       {% has_notification_appraisal request.user appraisal.id as hna %}
       <button type="button" class="btn btn-sm btn-dark btn-accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}"
               style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        thumb_up
+        <span id='icon'>thumb_up</span>
+        <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
       <button type="button" class="btn btn-dark btn-sm btn-reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        thumb_down
+        <span id='icon'>thumb_down</span>
+        <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
     </td>
   </tr>

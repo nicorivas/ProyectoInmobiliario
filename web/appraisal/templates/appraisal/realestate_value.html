@@ -86,125 +86,6 @@
 </script>
 
 <div id="accordion">
-  <div class="card ml-4 mr-4 mt-4 rounded-0">
-    <div class="card-header bg-light" id="header">
-      <div class="row">
-      <div class="col">
-        <p style="margin:0em;">Valor recomendado</p>
-      </div>
-      <div class="col text-right">
-        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#recommendedValue" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
-          more_vert
-        </a>
-      </div>
-      </div>
-    </div>
-    <div id="recommendedValue" class="collapse show" aria-labelledby="heading">
-    <div class="card-body" style="padding:0em;">
-
-      <table class="table mb-0">
-        <thead class="thead">
-          <tr>
-            <th scope="col"></th>
-            <th scope="col" style="width:10em;"></th>
-            <th scope="col" style="width:7em;"></th>
-            <th scope="col" style="text-align:center;width:10em;">U.F.</th>
-            <th scope="col" style="text-align:center;width:10em;">$</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td scope="col"></td>
-            <td scope="col" style="vertical-align: middle;">Valor comercial</td>
-            <td scope="col"></td>
-            <td scope="col">{{forms.appraisal.valorUF}}</td>
-            <td scope="col"><input id="in_value_market" class="form-control text-right" disabled></td>
-            <td scope="col"></td>
-          </tr>
-          <tr>
-            <td scope="col"></td>
-            <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
-            {% if not appraisal.finished %}
-            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75"></td>
-            {% else %}
-            <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75" disabled></td>
-            {% endif %}
-            <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
-            <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
-            <td scope="col"></td>
-          </tr>
-          <tr>
-            <td scope="col"></td>
-            <td scope="col" style="vertical-align: middle;">Monto seguro</td>
-            <td scope="col"></td>
-            <td scope="col"><input id="in_value_safe_UF" class="form-control text-right" disabled></td>
-            <td scope="col"><input id="in_value_safe" class="form-control text-right" disabled></td>
-            <td scope="col"></td>
-          </tr>
-        </tbody>
-      </table>
-
-    </div>
-    </div>
-  </div>
-
-<div class="card ml-4 mr-4 mt-4 rounded-0">
-  <div class="card-header" id="header">
-    <div class="row">
-      <div class="col">
-        <p style="margin:0em;">Valor de renta</p>
-      </div>
-      <div class="col text-right">
-        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuation_rent" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
-          more_vert
-        </a>
-      </div>
-    </div>
-  </div>
-  <div id="valuation_rent" class="collapse show" aria-labelledby="heading">
-    <div class="card-body" style="padding:0em;">
-      <table id="table_valuation_rent" class="table table-sm mb-0">
-        <thead class="thead">
-          <tr style="text-align:center;">
-            <th></th>
-            <th style="width:16em;">Renta mensual {{htmlBits.unitUF|safe}}</th>
-            <th style="width:5em;">Meses</th>
-            <th style="width:16em;">Renta líquida anual {{htmlBits.unitUF|safe}}</th>
-            <th style="width:5em;">Tasa</th>
-            <th style="width:16em;">Canon arriendo {{htmlBits.unitUFperSquaredMeter|safe}}</th>
-            <th style="width:16em;">Valor de renta {{htmlBits.unitUF|safe}}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td>
-            <td>
-              <input id="id_value_rent_month" class="form-control text-right" disabled>
-            </td>
-            <td>
-              <input id="id_value_rent_months" class="form-control text-center" disabled>
-            </td>
-            <td>
-              <input id="id_value_rent_year" class="form-control text-right" disabled>
-            </td>
-            <td>
-              <input id="id_value_rent_rate" class="form-control text-right" disabled>
-            </td>
-            <td>
-              <input id="id_value_rent_per_area" class="form-control text-right" disabled>
-            </td>
-            <td>
-              <input id="id_value_rent" class="form-control text-right" disabled>
-            </td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 <div class="card ml-4 mr-4 mt-4 rounded-0">
   <div class="card-header" id="header">
@@ -328,7 +209,7 @@
           </tr>
           {% endfor %}
 
-          {% if not appraisal.finished %}
+          {% if appraisal.active %}
           <tr>
             <td></td>
             <td colspan="12" style="padding:0em;text-align:right;">
@@ -362,9 +243,7 @@
       </table>
     </div>
   </div>
-
   {% endlocalize %}
-
 </div>
 
 {% if not appraisal.finished %}
@@ -568,24 +447,6 @@
     </div>
   </div>
 </div>
-{% endif %}
-
-<!--
-<div class="card ml-4 mr-4 mt-4 rounded-0">
-  <div class="card-header" id="header">
-    <div class="row">
-      <div class="col">
-        <p style="margin:0em;">Muestras CBR</p>
-      </div>
-      <div class="col text-right">
-        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#realEstateCBR" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
-          more_vert
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
--->
 
 <div class="card ml-4 mr-4 mt-4 mb-4 rounded-0">
   <div class="card-header" id="header">
@@ -615,6 +476,128 @@
 </div>
 
 {% include "appraisal/realestate_value_assets.html" %}
+
+<div class="card ml-4 mr-4 mt-4 rounded-0">
+  <div class="card-header" id="header">
+    <div class="row">
+      <div class="col">
+        <p style="margin:0em;">Valor de renta</p>
+      </div>
+      <div class="col text-right">
+        <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#valuation_rent" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+          more_vert
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="valuation_rent" class="collapse show" aria-labelledby="heading">
+    <div class="card-body" style="padding:0em;">
+      <table id="table_valuation_rent" class="table table-sm mb-0">
+        <thead class="thead">
+          <tr style="text-align:center;">
+            <th></th>
+            <th style="width:16em;">Renta mensual {{htmlBits.unitUF|safe}}</th>
+            <th style="width:5em;">Meses</th>
+            <th style="width:16em;">Renta líquida anual {{htmlBits.unitUF|safe}}</th>
+            <th style="width:5em;">Tasa</th>
+            <th style="width:16em;">Canon arriendo {{htmlBits.unitUFperSquaredMeter|safe}}</th>
+            <th style="width:16em;">Valor de renta {{htmlBits.unitUF|safe}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td>
+              <input id="id_value_rent_month" class="form-control text-right" disabled>
+            </td>
+            <td>
+              <input id="id_value_rent_months" class="form-control text-center" disabled>
+            </td>
+            <td>
+              <input id="id_value_rent_year" class="form-control text-right" disabled>
+            </td>
+            <td>
+              <input id="id_value_rent_rate" class="form-control text-right" disabled>
+            </td>
+            <td>
+              <input id="id_value_rent_per_area" class="form-control text-right" disabled>
+            </td>
+            <td>
+              <input id="id_value_rent" class="form-control text-right" disabled>
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card ml-4 mr-4 mt-4 mb-4 rounded-0">
+  <div class="card-header bg-light" id="header">
+    <div class="row">
+    <div class="col">
+      <p style="margin:0em;">Valor recomendado</p>
+    </div>
+    <div class="col text-right">
+      <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#recommendedValue" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+        more_vert
+      </a>
+    </div>
+    </div>
+  </div>
+  <div id="recommendedValue" class="collapse show" aria-labelledby="heading">
+  <div class="card-body" style="padding:0em;">
+
+    <table class="table mb-0">
+      <thead class="thead">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col" style="width:10em;"></th>
+          <th scope="col" style="width:7em;"></th>
+          <th scope="col" style="text-align:center;width:10em;">U.F.</th>
+          <th scope="col" style="text-align:center;width:10em;">$</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="col"></td>
+          <td scope="col" style="vertical-align: middle;">Valor comercial</td>
+          <td scope="col"></td>
+          <td scope="col">{{forms.appraisal.valorUF}}</td>
+          <td scope="col"><input id="in_value_market" class="form-control text-right" disabled></td>
+          <td scope="col"></td>
+        </tr>
+        <tr>
+          <td scope="col"></td>
+          <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
+          {% if not appraisal.finished %}
+          <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75"></td>
+          {% else %}
+          <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75" disabled></td>
+          {% endif %}
+          <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
+          <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
+          <td scope="col"></td>
+        </tr>
+        <tr>
+          <td scope="col"></td>
+          <td scope="col" style="vertical-align: middle;">Monto seguro</td>
+          <td scope="col"></td>
+          <td scope="col"><input id="in_value_safe_UF" class="form-control text-right" disabled></td>
+          <td scope="col"><input id="in_value_safe" class="form-control text-right" disabled></td>
+          <td scope="col"></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+</div>
+{% endif %}
 
 </div>
 

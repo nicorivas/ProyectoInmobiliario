@@ -81,3 +81,5 @@ input::-webkit-inner-spin-button {
   background-color: #007bff;
   color: #fff;
 }
+
+button:focus {outline:0;}

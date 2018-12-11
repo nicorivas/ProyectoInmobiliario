@@ -4,7 +4,7 @@ from realestate.models import RealEstate
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
-from appraisal.models import Appraisal
+from appraisal.models import Appraisal, Comment, Rol
 
 import datetime
 import requests # to call the API of Google to get lat-lon
@@ -28,7 +28,7 @@ def address_to_coordinates(address):
             resp_json_payload['results'][0]['geometry']['location']['lng']
             ]
 
-def appraisal_create(realEstate,
+def appraisal_create(request,realEstate,
     solicitante=None,
     solicitanteOtro=None,
     solicitanteSucursal=None,
@@ -38,6 +38,7 @@ def appraisal_create(realEstate,
     solicitanteEjecutivoTelefono=None,
     timeDue=None,
     timeRequest=None,
+    rol=None,
     tipoTasacion=None,
     finalidad=None,
     visita=None,
@@ -49,6 +50,7 @@ def appraisal_create(realEstate,
     contactoEmail=None,
     contactoTelefono=None,
     user=None,
+    orderFile=None,
     price=None):
     '''
     Create appraisal, given a ...?
@@ -75,12 +77,24 @@ def appraisal_create(realEstate,
         contacto=contacto,
         contactoEmail=contactoEmail,
         contactoTelefono=contactoTelefono,
+        orderFile=orderFile,
         price=price)
     appraisal.state = Appraisal.STATE_NOTASSIGNED
     appraisal.save()
+    
+    comment = Comment(event=24,user=request.user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
+    comment.save()
+    appraisal.comments.add(comment)
+
+    rol = Rol(code=rol)
+    rol.save()
+    appraisal.roles.add(rol)
+
+    appraisal.save()
+    
     return appraisal
 
-def apartment_create(building_in,addressNumber2):
+def apartment_create(request,building_in,addressNumber2):
     '''
     Given a building and a flat number, create an apartment.
     '''
@@ -101,7 +115,7 @@ def apartment_create(building_in,addressNumber2):
     apartment.save()
     return apartment
 
-def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
+def building_create(request,addressRegion,addressCommune,addressStreet,addressNumber):
     '''
     Given an address, create a building
     '''
@@ -129,7 +143,7 @@ def building_create(addressRegion,addressCommune,addressStreet,addressNumber):
     building.save()
     return building
 
-def house_create(addressRegion,addressCommune,addressStreet,addressNumber,addressNumber2):
+def house_create(request,addressRegion,addressCommune,addressStreet,addressNumber,addressNumber2):
     '''
     Given an address, create a house
     '''

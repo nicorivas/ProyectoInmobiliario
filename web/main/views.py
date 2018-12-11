@@ -60,11 +60,6 @@ def unassign_visador(appraisal_id):
 def main(request):
     evaluationForm = EvaluationForm()
     if request.method == 'POST':
-        if 'delete' in request.POST:
-            # Handle the delete button, next to every appraisal
-            id = int(request.POST['appraisal_id'])
-            appraisal = Appraisal.objects.get(pk=id)
-            appraisal.delete()
         if 'evaluadorAppraisal_id' in request.POST.keys():
             evaluationForm = EvaluationForm(request.POST)
             if evaluationForm.is_valid():
@@ -94,12 +89,6 @@ def main(request):
                                             'commentFeedback':_commentFeedback})
                 #evaluationForm.save()
                 print(evaluation.evaluationResult)
-
-    tasadores = User.objects.filter(groups__name__in=['tasador'])
-    tasadores_info = appraiserWork(tasadores)
-
-    visadores = User.objects.filter(groups__name__in=['visador'])
-    visadores_info = visadorWork(visadores)
 
     # Get appraisals that this user can see
     #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
@@ -222,6 +211,31 @@ def appraisals_get_imported(user):
     print(appraisals_imported)
     return appraisals_imported
 
+def ajax_assign_tasador_modal(request):
+    '''
+    Assign a tasador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding modal, which has a form where you can select the user.
+    '''
+    appraisal_current = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
+    tasadores = User.objects.filter(groups__name__in=['tasador'])
+    tasadores_info = appraiserWork(tasadores)
+    return render(request,'main/modals_assign_tasador.html',
+        {'appraisal':appraisal_current,
+         'tasadores':tasadores_info})
+
+def ajax_assign_visador_modal(request):
+    '''
+    Assign a tasador from an appraisal. Gets called through AJAX when clicked
+    on the corresponding modal, which has a form where you can select the user.
+    '''
+    appraisal_current = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
+    visadores = User.objects.filter(groups__name__in=['visador'])
+    visadores_info = visadorWork(visadores)
+    return render(request,'main/modals_assign_visador.html',
+        {'appraisal':appraisal_current,
+         'visadores':visadores_info})
+
+
 def ajax_assign_tasador(request):
     '''
     Assign a tasador from an appraisal. Gets called through AJAX when clicked
@@ -229,7 +243,8 @@ def ajax_assign_tasador(request):
     '''
     assign_tasador(int(request.POST['appraisal_id']),int(request.POST['tasador']),int(request.user.id))
     appraisals_not_accepted = appraisals_get_not_accepted(request.user)
-    return render(request,'main/appraisals_not_accepted.html',{'appraisals_not_accepted':appraisals_not_accepted})
+    return render(request,'main/appraisals_not_accepted.html',
+        {'appraisals_not_accepted':appraisals_not_accepted})
 
 def ajax_assign_visador(request):
     '''
@@ -294,6 +309,12 @@ def ajax_reject_appraisal(request):
 
     return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
 
+def ajax_delete_appraisal(request):
+    # Handle the delete button, next to every appraisal
+    id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(pk=id)
+    appraisal.delete()
+    return HttpResponse('')
 
 def ajax_logbook(request):
     '''
@@ -303,8 +324,9 @@ def ajax_logbook(request):
 
     appraisal = Appraisal.objects.get(id=id)
     comments = appraisal.comments.all().order_by('-timeCreated')
+    form_comment = FormComment(label_suffix='')
 
-    return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments})
+    return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments,'form_comment':form_comment})
 
 def ajax_logbook_close(request):
     '''
@@ -314,6 +336,14 @@ def ajax_logbook_close(request):
     request.user.user.removeNotification(ntype="comment",appraisal_id=appraisal_id)
 
     return HttpResponse('')
+
+def ajax_logbook_change_event(request):
+    '''
+    '''
+
+    #if request['event'] == 
+
+    return JsonResponse({'comment_id':comment_id})
 
 def ajax_comment(request):
     '''

@@ -39,13 +39,25 @@
     <div class="row">
 
       <div class="col text-center">
-        {% if appraisal.active %}
+        {% if appraisal.not_assigned %}
+        <div class="alert alert-warning" role="alert">Esperando asignación</div>
+        {% elif appraisal.active %}
         <div class="alert alert-primary" role="alert">Activa</div>
         {% elif appraisal.paused %}
         <div class="alert alert-warning" role="alert">Pausada</div>
         {% elif appraisal.finished %}
         <div class="alert alert-secondary" role="alert">Terminada</div>
         {% endif %}
+      </div>
+
+      <div class="col text-center">
+        <div class="alert alert-secondary" role="alert">
+          {% if appraisal.orderFile %}
+          <a href="{{appraisal.orderFile.url}}" style="color:#000;">Descargar archivo pedido</a>
+          {% else %}
+          Archivo de pedido no disponible
+          {% endif %}
+        </div>
       </div>
 
       <div class="col text-center">
@@ -57,14 +69,6 @@
         <div class="alert alert-danger" role="alert" id="timeLeft"></div>
         {% endif %}
       </div>
-
-      <!--
-      <div class="col text-center">
-        <div class="alert alert-secondary" role="alert">
-          {{appraisal.price}} UF
-        </div>
-      </div>
-      -->
 
     </div>
 

@@ -287,16 +287,6 @@ def assign_tasador(request,forms,appraisal):
         save_appraisal(request, forms, 'Changed tasador')
         return True
 
-def upload_photo(request,forms,appraisal):
-    if forms['photos'].is_valid() and forms['appraisal'].is_valid():
-        for photo_file in request.FILES.getlist('photos'):
-            photo = Photo()
-            photo.photo = photo_file
-            photo.description = forms['photos'].cleaned_data['description']
-            photo.save()
-            appraisal.photos.add(photo)
-        save_appraisal(request, forms, 'Added picture(s)')
-
 def upload_document(request,forms,appraisal):
     if forms['documents'].is_valid() and forms['appraisal'].is_valid():
         for document_file in request.FILES.getlist('documents'):
@@ -838,3 +828,14 @@ def ajax_computeValuations(request):
         "montoSeguroPesos": montoSeguroPesos
         }
     return HttpResponse(json.dumps(dict))
+
+def ajax_upload_photo(request):
+    print(request.POST)
+    print(request.FILES)
+    #for photo_file in request.FILES.getlist('photos'):
+    #    photo = Photo()
+    #    photo.photo = photo_file
+    #    photo.description = forms['photos'].cleaned_data['description']
+    #    photo.save()
+    #    appraisal.photos.add(photo)
+    return HttpResponse('')

@@ -7,13 +7,12 @@ from django.core.exceptions import ValidationError
 import datetime
 
 
-class AppraisalFileForm(forms.Form):
+class AppraisalCreateForm(forms.Form):
+
     archivo = forms.FileField(
         required=False,
         widget=forms.ClearableFileInput(
             attrs={'class':"custom-file-input",'multiple': False}))
-
-class AppraisalCreateForm(forms.Form):
 
     tipoTasacion = forms.ChoiceField(
         label="Tipo Pedido",
@@ -89,9 +88,11 @@ class AppraisalCreateForm(forms.Form):
 
     propertyType = forms.ChoiceField(
         label="Tipo propiedad",
-        choices=RealEstate.propertyType_choices,
-        initial=RealEstate.TYPE_HOUSE)
+        choices=RealEstate.propertyType_choices)
     propertyType.widget.attrs.update({'class':"form-control"})
+
+    rol = forms.CharField(label="Rol", max_length=20, required=False)
+    rol.widget.attrs.update({'class': "form-control"})
 
     addressRegion = forms.ModelChoiceField(
         label="Región",
