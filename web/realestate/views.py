@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from building.models import Building
+#from building.models import Building
 from apartment.models import Apartment
 from django.core import serializers
 

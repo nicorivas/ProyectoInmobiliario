@@ -346,7 +346,7 @@ class Appraisal(models.Model):
                 slugify(address['street']),
                 slugify(address['number']),
                 self.realEstate.propertyType,
-                self.realEstate.building.id,
+                self.realEstate.apartmentbuilding.id,
                 self.id)
         elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(

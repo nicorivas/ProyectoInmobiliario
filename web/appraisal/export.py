@@ -5,9 +5,9 @@ from django.core import files
 import requests
 import tempfile
 
-from realestate.models import RealEstate, Construction, Terrain, Asset
+from realestate.models import RealEstate, Asset
 from house.models import House
-from building.models import Building
+#from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune

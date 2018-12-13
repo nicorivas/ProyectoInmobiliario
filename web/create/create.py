@@ -2,7 +2,7 @@ from region.models import Region
 from commune.models import Commune
 from realestate.models import RealEstate
 from house.models import House
-from building.models import Building
+#from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Rol
 

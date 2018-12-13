@@ -2,121 +2,9 @@ from django.db import models
 from commune.models import Commune
 from region.models import Region
 from neighborhood.models import Neighborhood
-
-
-class Terrain(models.Model):
-    '''
-    Parts of the terrain
-    '''
-    name = models.CharField("Nombre",max_length=300,default="",blank=True)
-
-    frente = models.FloatField("Frente",blank=True,null=True)
-
-    fondo = models.FloatField("Fondo",blank=True,null=True)
-
-    TOPOGRAPHY_CHOICES = (
-        (0, 'Plano'),
-        (1, 'Semiplano'),
-        (2, 'Pendiente'),
-        (3, 'Pendiente abrupta')
-    )
-    topography = models.IntegerField("Topografía",choices=TOPOGRAPHY_CHOICES,blank=True,null=True)
-
-    SHAPE_CHOICES = (
-        (0, 'Regular'),
-        (1, 'Irregular'),
-    )
-    shape = models.IntegerField("Forma",choices=SHAPE_CHOICES,blank=True,null=True)
-
-    area = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
-
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
-
-    UFPerArea = models.FloatField("UF per Area",
-        blank=True,
-        null=False,
-        default=0)
-
-class Construction(models.Model):
-    '''
-    Parts of a RealEstate, such as balconies or other parts of a house.
-    '''
-    name = models.CharField("Nombre",max_length=300,default="",blank=True)
-    
-    complementary = models.BooleanField("Complementaria",blank=True,default=False)
-
-    MATERIAL_UNKNOWN = '-'
-    MATERIAL_ACERO = 'A'
-    MATERIAL_HORMIGON = 'B'
-    MATERIAL_ALBANILERIA = 'C'
-    MATERIAL_PIEDRA_BLOQUE = 'D'
-    MATERIAL_MADERA = 'E'
-    MATERIAL_ADOBE = 'F'
-    MATERIAL_METALCOM = 'G'
-    MATERIAL_PREFAB_MADERA = 'H'
-    MATERIAL_PREFAB_HORMIGON = 'I'
-    MATERIAL_OTRO = 'J'
-    MATERIAL_CHOICES = [
-        (MATERIAL_UNKNOWN, "Desconocido"),
-        (MATERIAL_ACERO, "Acero"),
-        (MATERIAL_HORMIGON, "Hormigón"),
-        (MATERIAL_ALBANILERIA, "Albañilería"),
-        (MATERIAL_PIEDRA_BLOQUE, "Piedra/Bloque"),
-        (MATERIAL_MADERA, "Madera"),
-        (MATERIAL_ADOBE, "Adobe"),
-        (MATERIAL_METALCOM, "Metalcom"),
-        (MATERIAL_PREFAB_MADERA, "Prefab. Madera"),
-        (MATERIAL_PREFAB_HORMIGON, "Prefab. Hormigón"),
-        (MATERIAL_OTRO, "Otros")]
-    material = models.CharField(
-        max_length=2,
-        blank=True,
-        choices=MATERIAL_CHOICES,
-        default=MATERIAL_UNKNOWN)
-    
-    year = models.DateField("Año construcción",blank=True,null=False,default='1985-01-01')
-
-    quality = models.IntegerField("Calidad",blank=True,null=True,choices=[(1,1),(2,2),(3,3),(4,4),(5,5)])
-
-    state = models.IntegerField("Estado",blank=True,null=True,choices=[(1,'Sin valor'),(2,'Malo'),(3,'Regular'),(4,'Bueno'),(5,'Muy bueno')])
-
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
-    
-    BOOLEAN_NULL_CHOICES = (
-        (None, "S/A"),
-        (True, "Si"),
-        (False, "No")
-    )
-    prenda = models.BooleanField("Mercado objetivo",blank=True,null=True,choices=BOOLEAN_NULL_CHOICES)
-
-    RECEPCION_CONRF = 0
-    RECEPCION_SINRF = 1
-    RECEPCION_SINPE = 2
-    RECEPCION_SINANT = 3
-    RECEPCION_NR = 4
-    RECEPCION_CHOICES = [
-        (RECEPCION_CONRF, "Con R/F"),
-        (RECEPCION_SINRF, "Sin R/F"),
-        (RECEPCION_SINPE, "Sin P/E"),
-        (RECEPCION_SINANT, "Sin Ant."),
-        (RECEPCION_NR, "N/R")]
-    recepcion = models.IntegerField(
-        choices=RECEPCION_CHOICES,
-        default=RECEPCION_NR,
-        blank=True)
-
-    area = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
-
-    UFPerArea = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
+from terrain.models import Terrain
+from apartmentbuilding.models import ApartmentBuilding
+from building.models import Building
 
 class Asset(models.Model):
     '''
@@ -184,7 +72,7 @@ class RealEstate(models.Model):
 
     terrains = models.ManyToManyField(Terrain)
 
-    constructions = models.ManyToManyField(Construction)
+    buildings = models.ManyToManyField(Building)
 
     assets = models.ManyToManyField(Asset)
 
@@ -365,6 +253,21 @@ class RealEstate(models.Model):
     vidaUtil = models.PositiveSmallIntegerField("Vida util",
         default=80,
         null=True)
+
+    def addApartmentBuilding(self, apartment_building):
+        if isinstance(apartment_building, type(ApartmentBuilding)):
+            self.buildings.add(apartment_building)
+            self.save()
+            return True
+        elif isinstance(apartment_building, int):
+            # Assuming its the building id.
+            try:
+                apartment_building = ApartmentBuilding.objects.get(id=apartment_building)
+                self.buildings.add(apartment_building)
+                self.save()
+                return True
+            except ApartmentBuilding.DoesNotExist:
+                return False
 
     @property
     def sourceNameNice(self):

@@ -1,8 +1,8 @@
 from django import forms
-from realestate.models import RealEstate, Construction, Terrain, Asset
+from realestate.models import RealEstate, Asset
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Rol, Comment
-from building.models import Building
+#from building.models import Building
 from house.models import House
 from region.models import Region
 from commune.models import Commune
@@ -83,6 +83,7 @@ class FormRealEstate(forms.ModelForm):
         #self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
         #self.fields['addressRegion'].queryset = Region.objects.only('name').all()
 
+'''
 class FormBuilding(forms.ModelForm):
 
     class Meta:
@@ -95,7 +96,7 @@ class FormBuilding(forms.ModelForm):
         class_se_bs = {'class':"custom-select custom-select-sm"}
 
         widgets = {}
-
+'''
 class FormApartment(forms.ModelForm):
 
     class Meta:
@@ -283,7 +284,7 @@ class FormCreateHouse(forms.ModelForm):
             'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
             'marketPrice': forms.NumberInput(attrs=class_bs)
             }
-
+'''
 class FormCreateTerrain(forms.ModelForm):
     class Meta:
         model = Terrain
@@ -309,7 +310,8 @@ class FormCreateTerrain(forms.ModelForm):
             'area': forms.NumberInput(attrs=class_bs_right),
             'UFPerArea': forms.NumberInput(attrs=class_bs_right)
             }
-
+'''
+'''
 class FormCreateConstruction(forms.ModelForm):
     class Meta:
         model = Construction
@@ -339,7 +341,7 @@ class FormCreateConstruction(forms.ModelForm):
             'area': forms.NumberInput(attrs=class_bs_right),
             'UFPerArea': forms.NumberInput(attrs=class_bs_right)
             }
-
+'''
 class FormCreateAsset(forms.ModelForm):
     class Meta:
         model = Asset
