@@ -14,33 +14,42 @@
           Cargando tasadores
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
         </div>
-        <table class="table table-sm" id="table" style="display:none;">
-          <thead class="thead-light">
+        <input class="form-control mb-2" placeholder="Buscar visador" id="visador_buscar" style="display:none;"></input>
+        <table class="table table-sm table-borderless" id="table" style="display:none;">
+          <thead>
             <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tasaciones</th>
+              <th style="width:1em;"></th>
+              <th style="width:10em;">Nombre</th>
+              <th style="width:10em;" class="text-center">Tasaciones</th>
+              <th style="width:1em;"></th>
             </tr>
           </thead>
           <tbody>
-
             {% for visador in visadores %}
-            <tr>
-              <th scope="col">
+            <tr class="visador">
+              <td></td>
+              <td>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{visador.user.id}}" checked>
-                  <label class="form-check-label" for="visador_radio">
+                  <input class="form-check-input visador_radio" type="radio" name="visador" id="visador_radio_{{visador.user.id}}" value="{{visador.user.id}}" {% if visador.user.id == appraisal.visadorUser.id %} checked {% endif %}>
+                  <label class="form-check-label" for="visador_radio" id="nombre" {% if visador.user.id == appraisal.visadorUser.id %} style="color:#0069d9;" {% endif %}>
                     {{visador.user.first_name}} {{visador.user.last_name}}
                   </label>
                 </div>
-              </th>
-              <th scope="col">{{visador.activeAppraisals}}</th>
+              </td>
+              <td class="text-center">
+                {{visador.activeAppraisals}}
+              </td>
+              <td></td>
             </tr>
             {% endfor %}
-
           </tbody>
         </table>
+        <div class="alert alert-warning text-center" id="alert_already_chosen" style="display:none;">
+          Visador seleccionado es el actual visador
+        </div>
         <div class="modal-footer">
           <input id="modal_assign_visador_appraisal_id" name="appraisal_id" type="hidden" value="">
+          <input id="modal_assign_visador_appraisal_visador_id" name="appraisal_visador_id" type="hidden" value="{{appraisal.visadorUser.id}}">
           <input id="modal_assign_visador_source_table" name="source_table" type="hidden" value="">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
           <button type="button" id="btn_assign_visador" name="btn_assign_visador" class="btn btn-primary ld-ext-right">
@@ -52,3 +61,30 @@
     </div>
   </div>
 </div>
+
+<script>
+  var search = function(val) {
+    val = val.toLowerCase()
+    $("tr.visador").each(function() {
+      if (!val) {
+        $(this).show()
+        return
+      }
+      var nombre = $(this).find("#nombre").html().trim();
+      nombre = nombre.toLowerCase()
+      if (nombre.indexOf(val) < 0) {
+        $(this).hide()
+      } else {
+        $(this).show()
+      }
+    });
+  }
+  $("#visador_buscar").on('keyup',function() {
+    val = $(this).val()
+    search(val)
+  })
+  $("#visador_buscar").on('change',function() {
+    val = $(this).val()
+    search(val)
+  })
+</script>

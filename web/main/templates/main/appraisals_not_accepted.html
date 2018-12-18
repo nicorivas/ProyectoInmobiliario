@@ -4,40 +4,40 @@
   <tr>
     <th scope="col" style="width:1em">ID</th>
     <th scope="col" style="width:8em">Cliente</th>
-    <th scope="col" style="width:8em">Código</th>
+    <th scope="col" style="width:6.5em">Código</th>
     <th scope="col" style="width:1em;text-align:center;">T.</th>
     <th scope="col" style="width:19em;">Dirección</th>
     <th scope="col" style="width:11em;">Tasador</th>
     <th scope="col" style="width:11em;">Visador</th>
     <th scope="col" style="width:8em;">Creada</th>
     <th scope="col" style="width:8em;">Entrega</th>
-    <th scope="col" style="width:5em;"></th>
+    <th scope="col" style="width:4em;"></th>
   </tr>
 </thead>
 <tbody>
   {% for appraisal in appraisals_not_accepted %}
   <tr class='not_accepted {{appraisal.tasadorUser.id}}' id="tr_table_not_accepted-{{appraisal.id}}">
     <td>
-      {{ appraisal.id }}
+      <small>{{ appraisal.id }}</small>
     </td>
-    <td>
-      {{ appraisal.solicitanteVerbose }}
+    <td class="solicitante">
+      {{ appraisal.solicitanteVerboseShort }}
     </td>
-    <td>
-      {{ appraisal.solicitanteCodigo }}
+    <td class="solicitanteCodigo">
+      <small>{{ appraisal.solicitanteCodigo }}</small>
     </td>
-    <td style="text-align:center;">
+    <td style="text-align:center;" data-toggle="tooltip" data-placement="top" title="{{appraisal.realEstate.get_propertyType_display}}">
       <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
     </td>
     <td>
-      <a href="{{appraisal.url}}">
+      <a href="{{appraisal.url}}" class="address">
         {{ appraisal.realEstate.addressVerboseNoRegion }}
       </a>
     </td>
     <td>
       <div class="row">
         <div class="col-auto">
-          <span style="vertical-align: middle;">
+          <span style="vertical-align: middle;" class="tasador">
           {% if appraisal.tasadorUser %}
             {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
           {% else %}
@@ -50,7 +50,7 @@
     <td>
       <div class="row">
         <div class="col-auto">
-          <span style="vertical-align: middle;">
+          <span style="vertical-align: middle;" class="visador">
           {% if appraisal.visadorUser %}
             {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
           {% else %}
@@ -74,14 +74,12 @@
     </td>
     <td>
       {% has_notification_appraisal request.user appraisal.id as hna %}
-      <button type="button" class="btn btn-sm btn-dark btn-accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}"
-              style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        <span id='icon'>thumb_up</span>
+      <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}" data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        <span id='icon'>assignment</span>
         <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
-      <button type="button" class="btn btn-dark btn-sm btn-reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        <span id='icon'>thumb_down</span>
-        <div class="ld ld-ring ld-spin" style="display:none;"></div>
+      <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal_modal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        delete
       </button>
     </td>
   </tr>

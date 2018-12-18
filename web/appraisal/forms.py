@@ -8,6 +8,7 @@ from region.models import Region
 from commune.models import Commune
 from multiupload.fields import MultiImageField
 
+'''
 class FormRealEstate(forms.ModelForm):
 
     class Meta:
@@ -80,23 +81,31 @@ class FormRealEstate(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(FormRealEstate, self).__init__(*args, **kwargs)
-        #self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
-        #self.fields['addressRegion'].queryset = Region.objects.only('name').all()
-
 '''
-class FormBuilding(forms.ModelForm):
+
+class FormRealEstate(forms.ModelForm):
 
     class Meta:
-        model = Building
-        fields = []
+        model = RealEstate
+        fields = [
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'addressRegion'
+        ]
 
-        class_bs = {'class':"form-control form-control-sm"}
-        class_dp_y_bs = {'class':"form-control form-control-sm datepicker_year"}
-        class_dp_m_bs = {'class':"form-control form-control-sm datepicker_month"}
-        class_se_bs = {'class':"custom-select custom-select-sm"}
+        class_bs = {'class':"form-control"}
 
-        widgets = {}
-'''
+        widgets = {
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'addressRegion': forms.Select(attrs=class_bs)
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(FormRealEstate, self).__init__(*args, **kwargs)
+
 class FormApartment(forms.ModelForm):
 
     class Meta:
@@ -419,4 +428,8 @@ class FormComment(forms.Form):
     text.widget.attrs.update({'class':"form-control",'rows':3})
     event = forms.ChoiceField(choices=Comment.event_choices_form,label='Evento',required=True)
     event.widget.attrs.update({'class':"form-control"})
-
+    datetime = forms.DateTimeField(label="Fecha y hora",required=False,
+        widget=forms.DateTimeInput(
+            attrs={'class': "form-control datetimepicker-input",
+                   'data-target':"#datetimepicker1"}))
+    datetime.input_formats = ['%d/%m/%Y %H:%M']

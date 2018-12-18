@@ -11,57 +11,61 @@ import datetime
 import reversion
 
 class Comment(models.Model):
+    EVENT_CONTACTO_VALIDADO = 1
+    EVENT_ASIGNACION_ACEPTADA = 2
+    EVENT_ASIGNACION_RECHAZADA = 6
+    EVENT_VISITA_ACORDADA = 3
+    EVENT_PROPIEDAD_VISITADA = 4
+    EVENT_ENVIADA_A_VISADOR = 5
+    EVENT_ENTREGADO_AL_CLIENTE = 8
+    EVENT_CLIENTE_VALIDADO = 9
+    EVENT_CONTABILIZACION = 10
+    EVENT_ABORTADO = 18
+    EVENT_INCIDENCIA = 19
+    EVENT_CORRECCION_INFORME = 20
+    EVENT_OBSERVACION_VISADOR = 21
+    EVENT_OBJECION = 22
+    EVENT_TASADOR_ASIGNADO = 23
+    EVENT_TASADOR_DESASIGNADO = 25
+    EVENT_VISADOR_ASIGNADO = 26
+    EVENT_VISADOR_DESASIGNADO = 27
+    EVENT_TASACION_INGRESADA = 24
+    EVENT_OTRO = 0
     event_choices = (
-        (1, "Contacto validado"),
-        (23, "Asignado"),
-        (24, "Tasación ingresada"),
-        (2, "Asignación aceptada"),
-        (3, "Visita acordada"),
-        (4, "Propiedad visitada"),
-        (5, "Informe enviado a UT"),
-        (6, "Informe validado a UT"),
-        (7, "Validación administrativa"),
-        (8, "Entregado al cliente"),
-        (9, "Cliente validado"),
-        (10, "Contabilización"),
-        (11, "Recepción física"),
-        (12, "Envío planilla para pago"),
-        (13, "Recepción facturación"),
-        (14, "Facturado"),
-        (15, "Pagado"),
-        (16, "Fondos disponibles"),
-        (17, "Cobranza"),
-        (18, "Abortado"),
-        (19, "Incidencia"),
-        (20, "Corección informe"),
-        (21, "Observación visador"),
-        (22, "Objeción"),
-        (0, "Otro")
+        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
+        (EVENT_ASIGNACION_ACEPTADA, "Asignación aceptada"),
+        (EVENT_ASIGNACION_RECHAZADA, "Asignación rechazada"),
+        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
+        (EVENT_TASADOR_ASIGNADO, "Tasador asignado"),
+        (EVENT_VISADOR_ASIGNADO, "Visador asignado"),
+        (EVENT_TASADOR_DESASIGNADO, "Tasador desasignado"),
+        (EVENT_VISADOR_DESASIGNADO, "Visador desasignado"),
+        (EVENT_TASACION_INGRESADA, "Tasación ingresada"),
+        (EVENT_VISITA_ACORDADA, "Visita acordada"),
+        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
+        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
+        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
+        (EVENT_CONTABILIZACION, "Contabilización"),
+        (EVENT_ABORTADO, "Abortado"),
+        (EVENT_INCIDENCIA, "Incidencia"),
+        (EVENT_CORRECCION_INFORME, "Corrección informe"),
+        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
+        (EVENT_OBJECION, "Objeción"),
+        (EVENT_OTRO, "Otro")
     )
     event_choices_form = (
-        (1, "Contacto validado"),
-        (2, "Asignación aceptada"),
-        (3, "Acuerdo visita"),
-        (4, "Propiedad visitada"),
-        (5, "Informe enviado a UT"),
-        (6, "Informe validado a UT"),
-        (7, "Validación administrativa"),
-        (8, "Entregado al cliente"),
-        (9, "Cliente validado"),
-        (10, "Contabilización"),
-        (11, "Recepción física"),
-        (12, "Envío planilla para pago"),
-        (13, "Recepción facturación"),
-        (14, "Facturado"),
-        (15, "Pagado"),
-        (16, "Fondos disponibles"),
-        (17, "Cobranza"),
-        (18, "Abortado"),
-        (19, "Incidencia"),
-        (20, "Corección informe"),
-        (21, "Observación visador"),
-        (22, "Objeción"),
-        (0, "Otro")
+        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
+        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
+        (EVENT_VISITA_ACORDADA, "Visita acordada"),
+        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
+        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
+        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
+        (EVENT_ABORTADO, "Abortado"),
+        (EVENT_INCIDENCIA, "Incidencia"),
+        (EVENT_CORRECCION_INFORME, "Corrección informe"),
+        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
+        (EVENT_OBJECION, "Objeción"),
+        (EVENT_OTRO, "Otro")
     )
     event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -179,6 +183,7 @@ class Appraisal(models.Model):
     NONE = ''
     OTRA = 0
     HIPOTECARIA = 1
+    COMERCIAL = 7
     REVISION = 2
     ESCRITORIO = 3
     PILOTO = 4
@@ -187,11 +192,12 @@ class Appraisal(models.Model):
     tipoTasacion_choices = [
         (NONE,'---------'),
         (HIPOTECARIA, 'Hipotecaria'),
+        (COMERCIAL, 'Comercial'),
+        (TERRENO, 'Terreno'),
+        (AVANCE_DE_OBRA,'Avance de obra'),
         (REVISION, 'Revisión'),
         (ESCRITORIO, 'Escritorio'),
         (PILOTO, 'Piloto'),
-        (TERRENO, 'Terreno'),
-        (AVANCE_DE_OBRA,'Avance de obra'),
         (OTRA, 'Otra')
     ]
     tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
@@ -203,14 +209,18 @@ class Appraisal(models.Model):
     REMATE = 3
     VENTA = 4
     LIQUIDACION = 5
+    DACION_EN_PAGO = 6
+    TOMA_DE_SEGURO = 7
     objective_choices = [
         (NONE,'---------'),
-        (OTRO, 'Otro'),
-        (GARANTIA, 'Garantía'),
         (CREDITO, 'Crédito'),
+        (GARANTIA, 'Garantía General'),
+        (VENTA, 'Venta Activos'),
+        (DACION_EN_PAGO, 'Dación en Pago'),
         (REMATE, 'Remate'),
-        (VENTA, 'Venta'),
-        (LIQUIDACION, 'Liquidación' ),
+        (LIQUIDACION, 'Liquidación'),
+        (TOMA_DE_SEGURO, 'Toma de Seguro'),
+        (OTRO, 'Otra'),
     ]
     finalidad = models.IntegerField("Finalidad", choices=objective_choices,blank=True,null=True)
 
@@ -288,6 +298,36 @@ class Appraisal(models.Model):
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
 
+
+
+    def addComment(self,event_id,user,timeCreated,text=None):
+        comment = Comment(event=event_id,user=user,timeCreated=timeCreated)
+        if text and len(text) > 0:
+            comment.text = text
+        comment.save()
+        self.comments.add(comment)
+        self.save()
+        return comment
+
+    def getCommentChoices(self,comments=None):
+        # List of comment types that can only happen once:
+        once_ids = [
+            Comment.EVENT_CONTACTO_VALIDADO,
+            Comment.EVENT_CLIENTE_VALIDADO,
+            Comment.EVENT_VISITA_ACORDADA,
+            Comment.EVENT_PROPIEDAD_VISITADA,
+            Comment.EVENT_ENVIADA_A_VISADOR,
+            Comment.EVENT_ENTREGADO_AL_CLIENTE,
+            Comment.EVENT_ABORTADO]
+        if comments == None:
+            comments = self.comments.all()
+        event_choices = Comment.event_choices_form
+        comment_ids = comments.values_list('event',flat=True)
+        for once_id in once_ids:
+            if once_id in comment_ids:
+                event_choices = [x for x in event_choices if x[0] != once_id]
+        return event_choices
+
     @property
     def status_verbose(self):
         return str([state[1] for state in self.STATES if state[0] == self.state][0])
@@ -336,10 +376,11 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
+        return ''
         if self.realEstate == None:
             return "/appraisal/{}/".format(self.id)
         address = self.realEstate.address_dict
-        if self.realEstate.propertyType == RealEstate.TYPE_BUILDING:
+        if self.realEstate.propertyType == RealEstate.TYPE_EDIFICIO:
             return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
@@ -348,7 +389,7 @@ class Appraisal(models.Model):
                 self.realEstate.propertyType,
                 self.realEstate.apartmentbuilding.id,
                 self.id)
-        elif self.realEstate.propertyType == RealEstate.TYPE_HOUSE:
+        elif self.realEstate.propertyType == RealEstate.TYPE_CASA:
             return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
@@ -357,7 +398,7 @@ class Appraisal(models.Model):
                 self.realEstate.propertyType,
                 self.realEstate.house.id,
                 self.id)
-        if self.realEstate.propertyType == RealEstate.TYPE_APARTMENT:
+        if self.realEstate.propertyType == RealEstate.TYPE_DEPARTAMENTO:
             return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
@@ -367,7 +408,7 @@ class Appraisal(models.Model):
                 self.realEstate.apartment.building_in.id,
                 self.realEstate.apartment.id,
                 self.id)
-        elif self.realEstate.propertyType == RealEstate.TYPE_CONDOMINIUM:
+        elif self.realEstate.propertyType == RealEstate.TYPE_CONDOMINIO:
             return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
                 slugify(address['region']),
                 slugify(address['commune']),
@@ -405,7 +446,24 @@ class Appraisal(models.Model):
             for choice in self.petitioner_choices:
                 if self.solicitante == choice[0]:
                     if choice[1] == "Banco Internacional":
+                        return "Banco Internacional"
+                    if choice[1] == "Banco de Chile":
+                        return "Banco de Chile"
+                    else:
+                        return choice[1]
+            return '-'
+
+    @property
+    def solicitanteVerboseShort(self):
+        if isinstance(self.solicitante,type(None)):
+            return '-'
+        else:
+            for choice in self.petitioner_choices:
+                if self.solicitante == choice[0]:
+                    if choice[1] == "Banco Internacional":
                         return "Internacional"
+                    if choice[1] == "Banco de Chile":
+                        return "B. de Chile"
                     else:
                         return choice[1]
             return '-'

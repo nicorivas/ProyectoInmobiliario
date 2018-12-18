@@ -11,6 +11,7 @@ from .forms import AppraisalCreateForm
 
 from region.models import Region
 from commune.models import Commune
+from dbase.globals import *
 
 from realestate.models import RealEstate
 from house.models import House
@@ -32,6 +33,7 @@ from io import BytesIO
 
 import fitz
 import re
+import zipfile
 
 @login_required(login_url='/user/login')
 def view_create(request):
@@ -45,7 +47,7 @@ def view_create(request):
 
             propertyType = int(form.cleaned_data['propertyType'])
             realEstate = None
-            if propertyType == RealEstate.TYPE_HOUSE:
+            if propertyType == RealEstate.TYPE_CASA:
 
                 addressRegion = form.cleaned_data['addressRegion']
                 addressCommune = form.cleaned_data['addressCommune']
@@ -69,7 +71,7 @@ def view_create(request):
                     context = {'error_message': 'House is repeated'}
                     return render(request, 'create/error.html', context)
 
-            elif propertyType == RealEstate.TYPE_BUILDING:
+            elif propertyType == RealEstate.TYPE_EDIFICIO:
 
                 addressRegion = form.cleaned_data['addressRegion']
                 addressCommune = form.cleaned_data['addressCommune']
@@ -84,7 +86,7 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_BUILDING)
+                        propertyType=RealEstate.TYPE_EDIFICIO)
                 except Building.DoesNotExist:
                     # building does not exist, so create it
                     realEstate = create.building_create(request,addressRegion,addressCommune,addressStreet,addressNumber)
@@ -94,12 +96,12 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_BUILDING)
+                        propertyType=RealEstate.TYPE_EDIFICIO)
                     realEstate = buildings.first()
                     #context = {'error_message': 'Building is repeated'}
                     #return render(request, 'create/error.html',context)
 
-            elif propertyType == RealEstate.TYPE_CONDOMINIUM:
+            elif propertyType == RealEstate.TYPE_CONDOMINIO:
 
                 addressRegion = form.cleaned_data['addressRegion']
                 addressCommune = form.cleaned_data['addressCommune']
@@ -113,7 +115,7 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_CONDOMINIUM)
+                        propertyType=RealEstate.TYPE_CONDOMINIO)
                 except RealEstate.DoesNotExist:
                     realEstate = create.real_estate_create(request,addressRegion,addressCommune,addressStreet,addressNumber)
                 except MultipleObjectsReturned:
@@ -122,10 +124,10 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_CONDOMINIUM)
+                        propertyType=RealEstate.TYPE_CONDOMINIO)
                     realEstate = realEstate.first()
 
-            elif propertyType == RealEstate.TYPE_APARTMENT:
+            elif propertyType == RealEstate.TYPE_DEPARTAMENTO:
 
                 addressRegion = form.cleaned_data['addressRegion']
                 addressCommune = form.cleaned_data['addressCommune']
@@ -141,7 +143,7 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_BUILDING)
+                        propertyType=RealEstate.TYPE_EDIFICIO)
                 except Building.DoesNotExist:
                     # building does not exist, so create it
                     building = create.building_create(request,addressRegion,addressCommune,addressStreet,addressNumber)
@@ -151,7 +153,7 @@ def view_create(request):
                         addressCommune=addressCommune,
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
-                        propertyType=RealEstate.TYPE_BUILDING)
+                        propertyType=RealEstate.TYPE_EDIFICIO)
                     building = buildings.first()
                     #context = {'error_message': 'Building is repeated'}
                     #return render(request, 'create/error.html',context)
@@ -165,7 +167,7 @@ def view_create(request):
                         addressStreet=addressStreet,
                         addressNumber=addressNumber,
                         addressNumber2=addressNumber2,
-                        propertyType=RealEstate.TYPE_APARTMENT)
+                        propertyType=RealEstate.TYPE_DEPARTAMENTO)
                 except Apartment.DoesNotExist:
                     # flat does not exist, so create it
                     realEstate = create.apartment_create(request,building,addressNumber2)
@@ -174,7 +176,7 @@ def view_create(request):
                     context = {'error_message': 'Apartment is repeated'}
                     return render(request, 'create/error.html',context)
 
-            elif propertyType == RealEstate.TYPE_OTHER:
+            elif propertyType == RealEstate.TYPE_OTRO:
 
                 pass
 
@@ -226,7 +228,7 @@ def view_create(request):
 
             if realEstate == None:
                 rsptr = None
-            if propertyType == RealEstate.TYPE_CONDOMINIUM:
+            if propertyType == RealEstate.TYPE_CONDOMINIO:
                 rsptr = realEstate
             else:
                 rsptr = realEstate.realestate_ptr
@@ -303,6 +305,74 @@ def parse_email(string):
     else:
         return string.strip().lower()
 
+def parseAddress(address,commune=None):
+    addressNumber2 = None
+    addressNumber = None
+
+    address = address.lower().strip()
+
+    if commune:
+        if address.endswith(commune):
+            address = address[:address.find(commune)].strip()
+
+    dpto_strings = ["dpto.","dpto","depto.","depto","departamento"]
+    for dpto_string in dpto_strings:
+        if dpto_string in address:
+            match = re.search(dpto_string+' ?(\d+)', address)
+            if match:
+                addressNumber2 = match.group(1)
+                address = address[:address.index(dpto_string)]
+                break
+
+    casa_strings = ["casa.","casa"]
+    for casa_string in casa_strings:
+        if casa_string in address:
+            match = re.search(casa_string+' ?[a-zA-Z0-9]', address)
+            if match:
+                addressNumber2 = match.group(0).title()
+                address = address[:address.index(casa_string)]
+                break
+
+    address = address.strip()
+    if address[-1] == ',' or address[-1] == '.' or address[-1] == '-':
+        address = address[:-1].strip()
+    match = re.search('(\d+)$', address) 
+    if match:
+        addressNumber = match.group(0)
+        address = address[:address.index(addressNumber)]
+    address = address.strip()
+    address.replace('avenida','av.')
+    address.replace('aven','av.')
+    address.replace('avnda','av.')
+
+    addressStreet = address
+
+    no_strings = ["no.","nº"]
+    for no_string in no_strings:
+        if address.endswith(no_string):
+            addressStreet = address[:address.find(no_string)]
+
+    if addressStreet.startswith('calle'):
+        addressStreet = addressStreet[5:].strip()
+
+    addressStreet = addressStreet.title()
+
+    return [addressStreet,addressNumber,addressNumber2]
+
+def parseRut(rut):
+    rut = rut.replace('.','').replace(',','').replace('-','').lower()
+    return rut[:-1]+'-'+rut[-1]
+
+def parseCommune(string):
+    commune = string.strip().title()
+    if '(' in commune:
+        commune = commune[:commune.index('(')].strip()
+    commune = COMMUNE_NAME_ASCII__UTF[commune]
+    commune = Commune.objects.get(name=commune)
+    region = commune.region.code
+    commune = commune.id
+    return [commune, region]
+
 def populate_from_file(request):
 
     data = {}
@@ -315,11 +385,15 @@ def populate_from_file(request):
     filetype = file._name.split('.')[1]
 
     if filetype == 'xls':
-        data['error'] = "No es posible importar de archivo excel 'xls'. Se recomienda guardar el excel en el formato 'xlsx'."
+        data['error'] = "No es posible importar archivos excel '.xls'. Se recomienda guardar el archivo en formato '.xlsx'."
         return JsonResponse(data)
 
     if filetype == 'xlsx':
-        wb = load_workbook(filename=file,read_only=True,data_only=True)
+        try:
+            wb = load_workbook(filename=file,read_only=True,data_only=True)
+        except zipfile.BadZipFile:
+            data['error'] = "Archivo parece estar asegurado. Se recomienda abrir y volver a guardar el archivo."
+            return JsonResponse(data)            
         ws = wb.worksheets[0]
         if ws['C1'].value != None and 'SOLICITUD DE TASACIÓN' in ws['C1'].value:
             # ----
@@ -349,22 +423,41 @@ def populate_from_file(request):
                 if solicitanteEjecutivoTelefono != '':
                     data['solicitanteEjecutivoTelefono'] = ws['O7'].value.strip().replace(' ','')
 
-            tipoTasacion = ws['G9'].value.strip()
-            if tipoTasacion == 'CRÉDITO HIPOTECARIO':
-                data['tipoTasacion'] = Appraisal.HIPOTECARIA
-                data['finalidad'] = Appraisal.CREDITO
-            finalidad = ws['G9'].value.strip()
-            if finalidad == 'ACTUALIZAR GARANTÍA':
-                data['finalidad'] = Appraisal.GARANTIA
-            elif finalidad == 'COMPRA INMUEBLE':
-                data['finalidad'] = Appraisal.CREDITO
-            elif finalidad == 'LIQUIDACIÓN FORZADA':
-                data['finalidad'] = Appraisal.LIQUIDACION
+            tipoTasacion = ws['G9'].value
+            if tipoTasacion:
+                tipoTasacion = tipoTasacion.strip()
+                if tipoTasacion == 'CRÉDITO HIPOTECARIO':
+                    data['tipoTasacion'] = Appraisal.HIPOTECARIA
+                    data['finalidad'] = Appraisal.CREDITO
+                if tipoTasacion == 'CRÉDITO COMERCIAL':
+                    data['tipoTasacion'] = Appraisal.COMERCIAL
+                    data['finalidad'] = Appraisal.CREDITO
+
+            finalidad = ws['J9'].value
+            if finalidad:
+                finalidad = finalidad.strip()
+                if finalidad == 'ACTUALIZAR GARANTÍA':
+                    data['finalidad'] = Appraisal.GARANTIA
+                elif finalidad == 'COMPRA INMUEBLE':
+                    data['finalidad'] = Appraisal.CREDITO
+                elif finalidad == 'LIQUIDACIÓN FORZADA':
+                    data['finalidad'] = Appraisal.LIQUIDACION
+                elif finalidad == 'DACIÓN EN PAGO':
+                    data['finalidad'] = Appraisal.DACION_EN_PAGO
 
             appraisalTimeRequest = ws['M3'].value
             if isinstance(appraisalTimeRequest,type('')):
                 if appraisalTimeRequest != '':
-                    data['appraisalTimeRequest'] = appraisalTimeRequest.strip().replace('-','/')+' 00:00'
+                    if appraisalTimeRequest.endswith(',') or appraisalTimeRequest.endswith('.'):
+                        appraisalTimeRequest = appraisalTimeRequest[:-1]
+                    if '-' in appraisalTimeRequest:
+                        data['appraisalTimeRequest'] = appraisalTimeRequest.strip().replace('-','/')+' 00:00'
+                    elif '.' in appraisalTimeRequest:
+                        data['appraisalTimeRequest'] = appraisalTimeRequest.strip().replace('.','/')+' 00:00'
+                    elif '/' in appraisalTimeRequest:
+                        data['appraisalTimeRequest'] = appraisalTimeRequest.strip()+' 00:00'
+                    else:
+                        pass
                     try:
                         a = datetime.datetime.strptime(data['appraisalTimeRequest'],'%d/%m/%Y %H:%M')
                     except ValueError:
@@ -379,11 +472,10 @@ def populate_from_file(request):
                 if cliente != '':
                     data['cliente'] = ws['C14'].value.strip().title()
 
-            clienteRut = ws['C16'].value
-            clienteRutDF = ws['F16'].value
-            if isinstance(clienteRut,type('')) and isinstance(clienteRutDF,type('')):
-                if clienteRut != '' and clienteRutDF != '':
-                    data['clienteRut'] = ws['C16'].value.strip()+''+ws['F16'].value.strip().lower()
+            if '-' in ws['C16'].value:
+                data['clienteRut'] = parseRut(ws['C16'].value)
+            else:
+                data['clienteRut'] = parseRut(ws['C16'].value+ws['F16'].value)
             
             clienteEmail = ws['C22'].value
             if isinstance(clienteEmail,type('')):
@@ -414,22 +506,45 @@ def populate_from_file(request):
             if isinstance(tipo,type('')):
                 tipo = tipo.strip()
             if tipo == 'CASAS':
-                data['propertyType'] = RealEstate.TYPE_HOUSE
+                data['propertyType'] = RealEstate.TYPE_CASA
             elif tipo == 'DEPARTAMENTOS':
-                data['propertyType'] = RealEstate.TYPE_APARTMENT
+                data['propertyType'] = RealEstate.TYPE_DEPARTAMENTO
+            elif tipo == 'OFICINAS':
+                data['propertyType'] = RealEstate.TYPE_OFICINA
+            elif tipo == 'TERRENO PROYECTO INMOBILIARIO':
+                data['propertyType'] = RealEstate.TYPE_TERRENO
+            elif tipo == 'SITIOS Y TERRENOS URBANOS':
+                data['propertyType'] = RealEstate.TYPE_TERRENO
+            elif tipo == 'LOCALES COMERCIALES':
+                data['propertyType'] = RealEstate.TYPE_LOCAL_COMERCIAL
+            elif tipo == 'CONSTRUCCIONES INDUSTRIALES':
+                data['propertyType'] = RealEstate.TYPE_INDUSTRIA
+            elif 'BODEGAS' in tipo:
+                data['propertyType'] = RealEstate.TYPE_BODEGA
+            elif 'ESTACIONAMIENTOS' in tipo:
+                data['propertyType'] = RealEstate.TYPE_ESTACIONAMIENTO
+            elif 'BIENES RAICES RURALES' in tipo:
+                data['propertyType'] = RealEstate.TYPE_PARCELA
             else:
-                data['propertyType'] = RealEstate.TYPE_OTHER
+                data['propertyType'] = RealEstate.TYPE_OTRO
+
+            try :
+                commune, region = parseCommune(ws['C45'].value)
+                data['addressCommune'] = commune
+                data['addressRegion'] = region
+            except Commune.DoesNotExist:
+                pass
 
             addressStreet = ws['C41'].value
             if isinstance(addressStreet,type('')):
                 if addressStreet != '':
-                    data['addressStreet'] = ws['C41'].value.strip()
-                    try :
-                        commune = Commune.objects.get(name=ws['C45'].value.strip().title())
-                        data['addressCommune'] = commune.id
-                        data['addressRegion'] = commune.region.code
-                    except Commune.DoesNotExist:
-                        pass
+                    addressStreet, addressNumber, addressNumber2 = parseAddress(addressStreet,
+                        commune=Commune.objects.get(id=data.get('addressCommune')).name.lower())
+                    data['addressStreet'] = addressStreet
+                    if addressNumber:
+                        data['addressNumber'] = addressNumber
+                    if addressNumber2:
+                        data['addressNumber2'] = addressNumber2
 
             rol = ws['C43'].value
             if isinstance(rol,type('')):
@@ -468,10 +583,10 @@ def populate_from_file(request):
             if solicitanteEjecutivoTelefono != '':
                 data['solicitanteEjecutivoTelefono'] = str(solicitanteEjecutivoTelefono)
 
-            solicitanteEjecutivoRut = ws['M61'].value
+            solicitanteEjecutivoRut = ws['M61'].value+ws['N61'].value
             if isinstance(solicitanteEjecutivoRut,type('')):
                 if solicitanteEjecutivoRut != '':
-                    data['solicitanteEjecutivoRut'] = solicitanteEjecutivoRut.replace(',','')+ws['N61'].value.replace('-','').strip().lower()
+                    data['solicitanteEjecutivoRut'] = parseRut(solicitanteEjecutivoRut)
 
             cliente = ws['H9'].value
             if isinstance(cliente,type('')):
@@ -481,7 +596,7 @@ def populate_from_file(request):
             clienteRut = ws['H10'].value
             clienteRutDF = ws['J10'].value
             if clienteRut != '' and clienteRutDF != '':
-                data['clienteRut'] = str(clienteRut)+''+clienteRutDF
+                data['clienteRut'] = parseRut(str(clienteRut)+''+clienteRutDF)
 
             contacto = ws['E56'].value
             if isinstance(contacto,type('')):
@@ -508,19 +623,27 @@ def populate_from_file(request):
             if isinstance(tipo,type('')):
                 tipo = tipo.strip()
                 if tipo == 'CASA':
-                    data['propertyType'] = RealEstate.TYPE_HOUSE
+                    data['propertyType'] = RealEstate.TYPE_CASA
                 elif tipo == 'DEPARTAMENTO':
-                    data['propertyType'] = RealEstate.TYPE_APARTMENT
+                    data['propertyType'] = RealEstate.TYPE_DEPARTAMENTO
                 else:
-                    data['propertyType'] = RealEstate.TYPE_OTHER
+                    data['propertyType'] = RealEstate.TYPE_OTRO
 
-            addressStreet = ws['K17'].value
-            if isinstance(addressStreet,type('')):
-                if addressStreet != '':
-                    data['addressStreet'] = addressStreet.strip()
+            address = ws['K17'].value
+            if isinstance(address,type('')):
+                if address != '':
+                    addressStreet, addressNumber, addressNumber2 = parseAddress(address)
+                    data['addressStreet'] = addressStreet
+                    if addressNumber:
+                        data['addressNumber'] = addressNumber
+                    if addressNumber2:
+                        data['addressNumber2'] = addressNumber2
 
             try :
-                commune = Commune.objects.get(name=ws['M17'].value.strip().title())
+                commune = ws['M17'].value
+                if commune == 'EST. CENTRAL':
+                    commune = "Estación Central"
+                commune = Commune.objects.get(name=commune.strip().title())
                 data['addressCommune'] = commune.id
                 data['addressRegion'] = commune.region.code
             except Commune.DoesNotExist:
@@ -549,6 +672,7 @@ def populate_from_file(request):
                 if c[1] == 'Banco de Chile':
                     data['solicitante'] = c[0]
             for i, line in enumerate(text):
+                print(line)
                 if 'ID' in line.strip():
                     data['solicitanteCodigo'] = text[i+6].strip()
                 if 'TIPO OPERACION' in line.strip():
@@ -557,18 +681,32 @@ def populate_from_file(request):
                         data['finalidad'] = Appraisal.CREDITO
                 if 'TIPO DE BIEN' in line.strip():
                     if text[i+6].strip() == "DEPARTAMENTO":
-                        data['propertyType'] = RealEstate.TYPE_APARTMENT
+                        data['propertyType'] = RealEstate.TYPE_DEPARTAMENTO
+                    if text[i+6].strip() == "CASA":
+                        data['propertyType'] = RealEstate.TYPE_CASA
                 if 'COMUNA' in line.strip():
                     comuna = text[i+6].strip().title()
                     commune = Commune.objects.get(name=comuna)
                     data['addressCommune'] = commune.id
                     data['addressRegion'] = commune.region.code
+                if 'ROL' in line.strip():
+                    data['rol'] = text[i+6+c-1].strip()
                 if 'DIRECCION' in line.strip():
-                    data['addressStreet'] = text[i+6].strip().title()
+                    address = ''
+                    c = 0
+                    while not 'De propiedad de' in text[i+6+c+1].strip():
+                        address += text[i+6+c].strip().title()
+                        c += 1
+                    addressStreet, addressNumber, addressNumber2 = parseAddress(address)
+                    data['addressStreet'] = addressStreet
+                    if addressNumber:
+                        data['addressNumber'] = addressNumber
+                    if addressNumber2:
+                        data['addressNumber2'] = addressNumber2
                 if 'Cliente' in line.strip():
                     data['cliente'] = text[i+2].strip().title()
                 if 'Rut' == line.strip():
-                    data['clienteRut'] = text[i+2].strip().replace('.','').replace('-','').lower()
+                    data['clienteRut'] = parseRut(text[i+2])
                 if 'Nombre' == line.strip():
                     data['solicitanteEjecutivo'] = text[i+2].strip().title()
                 if 'Teléfono' == line.strip():
@@ -593,7 +731,6 @@ def populate_from_file(request):
                     c = line.split('/')
                     data['contacto'] = c[0]
                     for cc in c[1:]:
-                        print(cc)
                         if 'Fono' in cc:    
                             data['contactoTelefono'] = cc.split(':')[1].strip().replace(' ','')
                         elif 'E-Mail' in cc:
@@ -607,8 +744,7 @@ def populate_from_file(request):
                 if c[1] == 'Santander':
                     data['solicitante'] = c[0]
             for i, line in enumerate(text):
-                print(line.strip())
-                print('Nombre Contacto' in line.strip())
+                print(line)
                 if 'Nº Req' in line.strip():
                     data['solicitanteCodigo'] = line.split(':')[1].strip()
                 elif 'Fecha de asignación' in line.strip():
@@ -625,7 +761,7 @@ def populate_from_file(request):
                         data['cliente'] += ' '+text[i+c].strip().title()
                         c += 1
                 elif 'RUT Cliente' in line.strip():
-                    data['clienteRut'] = line.split(':')[1].strip().replace('-','').replace('.','').lower()
+                    data['clienteRut'] = parseRut(line.split(':')[1])
                 elif 'Nombre Propietario' in line.strip():
                     data['propietario'] = line.split(':')[1].strip().title()
                     c = 1
@@ -636,40 +772,46 @@ def populate_from_file(request):
                         data['propietario'] += ' '+text[i+c].strip().title()
                         c += 1
                 elif 'RUT Propietario' in line.strip():
-                    data['propietarioRut'] = line.split(':')[1].strip().replace('-','').replace('.','').lower()
+                    data['propietarioRut'] = parseRut(line.split(':')[1])
                 elif 'Nombre Contacto' in line.strip():
                     data['contacto'] = line.split(':')[1].strip().title()
                 elif 'Telefono movil' in line.strip():
                     data['contactoTelefono'] = text[i+1].split(':')[1].strip().replace(' ','')
                 elif 'Direccion' in line.strip():
                     address = line.split(':')[1].strip()
-                    data['addressStreet'] = address
-                    address = address.lower()
-                    if 'dpto' in address or 'depto' in address or 'departamento' in address:
-                        data['propertyType'] = RealEstate.TYPE_APARTMENT   
+                    addressStreet, addressNumber, addressNumber2 = parseAddress(address)
+                    data['addressStreet'] = addressStreet
+                    if addressNumber:
+                        data['addressNumber'] = addressNumber
+                    if addressNumber2:
+                        data['addressNumber2'] = addressNumber2
                 elif 'Rubro :' in line.strip():
                     tipoTasacion = line.split(':')[1].strip()
                     if tipoTasacion == "HIPOTECARIO":
                         data['tipoTasacion'] = Appraisal.HIPOTECARIA
+                        data['finalidad'] = Appraisal.CREDITO
+                    elif tipoTasacion == "GARANTIAS GENERALES":
+                        data['finalidad'] = Appraisal.GARANTIA
                 elif 'Grupo :' in line.strip():
                     propertyType = line.split(':')[1].strip()
-                    if propertyType == 'DEPARTAMENTO':
-                        data['propertyType'] = RealEstate.TYPE_APARTMENT
+                    if 'DEPARTAMENTO' in propertyType:
+                        data['propertyType'] = RealEstate.TYPE_DEPARTAMENTO
+                    elif 'VIVIENDA' in propertyType:
+                        data['propertyType'] = RealEstate.TYPE_CASA
+                    elif 'TERRENO' in propertyType:
+                        data['propertyType'] = RealEstate.TYPE_TERRENO
+                    elif 'LOCAL COMERCIAL' in propertyType:
+                        data['propertyType'] = RealEstate.TYPE_LOCAL_COMERCIAL
+                        data['tipoTasacion'] = Appraisal.COMERCIAL
+                    elif 'AVANCE' in propertyType:
+                        data['tipoTasacion'] = Appraisal.AVANCE_DE_OBRA
                 elif 'Rol :' in line.strip():
                     data['rol'] = line.split(':')[1].strip()
                 elif 'Comuna' in line.strip():
-                    comuna = line.split(':')[1].strip().title()
-                    comuna = comuna.split('(')[0].strip()
-                    if comuna == "Nunoa":
-                        comuna = "Ñuñoa"
-                    try:
-                        commune = Commune.objects.get(name=comuna)
-                        data['addressCommune'] = commune.id
-                        data['addressRegion'] = commune.region.code
-                    except Commune.DoesNotExist:
-                        # In case name was not in standar format, we just don't fill
-                        # commune and region.
-                        pass
+                    commune = line.split(':')[1].strip().title()
+                    commune, region = parseCommune(commune)
+                    data['addressCommune'] = commune
+                    data['addressRegion'] = region
                 elif 'Nombre Ejecutivo' in line.strip():
                     data['solicitanteEjecutivo'] = line.split(':')[1].strip().title()
                     c = 1
@@ -685,5 +827,13 @@ def populate_from_file(request):
                     data['solicitanteEjecutivoEmail'] = line.split(':')[1].strip()
                 elif 'Sucursal' in line.strip():
                     data['solicitanteSucursal'] = line.split(':')[1].strip().title()
+                elif 'Centro de Costo' in line.strip():
+                    c = 1
+                    data['comments'] = ''
+                    while not 'Página 1 de 2' in text[i+c].strip():
+                        if len(text[i+c]) > 1 and text[i+c].strip()[1:-1] not in data['comments']:
+                            data['comments'] += text[i+c].strip()
+                        c += 1
+
 
     return JsonResponse(data)

@@ -3,8 +3,8 @@ from commune.models import Commune
 from region.models import Region
 from neighborhood.models import Neighborhood
 from terrain.models import Terrain
-from apartmentbuilding.models import ApartmentBuilding
 from building.models import Building
+from apartmentbuilding.models import ApartmentBuilding
 
 class Asset(models.Model):
     '''
@@ -14,26 +14,51 @@ class Asset(models.Model):
     value = models.FloatField("Valor en UF",blank=True,null=False,default=0)
 
 class RealEstate(models.Model):
-    ''' Topmost abstraction for all kinds of properties that can be valued'''
-    ''' Bien raíz '''
+    '''
+    Abstracción más general de un bien raíz.
+    Representa uno o más terrenos, y todo lo que está construido (o por construirse) sobre ellos.
+    '''
 
-    # more to be added
     TYPE_NONE = ''
-    TYPE_OTHER = 0
-    TYPE_HOUSE = 1
-    TYPE_APARTMENT = 2
-    TYPE_BUILDING = 3
-    TYPE_CONDOMINIUM = 4
+    TYPE_OTRO = 0
+    TYPE_CASA = 1
+    TYPE_DEPARTAMENTO = 2
+    TYPE_OFICINA = 6
+    TYPE_LOCAL_COMERCIAL = 7
+    TYPE_TERRENO = 8
+    TYPE_INDUSTRIA = 9
+    TYPE_GALPON = 10
+    TYPE_BODEGA = 11
+    TYPE_ESTACIONAMIENTO = 12
+    TYPE_EDIFICIO = 3
+    TYPE_PARCELA = 13
+    TYPE_BARCO = 14
+    TYPE_VEHICULO = 15
+    TYPE_MAQUINARIA = 16
+    TYPE_ESTACION_DE_SERVICIO = 17
+    TYPE_CONDOMINIO = 18
     propertyType_choices = [
         (TYPE_NONE,'---------'),
-        (TYPE_HOUSE, "Casa"),
-        (TYPE_APARTMENT, "Departamento"),
-        (TYPE_BUILDING, "Edificio"),
-        (TYPE_CONDOMINIUM, "Condominio"),
-        (TYPE_OTHER, "Otro"),]
+        (TYPE_CASA, "Casa"),
+        (TYPE_DEPARTAMENTO, "Departamento"),
+        (TYPE_OFICINA, "Oficina"),
+        (TYPE_LOCAL_COMERCIAL, "Local Comercial"),
+        (TYPE_TERRENO, "Terreno"),
+        (TYPE_INDUSTRIA, "Industria"),
+        (TYPE_GALPON, "Galpon"),
+        (TYPE_BODEGA, "Bodega"),
+        (TYPE_ESTACIONAMIENTO, "Estacionamiento"),
+        (TYPE_EDIFICIO, "Edificio"),
+        (TYPE_PARCELA, "Parcela"),
+        (TYPE_BARCO, "Barco"),
+        (TYPE_VEHICULO, "Vehiculo"),
+        (TYPE_MAQUINARIA, "Maquinaria"),
+        (TYPE_ESTACION_DE_SERVICIO, "Estación de Servicio"),
+        (TYPE_CONDOMINIO, "Condominio"),
+        (TYPE_OTRO, "Otro"),]
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
-        default=TYPE_OTHER)
+        default=TYPE_OTRO)
 
     addressStreet = models.CharField("Calle",max_length=300,default="",blank=True,)
     addressNumber = models.CharField("Número",max_length=30,default=0,blank=True,)
@@ -81,192 +106,23 @@ class RealEstate(models.Model):
         (2, "Si"),
         (3, "No")
     )
-    mercadoObjetivo = models.PositiveSmallIntegerField("Mercado objetivo",blank=True,null=False,default=1,choices=BOOLEAN_NULL_CHOICES)
 
-    programa = models.CharField("Programa",max_length=10000,null=True,blank=True)
-
-    estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
-
-    anoConstruccion = models.IntegerField("Año construcción",
-        blank=True,
-        null=True)
-
-    vidaUtilRemanente = models.IntegerField("Vida util remanente",
-        blank=True,
-        null=True)
-
-    avaluoFiscal = models.FloatField("Avaluo fiscal",
-        blank=True,
-        null=True)
-
-    dfl2 = models.PositiveSmallIntegerField("DFL 2",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    SELLO_VERDE_CHOICES = (
-        ('V', 'Verde'),
-        ('A', 'Amarillo'),
-        ('R', 'Rojo'),
-        ('NA', 'No Aplica'),
-        ('VV', 'Verde vencido'),
-        ('SA', 'Sin antecedentes')
-    )
-    selloVerde = models.CharField("Sello verde",
-        max_length=2,
-        choices=SELLO_VERDE_CHOICES,
-        blank=True,
-        null=True)
-
-    copropiedadInmobiliaria = models.PositiveSmallIntegerField("Copropiedad Inmobiliaria",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    OCUPANTE_CHOICES = (
-        ('P', 'Propietario'),
-        ('A', 'Arrendatario'),
-        ('O', 'Otro'),
-        ('SO', 'Sin ocupante')
-    )
-    ocupante = models.CharField("Ocupante",
-        max_length=2,
-        choices=OCUPANTE_CHOICES,
-        blank=True,
-        null=True)
-
-    tipoBien = models.CharField("Tipo de bien",
-        max_length=20,
-        blank=True,
-        null=True)
-
-    DESTINO_SII = (
-        ('H', 'Habitacional'),
-        ('O', 'Oficina'),
-        ('C', 'Comercio'),
-        ('I', 'Industria'),
-        ('L', 'Bodega'),
-        ('Z', 'Estacionamiento'),
-        ('D', 'Deportes y Recreación'),
-        ('E', 'Educación y Cultura'),
-        ('G', 'Hotel, Motel'),
-        ('P', 'Administración pública'),
-        ('Q', 'Culto'),
-        ('S', 'Salud'),
-        ('SE', 'Sitio Eriazo')
-    )
-    destinoSII = models.CharField("Destino según SII",
-        max_length=1,
-        choices=DESTINO_SII,
-        blank=True,
-        null=True)
-
-    usoActual = models.CharField("Uso actual",
-        max_length=1,
-        choices=DESTINO_SII,
-        blank=True,
-        null=True)
-
-    usoFuturo = models.CharField("Uso futuro",
-        max_length=1,
-        choices=DESTINO_SII,
-        blank=True,
-        null=True)
-
-    permisoEdificacionNo = models.CharField("Permiso edificación",
-        max_length=20,
-        blank=True,
-        null=True)
-    permisoEdificacionFecha = models.DateField("Fecha permiso edificación",
-        blank=True,
-        null=True)
-    permisoEdificacionSuperficie = models.DecimalField("Superficie permiso edificación",
-        max_digits=7,
-        decimal_places=2,
-        blank=True,
-        null=True)
-
-    recepcionFinalNo = models.CharField("Recepcion final",
-        max_length=20,
-        blank=True,
-        null=True)
-    recepcionFinalFecha = models.DateField("Recepcion final fecha",
-        blank=True,
-        null=True)
-
-    expropiacion = models.PositiveSmallIntegerField("Expropiacion",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    viviendaSocial = models.PositiveSmallIntegerField("Vivienda social",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    desmontable = models.PositiveSmallIntegerField("Desmontable",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    adobe = models.PositiveSmallIntegerField("Adobe",
-        blank=True,
-        null=False,
-        default=1,
-        choices=BOOLEAN_NULL_CHOICES)
-
-    acogidaLeyChoices = (
-        (0, 'O.G.U. y C.'),
-        (1, 'P.R.C.'),
-        (2, 'Ley Pereira'),
-        (3, 'Ley 19583'),
-        (4, 'Ley 19667'),
-        (5, 'Ley 19727'),
-        (6, 'Ley 20251'),
-        (7, 'Ley 6071'),
-        (8, 'Ninguna'),
-        (9, 'Antigüedad')
-    )
-    acogidaLey = models.IntegerField("Acogida a",
-        choices=acogidaLeyChoices,
-        blank=True,
-        null=True)
-    
-    USE = (
-        (0,'Usada'),
-        (1,'Nueva')
-    )
-    tipoPropiedad = models.PositiveSmallIntegerField("Tipo de propiedad",
-        choices=USE,
-        default=0,
-        null=True)
-
-    antiguedad = models.PositiveSmallIntegerField("Antiguedad",
-        default=0,
-        null=True)
-
-    vidaUtil = models.PositiveSmallIntegerField("Vida util",
-        default=80,
-        null=True)
-
-    def addApartmentBuilding(self, apartment_building):
-        if isinstance(apartment_building, type(ApartmentBuilding)):
-            self.buildings.add(apartment_building)
+    def addBuilding(self, building, only_if_empty=False):
+        if isinstance(building, Building):
+            if only_if_empty:
+                if len(self.buildings.all()) > 0:
+                    return False
+            self.buildings.add(building)
             self.save()
             return True
-        elif isinstance(apartment_building, int):
+        elif isinstance(building, int):
             # Assuming its the building id.
             try:
-                apartment_building = ApartmentBuilding.objects.get(id=apartment_building)
-                self.buildings.add(apartment_building)
+                building = Building.objects.get(id=building)
+                self.buildings.add(building)
                 self.save()
                 return True
-            except ApartmentBuilding.DoesNotExist:
+            except Building.DoesNotExist:
                 return False
 
     @property
@@ -283,12 +139,12 @@ class RealEstate(models.Model):
 
     @property
     def total_area(self):
-        if self.propertyType == self.TYPE_HOUSE:
+        if self.propertyType == self.TYPE_CASA:
             if self.house.terrainSquareMeters != None and self.house.builtSquareMeters != None:
                 return self.house.terrainSquareMeters + self.house.builtSquareMeters
             else:
                 return 0
-        elif self.propertyType == self.TYPE_APARTMENT:
+        elif self.propertyType == self.TYPE_DEPARTAMENTO:
             if self.apartment.usefulSquareMeters != None and self.apartment.terraceSquareMeters != None:
                 return self.apartment.usefulSquareMeters + self.apartment.terraceSquareMeters
             else:
@@ -305,15 +161,15 @@ class RealEstate(models.Model):
     @property
     def is_apartment(self):
         # Casting to int is done so that it also works when called in javascript.
-        return int(self.propertyType == self.TYPE_APARTMENT)
+        return int(self.propertyType == self.TYPE_DEPARTAMENTO)
 
     @property
     def is_house(self):
-        return int(self.propertyType == self.TYPE_HOUSE)
+        return int(self.propertyType == self.TYPE_CASA)
 
     @property
     def is_building(self):
-        return int(self.propertyType == self.TYPE_BUILDING)
+        return int(self.propertyType == self.TYPE_EDIFICIO)
 
     @property
     def address_dict(self):
@@ -362,29 +218,29 @@ class RealEstate(models.Model):
 
     @property
     def get_propertyTypeName(self):
-        if self.propertyType == self.TYPE_OTHER:
+        if self.propertyType == self.TYPE_OTRO:
             return "other"
-        elif self.propertyType == self.TYPE_HOUSE:
+        elif self.propertyType == self.TYPE_CASA:
             return "house"
-        elif self.propertyType == self.TYPE_APARTMENT:
+        elif self.propertyType == self.TYPE_DEPARTAMENTO:
             return "apartment"
-        elif self.propertyType == self.TYPE_BUILDING:
+        elif self.propertyType == self.TYPE_EDIFICIO:
             return "building"
-        elif self.propertyType == self.TYPE_CONDOMINIUM:
+        elif self.propertyType == self.TYPE_CONDOMINIO:
             return "condominium"
         else:
             return None
 
     def get_propertyTypeIcon(self):
-        if self.propertyType == self.TYPE_OTHER:
+        if self.propertyType == self.TYPE_OTRO:
             return "far fa-times-circle"
-        elif self.propertyType == self.TYPE_HOUSE:
+        elif self.propertyType == self.TYPE_CASA:
             return "fas fa-home"
-        elif self.propertyType == self.TYPE_APARTMENT:
+        elif self.propertyType == self.TYPE_DEPARTAMENTO:
             return "fas fa-building"
-        elif self.propertyType == self.TYPE_BUILDING:
+        elif self.propertyType == self.TYPE_EDIFICIO:
             return "fas fa-city"
-        elif self.propertyType == self.TYPE_CONDOMINIUM:
+        elif self.propertyType == self.TYPE_CONDOMINIO:
             return "fas fa-torii-gate"
         else:
             return "far fa-times-circle"

@@ -14,25 +14,32 @@
           Cargando tasadores
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
         </div>
+        <input class="form-control mb-2" placeholder="Buscar tasador" id="tasador_buscar" style="display:none;"></input>
         <table class="table table-sm table-borderless" id="table" style="display:none;">
-          <thead class="thead-light">
+          <thead>
             <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Tasaciones</th>
+              <th style="width:1em;"></th>
+              <th style="width:10em;">Nombre</th>
+              <th style="width:10em;" class="text-center">Tasaciones</th>
+              <th style="width:1em;"></th>
             </tr>
           </thead>
           <tbody>
             {% for tasador in tasadores %}
-            <tr>
-              <th scope="col">
+            <tr class="tasador">
+              <td></td>
+              <td>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{tasador.user.id}}">
-                  <label class="form-check-label" for="tasador_radio">
+                  <label class="form-check-label" for="tasador_radio" id="nombre">
                     {{tasador.user.first_name}} {{tasador.user.last_name}}
                   </label>
                 </div>
-              </th>
-              <th scope="col">{{tasador.activeAppraisals}}</th>
+              </td>
+              <td class="text-center">
+                {{tasador.activeAppraisals}}
+              </td>
+              <td></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -52,3 +59,30 @@
     </div>
   </div>
 </div>
+
+<script>
+  var search = function(val) {
+    val = val.toLowerCase()
+    $("tr.tasador").each(function() {
+      if (!val) {
+        $(this).show()
+        return
+      }
+      var nombre = $(this).find("#nombre").html().trim();
+      nombre = nombre.toLowerCase()
+      if (nombre.indexOf(val) < 0) {
+        $(this).hide()
+      } else {
+        $(this).show()
+      }
+    });
+  }
+  $("#tasador_buscar").on('keyup',function() {
+    val = $(this).val()
+    search(val)
+  })
+  $("#tasador_buscar").on('change',function() {
+    val = $(this).val()
+    search(val)
+  })
+</script>

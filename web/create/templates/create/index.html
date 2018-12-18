@@ -312,7 +312,7 @@
 
          <div class="row" id="propertyType">
             <div class="col-md-2 text-right">
-               <p class="font-weight-bold">Propiedad</p>
+               <p class="font-weight-bold">Bien</p>
             </div>
             <div class="col-md-2">
                <div class="form-group">
@@ -322,7 +322,10 @@
             </div>
             <div class="col-md-2">
                <div class="form-group">
-                  <label>Rol</label>
+                  <div class="valign-center">
+                    <label><span>Rol</span>
+                      <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Rol principal. Si existe más de un rol, es posible ingresarlo más tarde en el formulario de tasación.">help_outline</i></label>
+                  </div>
                   {{form.rol}}
                </div>
             </div>
@@ -372,7 +375,7 @@
 
          <div class="row">
             <div class="col-md-2 text-right">
-               <p class="font-weight-bold">Etc.</p>
+               <p class="font-weight-bold"></p>
             </div>
             <div class="col-md-6">
                <div class="form-group">
@@ -513,6 +516,9 @@
       "finalidad": "Campo requerido",
       "visita": "Campo requerido",
       "propertyType": "Campo requerido",
+      "rol": {
+        maxlength: "Máximo 20 caracteres"
+      },
       "clienteEmail": {
         email: "Email debe tener formato nombre@dominio.com"
       },
@@ -674,6 +680,11 @@
 
   $("#id_solicitanteEjecutivo").focusout(function() {
     $(this).val(toTitleCase($(this).val()));
+  })
+
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
   })
 
 </script>
