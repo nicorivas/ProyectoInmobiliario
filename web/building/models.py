@@ -81,6 +81,7 @@ class Building(models.Model):
     SELLO_VERDE_CHOICES = (
         ('V', 'Verde'),
         ('A', 'Amarillo'),
+        ('AV', 'Amarillo Vencido'),
         ('R', 'Rojo'),
         ('NA', 'No Aplica'),
         ('VV', 'Verde vencido'),
