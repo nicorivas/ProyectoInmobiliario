@@ -39,38 +39,36 @@ import zipfile
 def view_create(request):
 
     if request.method == 'POST':
+
         request_post = request.POST.copy()
         request_post['appraisalTimeRequest'] = datetime.datetime.strptime(request_post['appraisalTimeRequest'],'%d/%m/%Y %H:%M')
-
+        
         form = AppraisalCreateForm(request_post)
         if form.is_valid():
 
+            # Primero creamos el real estate
+            try:
+                real_estate = RealEstate.objects.get(
+                    addressNumber=form.cleaned_data['addressNumber'],
+                    addressStreet=form.cleaned_data['addressRegion'],
+                    addressCommune=form.cleaned_data['addressCommune'],
+                    addressRegion = form.cleaned_data['addressRegion'])
+            except RealEstate.DoesNotExist:
+                real_estate = RealEstate(
+                    addressNumber=form.cleaned_data['addressNumber'],
+                    addressStreet=form.cleaned_data['addressRegion'],
+                    addressCommune=form.cleaned_data['addressCommune'],
+                    addressRegion = form.cleaned_data['addressRegion'])
+            except MultipleObjectsReturned:
+                context = {'error_message': 'RealEstate is repeated'}
+                return render(request, 'create/error.html', context)
+
+            real_estate.save()
+
+            # Luego añadimos la propiedad principal al real estate
             propertyType = int(form.cleaned_data['propertyType'])
-            realEstate = None
             if propertyType == RealEstate.TYPE_CASA:
-
-                addressRegion = form.cleaned_data['addressRegion']
-                addressCommune = form.cleaned_data['addressCommune']
-                addressStreet = form.cleaned_data['addressStreet']
-                addressNumber = form.cleaned_data['addressNumber']
-                addressNumber2 = form.cleaned_data['addressNumber2']
-
-                try:
-                    # get house if it exists
-                    realEstate = House.objects.get(
-                        addressRegion=addressRegion,
-                        addressCommune=addressCommune,
-                        addressStreet=addressStreet,
-                        addressNumber=addressNumber,
-                        addressNumber2=addressNumber2)
-                except House.DoesNotExist:
-                    # house does not exist, so create it
-                    realEstate = create.house_create(request,addressRegion,addressCommune,addressStreet,addressNumber,addressNumber2)
-                except MultipleObjectsReturned:
-                    # error
-                    context = {'error_message': 'House is repeated'}
-                    return render(request, 'create/error.html', context)
-
+                casa = real_estate.createOrGetCasa(addressNumber2=form.cleaned_data['addressNumber2'])
             elif propertyType == RealEstate.TYPE_EDIFICIO:
 
                 addressRegion = form.cleaned_data['addressRegion']
@@ -225,16 +223,9 @@ def view_create(request):
                 orderFile = request.FILES['archivo']
             else:
                 orderFile = None
-
-            if realEstate == None:
-                rsptr = None
-            if propertyType == RealEstate.TYPE_CONDOMINIO:
-                rsptr = realEstate
-            else:
-                rsptr = realEstate.realestate_ptr
             
             # ToDO: VER COMO CHECKEAR EXISTENCIA DE APPRAISAL
-            appraisal = create.appraisal_create(request,rsptr,
+            appraisal = create.appraisal_create(request,real_estate,
                 solicitante=solicitante,
                 solicitanteOtro=solicitanteOtro,
                 solicitanteSucursal=solicitanteSucursal,

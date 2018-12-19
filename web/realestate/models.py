@@ -4,7 +4,9 @@ from region.models import Region
 from neighborhood.models import Neighborhood
 from terrain.models import Terrain
 from building.models import Building
+from house.models import House
 from apartmentbuilding.models import ApartmentBuilding
+from django.core.exceptions import MultipleObjectsReturned
 
 class Asset(models.Model):
     '''
@@ -16,84 +18,84 @@ class Asset(models.Model):
 class RealEstate(models.Model):
     '''
     Abstracción más general de un bien raíz.
-    Representa uno o más terrenos, y todo lo que está construido (o por construirse) sobre ellos.
+    Collección de uno o más terrenos, y todo lo que está construido (o por construirse) sobre ellos.
+    Definido únicamente por su dirección o por sus coordenadas.
     '''
 
-    TYPE_NONE = ''
-    TYPE_OTRO = 0
-    TYPE_CASA = 1
-    TYPE_DEPARTAMENTO = 2
-    TYPE_OFICINA = 6
-    TYPE_LOCAL_COMERCIAL = 7
-    TYPE_TERRENO = 8
-    TYPE_INDUSTRIA = 9
-    TYPE_GALPON = 10
-    TYPE_BODEGA = 11
-    TYPE_ESTACIONAMIENTO = 12
-    TYPE_EDIFICIO = 3
-    TYPE_PARCELA = 13
-    TYPE_BARCO = 14
-    TYPE_VEHICULO = 15
-    TYPE_MAQUINARIA = 16
-    TYPE_ESTACION_DE_SERVICIO = 17
-    TYPE_CONDOMINIO = 18
-    propertyType_choices = [
-        (TYPE_NONE,'---------'),
-        (TYPE_CASA, "Casa"),
-        (TYPE_DEPARTAMENTO, "Departamento"),
-        (TYPE_OFICINA, "Oficina"),
-        (TYPE_LOCAL_COMERCIAL, "Local Comercial"),
-        (TYPE_TERRENO, "Terreno"),
-        (TYPE_INDUSTRIA, "Industria"),
-        (TYPE_GALPON, "Galpon"),
-        (TYPE_BODEGA, "Bodega"),
-        (TYPE_ESTACIONAMIENTO, "Estacionamiento"),
-        (TYPE_EDIFICIO, "Edificio"),
-        (TYPE_PARCELA, "Parcela"),
-        (TYPE_BARCO, "Barco"),
-        (TYPE_VEHICULO, "Vehiculo"),
-        (TYPE_MAQUINARIA, "Maquinaria"),
-        (TYPE_ESTACION_DE_SERVICIO, "Estación de Servicio"),
-        (TYPE_CONDOMINIO, "Condominio"),
-        (TYPE_OTRO, "Otro"),]
-    propertyType = models.PositiveIntegerField(
-        choices=propertyType_choices,
-        default=TYPE_OTRO)
-
-    addressStreet = models.CharField("Calle",max_length=300,default="",blank=True,)
-    addressNumber = models.CharField("Número",max_length=30,default=0,blank=True,)
-    addressCommune = models.ForeignKey(Commune,
-        on_delete=models.CASCADE,
-        verbose_name="Comuna",
-        blank=True,
-        null=True,
-        to_field='code')
-    addressRegion = models.ForeignKey(Region,
-        on_delete=models.CASCADE,
-        verbose_name="Región",
-        blank=True,
-        null=True,
-        to_field='code')
-    addressFromCoords = models.BooleanField("Direccion por coordenadas",default=False)
-
-    name = models.CharField("Nombre",max_length=200,default="",null=True,blank=True)
-
-    lat = models.FloatField("Latitud",default=0.0)
-    lng = models.FloatField("Longitud",default=0.0)
-
-    neighborhood = models.ForeignKey(Neighborhood,
-        on_delete=models.CASCADE,
-        verbose_name="Barrio",
+    name = models.CharField("Nombre",
+        max_length=200,
+        default="",
         blank=True,
         null=True)
 
-    sourceUrl = models.URLField("Source url",max_length=1000,null=True,blank=True)
-    sourceName = models.CharField("Source name",max_length=20,null=True,blank=True)
-    sourceId = models.CharField("Source id",max_length=20,null=True,blank=True)
-    sourceDatePublished = models.DateTimeField("Fecha publicación",blank=True,null=True)
-    sourceAddedManually = models.BooleanField("Añadido manualmente",blank=True,null=False,default=False)
+    addressStreet = models.CharField("Calle",
+        max_length=300,
+        blank=True,
+        null=True)
 
-    marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
+    addressNumber = models.CharField("Número",
+        max_length=30,
+        blank=True,
+        null=True)
+    
+    addressCommune = models.ForeignKey(Commune,
+        verbose_name="Comuna",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        to_field='code')
+
+    addressRegion = models.ForeignKey(Region,
+        verbose_name="Región",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        to_field='code')
+
+    addressFromCoords = models.BooleanField("Direccion por coordenadas",
+        default=False)
+
+    lat = models.FloatField("Latitud",
+        default=0.0)
+    
+    lng = models.FloatField("Longitud",
+        default=0.0)
+
+    neighborhood = models.ForeignKey(Neighborhood,
+        verbose_name="Barrio",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+
+    sourceUrl = models.URLField("Source url",
+        max_length=1000,
+        null=True,
+        blank=True)
+
+    sourceName = models.CharField("Source name",
+        max_length=20,
+        null=True,
+        blank=True)
+
+    sourceId = models.CharField("Source id",
+        max_length=20,
+        null=True,
+        blank=True)
+
+    sourceDatePublished = models.DateTimeField("Fecha publicación",
+        blank=True,
+        null=True)
+
+    sourceAddedManually = models.BooleanField("Añadido manualmente",
+        blank=True,
+        null=False,
+        default=False)
+
+    marketPrice = models.DecimalField("Precio mercado UF",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True)
 
     terrains = models.ManyToManyField(Terrain)
 
@@ -106,6 +108,35 @@ class RealEstate(models.Model):
         (2, "Si"),
         (3, "No")
     )
+
+    def createCasa(self,addressNumber2):
+        building = Building(real_estate=self,propertyType=Building.TYPE_CASA)
+        building.save()
+        casa = House(building=building,addressNumber2=addressNumber2)
+        casa.save()
+        self.buildings.add(building)
+        self.save()
+        return casa
+
+    def createOrGetCasa(self,addressNumber2=None):
+        try:
+            building = self.buildings.get(propertyType=Building.TYPE_CASA)
+            try:
+                if building.casa.addressNumber2 == addressNumber2:
+                    return building.casa
+                else:
+                    return self.createCasa(addressNumber2)
+            except ObjectDoesNotExist:
+                # This should never take place
+                return False
+        except Building.DoesNotExist:
+            return self.createCasa(addressNumber2)
+        except MultipleObjectsReturned:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_CASA)
+            for building in buildings:
+                if building.casa.addressNumber2 == addressNumber2:
+                    return building.casa
+            return self.createCasa(addressNumber2)
 
     def addBuilding(self, building, only_if_empty=False):
         if isinstance(building, Building):
@@ -161,15 +192,15 @@ class RealEstate(models.Model):
     @property
     def is_apartment(self):
         # Casting to int is done so that it also works when called in javascript.
-        return int(self.propertyType == self.TYPE_DEPARTAMENTO)
+        return 1#int(self.propertyType == self.TYPE_DEPARTAMENTO)
 
     @property
     def is_house(self):
-        return int(self.propertyType == self.TYPE_CASA)
+        return 1#int(self.propertyType == self.TYPE_CASA)
 
     @property
     def is_building(self):
-        return int(self.propertyType == self.TYPE_EDIFICIO)
+        return 1#int(self.propertyType == self.TYPE_EDIFICIO)
 
     @property
     def address_dict(self):

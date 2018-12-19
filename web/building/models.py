@@ -5,21 +5,45 @@ class Building(models.Model):
     real_estate = models.ForeignKey('realestate.RealEstate',on_delete=models.CASCADE,verbose_name="Real estate",blank=False,null=False)
 
     TYPE_NONE = ''
-    TYPE_OTHER = 0
-    TYPE_HOUSE = 1
-    TYPE_APARTMENT = 2
-    TYPE_BUILDING = 3
-    TYPE_CONDOMINIUM = 4
+    TYPE_OTRO = 0
+    TYPE_CASA = 1
+    TYPE_DEPARTAMENTO = 2
+    TYPE_OFICINA = 6
+    TYPE_LOCAL_COMERCIAL = 7
+    TYPE_TERRENO = 8
+    TYPE_INDUSTRIA = 9
+    TYPE_GALPON = 10
+    TYPE_BODEGA = 11
+    TYPE_ESTACIONAMIENTO = 12
+    TYPE_EDIFICIO = 3
+    TYPE_PARCELA = 13
+    TYPE_BARCO = 14
+    TYPE_VEHICULO = 15
+    TYPE_MAQUINARIA = 16
+    TYPE_ESTACION_DE_SERVICIO = 17
+    TYPE_CONDOMINIO = 18
     propertyType_choices = [
         (TYPE_NONE,'---------'),
-        (TYPE_HOUSE, "Casa"),
-        (TYPE_APARTMENT, "Departamento"),
-        (TYPE_BUILDING, "Edificio"),
-        (TYPE_CONDOMINIUM, "Condominio"),
-        (TYPE_OTHER, "Otro"),]
+        (TYPE_CASA, "Casa"),
+        (TYPE_DEPARTAMENTO, "Departamento"),
+        (TYPE_OFICINA, "Oficina"),
+        (TYPE_LOCAL_COMERCIAL, "Local Comercial"),
+        (TYPE_TERRENO, "Terreno"),
+        (TYPE_INDUSTRIA, "Industria"),
+        (TYPE_GALPON, "Galpon"),
+        (TYPE_BODEGA, "Bodega"),
+        (TYPE_ESTACIONAMIENTO, "Estacionamiento"),
+        (TYPE_EDIFICIO, "Edificio"),
+        (TYPE_PARCELA, "Parcela"),
+        (TYPE_BARCO, "Barco"),
+        (TYPE_VEHICULO, "Vehiculo"),
+        (TYPE_MAQUINARIA, "Maquinaria"),
+        (TYPE_ESTACION_DE_SERVICIO, "Estación de Servicio"),
+        (TYPE_CONDOMINIO, "Condominio"),
+        (TYPE_OTRO, "Otro"),]
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
-        default=TYPE_OTHER)
+        default=TYPE_OTRO)
 
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
 

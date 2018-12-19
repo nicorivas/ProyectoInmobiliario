@@ -1,6 +1,7 @@
 from django import forms
 from region.models import Region
 from commune.models import Commune
+from building.models import Building
 from realestate.models import RealEstate
 from appraisal.models import Appraisal
 from django.core.exceptions import ValidationError
@@ -88,7 +89,7 @@ class AppraisalCreateForm(forms.Form):
 
     propertyType = forms.ChoiceField(
         label="Tipo propiedad",
-        choices=RealEstate.propertyType_choices)
+        choices=Building.propertyType_choices)
     propertyType.widget.attrs.update({'class':"form-control"})
 
     rol = forms.CharField(label="Rol", max_length=20, required=False)
@@ -137,19 +138,6 @@ class AppraisalCreateForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #self.fields['addressCommune'].queryset = []
-
-    def clean(self):
-        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].replace('.','')
-        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].replace('-','')
-        self.cleaned_data['clienteRut'] = self.cleaned_data['clienteRut'].lower()
-        if self.cleaned_data.get('addressStreet')=="":
-            raise forms.ValidationError('No name!')
-        if self.cleaned_data.get('addressStreet')=="":
-            raise forms.ValidationError('No name!')
-        if self.cleaned_data.get('propertyType') == RealEstate.TYPE_APARTMENT:
-            if self.cleaned_data.get('addressNumberFlat').strip()=="":
-                raise forms.ValidationError('No hay número de departamento (quizás puso sólo un espacio)')
-        return self.cleaned_data
 
     def clean_appraisalTimeFrame(self):
         data = self.cleaned_data['appraisalTimeFrame']
