@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'house',
     'building',
     'apartmentbuilding',
-    'testmodel',
     'apartment',
     'neighborhood',
     'region',

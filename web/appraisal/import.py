@@ -11,7 +11,7 @@ django.setup()
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_date
 
-from realestate.models import RealEstate, Construction, Terrain, Asset
+from realestate.models import RealEstate, Terrain, Asset
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -55,6 +55,18 @@ def get_commune_name(commune):
     for word in commune.split(" "):
         name += word.capitalize() + " "
     return name.strip(" ")
+
+def green_stamp(text):
+    colors = {
+        'Verde':'V',
+        'Amarillo':'A', 'Amarillo Vencido':'AV',
+        'Rojo':'R',
+        'No Aplica':'NA',
+        'Verde vencido':'VV', 'Verde Vencido':'VV',
+        'Sin antecedentes':'SA',
+        'Sin Antecedentes':'SA',
+        'No procede': 'SA', 'No encontrado':'SA'}
+    return colors[text]
 
 def excel_find_import(workbook1, workbook2, term):
     #finds data of appraisal of Santander xlxs file using santander template file
@@ -103,7 +115,7 @@ def excel_find_general(file, term):
                     col = 54
                     valorUF = round(ws.cell(row=row, column=col).value,2)
                     return valorUF
-    elif term == "Antigüedad" or term == "Vida Util":
+    elif term == "Antigüedad" or term == "Vida Util" or term == "Sello de Gases" or term == "Tipo Propiedad":
         for row in range(35, 70):
             for col in range(1, 30):
                 cv = ws.cell(row=row, column=col).value
@@ -114,8 +126,8 @@ def excel_find_general(file, term):
                 if cv == term:
                     print("found it!")
                     col = 6
-                    years = ws.cell(row=row, column=col).value
-                    return years
+                    feature = ws.cell(row=row, column=col).value
+                    return feature
     elif term == "Total Avalúo Fiscal" or term == "N° Rol Principal" or term== "N° Rol (es) Sec.":
         for row in range(35, 70):
             for col in range(10, 30):
@@ -229,18 +241,6 @@ def importAppraisalSantander(file):
             'Antigüedad':9
         }
         return law[text]
-
-    def green_stamp(text):
-        colors = {
-            'Verde':'V',
-            'Amarillo':'A',
-            'Rojo':'R',
-            'No Aplica':'NA',
-            'Verde vencido':'VV',
-            'Sin antecedentes':'SA',
-            'Sin Antecedentes':'SA'}
-        return colors[text]
-
 
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/santander-template.xlsx')
@@ -544,15 +544,13 @@ def importAppraisalITAU(file):
     # lng = convert(excel_find_import(wb, wb2, "lng"))
     antiguedad = excel_find_general(file, "Antigüedad")
     vidaUtil = excel_find_general(file, "Vida Util")
-    #if vidaUtil != int or float:
-    #    vidaUtil = 0
     avaluoFiscal = excel_find_general(file, "Total Avalúo Fiscal")
     leyes = excel_find_general(file, "Leyes que se Acoge")
     acogidaLey = leyes[0]
     acogidaLey2 = leyes[1]
+    selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
+    tipoBien = excel_find_general(file, "Tipo Propiedad")
     ''' 
-    selloVerde = green_stamp(excel_find_import(wb, wb2, "selloVerde"))
-    tipoBien = excel_find_import(wb, wb2, "tipoBien")
     usoFuturo = destinoSII_modified(excel_find_import(wb, wb2, "usoFuturo"))
     permisoEdificacion = excel_find_import(wb, wb2, "permisoEdificacion")
     recepcionFinal = excel_find_import(wb, wb2, "recepcionFinal")
@@ -606,11 +604,11 @@ def importAppraisalITAU(file):
     avaluoFiscal,"/",
     acogidaLey,"/",
     acogidaLey2,"/",
-          ''' 
-
-    
     selloVerde,
-    tipoBien ,
+    tipoBien,
+          ''' 
+    
+    
     usoFuturo,
     permisoEdificacion,
     recepcionFinal,
