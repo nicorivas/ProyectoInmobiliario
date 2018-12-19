@@ -17,8 +17,7 @@ from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
-from region.models import Region
-from user.models import UserProfile
+
 
 
 def get_clean_address(rawaddress):
@@ -540,7 +539,7 @@ def importAppraisalITAU(file):
     rol1 = excel_find_general(file, "N° Rol Principal")
     rol2 = excel_find_general(file, "N° Rol (es) Sec.")
     #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
-    # lat = convert(excel_find_import(wb, wb2, "lat"))
+    # lat = convert(excel_find_import(wb, wb2, "lat")) #Itau no viene con lat-long, usar función?
     # lng = convert(excel_find_import(wb, wb2, "lng"))
     antiguedad = excel_find_general(file, "Antigüedad")
     vidaUtil = excel_find_general(file, "Vida Util")
@@ -550,12 +549,12 @@ def importAppraisalITAU(file):
     acogidaLey2 = leyes[1]
     selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
     tipoBien = excel_find_general(file, "Tipo Propiedad")
+    permisoEdificacion = excel_find_general(file, "Tipo Propiedad")
+    recepcionFinal = excel_find_general(file, "Tipo Propiedad")
+    generalDescription = excel_find_general(file, "Tipo Propiedad")
+
     ''' 
-    usoFuturo = destinoSII_modified(excel_find_import(wb, wb2, "usoFuturo"))
-    permisoEdificacion = excel_find_import(wb, wb2, "permisoEdificacion")
-    recepcionFinal = excel_find_import(wb, wb2, "recepcionFinal")
-    expropiacion = boolean_null_choices(excel_find_import(wb, wb2, "expropiacion"))
-    generalDescription = excel_find_import(wb, wb2, "generalDescription")
+    
     mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
     terrainSquareMeters = mm2[0]
     # usefulSquareMeters = mm2[0]
