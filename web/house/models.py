@@ -2,11 +2,13 @@ from django.db import models
 from neighborhood.models import Neighborhood
 from commune.models import Commune
 from region.models import Region
+from building.models import Building
 from realestate.models import RealEstate
 import datetime
 
-class House(RealEstate):
+class House(models.Model):
 
+    building = models.ForeignKey(Building,on_delete=models.CASCADE,verbose_name="Edificio",null=True,blank=False)
     addressNumber2 = models.TextField("Lote",max_length=30,null=True,blank=True)
     bedrooms = models.PositiveSmallIntegerField("Dormitorios",null=True,blank=True)
     bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)

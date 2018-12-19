@@ -6,7 +6,7 @@ from region.models import Region
 from commune.models import Commune
 from collections import OrderedDict
 from realestate.models import RealEstate
-from apartment.models import Apartment
+#from apartment.models import Apartment
 
 import plotly.offline as opy
 import plotly.graph_objs as go

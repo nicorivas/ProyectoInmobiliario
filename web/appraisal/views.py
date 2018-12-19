@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
 from realestate.models import RealEstate, Asset
-from house.models import House
+#from house.models import House
 #from building.models import Building
-from apartment.models import Apartment
+#from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document, Rol
 from commune.models import Commune
 from user.models import UserProfile

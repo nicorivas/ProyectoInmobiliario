@@ -4,7 +4,7 @@ from region.models import Region
 from commune.models import Commune
 from collections import OrderedDict
 from realestate.models import RealEstate
-from apartment.models import Apartment
+#from apartment.models import Apartment
 
 from bokeh.models import CustomJS, TapTool, HoverTool
 from bokeh.plotting import figure, output_file, show, ColumnDataSource
