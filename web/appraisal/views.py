@@ -6,7 +6,7 @@ from django.core.exceptions import MultipleObjectsReturned
 
 from realestate.models import RealEstate, Asset
 #from house.models import House
-#from building.models import Building
+from building.models import Building
 #from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document, Rol
 from commune.models import Commune
@@ -20,7 +20,7 @@ import os
 import csv
 
 from .forms import FormRealEstate
-#from .forms import FormBuilding
+from .forms import FormBuilding
 from .forms import FormApartment
 from .forms import FormHouse
 from .forms import FormAppraisal
@@ -30,7 +30,7 @@ from .forms import FormDocuments
 from .forms import FormCreateApartment
 from .forms import FormCreateHouse
 #from .forms import FormCreateConstruction
-#from .forms import FormCreateTerrain
+from .forms import FormCreateTerrain
 from .forms import FormCreateAsset
 from .forms import FormCreateRol
 from create import create
@@ -678,6 +678,7 @@ def view_appraisal(request, **kwargs):
     # Reference real estate
     references = []
 
+    '''
     refRealEstate = related.getSimilarRealEstate(realestate)
     for obj in refRealEstate:
         references.append({'realestate':obj})
@@ -696,6 +697,7 @@ def view_appraisal(request, **kwargs):
                 ref['included_in_valuation'] = 1
             else:
                 ref['included_in_valuation'] = 0
+    '''
 
     plot_map = {}
     # Map of references
@@ -706,7 +708,7 @@ def view_appraisal(request, **kwargs):
     averages = []
     stds = []
     if len(references) > 0:
-        if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+        if realestate.propertyType == RealEstate.TYPE_DEPARTAMENTO:
             averages = refRealEstate.aggregate(
                 Avg('marketPrice'),
                 Avg('usefulSquareMeters'),
@@ -715,7 +717,7 @@ def view_appraisal(request, **kwargs):
                 StdDev('marketPrice'),
                 StdDev('usefulSquareMeters'),
                 StdDev('terraceSquareMeters'))
-        elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+        elif realestate.propertyType == RealEstate.TYPE_CASA:
             averages = refRealEstate.aggregate(
                 Avg('marketPrice'),
                 Avg('builtSquareMeters'),
@@ -745,24 +747,24 @@ def view_appraisal(request, **kwargs):
         'documents':FormDocuments(label_suffix='docs'),
         'realestate':FormRealEstate(instance=realestate,label_suffix='')
         }
-    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
-        forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
-        forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
+    if realestate.propertyType == Building.TYPE_DEPARTAMENTO:
+        forms['property'] = FormApartment(instance=realestate.buildings.first(),label_suffix='')
+        #forms['building'] = FormBuilding(instance=realestate.buildings.first().apartment_building,label_suffix='')
         forms['createRealEstate'] = FormCreateApartment(prefix='vc',label_suffix='')
         #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
-    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
-        forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
+    elif realestate.propertyType == Building.TYPE_CASA:
+        forms['property'] = FormHouse(instance=realestate.buildings.first(),label_suffix='')
         forms['createRealEstate'] = FormCreateHouse(prefix='vc',label_suffix='')
         #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
-    elif realestate.propertyType == RealEstate.TYPE_BUILDING:
+    elif realestate.propertyType == Building.TYPE_EDIFICIO:
         #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
-    elif realestate.propertyType == RealEstate.TYPE_CONDOMINIUM:
+    elif realestate.propertyType == Building.TYPE_CONDOMINIO:
         #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')

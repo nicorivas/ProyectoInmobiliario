@@ -4,6 +4,9 @@ class Terrain(models.Model):
     '''
     Parts of the terrain
     '''
+
+    TYPE_TERRAIN = 101
+
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
 
     frente = models.FloatField("Frente",blank=True,null=True)

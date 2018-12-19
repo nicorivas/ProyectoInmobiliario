@@ -376,49 +376,7 @@ class Appraisal(models.Model):
 
     @property
     def url(self):
-        return ''
-        if self.realEstate == None:
-            return "/appraisal/{}/".format(self.id)
-        address = self.realEstate.address_dict
-        if self.realEstate.propertyType == RealEstate.TYPE_EDIFICIO:
-            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(address['region']),
-                slugify(address['commune']),
-                slugify(address['street']),
-                slugify(address['number']),
-                self.realEstate.propertyType,
-                self.realEstate.apartmentbuilding.id,
-                self.id)
-        elif self.realEstate.propertyType == RealEstate.TYPE_CASA:
-            return "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(address['region']),
-                slugify(address['commune']),
-                slugify(address['street']),
-                slugify(address['number']),
-                self.realEstate.propertyType,
-                self.realEstate.house.id,
-                self.id)
-        if self.realEstate.propertyType == RealEstate.TYPE_DEPARTAMENTO:
-            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(address['region']),
-                slugify(address['commune']),
-                slugify(address['street']),
-                slugify(address['number']),
-                self.realEstate.propertyType,
-                self.realEstate.apartment.building_in.id,
-                self.realEstate.apartment.id,
-                self.id)
-        elif self.realEstate.propertyType == RealEstate.TYPE_CONDOMINIO:
-            return  "/appraisal/{}/{}/{}/{}/{}/{}/{}/".format(
-                slugify(address['region']),
-                slugify(address['commune']),
-                slugify(address['street']),
-                slugify(address['number']),
-                self.realEstate.propertyType,
-                self.realEstate.id,
-                self.id)
-        else:
-            return "error"
+        return "/appraisal/{}/".format(self.id)
 
     @property
     def daySinceCreated(self):
