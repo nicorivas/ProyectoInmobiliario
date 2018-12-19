@@ -1,8 +1,9 @@
 from django.db import models
 from realestate.models import RealEstate
-from building.models import Building
+#from building.models import Building
+from apartmentbuilding.models import ApartmentBuilding
 
-class Apartment(RealEstate):
+class Apartment(models.Model):
 
     ORIENTATIONS = (
         ('N', 'Norte'),
@@ -15,7 +16,7 @@ class Apartment(RealEstate):
         ('NW', 'Nororiente')
     )
     
-    building_in = models.ForeignKey(Building, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
+    apartment_building = models.ForeignKey(ApartmentBuilding, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     
     addressNumber2 = models.CharField("Dpto.",max_length=30,null=True,blank=True)
     floor = models.PositiveSmallIntegerField("Piso",null=True,blank=True)

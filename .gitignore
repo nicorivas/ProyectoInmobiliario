@@ -46,5 +46,13 @@ coverage.xml
 *.log
 *.pot
 
+
 # Sphinx documentation
 docs/_build/
+
+#
+web/dbase/logs/
+*.DS_store
+admin/
+data/
+old/

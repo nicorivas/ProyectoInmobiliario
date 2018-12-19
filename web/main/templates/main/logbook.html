@@ -1,7 +1,81 @@
 {% load custom_tags %}
-
-  <h6> Contactos </h6>
-  <div class="row mt-4" style="font-size:0.8em;">
+  <div class="row mb-2">
+    <div class="col-9">
+      <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+        {{appraisal.realEstate.address}}
+      </p>
+    </div>
+    <div class="col-3" style="text-align:right;">
+      {% if appraisal.orderFile %}
+      <div class="btn btn-light">
+        <a href="{{appraisal.orderFile.url}}">
+          <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Solicitud</div>
+          <div style="vertical-align:middle;display:inline-block;font-size:1.2em;" class="material-icons" style="font-size: 1em;">save_alt</div>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-9">
+      <p>
+        {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
+        <span style='font-weight: 800; color:#999;'>{{appraisal.get_tipoTasacion_display}}</span>
+      </p> 
+    </div>
+    <div class="col-3" style="text-align:right;">
+      {% if appraisal.orderFile %}
+      <div class="btn btn-light">
+        <a href="{{appraisal.orderFile.url}}">
+          <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Informe</div>
+          <div style="vertical-align:middle;display:inline-block;font-size:1.2em;" class="material-icons" style="font-size: 1em;">save_alt</div>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <!--<h6> Contactos </h6>-->
+  <div class="row mt-2" style="font-size:0.8em;">
+    <div class="col-2">
+      <p class="text-right"><em>Pedido</em></p>
+    </div>
+    <div class="col-4">
+      <p class="text-left">{{appraisal.timeCreated | date:"d/m/Y G:i"}}</p>
+    </div>
+    <div class="col-2">
+      <p class="text-right"><em>Entrega</em></p>
+    </div>
+    <div class="col-4">
+      <p class="text-left">{{appraisal.timeDue|date:"d/m/Y G:i"}}</p>
+    </div>
+    <div class="col-2">
+      <p class="text-right"><em>Tasador</em></p>
+    </div>
+    <div class="col-4">
+      {% if appraisal.tasadorUser %}
+      <p>
+      {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name.strip }}
+      </p>
+      {% else %}
+      <p>
+        -
+      </p>
+      {% endif %}
+    </div>
+    <div class="col-2">
+      <p class="text-right"><em>Visador</em></p>
+    </div>
+    <div class="col-4">
+      {% if appraisal.visadorUser %}
+      <p>
+      {{ appraisal.visadorUser.first_name }} {{ appraisal.visadorUser.last_name.strip }}
+      </p>
+      {% else %}
+      <p>
+        -
+      </p>
+      {% endif %}
+    </div>
     <div class="col-2">
       <p class="text-right"><em>Ejecutivo/a</em></p>
     </div>
@@ -101,17 +175,54 @@
 
         {% csrf_token %}
         <input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
-        <div class="form-group">
+        <div class="form-group" id="div_event">
           {{ form_comment.event.label_tag}}
           {{ form_comment.event }}
         </div>
-        <div class="form-group">
+        <div class="form-group" id="div_datetime" style="display:none;">
+          {{ form_comment.datetime.label_tag }}
+          <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            {{ form_comment.datetime }}
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript">
+          $(function () {
+            $('#datetimepicker1').datetimepicker({
+              locale: 'es',
+              icons: {
+                time: "far fa-clock",
+                date: "far fa-calendar-alt",
+                up: "fas fa-arrow-up",
+                down: "fas fa-arrow-down"
+              }
+            });
+          });
+        </script>
+        <div class="form-group" id="div_comment">
           {{ form_comment.text.label_tag }}
           {{ form_comment.text }}
         </div>
-        <div class="form-group row">
+        <div class="form-group row" id="div_comment_btn">
           <div class="col-12">
-            <button class="btn btn-dark btn-block" name="btn_comment" id="comment">Comentar</button>
+            <button type="button" class="btn btn-dark btn-block" name="btn_comment" id="btn_comment">Registrar evento</button>
+          </div>
+        </div>
+        <div class="form-group row" id="div_accept_reject" style="display:none;">
+          <div class="col-6">
+            <button type="button" class="btn btn-sm btn-dark btn-block btn_accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}"
+                style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+              <span id='icon'>thumb_up</span>
+              <div class="ld ld-ring ld-spin" style="display:none;"></div>
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" class="btn btn-dark btn-sm btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+              <span id='icon'>thumb_down</span>
+              <div class="ld ld-ring ld-spin" style="display:none;"></div>
+            </button>
           </div>
         </div>
       </form>
@@ -130,7 +241,7 @@
 
       <div id="historial">
 
-        <ul class="list-group list-group-flush">
+        <ul class="list-group">
         {% for comment in comments %}
         {% has_notification_comment request.user comment.id as hnc %}
         {% if hnc %}
@@ -139,14 +250,16 @@
         <li class="list-group-item" id="comment_{{comment.id}}">
         {% endif %}
           <div class="row">
-            <div class="col-10">
-              <span class="badge badge-secondary" style="padding-top: 0.5em; padding-bottom: 0.5em; padding-left: 1.0em; padding-right: 1.0em;font-size: 1em; font-weight: 200;">{{comment.get_event_display}}</span>
-              {{comment.user.first_name}} {{comment.user.last_name}}
-              <small>{{comment.timeCreated}}</small>
-              {% if request.user|has_group:"asignador" or user.is_superuser %} 
+            <div class="col-2">
+              <small style="color:#666;">{{comment.timeCreated|date:"d/m G:i"}}</small>
+            </div>
+            <div class="col-8">
+              <span style="font-weight:800;color:#000;">{{comment.get_event_display}}</span>
+              <span style="font-size:0.8em;color:#000;">{{comment.user.first_name}} {{comment.user.last_name}}</span>
+              {% if request.user|has_group:"asignador" or user.is_superuser %}
             </div>
             <div class="col-2 text-right">
-              <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="  {{comment.id}}" class="btn btn-dark btn-sm delete_comment ml-3" style="
+              <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="  {{comment.id}}" class="btn btn-light btn-sm delete_comment ml-3" style="
                 padding-top:0em;
                 padding-bottom:0em;
                 font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
@@ -156,7 +269,7 @@
           </div>
           {% endif %}
           {% if comment.hasText %}
-          <p class="mb-0 mt-2 ml-2">{{comment.text}}</p>
+          <p class="mb-0 mt-2 ml-2" style="color:#333;font-size:0.8em">{{comment.text}}</p>
           {% endif %}
         </li>
         {% endfor %}

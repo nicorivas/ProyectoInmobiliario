@@ -2,6 +2,7 @@ from slugify import slugify # for nice filenames
 
 from sqlalchemy import create_engine # for pandas dataframes to postgre
 from sqlalchemy import MetaData
+import unidecode
 #from sqlalchemy.sql import and_
 #from sqlalchemy import update
 
@@ -172,6 +173,8 @@ COMMUNE_NAME__CODE = {'Arica': 15101, 'Camarones': 15102, 'Putre': 15201,
 'Isla de Maipo': 13603, 'Padre Hurtado': 13604, 'Peñaflor': 13605}
 
 COMMUNE_NAME = COMMUNE_NAME__CODE.keys()
+
+COMMUNE_NAME_ASCII__UTF = {unidecode.unidecode(c): c for c in COMMUNE_NAME}
 
 COMMUNE_NAME_SLUG = [slugify(c) for c in COMMUNE_NAME]
 

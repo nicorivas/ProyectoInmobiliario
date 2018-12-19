@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from building.models import Building
-from apartment.models import Apartment
+#from building.models import Building
+#from apartment.models import Apartment
 from django.core import serializers
 
 def building(request,region="",commune="",street="",number=0,id=0):

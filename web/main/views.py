@@ -23,17 +23,18 @@ def assign_tasador(appraisal_id,tasador_id,user_id):
     user = User.objects.get(id=user_id)
 
     appraisal.tasadorUser = tasador
-    comment = Comment(event=23,user=user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
-    comment.text = "Tasación asignada a "+tasador.user.full_name
-    comment.save()
-    appraisal.comments.add(comment)
-    appraisal.save()
+    appraisal.addComment(Comment.EVENT_TASADOR_ASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+        text="Tasación asignada a "+tasador.user.full_name)
     return
 
-def unassign_tasador(appraisal_id):
+def unassign_tasador(appraisal_id,user_id):
     appraisal = Appraisal.objects.get(id=appraisal_id)
+    tasador = appraisal.tasadorUser
     appraisal.tasadorUser = None
     appraisal.state = Appraisal.STATE_NOTASSIGNED
+    user = User.objects.get(id=user_id)
+    appraisal.addComment(Comment.EVENT_TASADOR_DESASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+        text="Tasador "+tasador.user.full_name+" fue desasignado.")
     appraisal.save()
     return
 
@@ -41,18 +42,22 @@ def assign_visador(appraisal_id,visador_id,user_id):
     appraisal = Appraisal.objects.get(id=appraisal_id)
     visador = User.objects.get(id=visador_id)
     user = User.objects.get(id=user_id)
-
-    appraisal.visadorUser = visador
-    comment = Comment(event=23,user=user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
-    comment.text = "Tasación asignada a "+visador.user.full_name
-    comment.save()
-    appraisal.comments.add(comment)
-    appraisal.save()
-    return
+    if appraisal.visadorUser == visador:
+        return "Visador ya seleccionado"
+    else:
+        appraisal.visadorUser = visador
+        appraisal.addComment(Comment.EVENT_VISADOR_ASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+            text="Visación asignada a "+visador.user.full_name)
+        appraisal.save()
+        return ""
 
 def unassign_visador(appraisal_id):
     appraisal = Appraisal.objects.get(id=appraisal_id)
+    visador = appraisal.tasadorUser
     appraisal.visadorUser = None
+    user = User.objects.get(id=user_id)
+    appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+        text="Visador "+visador.user.full_name+" fue desasignado.")
     appraisal.save()
     return
 
@@ -92,7 +97,7 @@ def main(request):
 
     # Get appraisals that this user can see
     #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
-    appraisals_not_assigned = appraisals_get_not_assigned()
+    appraisals_not_assigned = appraisals_get_not_assigned(request.user)
     appraisals_not_accepted = appraisals_get_not_accepted(request.user)
     appraisals_active = appraisals_get_active(request.user)
     appraisals_finished = appraisals_get_finished(request.user)
@@ -163,7 +168,7 @@ def imported_appraisals(request):
 
 
 
-def appraisals_get_not_assigned():
+def appraisals_get_not_assigned(user):
     appraisals = Appraisal.objects.select_related().filter(state=Appraisal.STATE_NOTASSIGNED)
     appraisals_not_assigned = appraisals.filter(tasadorUser__isnull=True).order_by('timeCreated')
     appraisals_not_assigned.only(
@@ -264,11 +269,11 @@ def ajax_assign_tasador_modal(request):
     Assign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding modal, which has a form where you can select the user.
     '''
-    appraisal_current = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
+    appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     tasadores_info = appraiserWork(tasadores)
     return render(request,'main/modals_assign_tasador.html',
-        {'appraisal':appraisal_current,
+        {'appraisal':appraisal,
          'tasadores':tasadores_info})
 
 def ajax_assign_visador_modal(request):
@@ -276,11 +281,11 @@ def ajax_assign_visador_modal(request):
     Assign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding modal, which has a form where you can select the user.
     '''
-    appraisal_current = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
+    appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     visadores = User.objects.filter(groups__name__in=['visador'])
     visadores_info = visadorWork(visadores)
     return render(request,'main/modals_assign_visador.html',
-        {'appraisal':appraisal_current,
+        {'appraisal':appraisal,
          'visadores':visadores_info})
 
 
@@ -301,21 +306,21 @@ def ajax_assign_visador(request):
     Button an be called from two tables, so different appraisals must be gotten
     to modify the correct table.
     '''
-    assign_visador(int(request.POST['appraisal_id']),int(request.POST['visador']),int(request.user.id))
+    status = assign_visador(int(request.POST['appraisal_id']),int(request.POST['visador']),int(request.user.id))
     if request.POST['source_table'] == 'table_not_assigned':
-        appraisals_not_assigned = appraisals_get_not_assigned()
-        return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
+        appraisals_not_assigned = appraisals_get_not_assigned(request.user)
+        return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned,'status':status})
     elif request.POST['source_table'] == 'table_active':
         appraisals_active = appraisals_get_active(request.user)
-        return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active})
+        return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active,'status':status})
 
 def ajax_unassign_tasador(request):
     '''
     Unassign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding confirmation modal.
     '''
-    unassign_tasador(int(request.GET['appraisal_id']))
-    appraisals_not_assigned = appraisals_get_not_assigned()
+    unassign_tasador(int(request.GET['appraisal_id']),int(request.user.id))
+    appraisals_not_assigned = appraisals_get_not_assigned(request.user)
     return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
 
 def ajax_unassign_visador(request):
@@ -323,20 +328,21 @@ def ajax_unassign_visador(request):
     Unassign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding confirmation modal.
     '''
-    unassign_visador(int(request.GET['appraisal_id']))
+    unassign_visador(int(request.GET['appraisal_id']),int(request.user.id))
+
     appraisals_active = appraisals_get_active(request.user)
+
     return render(request,'main/appraisals_active.html',{'appraisals_active':appraisals_active})
 
 def ajax_accept_appraisal(request):
 
-    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal_id = int(request.POST['appraisal_id'])
+    text = request.POST['text']
+
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_ACTIVE
 
-    comment = Comment(event=2,user=request.user,timeCreated=datetime.datetime.now(datetime.timezone.utc))
-    comment.save()
-    appraisal.comments.add(comment)
-    appraisal.save()
+    appraisal.addComment(Comment.EVENT_ASIGNACION_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
 
     appraisals_active = appraisals_get_active(request.user)
 
@@ -344,16 +350,17 @@ def ajax_accept_appraisal(request):
 
 def ajax_reject_appraisal(request):
 
-    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal_id = int(request.POST['appraisal_id'])
+    text = request.POST['text']
+
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_NOTASSIGNED
     appraisal.tasadorUser = None
     appraisal.save()
 
-    appraisals = Appraisal.objects.filter(state=Appraisal.STATE_NOTASSIGNED)
-    appraisals_not_assigned = appraisals.filter(tasadorUser__isnull=True).order_by('timeCreated')
-    if request.user.groups.filter(name='tasador').exists():
-        appraisals_not_assigned = appraisals_not_assigned.filter(tasadorUser=request.user)
+    appraisal.addComment(Comment.EVENT_ASIGNACION_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
+
+    appraisals_not_assigned = appraisals_get_not_assigned(request.user)
 
     return render(request,'main/appraisals_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
 
@@ -373,6 +380,7 @@ def ajax_logbook(request):
     appraisal = Appraisal.objects.get(id=id)
     comments = appraisal.comments.all().order_by('-timeCreated')
     form_comment = FormComment(label_suffix='')
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments)
 
     return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments,'form_comment':form_comment})
 
@@ -399,19 +407,18 @@ def ajax_comment(request):
     It should return the list of comments in logbook.html.
     '''
     id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=id)
-    comment = Comment(
-        user=request.user,
-        text=request.POST['text'],
-        event=int(request.POST['event']),
-        timeCreated=datetime.datetime.now(datetime.timezone.utc),
-        appraisal=appraisal)
-    comment.save()
 
-    appraisal.comments.add(comment)
-    appraisal.save()
+    appraisal = Appraisal.objects.get(id=id)
+    if request.POST['datetime'] == "":
+        text = request.POST['text']
+    else:
+        text = "Visita agendada para "+request.POST['datetime']+". "+request.POST['text']
+    comment = appraisal.addComment(int(request.POST['event']),request.user,datetime.datetime.now(datetime.timezone.utc),text)
 
     comments = appraisal.comments.all().order_by('-timeCreated')
+
+    form_comment = FormComment(label_suffix='')
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments)
 
     # We need to add notifications to the relevant people. The tasador and visador of the appraisal,
     # and all other higher members like asignadores
@@ -429,7 +436,7 @@ def ajax_comment(request):
         if asignador != request.user: # dont add notifications to yourself
             asignador.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
 
-    return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments})
+    return render(request,'main/logbook.html',{'appraisal':appraisal,'comments':comments,'form_comment':form_comment})
 
 def ajax_delete_comment(request):
     '''
@@ -442,4 +449,10 @@ def ajax_delete_comment(request):
     comment = Comment.objects.get(id=comment_id)
     comment.delete()
 
-    return JsonResponse({'comment_id':comment_id})
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    form_comment = FormComment(label_suffix='')
+    choices = appraisal.getCommentChoices()
+
+    return JsonResponse({'comment_id':comment_id,'choices':choices})

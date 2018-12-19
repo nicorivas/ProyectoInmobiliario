@@ -83,3 +83,9 @@ input::-webkit-inner-spin-button {
 }
 
 button:focus {outline:0;}
+
+.valign-center {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+}

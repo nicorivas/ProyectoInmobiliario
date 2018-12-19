@@ -1,5 +1,5 @@
 from django import forms
-from realestate.models import RealEstate, Construction, Terrain, Asset
+from realestate.models import RealEstate, Asset
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Rol, Comment
 from building.models import Building
@@ -8,6 +8,7 @@ from region.models import Region
 from commune.models import Commune
 from multiupload.fields import MultiImageField
 
+'''
 class FormRealEstate(forms.ModelForm):
 
     class Meta:
@@ -80,21 +81,31 @@ class FormRealEstate(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(FormRealEstate, self).__init__(*args, **kwargs)
-        #self.fields['addressCommune'].queryset = Commune.objects.only('name').all()
-        #self.fields['addressRegion'].queryset = Region.objects.only('name').all()
+'''
 
-class FormBuilding(forms.ModelForm):
+class FormRealEstate(forms.ModelForm):
 
     class Meta:
-        model = Building
-        fields = []
+        model = RealEstate
+        fields = [
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'addressRegion'
+        ]
 
-        class_bs = {'class':"form-control form-control-sm"}
-        class_dp_y_bs = {'class':"form-control form-control-sm datepicker_year"}
-        class_dp_m_bs = {'class':"form-control form-control-sm datepicker_month"}
-        class_se_bs = {'class':"custom-select custom-select-sm"}
+        class_bs = {'class':"form-control"}
 
-        widgets = {}
+        widgets = {
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'addressRegion': forms.Select(attrs=class_bs)
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(FormRealEstate, self).__init__(*args, **kwargs)
+
 
 class FormApartment(forms.ModelForm):
 
@@ -220,70 +231,71 @@ class FormCreateApartment(forms.ModelForm):
     class Meta:
         model = Apartment
         fields = [
-            'addressCommune',
-            'addressStreet',
-            'addressNumber',
+            #'addressCommune',
+            #'addressStreet',
+            #'addressNumber',
             'addressNumber2',
             'floor',
-            'sourceUrl',
-            'sourceName',
-            'sourceId',
+            #'sourceUrl',
+            #'sourceName',
+            #'sourceId',
             'bedrooms',
             'bathrooms',
             'usefulSquareMeters',
             'terraceSquareMeters',
-            'marketPrice'
+            #'marketPrice'
             ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'addressCommune': forms.Select(attrs=class_bs),
-            'addressStreet': forms.TextInput(attrs=class_bs),
-            'addressNumber': forms.TextInput(attrs=class_bs),
+            #'addressCommune': forms.Select(attrs=class_bs),
+            #'addressStreet': forms.TextInput(attrs=class_bs),
+            #'addressNumber': forms.TextInput(attrs=class_bs),
             'addressNumber2': forms.NumberInput(attrs=class_bs),
             'floor': forms.NumberInput(attrs=class_bs),
-            'sourceUrl': forms.URLInput(attrs=class_bs),
-            'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
-            'sourceId': forms.TextInput(attrs=class_bs),
+            #'sourceUrl': forms.URLInput(attrs=class_bs),
+            #'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
+            #'sourceId': forms.TextInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
             'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
-            'marketPrice': forms.NumberInput(attrs=class_bs)
+            #'marketPrice': forms.NumberInput(attrs=class_bs)
             }
 
 class FormCreateHouse(forms.ModelForm):
     class Meta:
         model = House
         fields = [
-            'addressCommune',
-            'addressStreet',
-            'addressNumber',
+            #'addressCommune',
+            #'addressStreet',
+            #'addressNumber',
             'addressNumber2',
-            'sourceUrl',
-            'sourceName',
-            'sourceId',
+            #'sourceUrl',
+            #'sourceName',
+            #'sourceId',
             'bedrooms',
             'bathrooms',
             'builtSquareMeters',
             'terrainSquareMeters',
-            'marketPrice'
+            #'marketPrice'
             ]
         class_bs = {'class':"form-control form-control-sm"}
         widgets = {
-            'addressCommune': forms.Select(attrs=class_bs),
-            'addressStreet': forms.TextInput(attrs=class_bs),
-            'addressNumber': forms.TextInput(attrs=class_bs),
+            #'addressCommune': forms.Select(attrs=class_bs),
+            #addressStreet': forms.TextInput(attrs=class_bs),
+            #'addressNumber': forms.TextInput(attrs=class_bs),
             'addressNumber2': forms.TextInput(attrs=class_bs),
-            'sourceUrl': forms.URLInput(attrs=class_bs),
-            'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
-            'sourceId': forms.TextInput(attrs=class_bs),
+            #'sourceUrl': forms.URLInput(attrs=class_bs),
+            #'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
+            #'sourceId': forms.TextInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
             'builtSquareMeters': forms.NumberInput(attrs=class_bs),
             'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
-            'marketPrice': forms.NumberInput(attrs=class_bs)
+            #'marketPrice': forms.NumberInput(attrs=class_bs)
             }
 
+'''
 class FormCreateTerrain(forms.ModelForm):
     class Meta:
         model = Terrain
@@ -309,7 +321,8 @@ class FormCreateTerrain(forms.ModelForm):
             'area': forms.NumberInput(attrs=class_bs_right),
             'UFPerArea': forms.NumberInput(attrs=class_bs_right)
             }
-
+'''
+'''
 class FormCreateConstruction(forms.ModelForm):
     class Meta:
         model = Construction
@@ -339,7 +352,7 @@ class FormCreateConstruction(forms.ModelForm):
             'area': forms.NumberInput(attrs=class_bs_right),
             'UFPerArea': forms.NumberInput(attrs=class_bs_right)
             }
-
+'''
 class FormCreateAsset(forms.ModelForm):
     class Meta:
         model = Asset
@@ -417,4 +430,8 @@ class FormComment(forms.Form):
     text.widget.attrs.update({'class':"form-control",'rows':3})
     event = forms.ChoiceField(choices=Comment.event_choices_form,label='Evento',required=True)
     event.widget.attrs.update({'class':"form-control"})
-
+    datetime = forms.DateTimeField(label="Fecha y hora",required=False,
+        widget=forms.DateTimeInput(
+            attrs={'class': "form-control datetimepicker-input",
+                   'data-target':"#datetimepicker1"}))
+    datetime.input_formats = ['%d/%m/%Y %H:%M']

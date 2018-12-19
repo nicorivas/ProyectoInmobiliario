@@ -4,10 +4,10 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
-from realestate.models import RealEstate, Construction, Terrain, Asset
-from house.models import House
-from building.models import Building
-from apartment.models import Apartment
+from realestate.models import RealEstate, Asset
+#from house.models import House
+#from building.models import Building
+#from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document, Rol
 from commune.models import Commune
 from user.models import UserProfile
@@ -20,7 +20,7 @@ import os
 import csv
 
 from .forms import FormRealEstate
-from .forms import FormBuilding
+#from .forms import FormBuilding
 from .forms import FormApartment
 from .forms import FormHouse
 from .forms import FormAppraisal
@@ -29,8 +29,8 @@ from .forms import FormPhotos
 from .forms import FormDocuments
 from .forms import FormCreateApartment
 from .forms import FormCreateHouse
-from .forms import FormCreateConstruction
-from .forms import FormCreateTerrain
+#from .forms import FormCreateConstruction
+#from .forms import FormCreateTerrain
 from .forms import FormCreateAsset
 from .forms import FormCreateRol
 from create import create
@@ -457,7 +457,8 @@ def valuation_add_terrain(request,forms,appraisal,realestate):
             request_post['t-rol'] = request_post.getlist('t-rol')[c]
             request_post['t-area'] = request_post.getlist('t-area')[i]
             request_post['t-UFPerArea'] = request_post.getlist('t-UFPerArea')[i]
-            forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
+            #forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
+            '''
             if forms['createTerrain'].is_valid():
                 # Does the terrain exist?
                 try:
@@ -472,6 +473,7 @@ def valuation_add_terrain(request,forms,appraisal,realestate):
                     realestate.save()
             else:
                 print(forms['createTerrain'].errors)
+            '''
             c =+ 1
 
 def valuation_add_construction(request,forms,appraisal,realestate):
@@ -501,7 +503,8 @@ def valuation_add_construction(request,forms,appraisal,realestate):
             # These are always active, so count with i
             requestpost['c-area'] = requestpost.getlist('c-area')[i]
             requestpost['c-UFPerArea'] = requestpost.getlist('c-UFPerArea')[i]
-            forms['createConstruction'] = FormCreateConstruction(requestpost,prefix='c')
+            #forms['createConstruction'] = FormCreateConstruction(requestpost,prefix='c')
+            '''
             if forms['createConstruction'].is_valid():
                 # Does the construction exist?
                 try:
@@ -516,21 +519,25 @@ def valuation_add_construction(request,forms,appraisal,realestate):
                     realestate.save()
             else:
                 print(forms['createConstruction'].errors)
+            '''
             c =+ 1
 
+'''
 def valuation_remove_construction(request,forms,appraisal,realestate):
     try:
         construction = Construction.objects.get(id=int(request.POST['btn_valuation_remove_construction']))
         construction.delete()
     except Construction.DoesNotExist:
         print('Error')
-
+'''
+'''
 def valuation_remove_terrain(request,forms,appraisal,realestate):
     try:
         terrain = Terrain.objects.get(id=int(request.POST['btn_valuation_remove_terrain']))
         terrain.delete()
     except Terrain.DoesNotExist:
         print('Error')
+'''
 
 def getAppraisalHistory(appraisal):
     versions = list(Version.objects.get_for_object(appraisal))
@@ -604,7 +611,7 @@ def view_appraisal(request, **kwargs):
         forms['appraisal'] = FormAppraisal(request_post,request.FILES,instance=appraisal)
         forms['comment'] = FormComment(request_post)
         forms['realestate'] = FormRealEstate(request_post,instance=realestate)
-        forms['createConstruction'] = FormCreateConstruction(request_post,prefix='c')
+        #forms['createConstruction'] = FormCreateConstruction(request_post,prefix='c')
         forms['createTerrain'] = FormCreateTerrain(request_post,prefix='t')
         forms['createAsset'] = FormCreateAsset(request_post,prefix='a')
         forms['photos'] = FormPhotos(request_post,request.FILES)
@@ -742,21 +749,21 @@ def view_appraisal(request, **kwargs):
         forms['property'] = FormApartment(instance=realestate.apartment,label_suffix='')
         forms['building'] = FormBuilding(instance=realestate.apartment.building_in,label_suffix='')
         forms['createRealEstate'] = FormCreateApartment(prefix='vc',label_suffix='')
-        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
     elif realestate.propertyType == RealEstate.TYPE_HOUSE:
         forms['property'] = FormHouse(instance=realestate.house,label_suffix='')
         forms['createRealEstate'] = FormCreateHouse(prefix='vc',label_suffix='')
-        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
     elif realestate.propertyType == RealEstate.TYPE_BUILDING:
-        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
     elif realestate.propertyType == RealEstate.TYPE_CONDOMINIUM:
-        forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
+        #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
 
