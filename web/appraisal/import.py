@@ -49,19 +49,105 @@ def get_clean_address(rawaddress):
         data['addressNumber2'] = ' '
     return data
 
+def get_commune_name(commune):
+    #gets commune name with first capital letter "la florida" ->"La Florida"
+    name = ""
+    for word in commune.split(" "):
+        name += word.capitalize() + " "
+    return name.strip(" ")
+
+def excel_find_import(workbook1, workbook2, term):
+    #finds data of appraisal of Santander xlxs file using santander template file
+    for sheet in workbook1.sheetnames:
+        for row in range(1, 400):
+            for col in range(1, 100):
+                cv = workbook1.get_sheet_by_name(sheet).cell(row=row, column=col).value
+                if cv == term:
+                    value = workbook2.get_sheet_by_name(sheet).cell(row=row, column=col).value
+                    if value == None:
+                        value = workbook2.get_sheet_by_name(sheet).cell(row=row+1, column=col).value
+                        return value
+                    else:
+                        return value
+
 def excel_find_general(file, term):
     # finds data by term in appraisal file
+    print(len(term))
+    print(term)
+    termino = term
     wb = load_workbook(filename=file, read_only=True, data_only=True)
     ws = wb.worksheets[0]
-    for row in range(120, 200):
-        for col in range(1, 25):
-            cv = ws.cell(row=row, column=col).value
-            if cv == term:
-                print('Found it')
-                if term == "PROPIEDAD ANALIZADA":
-                    terrainSquareMeters = ws.cell(row=row, column=col+24).value
+    if term == "PROPIEDAD ANALIZADA":
+        for row in range(120, 200):
+            for col in range(1, 25):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print('Found it')
+                    terrainSquareMeters = ws.cell(row=row, column=col + 24).value
                     builtSquareMeters = ws.cell(row=row, column=col + 30).value
                     return terrainSquareMeters, builtSquareMeters
+    elif term == "VALOR COMERCIAL":
+        for row in range(74, 120):
+            for col in range(20, 60):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    col = 54
+                    valorUF = round(ws.cell(row=row, column=col).value,2)
+                    return valorUF
+    elif term == "Antigüedad" or term == "Vida Util":
+        for row in range(35, 70):
+            for col in range(1, 30):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    col = 6
+                    years = ws.cell(row=row, column=col).value
+                    return years
+    elif term == "Total Avalúo Fiscal" or term == "N° Rol Principal" or term== "N° Rol (es) Sec.":
+        for row in range(35, 70):
+            for col in range(10, 30):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    col = 17
+                    avaluo = ws.cell(row=row, column=col).value
+                    return avaluo
+    elif term == "Leyes que se Acoge":
+        print(term)
+        for row in range(35, 70):
+            for col in range(5, 20):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                print(cv)
+                if cv == term:
+                    print("found it!")
+                    col = 10
+                    ley1 = ws.cell(row=row, column=col).value
+                    ley2 = ws.cell(row=row + 1, column=col).value
+                    print(ley1)
+                    print(ley2)
+                    return ley1, ley2
+
 
 def importAppraisalSantander(file):
 
@@ -80,12 +166,6 @@ def importAppraisalSantander(file):
         except ValueError:
             return tude
 
-    def get_commune_name(commune):
-        #gets commune name with first capital letter "la florida" ->"La Florida"
-        name = ""
-        for word in commune.split(" "):
-            name += word.capitalize() + " "
-        return name.strip(" ")
 
     def ocupantes_choices(ocupante):
         #converts from file format to database format
@@ -161,20 +241,6 @@ def importAppraisalSantander(file):
             'Sin Antecedentes':'SA'}
         return colors[text]
 
-    def excel_find_import(workbook1, workbook2, term):
-        #finds data of appraisal of Santander xlxs file using santander template file
-        for sheet in workbook1.sheetnames:
-            for row in range(1, 400):
-                for col in range(1, 100):
-                    cv = workbook1.get_sheet_by_name(sheet).cell(row=row, column=col).value
-                    if cv == term:
-                        value = workbook2.get_sheet_by_name(sheet).cell(row=row, column=col).value
-                        if value == None:
-                            value = workbook2.get_sheet_by_name(sheet).cell(row=row+1, column=col).value
-                            return value
-                        else:
-                            return value
-
 
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/santander-template.xlsx')
@@ -201,7 +267,7 @@ def importAppraisalSantander(file):
     antiguedad = excel_find_import(wb, wb2, "antiguedad")
     vidaUtil = excel_find_import(wb, wb2, "vidaUtil")
     if vidaUtil != int or float:
-        vidaUtil=0
+        vidaUtil = 0
     avaluoFiscal = excel_find_import(wb, wb2, "avaluoFiscal")
     acogidaLey = law_to_database(excel_find_import(wb, wb2, "acogidaLey"))
     dfl2 = boolean_null_choices(excel_find_import(wb, wb2, "dfl2"))
@@ -227,22 +293,9 @@ def importAppraisalSantander(file):
     usefulSquareMeters = mm2[0]
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
+    valorUF = excel_find_general(file, "VALOR COMERCIAL")
     #hardcoded for now
     ws2= wb2.worksheets[0]
-    try:
-        valorUF = round(ws2['BB84'].value,2)
-    except (TypeError, AttributeError):
-        try:
-            valorUF = round(ws2['BB86'].value, 2)
-        except (TypeError, AttributeError):
-            try:
-                valorUF = round(ws2['BB85'].value, 2)
-            except (TypeError, AttributeError):
-                try:
-                    valorUF = round(ws2['BB87'].value, 2)
-                except (TypeError, AttributeError):
-                    valorUF = round(ws2['BB79'].value, 2)
-
     propertyType = ws2['U5'].value
 
     if propertyType == "Casa":
@@ -279,6 +332,7 @@ def importAppraisalSantander(file):
             house.dfl2 = dfl2
             house.terrainSquareMeters = terrainSquareMeters
             house.builtSquareMeters = builtSquareMeters
+            house.selloVerde = selloVerde
             house.save()
             print("existe")
         except ObjectDoesNotExist:
@@ -316,6 +370,7 @@ def importAppraisalSantander(file):
                             vidaUtil=vidaUtil,
                             acogidaLey=acogidaLey,
                             dfl2=dfl2,
+                            selloVerde=selloVerde,
                             builtSquareMeters=builtSquareMeters,
                             terrainSquareMeters=terrainSquareMeters
                                )
@@ -375,6 +430,7 @@ def importAppraisalSantander(file):
             apartment.dfl2 = dfl2
             apartment.usefulSquareMeters = usefulSquareMeters
             apartment.terraceSquareMeters = terraceSquareMeters
+            apartment.selloVerde = selloVerde
             apartment.save()
             print("existe")
         except ObjectDoesNotExist:
@@ -411,6 +467,7 @@ def importAppraisalSantander(file):
                                   vidaUtil=vidaUtil,
                                   acogidaLey=acogidaLey,
                                   dfl2=dfl2,
+                                  selloVerde=selloVerde,
                                   usefulSquareMeters=usefulSquareMeters,
                                   terraceSquareMeters=terraceSquareMeters
                                       )
@@ -462,11 +519,124 @@ def importAppraisalSantander(file):
 
 
 
-file = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1775967 (77557450-K) Lo Lopez 1469 Cerro Navia Rol 62851 (T 816) Terreno.xlsx'
+def importAppraisalITAU(file):
+    module_dir = os.path.dirname(__file__)  # get current directory
+    file_path = os.path.join(module_dir, 'static/appraisal/itau-template.xlsx')
+    wb = load_workbook(filename=file_path)
+    wb2 = load_workbook(filename=file, read_only=True, data_only=True)
+
+    solicitanteCodigo = excel_find_import(wb, wb2, "solicitanteCodigo")
+    id = excel_find_import(wb, wb2, "id")
+    solicitanteEjecutivo = excel_find_import(wb, wb2, "solicitanteEjecutivo")
+    cliente = excel_find_import(wb, wb2, "cliente")
+    clienteRut = str(excel_find_import(wb, wb2, "clienteRut")) + '-' +  str(excel_find_import(wb, wb2, "num1"))
+    propietario = excel_find_import(wb, wb2, "propietario")
+    propietarioRut = str(excel_find_import(wb, wb2, "propietarioRut")) + '-' +  str(excel_find_import(wb, wb2, "num1"))
+    addressStreet = excel_find_import(wb, wb2, "addressStreet")
+    addressNumber = excel_find_import(wb, wb2, "addressNumber")
+    addressNumber2 = excel_find_import(wb, wb2, "addressNumber2")
+    addressCommune = get_commune_name(excel_find_import(wb, wb2, "addressCommune"))
+    addressRegion = excel_find_import(wb, wb2, "addressRegion")
+    rol1 = excel_find_general(file, "N° Rol Principal")
+    rol2 = excel_find_general(file, "N° Rol (es) Sec.")
+    #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
+    # lat = convert(excel_find_import(wb, wb2, "lat"))
+    # lng = convert(excel_find_import(wb, wb2, "lng"))
+    antiguedad = excel_find_general(file, "Antigüedad")
+    vidaUtil = excel_find_general(file, "Vida Util")
+    #if vidaUtil != int or float:
+    #    vidaUtil = 0
+    avaluoFiscal = excel_find_general(file, "Total Avalúo Fiscal")
+    leyes = excel_find_general(file, "Leyes que se Acoge")
+    acogidaLey = leyes[0]
+    acogidaLey2 = leyes[1]
+    ''' 
+    selloVerde = green_stamp(excel_find_import(wb, wb2, "selloVerde"))
+    tipoBien = excel_find_import(wb, wb2, "tipoBien")
+    usoFuturo = destinoSII_modified(excel_find_import(wb, wb2, "usoFuturo"))
+    permisoEdificacion = excel_find_import(wb, wb2, "permisoEdificacion")
+    recepcionFinal = excel_find_import(wb, wb2, "recepcionFinal")
+    expropiacion = boolean_null_choices(excel_find_import(wb, wb2, "expropiacion"))
+    generalDescription = excel_find_import(wb, wb2, "generalDescription")
+    mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
+    terrainSquareMeters = mm2[0]
+    # usefulSquareMeters = mm2[0]
+    builtSquareMeters = mm2[1]
+    # terraceSquareMeters = mm2[1]
+    valorUF = excel_find_general(file, "VALOR COMERCIAL")
+    valorLiquidez = excel_find_general(file, "Valor Liquidez")
+
+    # descripcionSectorAll = excel_find_import(wb, wb2, "descripcionSectorAll")
+    # programa = excel_find_import(wb, wb2, "programa")
+    # estructuraTerminaciones = excel_find_import(wb, wb2, "estructuraTerminaciones")
+    # timeModified = excel_find_import(wb, wb2, "timeModified")
+    # solicitanteSucursal = excel_find_import(wb, wb2, "solicitanteSucursal")
+    # viviendaSocial = boolean_null_choices(excel_find_import(wb, wb2, "viviendaSocial"))
+    # adobe = boolean_null_choices(excel_find_import(wb, wb2, "adobe"))
+    # desmontable = boolean_null_choices(excel_find_import(wb, wb2, "desmontable"))
+    # destinoSII = destinoSII_modified(excel_find_import(wb, wb2, "destinoSII"))
+    # usoActual = destinoSII_modified(excel_find_import(wb, wb2, "usoActual"))
+    # copropiedadInmobiliaria = boolean_null_choices(excel_find_import(wb, wb2, "copropiedadInmobiliaria"))
+    # ocupante = ocupantes_choices(excel_find_import(wb, wb2, "ocupante"))
+    # mercadoObjetivo = boolean_null_choices(excel_find_import(wb, wb2, "mercadoObjetivo"))
+    # dfl2 = boolean_null_choices(excel_find_import(wb, wb2, "dfl2"))
+
+
+    #hardcoded for now
+    ws2= wb2.worksheets[0]
+    propertyType = ws2['U5'].value
+    '''
+    print(solicitanteCodigo, "/",
+    id,"/",
+    solicitanteEjecutivo,"/",
+    cliente,"/",
+    clienteRut,"/1",
+    propietario,"/",
+    propietarioRut,"/2",
+    addressStreet,"/",
+    addressNumber,"/",
+    addressNumber2,"/",
+    addressCommune,"/",
+    addressRegion,"/",
+    rol1,"/",
+    rol2,"/",
+    #tasadorUser,"/",
+    antiguedad,"/",
+    vidaUtil,"/",
+    avaluoFiscal,"/",
+    acogidaLey,"/",
+    acogidaLey2,"/",
+          ''' 
+
+    
+    selloVerde,
+    tipoBien ,
+    usoFuturo,
+    permisoEdificacion,
+    recepcionFinal,
+    expropiacion,
+    generalDescription,
+    mm2,
+    terrainSquareMeters,
+    # usefulSquareMeters,
+    builtSquareMeters,
+    # terraceSquareMeters,
+    valorUF,
+    valorLiquidez,
+    propertyType
+    '''
+    )
+
+
+
+
+
+file1 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
+file2 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
+file3 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx'
 
-importAppraisalSantander(file)
+#importAppraisalSantander(file)
+importAppraisalITAU(file1)
 
-#test = excel_find_general(file, "PROPIEDAD ANALIZADA")
-#print(test[0])
-#print(test[1])
+
