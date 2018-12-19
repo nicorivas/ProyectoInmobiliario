@@ -85,7 +85,6 @@ def excel_find_general(file, term):
     # finds data by term in appraisal file
     print(len(term))
     print(term)
-    termino = term
     wb = load_workbook(filename=file, read_only=True, data_only=True)
     ws = wb.worksheets[0]
     if term == "PROPIEDAD ANALIZADA":
@@ -149,16 +148,67 @@ def excel_find_general(file, term):
                     cv = cv.strip()
                 except AttributeError:
                     continue
-                print(cv)
                 if cv == term:
                     print("found it!")
                     col = 10
                     ley1 = ws.cell(row=row, column=col).value
                     ley2 = ws.cell(row=row + 1, column=col).value
-                    print(ley1)
-                    print(ley2)
                     return ley1, ley2
-
+    elif term == "Permiso Edificación":
+        print(term)
+        for row in range(35, 70):
+            for col in range(5, 20):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    col = 10
+                    permiso = ws.cell(row=row, column=col).value
+                    fecha  = ws.cell(row=row, column=col + 1).value
+                    return permiso, fecha
+    elif term == "II. DESCRIPCIÓN GENERAL DEL BIEN TASADO":
+        print(term)
+        for row in range(14, 20):
+            for col in range(1, 10):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    descripcion = ws.cell(row=row + 1, column=col).value
+                    return descripcion
+    elif term == "Sub Total Terreno" or term == "Sub Total Construcciones":
+        print(term)
+        for row in range(40, 70):
+            for col in range(8, 15):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    metros = ws.cell(row=row, column=col - 4).value
+                    return metros
+    elif term == "Valor Comercial":
+        print(term)
+        for row in range(85, 100):
+            for col in range(11, 20):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = cv.strip()
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    valorUf = ws.cell(row=row, column=col + 3).value
+                    liquidacion = ws.cell(row=row + 1, column=col + 2).value
+                    return valorUf, liquidacion
 
 def importAppraisalSantander(file):
 
@@ -519,6 +569,25 @@ def importAppraisalSantander(file):
 
 
 def importAppraisalITAU(file):
+
+    def tipoPropiedad(text):
+        tipos ={
+            'Casa': Building.TYPE_CASA,
+            'Casa en Parcela de Agrado': Building.TYPE_PARCELA,
+            'Departamento': Building.TYPE_DEPARTAMENTO,
+            'Terreno Unifamiliar': Building.TYPE_TERRENO,
+        }
+        return tipos[text]
+
+    def law_to_database(text, text2, law):
+        if law == "DFL2" and text == "DFL. 2 /59 (Viv. Económica)" or text2 == "DFL. 2 /59 (Viv. Económica)":
+            return 2
+        elif law == 'copropiedad' and text == "L. 19537 /97 (Cop. Inmobiliaria)" or text2 == "L. 19537 /97 (Cop. Inmobiliaria)":
+            return 2
+        else:
+            return 0
+
+
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/itau-template.xlsx')
     wb = load_workbook(filename=file_path)
@@ -549,79 +618,51 @@ def importAppraisalITAU(file):
     acogidaLey2 = leyes[1]
     selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
     tipoBien = excel_find_general(file, "Tipo Propiedad")
-    permisoEdificacion = excel_find_general(file, "Tipo Propiedad")
-    recepcionFinal = excel_find_general(file, "Tipo Propiedad")
-    generalDescription = excel_find_general(file, "Tipo Propiedad")
+    permiso = excel_find_general(file, "Permiso Edificación")
+    permisoEdificacion = permiso[0]
+    recepcionFinal = permiso[1]
+    generalDescription = excel_find_general(file, "II. DESCRIPCIÓN GENERAL DEL BIEN TASADO")
+    terrainSquareMeters = excel_find_general(file, "Sub Total Terreno")
+    builtSquareMeters = excel_find_general(file, "Sub Total Construcciones")
+    propertyType = tipoPropiedad(excel_find_import(wb, wb2, "propertyType"))
+    valores = excel_find_general(file, "Valor Comercial")
+    valorUF = valores[0]
+    valorLiquidez = valores[1]
+    dfl2 = law_to_database(acogidaLey, acogidaLey2, "DFL2")
+    copropiedadInmobiliaria = law_to_database(acogidaLey, acogidaLey2, "copropiedad")
 
-    ''' 
-    
-    mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
-    terrainSquareMeters = mm2[0]
-    # usefulSquareMeters = mm2[0]
-    builtSquareMeters = mm2[1]
-    # terraceSquareMeters = mm2[1]
-    valorUF = excel_find_general(file, "VALOR COMERCIAL")
-    valorLiquidez = excel_find_general(file, "Valor Liquidez")
-
-    # descripcionSectorAll = excel_find_import(wb, wb2, "descripcionSectorAll")
-    # programa = excel_find_import(wb, wb2, "programa")
-    # estructuraTerminaciones = excel_find_import(wb, wb2, "estructuraTerminaciones")
-    # timeModified = excel_find_import(wb, wb2, "timeModified")
-    # solicitanteSucursal = excel_find_import(wb, wb2, "solicitanteSucursal")
-    # viviendaSocial = boolean_null_choices(excel_find_import(wb, wb2, "viviendaSocial"))
-    # adobe = boolean_null_choices(excel_find_import(wb, wb2, "adobe"))
-    # desmontable = boolean_null_choices(excel_find_import(wb, wb2, "desmontable"))
-    # destinoSII = destinoSII_modified(excel_find_import(wb, wb2, "destinoSII"))
-    # usoActual = destinoSII_modified(excel_find_import(wb, wb2, "usoActual"))
-    # copropiedadInmobiliaria = boolean_null_choices(excel_find_import(wb, wb2, "copropiedadInmobiliaria"))
-    # ocupante = ocupantes_choices(excel_find_import(wb, wb2, "ocupante"))
-    # mercadoObjetivo = boolean_null_choices(excel_find_import(wb, wb2, "mercadoObjetivo"))
-    # dfl2 = boolean_null_choices(excel_find_import(wb, wb2, "dfl2"))
-
-
-    #hardcoded for now
-    ws2= wb2.worksheets[0]
-    propertyType = ws2['U5'].value
-    '''
     print(solicitanteCodigo, "/",
-    id,"/",
-    solicitanteEjecutivo,"/",
-    cliente,"/",
-    clienteRut,"/1",
-    propietario,"/",
-    propietarioRut,"/2",
-    addressStreet,"/",
-    addressNumber,"/",
-    addressNumber2,"/",
-    addressCommune,"/",
-    addressRegion,"/",
-    rol1,"/",
-    rol2,"/",
-    #tasadorUser,"/",
-    antiguedad,"/",
-    vidaUtil,"/",
-    avaluoFiscal,"/",
-    acogidaLey,"/",
-    acogidaLey2,"/",
-    selloVerde,
-    tipoBien,
-          ''' 
-    
-    
-    usoFuturo,
-    permisoEdificacion,
-    recepcionFinal,
-    expropiacion,
-    generalDescription,
-    mm2,
-    terrainSquareMeters,
-    # usefulSquareMeters,
-    builtSquareMeters,
-    # terraceSquareMeters,
-    valorUF,
-    valorLiquidez,
-    propertyType
-    '''
+        id,"/",
+        solicitanteEjecutivo,"/",
+        cliente,"/",
+        clienteRut,"/",
+        propietario,"/",
+        propietarioRut,"/",
+        addressStreet,"/",
+        addressNumber,"/",
+        addressNumber2,"/",
+        addressCommune,"/",
+        addressRegion,"/",
+        rol1,"/",
+        rol2,"/",
+        #tasadorUser,"/",
+        antiguedad,"/",
+        vidaUtil,"/",
+        avaluoFiscal,"/",
+        acogidaLey,"/",
+        acogidaLey2,"/",
+        selloVerde,"/",
+        tipoBien,"/",
+        permisoEdificacion, "/",
+        recepcionFinal,"/",
+        #generalDescription,"/",
+        terrainSquareMeters,"/",
+        builtSquareMeters,"/",
+        propertyType,"/",
+        valorUF,"/",
+        valorLiquidez,"/",
+        dfl2,
+        copropiedadInmobiliaria, "/",
     )
 
 
@@ -634,6 +675,6 @@ file3 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1805225 Gonzalo 
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx'
 
 #importAppraisalSantander(file)
-importAppraisalITAU(file1)
+importAppraisalITAU(file3)
 
 

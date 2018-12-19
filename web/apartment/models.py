@@ -1,6 +1,6 @@
 from django.db import models
-from realestate.models import RealEstate
-#from building.models import Building
+#from realestate.models import RealEstate
+from building.models import Building
 from apartmentbuilding.models import ApartmentBuilding
 
 class Apartment(models.Model):
@@ -66,4 +66,4 @@ class Apartment(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Apartment, self).__init__(*args, **kwargs)
-        self.propertyType=RealEstate.TYPE_APARTMENT
+        self.propertyType=Building.TYPE_DEPARTAMENTO

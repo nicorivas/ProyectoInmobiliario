@@ -6,7 +6,8 @@ from terrain.models import Terrain
 from building.models import Building
 from house.models import House
 from apartmentbuilding.models import ApartmentBuilding
-from django.core.exceptions import MultipleObjectsReturned
+from apartment.models import Apartment
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 class Asset(models.Model):
     '''
@@ -118,6 +119,17 @@ class RealEstate(models.Model):
         self.save()
         return casa
 
+    def createDepartamento(self, addressNumber2):
+        building = Building(real_estate=self, propertyType=Building.TYPE_DEPARTAMENTO)
+        building.save()
+        apartmentbuilding = ApartmentBuilding(building=building, fromApartment=True)
+        apartmentbuilding.save()
+        departamento = Apartment(apartment_building=apartmentbuilding ,addressNumber2=addressNumber2)
+        departamento.save()
+        self.buildings.add(building)
+        self.save()
+        return departamento
+
     def createOrGetCasa(self,addressNumber2=None):
         try:
             building = self.buildings.get(propertyType=Building.TYPE_CASA)
@@ -137,6 +149,26 @@ class RealEstate(models.Model):
                 if building.casa.addressNumber2 == addressNumber2:
                     return building.casa
             return self.createCasa(addressNumber2)
+
+    def createOrGetDepartamento(self,addressNumber2=None):
+        try:
+            building = self.buildings.get(propertyType=Building.TYPE_DEPARTAMENTO)
+            try:
+                if building.departamento.addressNumber2 == addressNumber2:
+                    return building.departamento
+                else:
+                    return self.createDepartamento(addressNumber2)
+            except ObjectDoesNotExist:
+                # This should never take place
+                return False
+        except Building.DoesNotExist:
+            return self.createDepartamento(addressNumber2)
+        except MultipleObjectsReturned:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_DEPARTAMENTO)
+            for building in buildings:
+                if building.departamento.addressNumber2 == addressNumber2:
+                    return building.departamento
+            return self.createDepartamento(addressNumber2)
 
     def addBuilding(self, building, only_if_empty=False):
         if isinstance(building, Building):
