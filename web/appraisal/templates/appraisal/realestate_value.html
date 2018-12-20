@@ -903,12 +903,12 @@
     
     if ({{realestate.is_house}}) {
       var builtSquareMeters = {{realestate.house.builtSquareMeters|default:0}}
-      var totalSquareMeters = {{realestate.total_area}}
+      var totalSquareMeters = 0.0//{{realestate.total_area}}
       $(".td_c_market_price_per_built_square_meters").text((valorUF/builtSquareMeters).toFixed(2))
       $(".td_c_market_price_per_total_square_meters").text((valorUF/totalSquareMeters).toFixed(2))
     } else if ({{realestate.is_apartment}}) {
       var usefulSquareMeters = {{realestate.apartment.usefulSquareMeters|default:0}}
-      var totalSquareMeters = {{realestate.total_area}}
+      var totalSquareMeters = 0.0//{{realestate.total_area}}
       $(".td_c_market_price_per_useful_square_meters").text((valorUF/usefulSquareMeters).toFixed(2))
       $(".td_c_market_price_per_total_square_meters").text((valorUF/totalSquareMeters).toFixed(2))
     }

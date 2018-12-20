@@ -3,21 +3,17 @@ from realestate.models import RealEstate, Asset
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Rol, Comment
 from building.models import Building
+from terrain.models import Terrain
 from house.models import House
 from region.models import Region
 from commune.models import Commune
 from multiupload.fields import MultiImageField
 
-'''
-class FormRealEstate(forms.ModelForm):
+class FormBuilding(forms.ModelForm):
 
     class Meta:
-        model = RealEstate
+        model = Building
         fields = [
-            'addressStreet',
-            'addressNumber',
-            'addressCommune',
-            'addressRegion',
             'anoConstruccion',
             'programa',
             'estructuraTerminaciones',
@@ -50,10 +46,6 @@ class FormRealEstate(forms.ModelForm):
         class_se_bs = {'class':"custom-select"}
 
         widgets = {
-            'addressStreet': forms.TextInput(attrs=class_bs),
-            'addressNumber': forms.TextInput(attrs=class_bs),
-            'addressCommune': forms.Select(attrs=class_bs),
-            'addressRegion': forms.Select(attrs=class_bs),
             'anoConstruccion': forms.TextInput(attrs=class_dp_y_bs),
             'programa': forms.Textarea(attrs={'class':"form-control",'rows':5}),
             'estructuraTerminaciones': forms.Textarea(attrs={'class':"form-control",'rows':10}),
@@ -81,7 +73,6 @@ class FormRealEstate(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(FormRealEstate, self).__init__(*args, **kwargs)
-'''
 
 class FormRealEstate(forms.ModelForm):
 
@@ -105,7 +96,6 @@ class FormRealEstate(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(FormRealEstate, self).__init__(*args, **kwargs)
-
 
 class FormApartment(forms.ModelForm):
 
@@ -295,7 +285,6 @@ class FormCreateHouse(forms.ModelForm):
             #'marketPrice': forms.NumberInput(attrs=class_bs)
             }
 
-'''
 class FormCreateTerrain(forms.ModelForm):
     class Meta:
         model = Terrain
@@ -307,7 +296,7 @@ class FormCreateTerrain(forms.ModelForm):
             'shape',
             'rol',
             'area',
-            'UFPerArea'
+            'uf_per_area'
             ]
         class_bs = {'class':"form-control form-control-sm terrains"}
         class_bs_right = {'class':"form-control form-control-sm terrains",'style':'text-align:right;'}
@@ -319,9 +308,9 @@ class FormCreateTerrain(forms.ModelForm):
             'shape': forms.Select(attrs=class_bs),
             'rol': forms.TextInput(attrs=class_bs),
             'area': forms.NumberInput(attrs=class_bs_right),
-            'UFPerArea': forms.NumberInput(attrs=class_bs_right)
+            'uf_per_area': forms.NumberInput(attrs=class_bs_right)
             }
-'''
+
 '''
 class FormCreateConstruction(forms.ModelForm):
     class Meta:

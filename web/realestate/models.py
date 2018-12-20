@@ -120,15 +120,31 @@ class RealEstate(models.Model):
         return casa
 
     def createDepartamento(self, addressNumber2):
-        building = Building(real_estate=self, propertyType=Building.TYPE_DEPARTAMENTO)
+        building = Building(real_estate=self, propertyType=Building.TYPE_EDIFICIO)
         building.save()
-        apartmentbuilding = ApartmentBuilding(building=building, fromApartment=True)
-        apartmentbuilding.save()
-        departamento = Apartment(apartment_building=apartmentbuilding ,addressNumber2=addressNumber2)
+        apartment_building = ApartmentBuilding(building=building, fromApartment=True)
+        apartment_building.save()
+        departamento = Apartment(apartment_building=apartment_building ,addressNumber2=addressNumber2)
         departamento.save()
         self.buildings.add(building)
         self.save()
         return departamento
+
+    def createEdificio(self, addressNumber2):
+        building = Building(real_estate=self, propertyType=Building.TYPE_EDIFICIO)
+        building.save()
+        apartment_building = Building(building=building, fromApartment=False)
+        apartment_building.save()
+        self.buildings.add(building)
+        self.save()
+        return apartment_building
+
+    def createCondominio(self, addressNumber2):
+        building = Building(real_estate=self, propertyType=Building.TYPE_CONDOMINIO)
+        building.save()
+        self.buildings.add(building)
+        self.save()
+        return building
 
     def createOrGetCasa(self,addressNumber2=None):
         try:
@@ -152,12 +168,13 @@ class RealEstate(models.Model):
 
     def createOrGetDepartamento(self,addressNumber2=None):
         try:
-            building = self.buildings.get(propertyType=Building.TYPE_DEPARTAMENTO)
+            building = self.buildings.get(propertyType=Building.TYPE_EDIFICIO)
             try:
-                if building.departamento.addressNumber2 == addressNumber2:
-                    return building.departamento
-                else:
-                    return self.createDepartamento(addressNumber2)
+                # check all apartments of building
+                for apartment in building.apartmentbuilding.apartment_set.all():
+                    if apartment.addressNumber2 == addressNumber2:
+                        return apartment
+                return self.createDepartamento(addressNumber2)
             except ObjectDoesNotExist:
                 # This should never take place
                 return False
@@ -165,15 +182,43 @@ class RealEstate(models.Model):
             return self.createDepartamento(addressNumber2)
         except MultipleObjectsReturned:
             buildings = self.buildings.filter(propertyType=Building.TYPE_DEPARTAMENTO)
+            # check all apartments of all buildings
             for building in buildings:
-                if building.departamento.addressNumber2 == addressNumber2:
-                    return building.departamento
+                for apartment in building.apartment_set.all():
+                    if apartment.addressNumber2 == addressNumber2:
+                        return apartment
             return self.createDepartamento(addressNumber2)
+
+    def createOrGetEdificio(self,addressNumber2=None):
+        try:
+            building = self.buildings.get(propertyType=Building.TYPE_EDIFICIO)
+            return building
+        except Building.DoesNotExist:
+            return self.createEdificio(addressNumber2)
+        except MultipleObjectsReturned:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
+            for building in buildings:
+                if building.addressNumber2 == addressNumber2:
+                    return building
+            return self.createEdificio(addressNumber2)
+
+    def createOrGetCondominio(self,addressNumber2=None):
+        try:
+            building = self.buildings.get(propertyType=Building.TYPE_CONDOMINIO)
+            return building
+        except Building.DoesNotExist:
+            return self.createCondominio(addressNumber2)
+        except MultipleObjectsReturned:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_CONDOMINIO)
+            for building in buildings:
+                if building.addressNumber2 == addressNumber2:
+                    return building
+            return self.createCondominio(addressNumber2)
 
     def addBuilding(self, building, only_if_empty=False):
         if isinstance(building, Building):
             if only_if_empty:
-                if len(self.buildings.all()) > 0:
+                if self.buildings.count() > 0:
                     return False
             self.buildings.add(building)
             self.save()
@@ -202,16 +247,19 @@ class RealEstate(models.Model):
 
     @property
     def total_area(self):
-        if self.propertyType == self.TYPE_CASA:
-            if self.house.terrainSquareMeters != None and self.house.builtSquareMeters != None:
-                return self.house.terrainSquareMeters + self.house.builtSquareMeters
+        if self.propertyType == Building.TYPE_CASA:
+            if self.buildings.first().house.terrainSquareMeters != None and self.buildings.first().house.builtSquareMeters != None:
+                return self.buildings.first().house.terrainSquareMeters + self.buildings.first().house.builtSquareMeters
             else:
                 return 0
-        elif self.propertyType == self.TYPE_DEPARTAMENTO:
-            if self.apartment.usefulSquareMeters != None and self.apartment.terraceSquareMeters != None:
+        elif self.propertyType == Building.TYPE_DEPARTAMENTO:
+            return 0
+            '''
+            if self.buildings.first().apartmentbuilding.apartment_set.first().usefulSquareMeters != None and self.apartment.terraceSquareMeters != None:
                 return self.apartment.usefulSquareMeters + self.apartment.terraceSquareMeters
             else:
                 return 0
+            '''
 
     @property
     def latlng(self):
@@ -280,6 +328,16 @@ class RealEstate(models.Model):
         return 'http://maps.google.com/maps?q='+str(self.lat)+','+str(self.lng)
 
     @property
+    def propertyType(self):
+        if self.buildings.count() == 0:
+            if self.terrains.count() == 0:
+                return None
+            else:
+                return Terrain.TYPE_TERRAIN
+        else:
+            return self.buildings.first().propertyType
+
+    @property
     def get_propertyTypeName(self):
         if self.propertyType == self.TYPE_OTRO:
             return "other"
@@ -295,16 +353,23 @@ class RealEstate(models.Model):
             return None
 
     def get_propertyTypeIcon(self):
-        if self.propertyType == self.TYPE_OTRO:
-            return "far fa-times-circle"
-        elif self.propertyType == self.TYPE_CASA:
-            return "fas fa-home"
-        elif self.propertyType == self.TYPE_DEPARTAMENTO:
-            return "fas fa-building"
-        elif self.propertyType == self.TYPE_EDIFICIO:
-            return "fas fa-city"
-        elif self.propertyType == self.TYPE_CONDOMINIO:
-            return "fas fa-torii-gate"
+        if self.buildings.count() == 0:
+            if self.terrains.count() == 0:
+                return "far fa-times-circle"
+            else:
+                return "fas fa-mountain"
         else:
-            return "far fa-times-circle"
+            propertyType = self.buildings.first().propertyType
+            if propertyType == Building.TYPE_OTRO:
+                return "far fa-times-circle"
+            elif propertyType == Building.TYPE_CASA:
+                return "fas fa-home"
+            elif propertyType == Building.TYPE_DEPARTAMENTO:
+                return "fas fa-building"
+            elif propertyType == Building.TYPE_EDIFICIO:
+                return "fas fa-city"
+            elif propertyType == Building.TYPE_CONDOMINIO:
+                return "fas fa-torii-gate"
+            else:
+                return "far fa-times-circle"
     

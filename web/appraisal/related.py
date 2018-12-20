@@ -2,6 +2,7 @@ import requests
 from apartment.models import Apartment
 from house.models import House
 from realestate.models import RealEstate
+from building.models import Building
 
 def getSimilarRealEstate(realestate):
 
@@ -21,7 +22,8 @@ def getSimilarRealEstate(realestate):
             realestate.lng = response_results['lng']
         #realestate.save()
 
-    if realestate.propertyType == RealEstate.TYPE_APARTMENT:
+    '''
+    if realestate.propertyType == Building.TYPE_DEPARTAMENTO:
         if (realestate.apartment.bedrooms != None and
             realestate.apartment.bathrooms != None and
             realestate.apartment.usefulSquareMeters != None and
@@ -51,7 +53,7 @@ def getSimilarRealEstate(realestate):
             return references
         else:
             return []
-    elif realestate.propertyType == RealEstate.TYPE_HOUSE:
+    elif realestate.propertyType == Building.TYPE_CASA:
         if (realestate.house.bedrooms != None and
             realestate.house.bathrooms != None and
             realestate.house.builtSquareMeters != None and
@@ -91,3 +93,4 @@ def getSimilarRealEstate(realestate):
             return []
     else:
         return []
+    '''
