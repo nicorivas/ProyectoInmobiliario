@@ -631,6 +631,8 @@ def importAppraisalITAU(file):
     dfl2 = law_to_database(acogidaLey, acogidaLey2, "DFL2")
     copropiedadInmobiliaria = law_to_database(acogidaLey, acogidaLey2, "copropiedad")
 
+
+
     print(solicitanteCodigo, "/",
         id,"/",
         solicitanteEjecutivo,"/",
