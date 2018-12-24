@@ -18,7 +18,7 @@ from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
 
-
+from create.create import createOrGetRealEstate
 
 def get_clean_address(rawaddress):
     data = {}
@@ -631,6 +631,8 @@ def importAppraisalITAU(file):
     dfl2 = law_to_database(acogidaLey, acogidaLey2, "DFL2")
     copropiedadInmobiliaria = law_to_database(acogidaLey, acogidaLey2, "copropiedad")
 
+
+
     print(solicitanteCodigo, "/",
         id,"/",
         solicitanteEjecutivo,"/",
@@ -664,9 +666,8 @@ def importAppraisalITAU(file):
         dfl2,
         copropiedadInmobiliaria, "/",
     )
-
-
-
+    #Crear Realestate
+    realestate = createOrGetRealEstate()
 
 
 file1 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
