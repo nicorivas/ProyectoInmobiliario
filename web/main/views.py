@@ -23,8 +23,8 @@ def assign_tasador(appraisal_id,tasador_id,user_id):
     user = User.objects.get(id=user_id)
 
     appraisal.tasadorUser = tasador
-    appraisal.addComment(Comment.EVENT_TASADOR_ASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
-        text="Tasación asignada a "+tasador.user.full_name)
+    appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(datetime.timezone.utc),
+        text="Tasación solicitada a "+tasador.user.full_name)
     return
 
 def unassign_tasador(appraisal_id,user_id):

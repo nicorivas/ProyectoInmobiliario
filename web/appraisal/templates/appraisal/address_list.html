@@ -1,0 +1,23 @@
+{% for real_estate in appraisal.real_estates.all %}
+<ul class="list-group" style="list-style-type: none;">
+  <li id="li_real_estate_{{real_estate.id}}">
+    <div class="row mt-2">
+      <div class="col-8">
+        <button class="btn btn-light form-control text-left btn_realestate ld-ext-left" id="ld-alert" type="button" value="{{real_estate.id}}">
+          <span class="btn_realestate_text">{{real_estate.address}}</span>
+        </button>
+      </div>
+      <div class="col-2 text-left">
+        <button type="button" class="btn btn-sm btn-light btn_edit_address_modal" value="{{real_estate.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;">
+          <div class="icon">edit</div>
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+        <button type="button" class="btn btn-sm btn-light btn_remove_address_modal" value="{{real_estate.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;">
+          <div class="icon">delete</div>
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+      </div>
+    </div>
+  </li>
+</ul>
+{% endfor %}

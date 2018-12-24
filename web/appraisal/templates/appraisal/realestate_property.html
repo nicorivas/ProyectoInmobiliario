@@ -1,430 +1,281 @@
-<div class="row ml-4 mr-4 mt-5">
+<div class="row ml-4 mr-4 mt-4">
 <div class="col">
 
-  {% for form in forms.rol %}
-  {% if forloop.counter == 1%}
-  <div class="row rol_row mt-4">
-  {% else %}
-  <div class="row rol_row">
-  {% endif %}
-    <input type="hidden" name="r-id" id="rol_id" value="{{form.instance.id}}">
-    <input type="hidden" name="r-delete" id="rol_delete" value="0">
-    <div class="col-2 text-right" id="id_title">
-      {% if forloop.counter == 1%}
-      <label class="font-weight-bold text-right">Roles</label><br>
-      <button type="button" class="btn btn-secondary add_rol" id="id_btn">
-        Agregar
-      </button>
-      {% endif %}
-    </div>
-    <div class="col-3">
-      <div class="form-group" id="id_codigo">
-        {% if forloop.counter == 1%}
-        <label>Código</label>
-        {% endif %}
-        {{form.code}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group" id="id_estado">
-        {% if forloop.counter == 1%}
-        <label>Estado</label>
-        {% endif %}
-        {{form.state}}
-      </div>
-    </div>
-    <div class="col-1">
-      {% if forloop.counter == 1%}
-      <button type="button" class="btn btn-secondary remove_rol" style="display:none;">
-        Borrar
-      </button>
-      {% else %}
-      <button type="button" class="btn btn-secondary remove_rol">
-        Borrar
-      </button>
-      {% endif %}
-    </div>
-  </div>
-  {% endfor %}
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">Ubicación</p>
-    </div>
+  <div class="row mb-0">
     <div class="col-4">
-      <div class="form-group">
-        <label>Lat/Lng</label>
-        <input type="text" class="form-control" value="{{realestate.lat|floatformat:6}},{{realestate.lng|floatformat:6}}" disabled>
-      </div>
+      <!--<h5>Direcciones</h5>-->
+    </div>
+    <div class="col-8 text-right">
+      <button class="btn btn-dark btn-sm btn_add_address_modal mb-1 mr-0">
+        Agregar dirección
+        <div class="ld ld-ring ld-spin" style="display:none;"></div>
+      </button>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-4">
-      <div class="form-group">
-        <label>{{forms.realestate.addressStreet.label_tag}}</label>
-        {{forms.realestate.addressStreet}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>{{forms.realestate.addressNumber.label_tag}}</label>
-        {{forms.realestate.addressNumber}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>{{forms.property.addressNumber2.label_tag}}</label>
-        {{forms.property.addressNumber2}}
-      </div>
-    </div>
+  <div class="mb-0" id="address_list">
+    {% include 'appraisal/address_list.html' %}
   </div>
 
   <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        <label>{{forms.realestate.addressCommune.label_tag}}</label>
-        {{forms.realestate.addressCommune}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        <label>{{forms.realestate.addressRegion.label_tag}}</label>
-        {{forms.realestate.addressRegion}}
-      </div>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">Características generales</p>
-    </div>
-    <div class="col-1">
-      <div class="form-group">
-        <label>{{forms.property.bedrooms.label_tag}}</label>
-        {{forms.property.bedrooms}}
-      </div>
-    </div>
-    <div class="col-1">
-      <div class="form-group">
-        <label>{{forms.property.bathrooms.label_tag}}</label>
-        {{forms.property.bathrooms}}
-      </div>
-    </div>
-    {% if realestate.is_apartment %}
-    <div class="col-1">
-      <div class="form-group">
-        <label>{{forms.property.floor.label_tag}}</label>
-        {{forms.property.floor}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>{{forms.property.orientation.label_tag}}</label>
-        {{forms.property.orientation}}
-      </div>
-    </div>
-    {% endif %}
-  </div>
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">Superficie</p>
-    </div>
-    {% if realestate.is_house %}
-    <div class="col-2">
-      <div class="form-group">
-        <label>Construida</label>
-        {{forms.property.builtSquareMeters}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>Terreno</label>
-        {{forms.property.terrainSquareMeters}}
-      </div>
-    </div>
-    {% endif %}
-    {% if realestate.is_apartment %}
-    <div class="col-2">
-      <div class="form-group">
-        <label>Útil</label>
-        {{forms.property.usefulSquareMeters}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>Terraza</label>
-        {{forms.property.terraceSquareMeters}}
-      </div>
-    </div>
-    {% endif %}
-  </div>
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">{{forms.property.generalDescription.label_tag}}</p>
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        {{forms.property.generalDescription}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">{{forms.realestate.programa.label_tag}}</p>
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        {{forms.realestate.programa}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">{{forms.realestate.estructuraTerminaciones.label_tag}}</p>
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        {{forms.realestate.estructuraTerminaciones}}
-      </div>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-2">
-      <p class="font-weight-bold text-right">Antecedentes técnico-legales</p>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.mercadoObjetivo.label_tag}}
-        {{forms.realestate.mercadoObjetivo}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.anoConstruccion.label_tag}}
-        {{forms.realestate.anoConstruccion}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.vidaUtilRemanente.label_tag}}
-        <div class="input-group">
-          {{forms.realestate.vidaUtilRemanente}}
-          <div class="input-group-append">
-            <div class="input-group-text">años</div>
-          </div>
+    <div class="col-3" style="padding-right:0em;">
+      <div class="card rounded-0 mb-4 mt-2" style="min-height: 10em;">
+        <div id="property_list" class="mr-0 mt-2">
+          <!--{% include 'appraisal/property_list.html' %}-->
         </div>
       </div>
     </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.avaluoFiscal.label_tag}}
-        <div class="input-group">
-          {{forms.realestate.avaluoFiscal}}
-          <div class="input-group-append">
-            <div class="input-group-text">$</div>
-          </div>
+    <div class="col-9">
+      <div class="card rounded-0 mb-4 mt-2" style="min-height: 10em; padding-top:1.5em;">
+        <div id="property_info" class="ml-4 mr-4">
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.dfl2.label_tag}}
-        {{forms.realestate.dfl2}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.selloVerde.label_tag}}
-        {{forms.realestate.selloVerde}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.copropiedadInmobiliaria.label_tag}}
-        {{forms.realestate.copropiedadInmobiliaria}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.ocupante.label_tag}}
-        {{forms.realestate.ocupante}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.acogidaLey.label_tag}}
-        {{forms.realestate.acogidaLey}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.tipoBien.label_tag}}
-        {{forms.realestate.tipoBien}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.destinoSII.label_tag}}
-        {{forms.realestate.destinoSII}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.usoActual.label_tag}}
-        {{forms.realestate.usoActual}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.permisoEdificacionNo.label_tag}}
-        {{forms.realestate.permisoEdificacionNo}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>Fecha</label>
-        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-            {{forms.realestate.permisoEdificacionFecha}}
-            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="text/javascript">
-    $(function () {
-        $('#datetimepicker1').datetimepicker({
-        format: 'YYYY-MM-DD'
-      });
-    });
-  </script>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.recepcionFinalNo.label_tag}}
-        {{forms.realestate.recepcionFinalNo}}
-      </div>
-    </div>
-    <div class="col-2">
-      <div class="form-group">
-        <label>Fecha</label>
-        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-            {{forms.realestate.recepcionFinalFecha}}
-            <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="text/javascript">
-    $(function () {
-        $('#datetimepicker2').datetimepicker({
-        format: 'YYYY-MM-DD'
-      });
-    });
-  </script>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.expropiacion.label_tag}}
-        {{forms.realestate.expropiacion}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.viviendaSocial.label_tag}}
-        {{forms.realestate.viviendaSocial}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.adobe.label_tag}}
-        {{forms.realestate.adobe}}
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.desmontable.label_tag}}
-        {{forms.realestate.desmontable}}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-2">
-    </div>
-    <div class="col-3">
-      <div class="form-group">
-        {{forms.realestate.usoFuturo.label_tag}}
-        {{forms.realestate.usoFuturo}}
       </div>
     </div>
   </div>
 
 </div>
 </div>
+
+<script>
+
+  function set_modal_actions() {
+    $("#btn_edit_address").unbind()
+    $("#btn_edit_address").off()
+    $('#btn_edit_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_edit_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_edit_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al guardar nueva dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#li_real_estate_"+btn.val()).find('.btn_realestate_text').html(data.address)
+          $("#modal_edit_address").modal('hide')
+        }
+      });
+    })
+
+    $("#btn_add_address").unbind()
+    $("#btn_add_address").off()
+    $('#btn_add_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_add_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_add_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al agregar nueva dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#address_list").html($.trim(data));
+          $("#modal_add_address").modal('hide');
+          set_address_list_actions();
+        }
+      });
+    })
+
+    $("#btn_remove_address").unbind()
+    $("#btn_remove_address").off()
+    $('#btn_remove_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_remove_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_remove_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al agregar nueva dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          console.log(btn.val(),$("#li_real_estate_"+btn.val()))
+          $("#li_real_estate_"+btn.val()).remove()
+          $("#modal_remove_address").modal('hide')
+        }
+      });
+    })
+  }
+
+  function set_property_list_actions() {
+
+    $('.btn_property').on('click', function() {
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = $("#property_list_data").data("real_estate_id")
+      var building_id = btn.closest('.building_list_item').data('building_id')
+      var property_id = btn.val()
+      console.log(appraisal_id,real_estate_id,building_id,property_id)
+      var url = "{% url 'ajax_show_property_url' %}"
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"appraisal_id":appraisal_id,"real_estate_id":real_estate_id,"building_id":building_id,"property_id":property_id},
+        error: function () {
+            alert("Error al cargar información de la propiedad.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#property_info").html($.trim(data));
+          $('#property_info').show();
+        }
+      });
+    })
+
+  }
+
+  function set_address_list_actions() {
+
+    $('.btn_add_address_modal').on('click', function() {
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var url = "{% url 'ajax_add_address_modal_url' %}"
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"appraisal_id":appraisal_id},
+        error: function () {
+            alert("Error al cargar modal para agregar una dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#modal_add_address").html($.trim(data));
+          $("#modal_add_address").modal('show')
+          set_modal_actions()
+          set_address_list_actions()
+        }
+      });
+    })
+
+    $('.btn_edit_address_modal').on('click', function() {
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = btn.val()
+      var url = "{% url 'ajax_edit_address_modal_url' %}"
+      btn.find('.ld').toggle();
+      btn.find('.icon').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"real_estate_id":real_estate_id,"appraisal_id":appraisal_id},
+        error: function () {
+            alert("Error al cargar modal para editar dirección.");
+            btn.find('.ld').toggle();
+            btn.find('.icon').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.find('.icon').toggle();
+          btn.prop('disabled', false);
+          $('#modal_edit_address').html($.trim(data));
+          $("#modal_edit_address").modal('show')
+          set_modal_actions()
+          set_address_list_actions()
+        }
+      });
+    })
+
+    $('.btn_remove_address_modal').on('click', function() {
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = btn.val()
+      var url = "{% url 'ajax_remove_address_modal_url' %}"
+      btn.find('.ld').toggle();
+      btn.find('.icon').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"real_estate_id":real_estate_id,"appraisal_id":appraisal_id},
+        error: function () {
+            alert("Error al cargar modal para eliminar dirección.");
+            btn.find('.ld').toggle();
+            btn.find('.icon').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.find('.icon').toggle();
+          btn.prop('disabled', false);
+          $('#modal_remove_address').html($.trim(data));
+          $("#modal_remove_address").modal('show')
+          set_modal_actions()
+        }
+      });
+    })
+
+    $('.btn_realestate').on('click', function() {
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = btn.val()
+      var url = "{% url 'ajax_load_realestate_url' %}"
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      btn.addClass("border border-primary")
+      $("#address_list").find(".btn_realestate").each(function() {
+        $(this).removeClass("border border-primary")
+      })
+      btn.addClass("border border-primary")
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"real_estate_id":real_estate_id,"appraisal_id":appraisal_id},
+        error: function () {
+            alert("Error al cargar dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $('#property_info').fadeOut();
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    })
+  }
+
+  $(document).ready(function($) {
+    set_address_list_actions()
+  })
+
+</script>

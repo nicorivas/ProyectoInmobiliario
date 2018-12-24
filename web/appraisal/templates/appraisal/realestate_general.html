@@ -15,7 +15,7 @@
       <div class="form-group">
         {% if perms.appraisal.assign_tasador %}
         {% if appraisal.active %}
-        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#asignarTasador" style="margin-top:2em;">
+        <button type="button" class="btn btn-secondary btn_assign_tasador_modal" value="{{appraisal.id}}" style="margin-top:2em;">
           Asignar tasador
         </button>
         {% endif %}
@@ -233,16 +233,6 @@
       </div>
     </div>
   </div>
-  <div class="row text-right">
-    <div class="col-2">
-    </div>
-    <div class="col-4">
-      <div class="form-group">
-        {{forms.appraisal.propietarioReferenceSII}}
-        <label>Referencia SII</label>
-      </div>
-    </div>
-  </div>
 
 </div>
 </div>
@@ -322,4 +312,12 @@
       error.insertAfter(element);
     }
   });
+
+
+  //url_ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
+  //btn_assign_tasador_actions();
+
+  //url_ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
+  //btn_assign_tasador_actions();
+
 </script>

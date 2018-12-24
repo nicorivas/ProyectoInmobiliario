@@ -28,6 +28,23 @@ def address_to_coordinates(address):
             resp_json_payload['results'][0]['geometry']['location']['lng']
             ]
 
+def createRealEstate(**kwargs):
+    '''
+    Crea real estate, o devuelve uno si ya existe.
+    Kwargs están abstraidos porque pueden haber distintos criterios de igualdad.
+    En general se ocupan addressStreet, addressNumber, addressCommune y addressRegion.
+    Es decir: NO PUEDEN HABER DOS REAL ESTATE CON LA MISMA DIRECCION.
+    '''
+    try:
+        real_estate = RealEstate.objects.get(**kwargs)
+        return False
+    except RealEstate.DoesNotExist:
+        real_estate = RealEstate(**kwargs)
+        real_estate.save()
+        return real_estate
+    except MultipleObjectsReturned:
+        return False
+
 def createOrGetRealEstate(**kwargs):
     '''
     Crea real estate, o devuelve uno si ya existe.
@@ -53,7 +70,6 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
     '''
     appraisal = Appraisal(**kwargs)
     appraisal.state = Appraisal.STATE_NOTASSIGNED
-    appraisal.realEstate = real_estate
     appraisal.save()
     
     comment = Comment(
@@ -68,6 +84,8 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
         rol.save()
         appraisal.roles.add(rol)
 
+    appraisal.real_estates.add(real_estate)
+    
     appraisal.save()
     
     return appraisal
