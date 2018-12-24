@@ -38,6 +38,8 @@ class Apartment(models.Model):
 
     estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
 
+    marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)
+
 
     @property 
     def usefulSquareMetersVerbose(self):
