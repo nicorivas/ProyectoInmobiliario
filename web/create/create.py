@@ -5,6 +5,8 @@ from realestate.models import RealEstate
 #from building.models import Building
 #from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Rol
+from django.core.exceptions import MultipleObjectsReturned
+from django.shortcuts import render
 
 import datetime
 import requests # to call the API of Google to get lat-lon
