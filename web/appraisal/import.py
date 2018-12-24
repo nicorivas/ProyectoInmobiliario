@@ -3,15 +3,16 @@ import re
 import sys
 import os
 import django
-sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
-#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
+#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_date
 
-from realestate.models import RealEstate, Terrain, Asset
+from realestate.models import RealEstate, Asset
+from terrain.models import Terrain
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -566,8 +567,6 @@ def importAppraisalSantander(file):
         appraisal.save()
 
 
-
-
 def importAppraisalITAU(file):
 
     def tipoPropiedad(text):
@@ -586,6 +585,15 @@ def importAppraisalITAU(file):
             return 2
         else:
             return 0
+
+    def estadoPropiedad(text):
+        estado = {
+            'Nueva':0,
+            'Usada':1,
+            'No Aplica':3,
+            'Sitio Eriazo'3
+        }
+        return estado[text]
 
 
     module_dir = os.path.dirname(__file__)  # get current directory
@@ -610,14 +618,15 @@ def importAppraisalITAU(file):
     #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
     # lat = convert(excel_find_import(wb, wb2, "lat")) #Itau no viene con lat-long, usar función?
     # lng = convert(excel_find_import(wb, wb2, "lng"))
-    antiguedad = excel_find_general(file, "Antigüedad")
-    vidaUtil = excel_find_general(file, "Vida Util")
+    antiguedad = int(excel_find_general(file, "Antigüedad"))
+    vidaUtil = int(excel_find_general(file, "Vida Util"))
+    vidaUtilRemanente = vidaUtil-antiguedad
     avaluoFiscal = excel_find_general(file, "Total Avalúo Fiscal")
     leyes = excel_find_general(file, "Leyes que se Acoge")
     acogidaLey = leyes[0]
     acogidaLey2 = leyes[1]
     selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
-    tipoBien = excel_find_general(file, "Tipo Propiedad")
+    tipoBien = estadoPropiedad(excel_find_general(file, "Tipo Propiedad"))
     permiso = excel_find_general(file, "Permiso Edificación")
     permisoEdificacion = permiso[0]
     recepcionFinal = permiso[1]
@@ -632,50 +641,138 @@ def importAppraisalITAU(file):
     copropiedadInmobiliaria = law_to_database(acogidaLey, acogidaLey2, "copropiedad")
 
 
-
-    print(solicitanteCodigo, "/",
-        id,"/",
-        solicitanteEjecutivo,"/",
-        cliente,"/",
-        clienteRut,"/",
-        propietario,"/",
-        propietarioRut,"/",
-        addressStreet,"/",
-        addressNumber,"/",
-        addressNumber2,"/",
-        addressCommune,"/",
-        addressRegion,"/",
-        rol1,"/",
-        rol2,"/",
-        #tasadorUser,"/",
-        antiguedad,"/",
-        vidaUtil,"/",
-        avaluoFiscal,"/",
-        acogidaLey,"/",
-        acogidaLey2,"/",
-        selloVerde,"/",
-        tipoBien,"/",
-        permisoEdificacion, "/",
-        recepcionFinal,"/",
-        #generalDescription,"/",
-        terrainSquareMeters,"/",
-        builtSquareMeters,"/",
-        propertyType,"/",
-        valorUF,"/",
-        valorLiquidez,"/",
-        dfl2,
-        copropiedadInmobiliaria, "/",
-    )
     #Crear Realestate
-    realestate = createOrGetRealEstate()
+
+    propiedad = createOrGetRealEstate(
+        addressNumber=addressNumber,
+        addressStreet=addressStreet,
+        addressCommune=addressCommune,
+        addressRegion=addressRegion)
+    print(propiedad)
+
+    #Crear building
+
+    try:
+        edificio = Building.objects.get(realestate=propiedad, propertyType=propertyType, rol=rol1)
+        edificio.realestate = propiedad
+        edificio.propertyType = propertyType
+        edificio.name = str(file)
+        #edificio.marketPrice = valorUF
+        edificio.vidaUtilRemanente = vidaUtilRemanente
+        edificio.dfl2 = dfl2
+        edificio.avaluoFiscal = avaluoFiscal
+        edificio.copropiedadInmobiliaria = copropiedadInmobiliaria
+        edificio.selloVerde = selloVerde
+        edificio.permisoEdificacionNo = permisoEdificacion
+        edificio.permisoEdificacionFecha = recepcionFinal
+        edificio.tipoPopiedad = tipoBien
+        edificio.rol = rol1
+        edificio.year = recepcionFinal
+
+        edificio.save()
+
+    except ObjectDoesNotExist:
+        edificio = Building(realestate=propiedad,
+                            propertyType=propertyType,
+                            name=str(file),
+                            vidaUtilRemanente=vidaUtilRemanente,
+                            dfl2=dfl2,
+                            avaluoFiscal=avaluoFiscal,
+                            #marketPrice=valorUF,
+                            copropiedadInmobiliaria=copropiedadInmobiliaria,
+                            selloVerde=selloVerde,
+                            permisoEdificacionNo=permisoEdificacion,
+                            permisoEdificacionFecha=recepcionFinal,
+                            tipoPopiedad=tipoBien,
+                            rol=rol1,
+                            year=recepcionFinal,
+                            )
+        edificio.save()
+
+    propiedad.buildings = edificio
+    propiedad.save()
+
+    if propertyType == Building.TYPE_CASA:
+        casa = propiedad.createOrGetCasa(addressNumber2=addressNumber2)
+        casa.building = edificio
+        casa.bedrooms = bedrooms
+        casa.bathrooms = bathrooms
+        casa.builtSquareMeters = builtSquareMeters
+        casa.terrainSquareMeters = terrainSquareMeters
+        casa.generalDescription = generalDescription
+
+        casa.save()
+    elif propertyType == Building.TYPE_DEPARTAMENTO:
+        departamento = propiedad.createOrGetDepartamento(addressNumber2=addressNumber2)
+        #departamento.floor = floor
+        #departamento.orientation = orientation
+        departamento.bedrooms = bedrooms
+        departamento.bathrooms = bathdrooms
+        departamento.usefulSquaremeters = builtSquareMeters
+        departamento.generalDescription = generalDescription
+        departamento.save()
+
+    elif propertyType == Building.TYPE_TERRENO:
+        terreno = Terrain(name=str(file), area=terrainSquareMeters, rol=rol1)
+        terreno.save()
+        propiedad.terrains=terreno
+        propiedad.save()
 
 
-file1 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
-file2 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
-file3 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
-file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx'
+    # crear tasación
+    try:
+        appraisal = Appraisal.objects.get(realEstate=propiedad,
+                                          valorUF=valorUF,
+                                          tipoTasacion=1,
+                                          state=0,
+                                          source=1,
+                                          solicitanteCodigo=solicitanteCodigo,
+                                          timeFinished=timeModified
+                                          )
+        appraisal.solicitante = 2
+        appraisal.solicitanteOtro = id
+        appraisal.solicitanteSucursal = solicitanteSucursal
+        appraisal.solicitanteEjecutivo = solicitanteEjecutivo
+        appraisal.cliente = cliente
+        appraisal.clienteRut = clienteRut
+        appraisal.propietario = propietario
+        appraisal.propietarioRut = propietarioRut
+        # appraisal.tasadorUser=tasadorUser
+        appraisal.descripcionSector = descripcionSectorAll
+        appraisal.save()
 
+    except ObjectDoesNotExist:
+        appraisal = Appraisal(state=0,
+                              source=1,
+                              tipoTasacion=1,
+                              solicitante=2,
+                              realEstate=realEstate,
+                              solicitanteCodigo=solicitanteCodigo,
+                              solicitanteOtro=id,
+                              timeFinished=timeModified,
+                              solicitanteSucursal=solicitanteSucursal,
+                              solicitanteEjecutivo=solicitanteEjecutivo,
+                              cliente=cliente,
+                              clienteRut=clienteRut,
+                              propietario=propietario,
+                              propietarioRut=propietarioRut,
+                              #tasadorUser=tasadorUser,
+                              descripcionSector=descripcionSectorAll,
+                              valorUF=valorUF
+                              )
+        appraisal.save()
+
+
+
+
+
+file1 = 'TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
+file2 = 'TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
+file3 = 'TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
+file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
+file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
+file = file_mac + file1
 #importAppraisalSantander(file)
-importAppraisalITAU(file3)
+importAppraisalITAU(file)
 
 

@@ -213,7 +213,8 @@ class Building(models.Model):
 
     USE = (
         (0,'Usada'),
-        (1,'Nueva')
+        (1,'Nueva'),
+        (3, 'No Aplica')
     )
     tipoPropiedad = models.PositiveSmallIntegerField("Tipo de propiedad",
         choices=USE,
