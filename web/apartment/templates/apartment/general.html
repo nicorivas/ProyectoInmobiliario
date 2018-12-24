@@ -1,0 +1,366 @@
+{% for form in forms.rol %}
+{% if forloop.counter == 1%}
+<div class="row rol_row mt-4">
+{% else %}
+<div class="row rol_row">
+{% endif %}
+  <input type="hidden" name="r-id" id="rol_id" value="{{form.instance.id}}">
+  <input type="hidden" name="r-delete" id="rol_delete" value="0">
+  <div class="col-2 text-right" id="id_title">
+    {% if forloop.counter == 1%}
+    <label class="font-weight-bold text-right">Roles</label><br>
+    <button type="button" class="btn btn-secondary add_rol" id="id_btn">
+      Agregar
+    </button>
+    {% endif %}
+  </div>
+  <div class="col-3">
+    <div class="form-group" id="id_codigo">
+      {% if forloop.counter == 1%}
+      <label>Código</label>
+      {% endif %}
+      {{form.code}}
+    </div>
+  </div>
+  <div class="col-2">
+    <div class="form-group" id="id_estado">
+      {% if forloop.counter == 1%}
+      <label>Estado</label>
+      {% endif %}
+      {{form.state}}
+    </div>
+  </div>
+  <div class="col-1">
+    {% if forloop.counter == 1%}
+    <button type="button" class="btn btn-secondary remove_rol" style="display:none;">
+      Borrar
+    </button>
+    {% else %}
+    <button type="button" class="btn btn-secondary remove_rol">
+      Borrar
+    </button>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<div class="row">
+	<div class="col-2">
+		<p class="font-weight-bold text-right">Características generales</p>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.apartment.bedrooms.label_tag}}
+			{{forms.apartment.bedrooms}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.apartment.bathrooms.label_tag}}
+			{{forms.apartment.bathrooms}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.apartment.floor.label_tag}}
+			{{forms.apartment.floor}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.apartment.orientation.label_tag}}
+			{{forms.apartment.orientation}}
+		</div>
+	</div>
+</div>
+
+<hr/>
+
+<div class="row">
+	<div class="col-2">
+		<p class="font-weight-bold text-right">Superficie</p>
+	</div>
+	<!--
+	{% if realestate.is_house %}
+	<div class="col-2">
+	  <div class="form-group">
+	    <label>Construida</label>
+	    {{forms.property.builtSquareMeters}}
+	  </div>
+	</div>
+	<div class="col-2">
+	  <div class="form-group">
+	    <label>Terreno</label>
+	    {{forms.property.terrainSquareMeters}}
+	  </div>
+	</div>
+	{% endif %}
+	-->
+	<div class="col-2">
+		<div class="form-group">
+			<label>Útil</label>
+			{{forms.apartment.usefulSquareMeters}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			<label>Terraza</label>
+			{{forms.apartment.terraceSquareMeters}}
+		</div>
+	</div>
+</div>
+
+<hr/>
+
+<div class="row">
+<div class="col-2">
+  <p class="font-weight-bold text-right">{{forms.apartment.generalDescription.label_tag}}</p>
+</div>
+<div class="col-6">
+  <div class="form-group">
+    {{forms.apartment.generalDescription}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+  <p class="font-weight-bold text-right">{{forms.apartment.programa.label_tag}}</p>
+</div>
+<div class="col-6">
+  <div class="form-group">
+    {{forms.apartment.programa}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+  <p class="font-weight-bold text-right">{{forms.apartment.estructuraTerminaciones.label_tag}}</p>
+</div>
+<div class="col-6">
+  <div class="form-group">
+    {{forms.apartment.estructuraTerminaciones}}
+  </div>
+</div>
+</div>
+
+<hr/>
+
+<div class="row">
+<div class="col-2">
+  <p class="font-weight-bold text-right">Antecedentes técnico-legales</p>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.mercadoObjetivo.label_tag}}
+    {{forms.building.mercadoObjetivo}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.anoConstruccion.label_tag}}
+    {{forms.building.anoConstruccion}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.vidaUtilRemanente.label_tag}}
+    <div class="input-group">
+      {{forms.building.vidaUtilRemanente}}
+      <div class="input-group-append">
+        <div class="input-group-text">años</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.avaluoFiscal.label_tag}}
+    <div class="input-group">
+      {{forms.building.avaluoFiscal}}
+      <div class="input-group-append">
+        <div class="input-group-text">$</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.dfl2.label_tag}}
+    {{forms.building.dfl2}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.selloVerde.label_tag}}
+    {{forms.building.selloVerde}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.copropiedadInmobiliaria.label_tag}}
+    {{forms.building.copropiedadInmobiliaria}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.ocupante.label_tag}}
+    {{forms.building.ocupante}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.acogidaLey.label_tag}}
+    {{forms.building.acogidaLey}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.tipoBien.label_tag}}
+    {{forms.building.tipoBien}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.destinoSII.label_tag}}
+    {{forms.building.destinoSII}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.usoActual.label_tag}}
+    {{forms.building.usoActual}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.permisoEdificacionNo.label_tag}}
+    {{forms.building.permisoEdificacionNo}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    <label>Fecha</label>
+    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+        {{forms.building.permisoEdificacionFecha}}
+        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    $('#datetimepicker1').datetimepicker({
+    format: 'YYYY-MM-DD'
+  });
+});
+</script>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.recepcionFinalNo.label_tag}}
+    {{forms.building.recepcionFinalNo}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    <label>Fecha</label>
+    <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+        {{forms.building.recepcionFinalFecha}}
+        <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    $('#datetimepicker2').datetimepicker({
+    format: 'YYYY-MM-DD'
+  });
+});
+</script>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.expropiacion.label_tag}}
+    {{forms.building.expropiacion}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.viviendaSocial.label_tag}}
+    {{forms.building.viviendaSocial}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.adobe.label_tag}}
+    {{forms.building.adobe}}
+  </div>
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.desmontable.label_tag}}
+    {{forms.building.desmontable}}
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-2">
+</div>
+<div class="col-3">
+  <div class="form-group">
+    {{forms.building.usoFuturo.label_tag}}
+    {{forms.building.usoFuturo}}
+  </div>
+</div>
+</div>

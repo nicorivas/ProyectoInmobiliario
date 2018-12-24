@@ -44,7 +44,6 @@ def view_create(request):
                 addressStreet=form.cleaned_data['addressStreet'],
                 addressCommune=form.cleaned_data['addressCommune'],
                 addressRegion=form.cleaned_data['addressRegion'])
-            print(real_estate)
 
             # Luego añadimos la propiedad principal al real estate
             propertyType = int(form.cleaned_data['propertyType'])
@@ -55,7 +54,7 @@ def view_create(request):
             elif propertyType == Building.TYPE_CONDOMINIO:
                 propiedad = real_estate.createOrGetCondominio()
             elif propertyType == Building.TYPE_DEPARTAMENTO:
-                propiedad = real_estate.createOrGetDepartamento()
+                propiedad = real_estate.createOrGetDepartamento(addressNumber2=form.cleaned_data['addressNumber2'])
             elif propertyType == Building.TYPE_OTRO:
                 pass
             else:
@@ -91,7 +90,13 @@ def view_create(request):
                 price=None,
                 commentsOrder=form.cleaned_data['comments'],
                 orderFile=orderFile)
-
+            
+            # Asignar al appraisal la propiedad que realmente va a ser valuada
+            # (el RealEstate en general tiene más propiedades (terreno, casas, etc.) que NO serán tasadas
+            #  en esta tasación, por lo que es necesario identificar cuáles serán las tasadas)
+            appraisal.addAppProperty(propertyType,propiedad.id)
+            appraisal.save()
+            
             # Go to appraisal url
             return HttpResponseRedirect(appraisal.url)
 

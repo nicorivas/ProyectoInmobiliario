@@ -169,9 +169,12 @@ class RealEstate(models.Model):
     def createOrGetDepartamento(self,addressNumber2=None):
         try:
             building = self.buildings.get(propertyType=Building.TYPE_EDIFICIO)
+            print('building',building)
             try:
                 # check all apartments of building
                 for apartment in building.apartmentbuilding.apartment_set.all():
+                    print('apartment',apartment)
+                    print('apartment.addressNumber2',apartment.addressNumber2)
                     if apartment.addressNumber2 == addressNumber2:
                         return apartment
                 return self.createDepartamento(addressNumber2)
@@ -179,13 +182,16 @@ class RealEstate(models.Model):
                 # This should never take place
                 return False
         except Building.DoesNotExist:
+            print('Building.DoesNotExist')
             return self.createDepartamento(addressNumber2)
         except MultipleObjectsReturned:
-            buildings = self.buildings.filter(propertyType=Building.TYPE_DEPARTAMENTO)
+            print('MultipleObjectsReturned',addressNumber2)
+            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
             # check all apartments of all buildings
             for building in buildings:
-                for apartment in building.apartment_set.all():
+                for apartment in building.apartmentbuilding.apartment_set.all():
                     if apartment.addressNumber2 == addressNumber2:
+                        print('apartment found')
                         return apartment
             return self.createDepartamento(addressNumber2)
 
@@ -268,19 +274,6 @@ class RealEstate(models.Model):
     @property
     def latlng_verbose(self):
         return str(self.lat)+','+str(self.lng)
-
-    @property
-    def is_apartment(self):
-        # Casting to int is done so that it also works when called in javascript.
-        return 1#int(self.propertyType == self.TYPE_DEPARTAMENTO)
-
-    @property
-    def is_house(self):
-        return 1#int(self.propertyType == self.TYPE_CASA)
-
-    @property
-    def is_building(self):
-        return 1#int(self.propertyType == self.TYPE_EDIFICIO)
 
     @property
     def address_dict(self):

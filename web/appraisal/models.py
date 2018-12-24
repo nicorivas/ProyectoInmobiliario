@@ -12,8 +12,8 @@ import reversion
 
 class Comment(models.Model):
     EVENT_CONTACTO_VALIDADO = 1
-    EVENT_ASIGNACION_ACEPTADA = 2
-    EVENT_ASIGNACION_RECHAZADA = 6
+    EVENT_SOLICITUD_ACEPTADA = 2
+    EVENT_SOLICITUD_RECHAZADA = 6
     EVENT_VISITA_ACORDADA = 3
     EVENT_PROPIEDAD_VISITADA = 4
     EVENT_ENVIADA_A_VISADOR = 5
@@ -25,7 +25,7 @@ class Comment(models.Model):
     EVENT_CORRECCION_INFORME = 20
     EVENT_OBSERVACION_VISADOR = 21
     EVENT_OBJECION = 22
-    EVENT_TASADOR_ASIGNADO = 23
+    EVENT_TASADOR_SOLICITADO = 23
     EVENT_TASADOR_DESASIGNADO = 25
     EVENT_VISADOR_ASIGNADO = 26
     EVENT_VISADOR_DESASIGNADO = 27
@@ -33,12 +33,12 @@ class Comment(models.Model):
     EVENT_OTRO = 0
     event_choices = (
         (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
-        (EVENT_ASIGNACION_ACEPTADA, "Asignación aceptada"),
-        (EVENT_ASIGNACION_RECHAZADA, "Asignación rechazada"),
         (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
-        (EVENT_TASADOR_ASIGNADO, "Tasador asignado"),
-        (EVENT_VISADOR_ASIGNADO, "Visador asignado"),
+        (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
+        (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
+        (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
         (EVENT_TASADOR_DESASIGNADO, "Tasador desasignado"),
+        (EVENT_VISADOR_ASIGNADO, "Visador asignado"),
         (EVENT_VISADOR_DESASIGNADO, "Visador desasignado"),
         (EVENT_TASACION_INGRESADA, "Tasación ingresada"),
         (EVENT_VISITA_ACORDADA, "Visita acordada"),
@@ -130,8 +130,7 @@ class Appraisal(models.Model):
     Hola
     '''
 
-    realEstate = models.ForeignKey(RealEstate, on_delete=models.CASCADE,
-        verbose_name="Propiedad",null=True)
+    real_estates = models.ManyToManyField(RealEstate)
 
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
@@ -288,8 +287,6 @@ class Appraisal(models.Model):
 
     commentsOrder = models.CharField("Comentarios pedido",max_length=1000,null=True,blank=True)
 
-    valuationRealEstate = models.ManyToManyField(RealEstate,related_name="valuationRealEstate")
-
     descripcionSector = models.TextField("Descripción sector",max_length=10000,default="",null=True,blank=True)
     descripcionPlanoRegulador = models.TextField("Descripción plano regulador",max_length=10000,default="",null=True,blank=True)
     descripcionExpropiacion = models.TextField("Descripción expropiación",max_length=10000,default="",null=True,blank=True)
@@ -308,6 +305,11 @@ class Appraisal(models.Model):
         self.comments.add(comment)
         self.save()
         return comment
+
+    def addAppProperty(self,property_type,property_id):
+        app_property = AppProperty(property_type=property_type,property_id=property_id,appraisal=self)
+        app_property.save()
+        return app_property
 
     def getCommentChoices(self,comments=None):
         # List of comment types that can only happen once:
@@ -440,6 +442,11 @@ class Appraisal(models.Model):
         for field_name in self._meta.get_fields():
             value = getattr(self, field_name.name)
             yield (field_name.name, value)
+
+class AppProperty(models.Model):
+    property_type = models.PositiveIntegerField();
+    property_id = models.PositiveIntegerField();
+    appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
 
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

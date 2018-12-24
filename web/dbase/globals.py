@@ -73,6 +73,8 @@ REGION_NAME__CODE = {
     u'Región Metropolitana':13
 }
 
+REGION_CHOICES = [(b,a) for a,b in REGION_NAME__CODE.items()]
+
 REGION_CODE__NAME = {v: k for k, v in REGION_NAME__CODE.items()}
 
 REGION_CODE__NAME_SLUG = {v: slugify(k) for k, v in REGION_NAME__CODE.items()}
@@ -173,6 +175,8 @@ COMMUNE_NAME__CODE = {'Arica': 15101, 'Camarones': 15102, 'Putre': 15201,
 'Isla de Maipo': 13603, 'Padre Hurtado': 13604, 'Peñaflor': 13605}
 
 COMMUNE_NAME = COMMUNE_NAME__CODE.keys()
+
+COMMUNE_CHOICES = [(b,a) for a,b in COMMUNE_NAME__CODE.items()]
 
 COMMUNE_NAME_ASCII__UTF = {unidecode.unidecode(c): c for c in COMMUNE_NAME}
 

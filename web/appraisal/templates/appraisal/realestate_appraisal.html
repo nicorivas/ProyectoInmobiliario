@@ -5,6 +5,7 @@
 {% block head %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'appraisal/css/app.css' %}">
+<script src="{% static "main/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
 {% endblock head %}
 
 {% block content %}
@@ -84,7 +85,7 @@
           </li>
           <li class="nav-item">
             <a class="{{request.GET.tab|tab_nav_class:"property"}}" id="property-tab" data-toggle="tab" href="#property" role="tab" aria-controls="property" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"property"}}">
-              Propiedad
+              Propiedad(es)
             </a>
           </li>
           <li class="nav-item">

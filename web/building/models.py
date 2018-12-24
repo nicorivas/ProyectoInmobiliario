@@ -56,10 +56,6 @@ class Building(models.Model):
     )
     mercadoObjetivo = models.PositiveSmallIntegerField("Mercado objetivo",blank=True,null=False,default=1,choices=BOOLEAN_NULL_CHOICES)
 
-    programa = models.CharField("Programa",max_length=10000,null=True,blank=True)
-
-    estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
-
     anoConstruccion = models.IntegerField("Año construcción",
         blank=True,
         null=True)
@@ -300,3 +296,17 @@ class Building(models.Model):
         blank=True,
         null=False,
         default=0)
+
+    @property
+    def is_apartment(self):
+        # Casting to int is done so that it also works when called in javascript.
+        return int(self.propertyType == Building.TYPE_DEPARTAMENTO)
+
+    @property
+    def is_house(self):
+        return int(self.propertyType == Building.TYPE_CASA)
+
+    @property
+    def is_apartmentbuilding(self):
+        return int(self.propertyType == Building.TYPE_EDIFICIO)
+

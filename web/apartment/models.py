@@ -19,13 +19,27 @@ class Apartment(models.Model):
     apartment_building = models.ForeignKey(ApartmentBuilding, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     
     addressNumber2 = models.CharField("Dpto.",max_length=30,null=True,blank=True)
+
     floor = models.PositiveSmallIntegerField("Piso",null=True,blank=True)
+
     bedrooms = models.PositiveSmallIntegerField("Dormitorios",null=True,blank=True)
+
     bathrooms = models.PositiveSmallIntegerField("Baños",null=True,blank=True)
+
     usefulSquareMeters = models.DecimalField("Superficie util",max_digits=7,decimal_places=2,null=True,blank=True)
+
     terraceSquareMeters = models.DecimalField("Superficie terraza", max_digits=7, decimal_places=2, null=True, blank=True)
+
     orientation = models.CharField("Orientación",max_length=2,choices=ORIENTATIONS,null=True,blank=True)
+
     generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
+
+    programa = models.CharField("Programa",max_length=10000,null=True,blank=True)
+
+    estructuraTerminaciones = models.CharField("Estructura y terminaciones",max_length=10000,null=True,blank=True)
+
+    marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)
+
 
     @property 
     def usefulSquareMetersVerbose(self):

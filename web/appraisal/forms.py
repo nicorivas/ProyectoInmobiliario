@@ -8,6 +8,7 @@ from house.models import House
 from region.models import Region
 from commune.models import Commune
 from multiupload.fields import MultiImageField
+from dbase.globals import *
 
 class FormBuilding(forms.ModelForm):
 
@@ -15,8 +16,6 @@ class FormBuilding(forms.ModelForm):
         model = Building
         fields = [
             'anoConstruccion',
-            'programa',
-            'estructuraTerminaciones',
             'vidaUtilRemanente',
             'avaluoFiscal',
             'dfl2',
@@ -47,8 +46,6 @@ class FormBuilding(forms.ModelForm):
 
         widgets = {
             'anoConstruccion': forms.TextInput(attrs=class_dp_y_bs),
-            'programa': forms.Textarea(attrs={'class':"form-control",'rows':5}),
-            'estructuraTerminaciones': forms.Textarea(attrs={'class':"form-control",'rows':10}),
             'vidaUtilRemanente': forms.NumberInput(attrs=class_bs),
             'avaluoFiscal': forms.NumberInput(attrs={'class':"form-control",'lang':"es"}),
             'dfl2': forms.Select(attrs=class_se_bs),
@@ -71,9 +68,6 @@ class FormBuilding(forms.ModelForm):
             'mercadoObjetivo': forms.Select(attrs={'class':"custom-select"})
         }
         
-    def __init__(self, *args, **kwargs):
-        super(FormRealEstate, self).__init__(*args, **kwargs)
-
 class FormRealEstate(forms.ModelForm):
 
     class Meta:
@@ -109,7 +103,9 @@ class FormApartment(forms.ModelForm):
             'usefulSquareMeters',
             'terraceSquareMeters',
             'orientation',
-            'generalDescription'
+            'generalDescription',
+            'programa',
+            'estructuraTerminaciones'
         ]
         class_bs = {'class':"form-control"}
         class_bs_sm = {'class':"form-control form-control-sm"}
@@ -121,7 +117,9 @@ class FormApartment(forms.ModelForm):
             'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
             'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
             'orientation': forms.Select(attrs={'class':"custom-select"}),
-            'generalDescription': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':15})
+            'generalDescription': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'programa': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'estructuraTerminaciones': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
         }
 
 class FormHouse(forms.ModelForm):
@@ -367,7 +365,39 @@ class FormCreateRol(forms.ModelForm):
         widgets = {
             'code': forms.TextInput(attrs=class_bs),
             'state': forms.Select(choices=Rol.rolTypeChoices,attrs=class_bs),
-            } 
+            }
+
+class FormEditAddress(forms.Form):
+
+    class_bs = {'class':"form-control form-control-sm"}
+
+    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
+    addressRegion.widget.attrs.update({'class':"form-control"})
+
+    addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
+    addressCommune.widget.attrs.update({'class':"form-control"})
+
+    addressStreet = forms.CharField(max_length=200,label="Calle")
+    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+    addressNumber = forms.CharField(max_length=30,label="Número")
+    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+class FormAddAddress(forms.Form):
+
+    class_bs = {'class':"form-control form-control-sm"}
+
+    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
+    addressRegion.widget.attrs.update({'class':"form-control"})
+
+    addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
+    addressCommune.widget.attrs.update({'class':"form-control"})
+
+    addressStreet = forms.CharField(max_length=200,label="Calle")
+    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+    addressNumber = forms.CharField(max_length=30,label="Número")
+    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}

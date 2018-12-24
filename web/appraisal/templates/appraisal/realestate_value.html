@@ -778,6 +778,7 @@
       $(this).find("[class$=market_price]").html(function() {
         return parseFloatEs($(this).html())
       })
+      /*
       if ({{realestate.is_apartment}}) {
         $(this).find('[class$=market_price_per_useful_square_meters]').html(function() {
           return parseFloatEs($(this).html())
@@ -787,6 +788,7 @@
           return parseFloatEs($(this).html())
         })
       }
+      */
       $(this).find('[class$=market_price_per_total_square_meters]').html(function() {
         return parseFloatEs($(this).html())
       })
@@ -802,6 +804,7 @@
       $(this).find('[class$=area_2]').html(function() {
         return parseFloatEs($(this).html())
       });
+      /*
       if ({{realestate.is_apartment}}) {
         $(this).find('[class$=market_price_per_useful_square_meters]').html(function() {
           return parseFloatEs($(this).html())
@@ -817,6 +820,7 @@
           return parseFloatEs($(this).html())
         })
       }
+      */
     });
   }
 
@@ -833,6 +837,7 @@
       $(this).find("[class$=market_price]").html(function() {
         return UFFormat($(this).html())
       })
+      /*
       if ({{realestate.is_apartment}}) {
         $(this).find("[class$=market_price_per_useful_square_meters]").html(function() {
           return UFFormat($(this).html())
@@ -842,6 +847,7 @@
           return UFFormat($(this).html())
         })
       }
+      */
       $(this).find("[class$=market_price_per_total_square_meters]").html(function() {
         return UFFormat($(this).html())
       })
@@ -857,6 +863,7 @@
       $(this).find('[class$=area_2]').html(function() {
         return areaFormat($(this).html())
       });
+      /*
       if ({{realestate.is_apartment}}) {
         $(this).find('[class$=market_price_per_useful_square_meters]').html(function() {
           return floatFormat($(this).html())
@@ -872,6 +879,7 @@
           return floatFormat($(this).html())
         })
       }
+      */
     });
 
     $('#vreUsefulSquareMetersAvg').text(function() {
@@ -900,7 +908,7 @@
     } else {
       $(".td_c_market_price").text(valorUF)
     }
-    
+    /*
     if ({{realestate.is_house}}) {
       var builtSquareMeters = {{realestate.house.builtSquareMeters|default:0}}
       var totalSquareMeters = 0.0//{{realestate.total_area}}
@@ -912,6 +920,7 @@
       $(".td_c_market_price_per_useful_square_meters").text((valorUF/usefulSquareMeters).toFixed(2))
       $(".td_c_market_price_per_total_square_meters").text((valorUF/totalSquareMeters).toFixed(2))
     }
+    */
 
     // Compute totals and averages
     var sumUsefulSquareMeters = 0
@@ -919,6 +928,7 @@
     var sumMarketPrice = 0
     var c = 0
     $('#table_selected_real_estate tr').each(function() {
+      /*
       if ({{realestate.is_apartment}}) {
         tmp = parseFloat($(this).find(".td_sre_area_1").text());
         if (!isNaN(tmp)) {
@@ -948,6 +958,7 @@
           sumMarketPrice += tmp
         }
       }
+      */
     });
     if (c == 0) {
       $('#vreUsefulSquareMetersAvg').text('-')

@@ -32,3 +32,5 @@ class Terrain(models.Model):
     rol = models.CharField("Rol",max_length=20,blank=True,null=True)
 
     uf_per_area = models.FloatField("UF per Area",blank=True,null=False,default=0)
+
+    marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)

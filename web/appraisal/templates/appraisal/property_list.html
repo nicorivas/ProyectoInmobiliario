@@ -1,0 +1,45 @@
+<div id="property_list_data" data-real_estate_id="{{real_estate.id}}">
+	{% if buildings|length == 0 %}
+	<div class="alert alert-warning ml-2 mr-2">
+		No hay propiedades registradas en esta dirección.
+	</div>
+	{% else %}
+
+	<ul style="list-style-type: none;padding-left: 0em;">
+	{% for building in buildings %}
+	{% if building.is_apartmentbuilding %}
+		<li class="building_list_item" data-building_id="{{building.id}}">
+			<div class="mb-1 ml-2 mr-2">
+				<button class="btn btn btn-light btn-block text-left">Edificio</button>
+			</div>
+	{% endif %}				
+			<ul style="list-style-type: none;">
+	 		{% if building.is_apartmentbuilding %}
+	 		{% for apartment in building.apartmentbuilding.apartment_set.all %}
+	     		<li>
+	     			<div class="mb-1 ml-2 mr-2">
+						<button type="button" class="btn btn-sm btn-light text-left btn_property btn-block" value="{{apartment.id}}">
+							Departamento {{apartment.addressNumber2}}
+						</button>
+					</div>
+				</li>
+			{% endfor %}
+			{% endif %}
+				<li>
+	     			<div class="mb-1 ml-2 mr-2">
+						<button type="button" class="btn btn-sm btn-light text-right btn_property btn-block" value="{{apartment.id}}">
+							Agregar
+						</button>
+					</div>
+				</li>
+			</ul>
+	 	</li>
+	 	{% endfor %}
+	 	{% endif %}
+	 	<li class="building_list_item" data-building_id="{{building.id}}">
+	 		<div class="mb-1 ml-2 mr-2">
+				<button class="btn btn btn-light btn-block text-left">Agregar</button>
+			</div>
+	 	</li>
+	</ul>
+</div>

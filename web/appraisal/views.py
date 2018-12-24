@@ -1,6 +1,6 @@
 from django.core import serializers
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -27,6 +27,8 @@ from .forms import FormAppraisal
 from .forms import FormComment
 from .forms import FormPhotos
 from .forms import FormDocuments
+from .forms import FormEditAddress
+from .forms import FormAddAddress
 from .forms import FormCreateApartment
 from .forms import FormCreateHouse
 #from .forms import FormCreateConstruction
@@ -38,6 +40,7 @@ from create import create
 import viz.maps as maps
 import appraisal.related as related
 from appraisal.export import *
+from dbase.globals import *
 
 from django.db.models import Avg, StdDev
 
@@ -597,9 +600,9 @@ def view_appraisal(request, **kwargs):
     appraisal_old = deepcopy(appraisal) # done to check differences when saving history
 
     # Get realestate
-    realestate = getRealEstate(request,appraisal.realEstate.id)
-    if isinstance(realestate,HttpResponse):
-        return realestate
+    #realestate = getRealEstate(request,appraisal.realEstate.id)
+    #if isinstance(realestate,HttpResponse):
+    #    return realestate
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -699,12 +702,15 @@ def view_appraisal(request, **kwargs):
                 ref['included_in_valuation'] = 0
     '''
 
+    '''
     plot_map = {}
     # Map of references
     if len(references) > 0:
         plot_map = maps.mapReferences(refRealEstate,realestate)
+    '''
     
     # Derived properties from references
+    '''
     averages = []
     stds = []
     if len(references) > 0:
@@ -726,6 +732,7 @@ def view_appraisal(request, **kwargs):
                 StdDev('marketPrice'),
                 StdDev('builtSquareMeters'),
                 StdDev('terrainSquareMeters'))
+    '''
 
     # Visadores and tasadores for the modals where you can select them.
     tasadores = User.objects.filter(groups__name__in=['tasador'])
@@ -744,9 +751,10 @@ def view_appraisal(request, **kwargs):
         'appraisal': FormAppraisal(instance=appraisal,label_suffix=''),
         'comment':FormComment(label_suffix=''),
         'photos':FormPhotos(label_suffix=''),
-        'documents':FormDocuments(label_suffix='docs'),
-        'realestate':FormRealEstate(instance=realestate,label_suffix='')
+        'documents':FormDocuments(label_suffix='docs')
         }
+
+    '''
     if realestate.propertyType == Building.TYPE_DEPARTAMENTO:
         forms['property'] = FormApartment(instance=realestate.buildings.first(),label_suffix='')
         #forms['building'] = FormBuilding(instance=realestate.buildings.first().apartment_building,label_suffix='')
@@ -768,6 +776,7 @@ def view_appraisal(request, **kwargs):
         #forms['createConstruction'] = FormCreateConstruction(prefix='c',label_suffix='')
         forms['createTerrain'] = FormCreateTerrain(prefix='t',label_suffix='')
         forms['createAsset'] = FormCreateAsset(prefix='a',label_suffix='')
+    '''
 
     forms['rol'] = []
     for i, rol in enumerate(appraisal.roles.all()):
@@ -810,15 +819,15 @@ def view_appraisal(request, **kwargs):
     context = {
         'appraisal':appraisal,
         'forms':forms,
-        'realestate': realestate,
+        #'realestate': realestate,
         'references': references,
-        'averages': averages,
-        'stds': stds,
+        #'averages': averages,
+        #'stds': stds,
         'tasadores':tasadores,
         'visadores':visadores,
         'appraisal_history': appraisal_history,
         'comments': comments,
-        'plot_map':plot_map,
+        #'plot_map':plot_map,
         'htmlBits':htmlBits
         }
 
@@ -858,3 +867,143 @@ def ajax_upload_photo(request):
     #    photo.save()
     #    appraisal.photos.add(photo)
     return HttpResponse('')
+
+def ajax_edit_address_modal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    form_edit_address = FormEditAddress(label_suffix='',
+        initial={
+            'addressNumber': real_estate.addressNumber,
+            'addressStreet': real_estate.addressStreet,
+            'addressCommune': real_estate.addressCommune.code,
+            'addressRegion': real_estate.addressRegion.code })
+
+    return render(request,'appraisal/modals_edit_address.html',
+        {'appraisal':appraisal,'real_estate':real_estate,'form_edit_address':form_edit_address})
+
+def ajax_add_address_modal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate = appraisal.real_estates.first()
+
+    form_add_address = FormAddAddress(label_suffix='',
+        initial={
+            'addressNumber': '',
+            'addressStreet': '',
+            'addressCommune': real_estate.addressCommune.code,
+            'addressRegion': real_estate.addressRegion.code })
+
+    return render(request,'appraisal/modals_add_address.html',
+        {'appraisal':appraisal,'form_add_address':form_add_address})
+
+def ajax_remove_address_modal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    return render(request,'appraisal/modals_remove_address.html', {'appraisal':appraisal,'real_estate':real_estate})
+
+def ajax_edit_address(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    commune = Commune.objects.get(code=request.POST['addressCommune'])
+
+    real_estate.addressNumber = request.POST['addressNumber']
+    real_estate.addressStreet = request.POST['addressStreet']
+    real_estate.addressCommune = commune
+    real_estate.addressRegion = commune.region
+
+    real_estate.save()
+
+    return JsonResponse({'address':real_estate.address})
+
+def ajax_add_address(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    commune = Commune.objects.get(code=request.POST['addressCommune'])
+
+    real_estate = create.createOrGetRealEstate(
+        addressNumber=request.POST['addressNumber'],
+        addressStreet=request.POST['addressStreet'],
+        addressCommune=commune,
+        addressRegion=commune.region)
+    real_estate.save()
+
+    appraisal.real_estates.add(real_estate)
+    appraisal.save()
+
+    return render(request,'appraisal/property_address_list.html', {'appraisal':appraisal})
+
+def ajax_remove_address(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    appraisal.real_estates.remove(real_estate)
+    appraisal.save()
+
+    return JsonResponse({})
+
+def ajax_load_realestate(request):
+
+    print('ajax_load_realestate')
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    print('appraisal_id',appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+    print('real_estate_id',real_estate_id)
+
+    buildings = real_estate.buildings.all()
+
+    return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
+
+def ajax_show_property(request):
+
+    print('ajax_show_property')
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    print('appraisal_id',appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+    print('real_estate_id',real_estate_id)
+
+    building_id = int(request.GET['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    if building.is_apartmentbuilding:
+
+        apartment_id = int(request.GET['property_id'])
+        apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+
+        form_apartment = FormApartment(instance=apartment)
+        form_building = FormBuilding(instance=building)
+        forms = {
+            'apartment':form_apartment,
+            'building':form_building}
+
+        return render(request,'apartment/general.html', {'forms':forms})
