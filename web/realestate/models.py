@@ -111,9 +111,9 @@ class RealEstate(models.Model):
     )
 
     def createCasa(self,addressNumber2):
-        building = Building(real_estate=self,propertyType=Building.TYPE_CASA)
+        building = Building(real_estate=self, propertyType=Building.TYPE_CASA)
         building.save()
-        casa = House(building=building,addressNumber2=addressNumber2)
+        casa = House(building=building, addressNumber2=addressNumber2)
         casa.save()
         self.buildings.add(building)
         self.save()
@@ -133,7 +133,7 @@ class RealEstate(models.Model):
     def createEdificio(self, addressNumber2):
         building = Building(real_estate=self, propertyType=Building.TYPE_EDIFICIO)
         building.save()
-        apartment_building = Building(building=building, fromApartment=False)
+        apartment_building = ApartmentBuilding(building=building, fromApartment=False)
         apartment_building.save()
         self.buildings.add(building)
         self.save()
@@ -146,12 +146,12 @@ class RealEstate(models.Model):
         self.save()
         return building
 
-    def createOrGetCasa(self,addressNumber2=None):
+    def createOrGetCasa(self, addressNumber2=None):
         try:
             building = self.buildings.get(propertyType=Building.TYPE_CASA)
             try:
-                if building.casa.addressNumber2 == addressNumber2:
-                    return building.casa
+                if building.house.addressNumber2 == addressNumber2:
+                    return building.house
                 else:
                     return self.createCasa(addressNumber2)
             except ObjectDoesNotExist:
@@ -162,9 +162,11 @@ class RealEstate(models.Model):
         except MultipleObjectsReturned:
             buildings = self.buildings.filter(propertyType=Building.TYPE_CASA)
             for building in buildings:
-                if building.casa.addressNumber2 == addressNumber2:
-                    return building.casa
-            return self.createCasa(addressNumber2)
+                try:
+                    if building.house.addressNumber2 == addressNumber2:
+                        return building.house
+                except ObjectDoesNotExist:
+                    return self.createCasa(addressNumber2)
 
     def createOrGetDepartamento(self,addressNumber2=None):
         try:
