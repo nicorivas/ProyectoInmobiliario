@@ -212,23 +212,60 @@ def excel_find_general(file, term):
 
 def findFromDescription(text):
     baños = 0
-    dormitorio = 0
+    dormitorios = 0
+    counter = True
+    numbers = {'un':1, 'uno':1, 'dos':2, 'tres':3, 'cuatro':4,'cinco':5,
+               'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'dies':10}
     for i in range(len(text.split(' '))):
-        word = text.split(' ')[i]
-        if word == 'baño' or word == 'Baño' or word == 'baños' or word == 'Baños':
+        word = text.split(' ')[i].lower().strip(',').strip('.').strip(' ')
+        counter = True
+        if word == 'baño' or word == 'baños':
+            try:
+                baños += int(text.split(' ')[i-1].lower().strip(',').strip('.'))
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i-1].lower().strip(',').strip('.') in numbers.keys():
+                    baños += numbers[text.split(' ')[i-1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
             try:
                 baños += int(text.split(' ')[i+1])
-            except ValueError:
+                counter = False
                 continue
-            try:
-                baños += int(text.split(' ')[i-1])
             except ValueError:
-                continue
+                if text.split(' ')[i+1].lower().strip(',').strip('.') in numbers.keys():
+                    baños += numbers[text.split(' ')[i+1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            if counter:
+                baños += 1
 
+        elif word == 'dormitorio' or word== 'dormitorios':
             print(word)
-            print(text.split(' ')[i+1])
-            print(text.split(' ')[i-1])
-    print(baños)
+            try:
+                dormitorios += int(text.split(' ')[i - 1].lower().strip(',').strip('.'))
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i - 1].lower().strip(',').strip('.') in numbers.keys():
+                    dormitorios += numbers[text.split(' ')[i - 1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            try:
+                dormitorios += int(text.split(' ')[i + 1])
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i + 1].lower().strip(',').strip('.') in numbers.keys():
+                    dormitorios += numbers[text.split(' ')[i + 1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            if counter:
+                dormitorios += 1
+
+    print(baños, dormitorios)
+    return baños, dormitorios
 
 
 def importAppraisalSantander(file):
@@ -688,6 +725,6 @@ file = file_mac + file1
 #importAppraisalSantander(file)
 #importAppraisalITAU(file)
 
-text = "Se analiza departamento ubicado en 1° piso, con vista al poniente, con vista a calle aledaña. Cuenta con un programa arquitectónico consiste en estar-comedor, cocina, logia, baño y 2 dormitorios. Mantiene nivel estándar de terminaciones y buen estado de conservación. Inmueble no incorpora obras complementarias. Copropiedad cuenta con bloques de edificio destinados a departamentos habitación. La unidad tasada pertenece a edificio de 4 pisos, sin subterráneo. Se abastece sólo con caja de escala. Copropiedad no cuenta con equipamiento comunitario, según datos aportados en visita. El sector corresponde a área cercana a A. Libertador Bdo. O'Higgins, Las Rejas y General Velásquez, principales ejes estructurantes dentro de la comuna y su entorno, orientada a segmentos socioeconómicos medios, conformada además por conjunto de edificios de departamentos de igual altura en misma copropiedad y sector. Cercano a Estaciones de Metro: Ecuador y Las Rejas. Posee buena accesibilidad  y amplio equipamiento de apoyo dado su emplazamiento.  Municipalidad de Estación Central señala verbalmente que se el inmueble posee P.E. N°06/88 del año 1988 y R.F. N°59 de fecha 26 de octubre de 1988 por una superficie de 46,25 m2. Se acoge a DFL N°2 de 1959, D.L. N°2552 DE 1979 y Ley N°6.071. Plano de Loteo aprobado mediante Res. N°16 de fecha 21 de septiembre de 1988."
+text = "Se analiza departamento ubicado en 1° piso, con vista al siete baños seis poniente, dos baños, 3 baño, con vista a calle aledaña. Cuenta con un programa arquitectónico consiste en estar-comedor, cocina, logia, baño y 2 dormitorios. Mantiene nivel estándar de terminaciones y buen estado de conservación. Inmueble no incorpora obras complementarias. Copropiedad cuenta con bloques de edificio destinados a departamentos habitación. La unidad tasada pertenece a edificio de 4 pisos, sin subterráneo. Se abastece sólo con caja de escala. Copropiedad no cuenta con equipamiento comunitario, según datos aportados en visita. El sector corresponde a área cercana a A. Libertador Bdo. O'Higgins, Las Rejas y General Velásquez, principales ejes estructurantes dentro de la comuna y su entorno, orientada a segmentos socioeconómicos medios, conformada además por conjunto de edificios de departamentos de igual altura en misma copropiedad y sector. Cercano a Estaciones de Metro: Ecuador y Las Rejas. Posee buena accesibilidad  y amplio equipamiento de apoyo dado su emplazamiento.  Municipalidad de Estación Central señala verbalmente que se el inmueble posee P.E. N°06/88 del año 1988 y R.F. N°59 de fecha 26 de octubre de 1988 por una superficie de 46,25 m2. Se acoge a DFL N°2 de 1959, D.L. N°2552 DE 1979 y Ley N°6.071. Plano de Loteo aprobado mediante Res. N°16 de fecha 21 de septiembre de 1988."
 
 findFromDescription(text)
