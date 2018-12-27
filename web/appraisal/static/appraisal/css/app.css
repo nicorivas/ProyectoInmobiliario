@@ -143,3 +143,7 @@ textarea.form-control:disabled {
     border: 1px solid #ddd;
     color: #666;
 }
+
+#property_info label {
+    font-size:0.9em;
+}

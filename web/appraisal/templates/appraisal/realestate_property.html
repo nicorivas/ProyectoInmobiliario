@@ -168,10 +168,17 @@
             return false;
         },
         success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          $('#select_realestate').find(":selected").text(data.address);
-          $("#modal_edit_address").modal('hide')
+          if (data.error) {
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            $('#edit_address_alert').fadeIn()
+            $('#edit_address_alert').html(data.error)
+          } else {
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            $('#select_realestate').find(":selected").text(data.address);
+            $("#modal_edit_address").modal('hide')
+          }
         }
       });
     })
@@ -194,13 +201,20 @@
             return false;
         },
         success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          $("#address_list").html($.trim(data));
-          set_address_list_actions();
-          $('#select_realestate').val($('#select_realestate option:last').val());
-          $("#modal_add_address").modal('hide');
-          $('#select_realestate').trigger('change');
+          if (data.error) {
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            $('#add_address_alert').fadeIn()
+            $('#add_address_alert').html(data.error)
+          } else {
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            $("#address_list").html($.trim(data));
+            set_address_list_actions();
+            $('#select_realestate').val($('#select_realestate option:last').val());
+            $("#modal_add_address").modal('hide');
+            $('#select_realestate').trigger('change');
+          }
         }
       });
     })

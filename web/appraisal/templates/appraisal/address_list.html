@@ -1,31 +1,31 @@
 <div class="row mt-2">
-  <div class="col">
+  <div class="col-4">
     <label>
       Direcciones
     </label>
   </div>
-  <div class="col text-right">
+  <div class="col-8 text-right">
     <a href="#" class="btn_add_address_modal" style="font-size:0.9em;">
       Agregar dirección
       <div class="ld ld-ring ld-spin" style="display:none;"></div>
     </a>
   </div>
 </div>
-  <div class="form-group row">
-    <div class="col-10" style="padding-right:0em;">
-      <select class="form-control" id="select_realestate">
-        {% for real_estate in appraisal.real_estates.all %}
-        <option value="{{real_estate.id}}">{{real_estate.address}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-2" style="padding-left:0.2em;">
-      <button type="button" class="btn btn-block btn-sm btn-outline-dark btn_edit_address_modal" value="{{real_estate.id}}" style="font-family:Material Icons;font-size:1.2em;margin-bottom:1px;">
-        <div class="icon">edit</div>
-        <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      </button>
-    </div>
+<div class="form-group row">
+  <div class="col-10" style="padding-right:0em;">
+    <select class="form-control" id="select_realestate">
+      {% for real_estate in appraisal.real_estates.all %}
+      <option value="{{real_estate.id}}">{{real_estate.address}}</option>
+      {% endfor %}
+    </select>
   </div>
+  <div class="col-2" style="padding-left:0.2em;">
+    <button type="button" class="btn btn-block btn-sm btn-outline-dark btn_edit_address_modal" value="{{real_estate.id}}" style="font-family:Material Icons;font-size:1.2em;margin-bottom:1px;">
+      <div class="icon">edit</div>
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+</div>
   <!--
   <li id="li_real_estate_{{real_estate.id}}">
     <div class="row mt-2">
