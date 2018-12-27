@@ -52,6 +52,7 @@ docs/_build/
 
 #
 web/dbase/logs/
+web/uploads/
 *.DS_store
 admin/
 data/

@@ -885,14 +885,21 @@ def ajax_edit_address(request):
 
     commune = Commune.objects.get(code=request.POST['addressCommune'])
 
-    real_estate.addressNumber = request.POST['addressNumber']
-    real_estate.addressStreet = request.POST['addressStreet']
-    real_estate.addressCommune = commune
-    real_estate.addressRegion = commune.region
-
-    real_estate.save()
-
-    return JsonResponse({'address':real_estate.address})
+    # Check if there is already a real estate with this address
+    try:
+        real_estate = appraisal.real_estates.get(
+            addressNumber=request.POST['addressNumber'],
+            addressStreet=request.POST['addressStreet'],
+            addressCommune=commune,
+            addressRegion=commune.region)
+        return JsonResponse({'error':'La dirección especificada ya es parte de esta tasación'})
+    except RealEstate.DoesNotExist:
+        real_estate.addressNumber = request.POST['addressNumber']
+        real_estate.addressStreet = request.POST['addressStreet']
+        real_estate.addressCommune = commune
+        real_estate.addressRegion = commune.region
+        real_estate.save()
+        return JsonResponse({'address':real_estate.address})
 
 def ajax_add_address(request):
 
@@ -906,12 +913,15 @@ def ajax_add_address(request):
         addressStreet=request.POST['addressStreet'],
         addressCommune=commune,
         addressRegion=commune.region)
-    real_estate.save()
 
-    appraisal.real_estates.add(real_estate)
-    appraisal.save()
-
-    return render(request,'appraisal/address_list.html', {'appraisal':appraisal})
+    try:
+        appraisal.real_estates.get(id=real_estate.id)
+        # El real estate ya está en este appraisal
+        return JsonResponse({'error':'La dirección especificada ya es parte de esta tasación'})
+    except RealEstate.DoesNotExist:
+        appraisal.real_estates.add(real_estate)
+        appraisal.save()
+        return render(request,'appraisal/address_list.html', {'appraisal':appraisal})
 
 def ajax_remove_address(request):
 
@@ -1021,9 +1031,18 @@ def ajax_edit_property_modal(request):
     building = real_estate.buildings.get(id=building_id)
 
     if building.propertyType == Building.TYPE_CASA:
+
         form_edit_property = FormEditProperty(label_suffix='',
             initial={'addressNumber2': building.house.addressNumber2})
+
+        return render(request,'appraisal/modals_edit_property.html',{
+                'appraisal':appraisal,
+                'real_estate':real_estate,
+                'building':building,
+                'form_edit_property':form_edit_property})
+
     elif building.propertyType == Building.TYPE_EDIFICIO:
+
         if 'apartment_id' in request.GET:
             apartment_id = int(request.GET['apartment_id'])
             apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
@@ -1109,17 +1128,24 @@ def ajax_show_property(request):
             # DEPARTAMENTO
             apartment_id = int(request.GET['apartment_id'])
             apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
-            form_apartment = FormApartment(instance=apartment)
-            form_building = FormBuilding(instance=building)
+            form_apartment = FormApartment(instance=apartment,label_suffix='')
+            form_building = FormBuilding(instance=building,label_suffix='')
             forms = {
                 'apartment':form_apartment,
                 'building':form_building}
             return render(request,'apartment/general.html', {'forms':forms})
         else:
-            form_building = FormBuilding(instance=building)
+            form_building = FormBuilding(instance=building,label_suffix='')
             forms = {
                 'building':form_building}
             return render(request,'apartmentbuilding/general.html', {'forms':forms})
+
+    if building.is_house:
+
+        form_house = FormHouse(instance=building.house,label_suffix='')
+        forms = {'house':form_house}
+
+        return render(request,'house/general.html', {'forms':forms})
 
 def ajax_save_property(request):
 

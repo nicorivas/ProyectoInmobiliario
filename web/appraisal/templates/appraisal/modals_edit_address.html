@@ -1,20 +1,20 @@
 
 <div class="modal-dialog" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">Editar dirección</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-
-      <div class="alert alert-warning">
-        Se cambiará la dirección de todas las propiedades asociadas.
+  <form action="" method="post" id="form_edit_address">
+  {% csrf_token %}
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar dirección</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body">
 
-      <form action="" method="post" id="form_edit_address">
-        {% csrf_token %}
+        <div class="alert alert-secondary">
+          Se cambiará la dirección de todas las propiedades actualmente asociadas a esta dirección.
+        </div>
+
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
         <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
         <div class="row">
@@ -52,18 +52,21 @@
             </div>
           </div>
         </div>
-      </form>
 
+        <div class="alert alert-warning" id="edit_address_alert" style="display:none;">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="btn_remove_address" value="{{real_estate.id}}">
+          Borrar
+        </button>
+        <button class="btn btn-primary" id="btn_edit_address" value="{{real_estate.id}}">
+          Guardar
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      <button class="btn btn-danger" id="btn_remove_address" value="{{real_estate.id}}">
-        Borrar
-      </button>
-      <button class="btn btn-primary" id="btn_edit_address" value="{{real_estate.id}}">
-        Guardar
-        <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      </button>
-    </div>
-  </div>
+  </form>
 </div>

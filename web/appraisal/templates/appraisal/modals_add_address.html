@@ -2,15 +2,13 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">Agregar dirección</h5>
+      <h5 class="modal-title">Agregar dirección</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-
     <form action="" method="post" id="form_add_address">
-
-    <div class="modal-body">
+      <div class="modal-body">
         {% csrf_token %}
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
         <div class="row">
@@ -21,7 +19,6 @@
             </div>
           </div>
         </div>
-
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
@@ -30,7 +27,6 @@
             </div>
           </div>
         </div>
-
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
@@ -39,7 +35,6 @@
             </div>
           </div>
         </div>
-        
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
@@ -48,13 +43,13 @@
             </div>
           </div>
         </div>
-
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      <button name="btn_export" class="btn btn-primary" id="btn_add_address">Agregar</button>
-    </div>
-
+        <div class="alert alert-warning" id="add_address_alert" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button name="btn_export" class="btn btn-primary" id="btn_add_address">Agregar</button>
+      </div>
     </form>
   </div>
 </div>

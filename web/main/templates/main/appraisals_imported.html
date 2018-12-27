@@ -74,11 +74,11 @@
               {{ appraisal.solicitanteCodigo }}
             </td>
             <td style="text-align:center;">
-              <i class="{{ appraisal.realEstate.get_propertyTypeIcon }}"></i>
+              <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
             </td>
             <td>
               <a href={{appraisal.url}}>
-                {{ appraisal.realEstate.addressVerboseNoRegion }}
+                {{ appraisal.real_estates.first.addressVerboseNoRegion }}
               </a>
             </td>
             <td>
