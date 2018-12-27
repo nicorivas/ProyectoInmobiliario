@@ -104,9 +104,14 @@ def excel_find_general(file, term):
                     continue
                 if cv == term:
                     print('Found it')
-                    terrainSquareMeters = ws.cell(row=row, column=col + 24).value
-                    builtSquareMeters = ws.cell(row=row, column=col + 30).value
-                    return terrainSquareMeters, builtSquareMeters
+                    for i in range(15):
+                        terrainSquareMeters = ws.cell(row=row, column=col +15 + i).value
+                        if not isinstance(terrainSquareMeters,(int, float)):
+                            continue
+                        else:
+                            builtSquareMeters = ws.cell(row=row, column=col + 21+ i).value
+                            print(terrainSquareMeters, builtSquareMeters)
+                            return terrainSquareMeters, builtSquareMeters
     elif term == "VALOR COMERCIAL":
         for row in range(74, 120):
             for col in range(25, 60):
@@ -117,9 +122,77 @@ def excel_find_general(file, term):
                     continue
                 if cv == term:
                     print("found it!")
-                    col = 54
-                    valorUF = round(ws.cell(row=row, column=col).value,2)
-                    return valorUF
+                    col = 60
+                    for i in range(15):
+                        try:
+                            valorUF = round(ws.cell(row=row, column=col-i).value,2)
+                        except TypeError:
+                            continue
+                        if not isinstance(valorUF,(int, float)):
+                            continue
+                        else:
+                            print(valorUF)
+                            return valorUF
+    elif term == "DESCRIPCIÓN GENERAL":
+        for row in range(20, 50):
+            for col in range(20, 50):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = " ".join(cv.split())
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    for i in range(15):
+                        valor = ws.cell(row=row+1+i, column=col).value
+                        if valor is not None:
+                            print(valor)
+                            return valor
+    elif term == "DESCRIPCION SECTOR":
+        for row in range(90, 120):
+            for col in range(1, 50):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = " ".join(cv.split())
+                except AttributeError:
+                    continue
+                if cv == term:
+                    print("found it!")
+                    for i in range(15):
+                        valor = ws.cell(row=row+4-i, column=col).value
+                        if valor is not None:
+                            print(valor)
+                            return valor
+    elif term == "Programa :":
+        for row in range(100, 120):
+            for col in range(1, 50):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = " ".join(cv.split())
+                except AttributeError:
+                    continue
+                if cv == term or cv == "Programa:":
+                    print("found it!")
+                    for i in range(15):
+                        valor = ws.cell(row=row+i+1, column=col).value
+                        if valor is not None:
+                            print(valor)
+                            return valor
+    elif term == "Estructura y Terminaciones :":
+        for row in range(103, 120):
+            for col in range(1, 50):
+                cv = ws.cell(row=row, column=col).value
+                try:
+                    cv = " ".join(cv.split())
+                except AttributeError:
+                    continue
+                if cv == term or cv == "Estructura y Terminaciones:":
+                    print("found it!")
+                    for i in range(15):
+                        valor = ws.cell(row=row+i+1, column=col).value
+                        if valor is not None:
+                            print(valor)
+                            return valor
     elif term == "Antigüedad" or term == "Vida Util" or term == "Sello de Gases" or term == "Tipo Propiedad":
         for row in range(35, 70):
             for col in range(1, 30):
@@ -300,7 +373,6 @@ def findFromDescription(text):
     print(baños, dormitorios)
     return baños, dormitorios
 
-
 def importAppraisalSantander(file):
 
     def convert(tude):
@@ -434,17 +506,17 @@ def importAppraisalSantander(file):
     viviendaSocial = boolean_null_choices(excel_find_general(file, "VIVIENDA SOCIAL"))
     adobe = boolean_null_choices(excel_find_general(file, "CONST. DE ADOBE"))
     desmontable = boolean_null_choices(excel_find_general(file, "CONST. DESMONTABLES"))
-    generalDescription = excel_find_import(wb, wb2, "generalDescription")
-    descripcionSectorAll = excel_find_import(wb, wb2, "descripcionSectorAll")
-    programa = excel_find_import(wb, wb2, "programa")
-    estructuraTerminaciones = excel_find_import(wb, wb2, "estructuraTerminaciones")
+    generalDescription = excel_find_general(file, "DESCRIPCIÓN GENERAL")
+    descripcionSectorAll = excel_find_general(file, "DESCRIPCION SECTOR")
+    programa = excel_find_general(file, "Programa :")
+    #estructuraTerminaciones = excel_find_general(file, "Estructura y Terminaciones :")
     mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
     terrainSquareMeters = mm2[0]
     usefulSquareMeters = mm2[0]
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
     valorUF = excel_find_general(file, "VALOR COMERCIAL")
-    habitaciones = findFromDescription(generalDescription)
+    habitaciones = findFromDescription(programa)
     banos = habitaciones[0]
     dormitorios = habitaciones[1]
     #hardcoded for now
@@ -574,7 +646,6 @@ def importAppraisalSantander(file):
         appraisal.real_estates.add(propiedad)
         appraisal.save()
         print('No Existe')
-
 
 def importAppraisalITAU(file):
 
@@ -775,7 +846,7 @@ files_santander =  ['N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de
 files_itau = []
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
-''' 
+
 for dir in files_santander:
     file = file_pc + dir
     print(file)
@@ -789,3 +860,5 @@ path = file_pc
 files = os.listdir(path)
 for name in files:
     print(name)
+'''
+
