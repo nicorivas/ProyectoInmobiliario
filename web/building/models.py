@@ -2,7 +2,7 @@ from django.db import models
 
 class Building(models.Model):
 
-    real_estate = models.ForeignKey('realestate.RealEstate',on_delete=models.CASCADE,verbose_name="Real estate",blank=False,null=False)
+    real_estate = models.ForeignKey('realestate.RealEstate', on_delete=models.CASCADE,verbose_name="Real estate",blank=False,null=False)
 
     TYPE_NONE = ''
     TYPE_OTRO = 0
@@ -209,7 +209,8 @@ class Building(models.Model):
 
     USE = (
         (0,'Usada'),
-        (1,'Nueva')
+        (1,'Nueva'),
+        (3, 'No Aplica')
     )
     tipoPropiedad = models.PositiveSmallIntegerField("Tipo de propiedad",
         choices=USE,

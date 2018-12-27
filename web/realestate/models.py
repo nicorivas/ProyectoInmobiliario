@@ -111,9 +111,9 @@ class RealEstate(models.Model):
     )
 
     def createCasa(self,addressNumber2):
-        building = Building(real_estate=self,propertyType=Building.TYPE_CASA)
+        building = Building(real_estate=self, propertyType=Building.TYPE_CASA)
         building.save()
-        casa = House(building=building,addressNumber2=addressNumber2)
+        casa = House(building=building, addressNumber2=addressNumber2)
         casa.save()
         self.buildings.add(building)
         self.save()

@@ -3,15 +3,16 @@ import re
 import sys
 import os
 import django
-sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
-#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
+#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_date
 
-from realestate.models import RealEstate, Terrain, Asset
+from realestate.models import RealEstate, Asset
+from terrain.models import Terrain
 from house.models import House
 from building.models import Building
 from apartment.models import Apartment
@@ -83,7 +84,6 @@ def excel_find_import(workbook1, workbook2, term):
 
 def excel_find_general(file, term):
     # finds data by term in appraisal file
-    print(len(term))
     print(term)
     wb = load_workbook(filename=file, read_only=True, data_only=True)
     ws = wb.worksheets[0]
@@ -210,6 +210,64 @@ def excel_find_general(file, term):
                     liquidacion = ws.cell(row=row + 1, column=col + 2).value
                     return valorUf, liquidacion
 
+def findFromDescription(text):
+    baños = 0
+    dormitorios = 0
+    counter = True
+    numbers = {'un':1, 'uno':1, 'dos':2, 'tres':3, 'cuatro':4,'cinco':5,
+               'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'dies':10}
+    for i in range(len(text.split(' '))):
+        word = text.split(' ')[i].lower().strip(',').strip('.').strip(' ')
+        counter = True
+        if word == 'baño' or word == 'baños':
+            try:
+                baños += int(text.split(' ')[i-1].lower().strip(',').strip('.'))
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i-1].lower().strip(',').strip('.') in numbers.keys():
+                    baños += numbers[text.split(' ')[i-1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            try:
+                baños += int(text.split(' ')[i+1])
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i+1].lower().strip(',').strip('.') in numbers.keys():
+                    baños += numbers[text.split(' ')[i+1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            if counter:
+                baños += 1
+
+        elif word == 'dormitorio' or word== 'dormitorios':
+            print(word)
+            try:
+                dormitorios += int(text.split(' ')[i - 1].lower().strip(',').strip('.'))
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i - 1].lower().strip(',').strip('.') in numbers.keys():
+                    dormitorios += numbers[text.split(' ')[i - 1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            try:
+                dormitorios += int(text.split(' ')[i + 1])
+                counter = False
+                continue
+            except ValueError:
+                if text.split(' ')[i + 1].lower().strip(',').strip('.') in numbers.keys():
+                    dormitorios += numbers[text.split(' ')[i + 1].lower().strip(',').strip('.')]
+                    counter = False
+                    continue
+            if counter:
+                dormitorios += 1
+
+    print(baños, dormitorios)
+    return baños, dormitorios
+
+
 def importAppraisalSantander(file):
 
     def convert(tude):
@@ -301,6 +359,7 @@ def importAppraisalSantander(file):
     timeModified = excel_find_import(wb, wb2, "timeModified")
     solicitanteSucursal = excel_find_import(wb, wb2, "solicitanteSucursal")
     solicitanteEjecutivo = excel_find_import(wb, wb2, "solicitanteEjecutivo")
+    rol = excel_find_import(wb, wb2, "rol")
     cliente = excel_find_import(wb, wb2, "cliente")
     clienteRut = excel_find_import(wb, wb2, "clienteRut")
     propietario = excel_find_import(wb, wb2, "propietario")
@@ -308,8 +367,8 @@ def importAppraisalSantander(file):
     address = get_clean_address(excel_find_import(wb, wb2, "address"))
     addressCommune = get_commune_name(excel_find_import(wb, wb2, "addressCommune"))
     addressRegion = excel_find_import(wb, wb2, "addressRegion")
-    tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
-    tasadorUserrut = excel_find_import(wb, wb2, "tasadorUser.rut")
+    #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
+    #tasadorUserrut = excel_find_import(wb, wb2, "tasadorUser.rut")
     lat = convert(excel_find_import(wb, wb2, "lat"))
     lng = convert(excel_find_import(wb, wb2, "lng"))
     mercadoObjetivo = boolean_null_choices(excel_find_import(wb, wb2, "mercadoObjetivo"))
@@ -343,229 +402,133 @@ def importAppraisalSantander(file):
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
     valorUF = excel_find_general(file, "VALOR COMERCIAL")
+
     #hardcoded for now
-    ws2= wb2.worksheets[0]
+    ws2 = wb2.worksheets[0]
     propertyType = ws2['U5'].value
 
-    if propertyType == "Casa":
-        print('Casa')
-        try:
-            house = House.objects.get(addressStreet=address['addressStreet'],
-                                      addressNumber=address['addressNumber'],
-                                      addressNumber2=address['addressNumber2'],
-                                      addressCommune=Commune.objects.get(name=addressCommune))
-            house.addressRegion = Commune.objects.get(name=addressCommune).region
-            house.copropiedadInmobiliaria = copropiedadInmobiliaria
-            house.ocupante = ocupante
-            house.tipoBien = tipoBien
-            house.destinoSII = destinoSII
-            house.usoActual = usoActual
-            house.usoFuturo = usoFuturo
-            house.permisoEdificacionNo = permisoEdificacion
-            house.permisoEdificacionFecha = date_to_datetimefield(permisoEdificacion)
-            house.recepcionFinalNo = recepcionFinal
-            house.recepcionFinalFecha = date_to_datetimefield(recepcionFinal)
-            house.expropiacion = expropiacion
-            house.viviendaSocial = viviendaSocial
-            house.adobe = adobe
-            house.desmontable = desmontable
-            house.generalDescription = generalDescription
-            house.programa = programa
-            house.estructuraTerminaciones = estructuraTerminaciones
-            house.avaluoFiscal = avaluoFiscal
-            house.marketPrice = valorUF
-            house.mercadoObjetivo = mercadoObjetivo
-            house.antiguedad = antiguedad
-            house.vidaUtil = vidaUtil
-            house.acogidaLey = acogidaLey
-            house.dfl2 = dfl2
-            house.terrainSquareMeters = terrainSquareMeters
-            house.builtSquareMeters = builtSquareMeters
-            house.selloVerde = selloVerde
-            house.save()
-            print("existe")
-        except ObjectDoesNotExist:
-            print(addressCommune)
-            house = House(name=address['addressStreet']+' '+address['addressNumber']+' '+address['addressNumber2'],
-                            addressStreet=address['addressStreet'],
-                            addressNumber=address['addressNumber'],
-                            addressNumber2=address['addressNumber2'],
-                            addressCommune=Commune.objects.get(name=addressCommune),
-                            addressRegion=Commune.objects.get(name=addressCommune).region,
-                            propertyType=RealEstate.TYPE_HOUSE,
-                            lat=lat,
-                            lng=lng,
-                            copropiedadInmobiliaria=copropiedadInmobiliaria,
-                            ocupante=ocupante,
-                            tipoBien=tipoBien,
-                            destinoSII=destinoSII,
-                            usoActual=usoActual,
-                            usoFuturo=usoFuturo,
-                            permisoEdificacionNo=permisoEdificacion,
-                            permisoEdificacionFecha=date_to_datetimefield(permisoEdificacion),
-                            recepcionFinalNo=recepcionFinal,
-                            recepcionFinalFecha=date_to_datetimefield(recepcionFinal),
-                            expropiacion=expropiacion,
-                            viviendaSocial=viviendaSocial,
-                            adobe=adobe,
-                            desmontable=desmontable,
-                            generalDescription=generalDescription,
-                            programa=programa,
-                            estructuraTerminaciones=estructuraTerminaciones,
-                            avaluoFiscal=avaluoFiscal,
-                            marketPrice=valorUF,
-                            mercadoObjetivo=mercadoObjetivo,
-                            antiguedad=antiguedad,
-                            vidaUtil=vidaUtil,
-                            acogidaLey=acogidaLey,
-                            dfl2=dfl2,
-                            selloVerde=selloVerde,
-                            builtSquareMeters=builtSquareMeters,
-                            terrainSquareMeters=terrainSquareMeters
-                               )
-            house.save()
+    # Crear Realestate
 
-            print("no existe")
-        realEstate = house
+    propiedad = createOrGetRealEstate(
+        addressNumber=address['addressNumber'],
+        addressStreet=address['addressStreet'],
+        addressCommune=Commune.objects.get(name=addressCommune),
+        addressRegion=Commune.objects.get(name=addressCommune).region)
+    propiedad.lat = lat
+    propiedad.lng = lng
+    print(propiedad)
 
-    elif propertyType == "Departamento":
-        print('Departamento')
-        try:
-            building = Building.objects.get(
-                addressRegion=Commune.objects.get(name=addressCommune).region,
-                addressCommune=Commune.objects.get(name=addressCommune),
-                addressStreet=address['addressStreet'],
-                addressNumber=address['addressNumber'],
-                propertyType=RealEstate.TYPE_BUILDING)
-        except Building.DoesNotExist:
-            # building does not exist, so create it
-            building = Building(
-                addressRegion=Commune.objects.get(name=addressCommune).region,
-                addressCommune=Commune.objects.get(name=addressCommune),
-                addressStreet=address['addressStreet'],
-                addressNumber=address['addressNumber'],
-                propertyType=RealEstate.TYPE_BUILDING)
-        building.save()
-        try:
-            apartment = Apartment.objects.get(addressStreet=address['addressStreet'],
-                                                addressNumber=address['addressNumber'],
-                                                addressNumber2=address['addressNumber2'],
-                                                addressCommune=Commune.objects.get(name=addressCommune),
-                                                building_in=building)
-            apartment.addressRegion = Commune.objects.get(name=addressCommune).region
-            apartment.copropiedadInmobiliaria = copropiedadInmobiliaria
-            apartment.ocupante = ocupante
-            apartment.tipoBien = tipoBien
-            apartment.destinoSII = destinoSII
-            apartment.usoActual = usoActual
-            apartment.usoFuturo = usoFuturo
-            apartment.permisoEdificacionNo = permisoEdificacion
-            apartment.permisoEdificacionFecha = date_to_datetimefield(permisoEdificacion)
-            apartment.recepcionFinalNo = recepcionFinal
-            apartment.recepcionFinalFecha = date_to_datetimefield(recepcionFinal)
-            apartment.expropiacion = expropiacion
-            apartment.viviendaSocial = viviendaSocial
-            apartment.adobe = adobe
-            apartment.desmontable = desmontable
-            apartment.generalDescription = generalDescription
-            apartment.programa = programa
-            apartment.estructuraTerminaciones = estructuraTerminaciones
-            apartment.avaluoFiscal = avaluoFiscal
-            apartment.marketPrice = valorUF
-            apartment.mercadoObjetivo = mercadoObjetivo
-            apartment.antiguedad = antiguedad
-            apartment.vidaUtil = vidaUtil
-            apartment.acogidaLey = acogidaLey
-            apartment.dfl2 = dfl2
-            apartment.usefulSquareMeters = usefulSquareMeters
-            apartment.terraceSquareMeters = terraceSquareMeters
-            apartment.selloVerde = selloVerde
-            apartment.save()
-            print("existe")
-        except ObjectDoesNotExist:
-            apartment = Apartment(addressStreet=address['addressStreet'],
-                                  addressNumber=address['addressNumber'],
-                                  addressNumber2=address['addressNumber2'],
-                                  addressCommune=Commune.objects.get(name=addressCommune),
-                                  building_in=building,
-                                  addressRegion=Commune.objects.get(name=addressCommune).region,
-                                  propertyType=RealEstate.TYPE_HOUSE,
-                                  lat=lat,
-                                  lng=lng,
-                                  copropiedadInmobiliaria=copropiedadInmobiliaria,
-                                  ocupante=ocupante,
-                                  tipoBien=tipoBien,
-                                  destinoSII=destinoSII,
-                                  usoActual=usoActual,
-                                  usoFuturo=usoFuturo,
-                                  permisoEdificacionNo=permisoEdificacion,
-                                  permisoEdificacionFecha=date_to_datetimefield(permisoEdificacion),
-                                  recepcionFinalNo=recepcionFinal,
-                                  recepcionFinalFecha=date_to_datetimefield(recepcionFinal),
-                                  expropiacion=expropiacion,
-                                  viviendaSocial=viviendaSocial,
-                                  adobe=adobe,
-                                  desmontable=desmontable,
-                                  generalDescription=generalDescription,
-                                  programa=programa,
-                                  estructuraTerminaciones=estructuraTerminaciones,
-                                  avaluoFiscal=avaluoFiscal,
-                                  marketPrice=valorUF,
-                                  mercadoObjetivo=mercadoObjetivo,
-                                  antiguedad=antiguedad,
-                                  vidaUtil=vidaUtil,
-                                  acogidaLey=acogidaLey,
-                                  dfl2=dfl2,
-                                  selloVerde=selloVerde,
-                                  usefulSquareMeters=usefulSquareMeters,
-                                  terraceSquareMeters=terraceSquareMeters
-                                      )
-            apartment.save()
-        realEstate = apartment
+    # Crear building
+    edificio = propiedad.createOrGetEdificio(addressNumber2=address['addressNumber2'])
+    edificio.propertyType = propertyType
+    edificio.name = str(file)
+    # edificio.marketPrice = valorUF
+    edificio.vidaUtilRemanente = vidaUtil
+    edificio.dfl2 = dfl2
+    edificio.avaluoFiscal = avaluoFiscal
+    edificio.copropiedadInmobiliaria = copropiedadInmobiliaria
+    edificio.selloVerde = selloVerde
+    edificio.permisoEdificacionNo = permisoEdificacion
+    edificio.permisoEdificacionFecha = recepcionFinal
+    edificio.tipoPropiedad = tipoBien
+    edificio.rol = rol
+    edificio.year = recepcionFinal
+    edificio.mercadoObjetivo = mercadoObjetivo
+    edificio.antiguedad = antiguedad
+    edificio.acogidaLey = acogidaLey
+    edificio.ocupante = ocupante
+    edificio.adobe = adobe
+    edificio.expropiacion = expropiacion
+    edificio.viviandaSocial = viviendaSocial
+    edificio.desmontable = desmontable
+    edificio.usoActual = usoActual
+    edificio.usoFuturo = usoFuturo
+    edificio.destinoSII = destinoSII
 
+    edificio.save()
+
+    if propertyType == Building.TYPE_CASA:
+        casa = propiedad.createOrGetCasa(addressNumber2=address['addressNumber2'])
+        # casa.bedrooms = bedrooms
+        # casa.bathrooms = bathrooms
+        casa.builtSquareMeters = builtSquareMeters
+        casa.terrainSquareMeters = terrainSquareMeters
+        casa.generalDescription = generalDescription
+        casa.marketPrice = valorUF
+
+        casa.save()
+    elif propertyType == Building.TYPE_DEPARTAMENTO:
+        departamento = propiedad.createOrGetDepartamento(addressNumber2=address['addressNumber2'])
+        # departamento.floor = floor
+        # departamento.orientation = orientation
+        # departamento.bedrooms = bedrooms
+        # departamento.bathrooms = bathdrooms
+        departamento.usefulSquaremeters = usefulSquareMeters
+        departamento.terraceSquaremeters = terraceSquareMeters
+        departamento.generalDescription = generalDescription
+        departamento.marketPrice = valorUF
+        departamento.programa = programa
+        departamento.save()
+
+    elif propertyType == Building.TYPE_TERRENO:
+        terreno = Terrain(name=str(file), area=terrainSquareMeters, rol=rol)
+        terreno.marketPrice = valorUF
+        terreno.save()
+        propiedad.terrains = terreno
+        propiedad.save()
+
+    print(propertyType)
+
+    # crear tasación
 
     try:
-        appraisal = Appraisal.objects.get(realEstate=realEstate,
-                                            valorUF=valorUF,
-                                            tipoTasacion=1,
-                                            state=0,
-                                            source=1,
-                                            solicitanteCodigo=solicitanteCodigo,
-                                            timeFinished=timeModified
-                                                  )
+        appraisal = Appraisal.objects.get(real_estates=propiedad,
+                                          tipoTasacion=1,
+                                          state=0,
+                                          source=1,
+                                          solicitanteCodigo=solicitanteCodigo,
+                                          timeFinished=timeModified
+                                          )
         appraisal.solicitante = 2
+        appraisal.visita = 1
         appraisal.solicitanteOtro = id
-        appraisal.solicitanteSucursal = solicitanteSucursal
         appraisal.solicitanteEjecutivo = solicitanteEjecutivo
+        appraisal.solicitanteSucursal = solicitanteSucursal
         appraisal.cliente = cliente
         appraisal.clienteRut = clienteRut
         appraisal.propietario = propietario
         appraisal.propietarioRut = propietarioRut
-        #appraisal.tasadorUser=tasadorUser
         appraisal.descripcionSector = descripcionSectorAll
+        #appraisal.liquidez = valorLiquidez
+        #appraisal.tasadorUser = tasadorUser
+        appraisal.timeFinished = timeModified
         appraisal.save()
+        print('Existe')
 
     except ObjectDoesNotExist:
         appraisal = Appraisal(state=0,
-                                source=1,
-                                tipoTasacion=1,
-                                solicitante=2,
-                                realEstate=realEstate,
-                                solicitanteCodigo=solicitanteCodigo,
-                                solicitanteOtro=id,
-                                timeFinished=timeModified,
-                                solicitanteSucursal=solicitanteSucursal,
-                                solicitanteEjecutivo=solicitanteEjecutivo,
-                                cliente=cliente,
-                                clienteRut=clienteRut,
-                                propietario=propietario,
-                                propietarioRut=propietarioRut,
-                                #tasadorUser=tasadorUser,
-                                descripcionSector=descripcionSectorAll,                                      valorUF=valorUF
-                                    )
+                              source=1,
+                              tipoTasacion=1,
+                              solicitante=2,
+                              visita=1,
+                              solicitanteCodigo=solicitanteCodigo,
+                              solicitanteOtro=id,
+                              timeFinished=timeModified,
+                              solicitanteEjecutivo=solicitanteEjecutivo,
+                              solicitanteSucursal=solicitanteSucursal,
+                              cliente=cliente,
+                              clienteRut=clienteRut,
+                              propietario=propietario,
+                              propietarioRut=propietarioRut,
+                              descripcionSector=descripcionSectorAll,
+                              #liquidez=valorLiquidez
+                              #tasadorUser=tasadorUser,
+                              )
+
         appraisal.save()
-
-
+        appraisal.real_estates.add(propiedad)
+        appraisal.save()
+        print('No Existe')
 
 
 def importAppraisalITAU(file):
@@ -587,6 +550,15 @@ def importAppraisalITAU(file):
         else:
             return 0
 
+    def estadoPropiedad(text):
+        estado = {
+            'Nueva':0,
+            'Usada':1,
+            'No Aplica':3,
+            'Sitio Eriazo':3
+        }
+        return estado[text]
+
 
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/itau-template.xlsx')
@@ -606,18 +578,21 @@ def importAppraisalITAU(file):
     addressCommune = get_commune_name(excel_find_import(wb, wb2, "addressCommune"))
     addressRegion = excel_find_import(wb, wb2, "addressRegion")
     rol1 = excel_find_general(file, "N° Rol Principal")
+    fechaVisita = excel_find_import(wb, wb2, "timeModified")
+    print(fechaVisita)
     rol2 = excel_find_general(file, "N° Rol (es) Sec.")
     #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
     # lat = convert(excel_find_import(wb, wb2, "lat")) #Itau no viene con lat-long, usar función?
     # lng = convert(excel_find_import(wb, wb2, "lng"))
-    antiguedad = excel_find_general(file, "Antigüedad")
-    vidaUtil = excel_find_general(file, "Vida Util")
+    antiguedad = int(excel_find_general(file, "Antigüedad"))
+    vidaUtil = int(excel_find_general(file, "Vida Util"))
+    vidaUtilRemanente = vidaUtil-antiguedad
     avaluoFiscal = excel_find_general(file, "Total Avalúo Fiscal")
     leyes = excel_find_general(file, "Leyes que se Acoge")
     acogidaLey = leyes[0]
     acogidaLey2 = leyes[1]
     selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
-    tipoBien = excel_find_general(file, "Tipo Propiedad")
+    tipoBien = estadoPropiedad(excel_find_general(file, "Tipo Propiedad"))
     permiso = excel_find_general(file, "Permiso Edificación")
     permisoEdificacion = permiso[0]
     recepcionFinal = permiso[1]
@@ -632,50 +607,124 @@ def importAppraisalITAU(file):
     copropiedadInmobiliaria = law_to_database(acogidaLey, acogidaLey2, "copropiedad")
 
 
-
-    print(solicitanteCodigo, "/",
-        id,"/",
-        solicitanteEjecutivo,"/",
-        cliente,"/",
-        clienteRut,"/",
-        propietario,"/",
-        propietarioRut,"/",
-        addressStreet,"/",
-        addressNumber,"/",
-        addressNumber2,"/",
-        addressCommune,"/",
-        addressRegion,"/",
-        rol1,"/",
-        rol2,"/",
-        #tasadorUser,"/",
-        antiguedad,"/",
-        vidaUtil,"/",
-        avaluoFiscal,"/",
-        acogidaLey,"/",
-        acogidaLey2,"/",
-        selloVerde,"/",
-        tipoBien,"/",
-        permisoEdificacion, "/",
-        recepcionFinal,"/",
-        #generalDescription,"/",
-        terrainSquareMeters,"/",
-        builtSquareMeters,"/",
-        propertyType,"/",
-        valorUF,"/",
-        valorLiquidez,"/",
-        dfl2,
-        copropiedadInmobiliaria, "/",
-    )
     #Crear Realestate
-    realestate = createOrGetRealEstate()
 
 
-file1 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
-file2 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
-file3 = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
-file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx'
+    propiedad = createOrGetRealEstate(
+        addressNumber=addressNumber,
+        addressStreet=addressStreet,
+        addressCommune=Commune.objects.get(name=addressCommune),
+        addressRegion=Commune.objects.get(name=addressCommune).region)
+    print(propiedad)
 
+    #Crear building
+    edificio = propiedad.createOrGetEdificio(addressNumber2=addressNumber2)
+    edificio.propertyType = propertyType
+    edificio.name = str(file)
+    #edificio.marketPrice = valorUF
+    edificio.vidaUtilRemanente = vidaUtilRemanente
+    edificio.dfl2 = dfl2
+    edificio.avaluoFiscal = avaluoFiscal
+    edificio.copropiedadInmobiliaria = copropiedadInmobiliaria
+    edificio.selloVerde = selloVerde
+    edificio.permisoEdificacionNo = permisoEdificacion
+    edificio.permisoEdificacionFecha = recepcionFinal
+    edificio.tipoPropiedad = tipoBien
+    edificio.rol = rol1
+    edificio.year = recepcionFinal
+
+    edificio.save()
+
+
+    if propertyType == Building.TYPE_CASA:
+        casa = propiedad.createOrGetCasa(addressNumber2=addressNumber2)
+        #casa.bedrooms = bedrooms
+        #casa.bathrooms = bathrooms
+        casa.builtSquareMeters = builtSquareMeters
+        casa.terrainSquareMeters = terrainSquareMeters
+        casa.generalDescription = generalDescription
+        casa.marketPrice = valorUF
+
+        casa.save()
+    elif propertyType == Building.TYPE_DEPARTAMENTO:
+        departamento = propiedad.createOrGetDepartamento(addressNumber2=addressNumber2)
+        #departamento.floor = floor
+        #departamento.orientation = orientation
+        #departamento.bedrooms = bedrooms
+        #departamento.bathrooms = bathdrooms
+        departamento.usefulSquaremeters = builtSquareMeters
+        departamento.generalDescription = generalDescription
+        departamento.marketPrice = valorUF
+        departamento.save()
+
+    elif propertyType == Building.TYPE_TERRENO:
+        terreno = Terrain(name=str(file), area=terrainSquareMeters, rol=rol1)
+        terreno.marketPrice = valorUF
+        terreno.save()
+        propiedad.terrains=terreno
+        propiedad.save()
+
+    print(propertyType)
+
+    # crear tasación
+
+    try:
+        appraisal = Appraisal.objects.get(real_estates=propiedad,
+                                          tipoTasacion=1,
+                                          state=0,
+                                          source=1,
+                                          solicitanteCodigo=solicitanteCodigo,
+                                          timeFinished=fechaVisita
+                                          )
+        appraisal.solicitante = 3
+        appraisal.solicitanteOtro = id
+        appraisal.solicitanteEjecutivo = solicitanteEjecutivo
+        appraisal.cliente = cliente
+        appraisal.clienteRut = clienteRut
+        appraisal.propietario = propietario
+        appraisal.propietarioRut = propietarioRut
+        appraisal.visita = 1
+        #appraisal.liquidez = valorLiquidez
+        # appraisal.tasadorUser=tasadorUser
+        appraisal.save()
+        print('Existe')
+
+    except ObjectDoesNotExist:
+        appraisal = Appraisal(state=0,
+                              source=1,
+                              tipoTasacion=1,
+                              solicitante=3,
+                              visita=1,
+                              solicitanteCodigo=solicitanteCodigo,
+                              solicitanteOtro=id,
+                              timeFinished=fechaVisita,
+                              solicitanteEjecutivo=solicitanteEjecutivo,
+                              cliente=cliente,
+                              clienteRut=clienteRut,
+                              propietario=propietario,
+                              propietarioRut=propietarioRut,
+                              #liquidez=valorLiquidez
+                              #tasadorUser=tasadorUser,
+                              )
+
+        appraisal.save()
+        appraisal.real_estates.add(propiedad)
+        appraisal.save()
+        print('No Existe')
+
+
+
+
+
+file1 = 'TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
+file2 = 'TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
+file3 = 'TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
+file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
+file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
+file = file_mac + file1
 #importAppraisalSantander(file)
-importAppraisalITAU(file3)
+#importAppraisalITAU(file)
 
+text = "Se analiza departamento ubicado en 1° piso, con vista al siete baños seis poniente, dos baños, 3 baño, con vista a calle aledaña. Cuenta con un programa arquitectónico consiste en estar-comedor, cocina, logia, baño y 2 dormitorios. Mantiene nivel estándar de terminaciones y buen estado de conservación. Inmueble no incorpora obras complementarias. Copropiedad cuenta con bloques de edificio destinados a departamentos habitación. La unidad tasada pertenece a edificio de 4 pisos, sin subterráneo. Se abastece sólo con caja de escala. Copropiedad no cuenta con equipamiento comunitario, según datos aportados en visita. El sector corresponde a área cercana a A. Libertador Bdo. O'Higgins, Las Rejas y General Velásquez, principales ejes estructurantes dentro de la comuna y su entorno, orientada a segmentos socioeconómicos medios, conformada además por conjunto de edificios de departamentos de igual altura en misma copropiedad y sector. Cercano a Estaciones de Metro: Ecuador y Las Rejas. Posee buena accesibilidad  y amplio equipamiento de apoyo dado su emplazamiento.  Municipalidad de Estación Central señala verbalmente que se el inmueble posee P.E. N°06/88 del año 1988 y R.F. N°59 de fecha 26 de octubre de 1988 por una superficie de 46,25 m2. Se acoge a DFL N°2 de 1959, D.L. N°2552 DE 1979 y Ley N°6.071. Plano de Loteo aprobado mediante Res. N°16 de fecha 21 de septiembre de 1988."
 
+findFromDescription(text)
