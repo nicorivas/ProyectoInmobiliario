@@ -62,8 +62,7 @@ def createOrGetRealEstate(**kwargs):
         real_estate.save()
         return real_estate
     except MultipleObjectsReturned:
-        context = {'error_message': 'RealEstate is repeated'}
-        return render(request, 'create/error.html', context)
+        return RealEstate.objects.filter(**kwargs).last()
 
 def createAppraisal(request,real_estate,rol="",**kwargs):
     '''

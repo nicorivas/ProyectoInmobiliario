@@ -1,10 +1,11 @@
+from __future__ import print_function
 from openpyxl import load_workbook
 import re
 import sys
 import os
 import django
-#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
-sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
+sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -20,6 +21,8 @@ from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
 
 from create.create import createOrGetRealEstate
+
+
 
 def get_clean_address(rawaddress):
     data = {}
@@ -89,7 +92,7 @@ def excel_find_general(file, term):
     ws = wb.worksheets[0]
     if term == "PROPIEDAD ANALIZADA":
         for row in range(120, 200):
-            for col in range(1, 25):
+            for col in range(1, 10):
                 cv = ws.cell(row=row, column=col).value
                 try:
                     cv = cv.strip()
@@ -102,7 +105,7 @@ def excel_find_general(file, term):
                     return terrainSquareMeters, builtSquareMeters
     elif term == "VALOR COMERCIAL":
         for row in range(74, 120):
-            for col in range(20, 60):
+            for col in range(25, 60):
                 cv = ws.cell(row=row, column=col).value
                 try:
                     cv = cv.strip()
@@ -209,6 +212,32 @@ def excel_find_general(file, term):
                     valorUf = ws.cell(row=row, column=col + 3).value
                     liquidacion = ws.cell(row=row + 1, column=col + 2).value
                     return valorUf, liquidacion
+    elif term == "RECEPCION FINAL N°" or term == "EXPROPIACION" or term == "VIVIENDA SOCIAL" or term == "CONST. DE ADOBE" \
+            or term == "CONST. DESMONTABLES":
+        if term == "RECEPCION FINAL N°":
+            for row in range(20, 50):
+                for col in range(30, 50):
+                    cv = ws.cell(row=row, column=col).value
+                    try:
+                        cv = " ".join(cv.split())
+                    except AttributeError:
+                        continue
+                    if cv == term or cv == "R. FINAL N°":
+                        print("found it!")
+                        valor = ws.cell(row=row, column=col + 9).value
+                        return valor
+        else:
+            for row in range(20, 50):
+                for col in range(30, 50):
+                    cv = ws.cell(row=row, column=col).value
+                    try:
+                        cv = " ".join(cv.split())
+                    except AttributeError:
+                        continue
+                    if cv == term:
+                        print("found it!")
+                        valor = ws.cell(row=row, column=col + 9).value
+                        return valor
 
 def findFromDescription(text):
     baños = 0
@@ -283,8 +312,16 @@ def importAppraisalSantander(file):
             print((d + m + s)*multiplier)
             return (d + m + s)*multiplier
         except ValueError:
-            return tude
+            return 0.0
 
+    def tipoPropiedad(text):
+        tipos ={
+            'Casa': Building.TYPE_CASA,
+            'Pc. Agrado - Eriazo': Building.TYPE_PARCELA,
+            'Departamento': Building.TYPE_DEPARTAMENTO,
+            'Pc. Agrorresidencial': Building.TYPE_TERRENO,
+        }
+        return tipos[text]
 
     def ocupantes_choices(ocupante):
         #converts from file format to database format
@@ -327,6 +364,7 @@ def importAppraisalSantander(file):
         return parse_date(finalDate)
 
     def boolean_null_choices(choice):
+        choice = choice.strip()
         options={
             "S/A":1, "S/Ant.":1,
             "Si":2, "SI":2,
@@ -387,11 +425,11 @@ def importAppraisalSantander(file):
     usoActual = destinoSII_modified(excel_find_import(wb, wb2, "usoActual"))
     usoFuturo = destinoSII_modified(excel_find_import(wb, wb2, "usoFuturo"))
     permisoEdificacion = excel_find_import(wb, wb2, "permisoEdificacion")
-    recepcionFinal = excel_find_import(wb, wb2, "recepcionFinal")
-    expropiacion = boolean_null_choices(excel_find_import(wb, wb2, "expropiacion"))
-    viviendaSocial = boolean_null_choices(excel_find_import(wb, wb2, "viviendaSocial"))
-    adobe = boolean_null_choices(excel_find_import(wb, wb2, "adobe"))
-    desmontable = boolean_null_choices(excel_find_import(wb, wb2, "desmontable"))
+    recepcionFinal = date_to_datetimefield(excel_find_general(file, "RECEPCION FINAL N°"))
+    expropiacion = boolean_null_choices(excel_find_general(file, "EXPROPIACION"))
+    viviendaSocial = boolean_null_choices(excel_find_general(file, "VIVIENDA SOCIAL"))
+    adobe = boolean_null_choices(excel_find_general(file, "CONST. DE ADOBE"))
+    desmontable = boolean_null_choices(excel_find_general(file, "CONST. DESMONTABLES"))
     generalDescription = excel_find_import(wb, wb2, "generalDescription")
     descripcionSectorAll = excel_find_import(wb, wb2, "descripcionSectorAll")
     programa = excel_find_import(wb, wb2, "programa")
@@ -402,10 +440,12 @@ def importAppraisalSantander(file):
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
     valorUF = excel_find_general(file, "VALOR COMERCIAL")
-
+    habitaciones = findFromDescription(generalDescription)
+    banos = habitaciones[0]
+    dormitorios = habitaciones[1]
     #hardcoded for now
     ws2 = wb2.worksheets[0]
-    propertyType = ws2['U5'].value
+    propertyType = tipoPropiedad(ws2['U5'].value)
 
     # Crear Realestate
 
@@ -430,7 +470,7 @@ def importAppraisalSantander(file):
     edificio.selloVerde = selloVerde
     edificio.permisoEdificacionNo = permisoEdificacion
     edificio.permisoEdificacionFecha = recepcionFinal
-    edificio.tipoPropiedad = tipoBien
+    edificio.tipoBien = tipoBien
     edificio.rol = rol
     edificio.year = recepcionFinal
     edificio.mercadoObjetivo = mercadoObjetivo
@@ -449,8 +489,8 @@ def importAppraisalSantander(file):
 
     if propertyType == Building.TYPE_CASA:
         casa = propiedad.createOrGetCasa(addressNumber2=address['addressNumber2'])
-        # casa.bedrooms = bedrooms
-        # casa.bathrooms = bathrooms
+        casa.bedrooms = dormitorios
+        casa.bathrooms = banos
         casa.builtSquareMeters = builtSquareMeters
         casa.terrainSquareMeters = terrainSquareMeters
         casa.generalDescription = generalDescription
@@ -461,8 +501,8 @@ def importAppraisalSantander(file):
         departamento = propiedad.createOrGetDepartamento(addressNumber2=address['addressNumber2'])
         # departamento.floor = floor
         # departamento.orientation = orientation
-        # departamento.bedrooms = bedrooms
-        # departamento.bathrooms = bathdrooms
+        departamento.bedrooms = dormitorios
+        departamento.bathrooms = banos
         departamento.usefulSquaremeters = usefulSquareMeters
         departamento.terraceSquaremeters = terraceSquareMeters
         departamento.generalDescription = generalDescription
@@ -716,15 +756,26 @@ def importAppraisalITAU(file):
 
 
 
-file1 = 'TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xlsx'
-file2 = 'TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xlsx'
-file3 = 'TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx'
+files_santander =  ['N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx',
+'N-1777974 (16336209-0) Santa Isabel 797 dp 1016 Santiago.xlsx',
+'N-1774960 (13267388-8) Hernán Olguín 0359, Los Heroes Poniente Maipú.xlsx',
+'N-1775293 (9314398-1) Consistorial 2608 (Via Amarilla) casa 14, Condominio Casas del Consistorial Peñalolen.xlsx',
+'N-1775307 (13450369-6) Transit 480 Block 2-B Estacion Central.xlsx',
+'N-1775460 (12516411-0) Las Violetas 2152  Dpto 407 Providencia Rol 2428-25 (E 33) (A 2017) (7P).xlsx',
+'N-1775763 (15421021-0) Luis Pereira 1621 Dpto E Ñuñoa Rol 1851-88 (T 26) (E 77) (A 1995).xlsx',
+'N-1777517 (12874278-6) Río Teno 1069 Villa Bahia Catalina La Granja Rol 5935-8 (T 86 E 57) (A 2009).xlsx',
+'N-1777660 (16713130-1) Credito 596 Providencia.xlsx',
+'N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx',
+'N-1775967 (77557450-K) Lo Lopez 1469 Cerro Navia Rol 62851 (T 816) Terreno.xlsx']
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
-file = file_mac + file1
-#importAppraisalSantander(file)
+
+for dir in files_santander:
+    file = file_pc + dir
+    print(file)
+    importAppraisalSantander(file)
+
 #importAppraisalITAU(file)
 
-text = "Se analiza departamento ubicado en 1° piso, con vista al siete baños seis poniente, dos baños, 3 baño, con vista a calle aledaña. Cuenta con un programa arquitectónico consiste en estar-comedor, cocina, logia, baño y 2 dormitorios. Mantiene nivel estándar de terminaciones y buen estado de conservación. Inmueble no incorpora obras complementarias. Copropiedad cuenta con bloques de edificio destinados a departamentos habitación. La unidad tasada pertenece a edificio de 4 pisos, sin subterráneo. Se abastece sólo con caja de escala. Copropiedad no cuenta con equipamiento comunitario, según datos aportados en visita. El sector corresponde a área cercana a A. Libertador Bdo. O'Higgins, Las Rejas y General Velásquez, principales ejes estructurantes dentro de la comuna y su entorno, orientada a segmentos socioeconómicos medios, conformada además por conjunto de edificios de departamentos de igual altura en misma copropiedad y sector. Cercano a Estaciones de Metro: Ecuador y Las Rejas. Posee buena accesibilidad  y amplio equipamiento de apoyo dado su emplazamiento.  Municipalidad de Estación Central señala verbalmente que se el inmueble posee P.E. N°06/88 del año 1988 y R.F. N°59 de fecha 26 de octubre de 1988 por una superficie de 46,25 m2. Se acoge a DFL N°2 de 1959, D.L. N°2552 DE 1979 y Ley N°6.071. Plano de Loteo aprobado mediante Res. N°16 de fecha 21 de septiembre de 1988."
 
-findFromDescription(text)
+
