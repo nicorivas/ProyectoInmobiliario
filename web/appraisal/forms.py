@@ -96,6 +96,7 @@ class FormApartment(forms.ModelForm):
     class Meta:
         model = Apartment
         fields = [
+            'apartment_building',
             'addressNumber2',
             'floor',
             'bedrooms',
@@ -110,7 +111,8 @@ class FormApartment(forms.ModelForm):
         class_bs = {'class':"form-control"}
         class_bs_sm = {'class':"form-control form-control-sm"}
         widgets = {
-            'addressNumber2': forms.TextInput(attrs=class_bs),
+            'apartment_building': forms.HiddenInput(),
+            'addressNumber2': forms.HiddenInput(),
             'floor': forms.NumberInput(attrs=class_bs),
             'bedrooms': forms.NumberInput(attrs=class_bs),
             'bathrooms': forms.NumberInput(attrs=class_bs),
@@ -369,8 +371,6 @@ class FormCreateRol(forms.ModelForm):
 
 class FormEditAddress(forms.Form):
 
-    class_bs = {'class':"form-control form-control-sm"}
-
     addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
     addressRegion.widget.attrs.update({'class':"form-control"})
 
@@ -385,8 +385,6 @@ class FormEditAddress(forms.Form):
 
 class FormAddAddress(forms.Form):
 
-    class_bs = {'class':"form-control form-control-sm"}
-
     addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
     addressRegion.widget.attrs.update({'class':"form-control"})
 
@@ -398,6 +396,24 @@ class FormAddAddress(forms.Form):
 
     addressNumber = forms.CharField(max_length=30,label="Número")
     addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+class FormAddProperty(forms.Form):
+
+    propertyType = forms.ChoiceField(label="Tipo propiedad",choices=Building.propertyType_choices)
+    propertyType.widget.attrs.update({'class':"form-control"})
+
+    addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
+    addressNumber2.widget.attrs.update({'class':"form-control"})
+
+class FormEditProperty(forms.Form):
+
+    addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
+    addressNumber2.widget.attrs.update({'class':"form-control"})
+
+class FormAddApartment(forms.Form):
+
+    addressNumber2 = forms.CharField(max_length=30,label="Departamento",required=False)
+    addressNumber2.widget.attrs.update({'class':"form-control"})
 
 class FormPhotos(forms.Form):
     class_bs = {'class':"form-control form-control-sm"}

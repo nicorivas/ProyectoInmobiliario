@@ -13,17 +13,18 @@
         Está seguro que desea remover esta dirección de esta tasación?
       </div>
 
-    <div class="modal-footer">
-      <form action="" method="post" id="form_remove_address">
-        {% csrf_token %}
-        <input type="hidden" id="in_appraisal_id_remove" name="appraisal_id" value="{{appraisal.id}}">
-        <input type="hidden" id="in_real_estate_id_remove" name="real_estate_id" value="{{real_estate.id}}">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btn_remove_address" value="{{real_estate.id}}">
-          Remover
-          <div class="ld ld-ring ld-spin" style="display:none;"></div>
-        </button>
-      </form>
+      <div class="modal-footer">
+        <form action="" method="post" id="form_remove_address">
+          {% csrf_token %}
+          <input type="hidden" id="in_appraisal_id_remove" name="appraisal_id" value="{{appraisal.id}}">
+          <input type="hidden" id="in_real_estate_id_remove" name="real_estate_id" value="{{real_estate.id}}">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_remove_address" value="{{real_estate.id}}">
+            Remover
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
