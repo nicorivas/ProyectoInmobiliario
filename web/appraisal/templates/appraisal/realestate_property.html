@@ -1,158 +1,37 @@
-<div class="row ml-4 mr-4 mt-4">
-<div class="col">
-
-  <div class="row mb-0">
-    <div class="col-4">
-      <!--<h5>Direcciones</h5>-->
+<div>
+<div class="row mt-4" style="padding-left:2em;">
+  <div class="col-3 border-right"">
+    <div id="address_list" style="padding-right:1em;">
+      {% include 'appraisal/address_list.html' %}
     </div>
-    <div class="col-8 text-right">
-      <button class="btn btn-dark btn-sm btn_add_address_modal mb-1 mr-0">
-        Agregar dirección
-        <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      </button>
+    <!--<div class="card rounded-0" style="min-height: 10em;">-->
+    <div id="property_list" class="mb-4" style="min-height:40em;padding-right:1em;">
+      <!--{% include 'appraisal/property_list.html' %}-->
     </div>
+      <!--</div>-->
   </div>
-
-  <div class="mb-0" id="address_list">
-    {% include 'appraisal/address_list.html' %}
-  </div>
-
-  <div class="row">
-    <div class="col-3" style="padding-right:0em;">
-      <div class="card rounded-0 mb-4 mt-2" style="min-height: 10em;">
-        <div id="property_list" class="mr-0 mt-2">
-          <!--{% include 'appraisal/property_list.html' %}-->
-        </div>
+  <div class="col-9">
+  <!--<div class="card rounded-0 mb-4 mt-2" style="min-height: 10em; padding-top:1.5em;">-->
+    <form class="needs-validation" action="" method="post" id="form_property" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="appraisal_id"   id="in_appraisal_id">
+      <input type="hidden" name="real_estate_id" id="in_real_estate_id">
+      <input type="hidden" name="building_id"    id="in_building_id">
+      <input type="hidden" name="apartment_id"   id="in_apartment_id">
+      <div id="property_info" class="mt-3" style="padding-left:2em;">
       </div>
-    </div>
-    <div class="col-9">
-      <div class="card rounded-0 mb-4 mt-2" style="min-height: 10em; padding-top:1.5em;">
-        <div id="property_info" class="ml-4 mr-4">
-        </div>
-      </div>
-    </div>
+    </form>
+    <!--</div>-->
   </div>
-
 </div>
 </div>
 
 <script>
 
-  function set_modal_actions() {
-    $("#btn_edit_address").unbind()
-    $("#btn_edit_address").off()
-    $('#btn_edit_address').on('click', function() {
-      var btn = $(this)
-      var form = $('#form_edit_address')
-      btn.find('.ld').toggle();
-      btn.prop('disabled', true);
-      $.ajax({
-        url: "{% url 'ajax_edit_address_url' %}",
-        type: 'post',
-        data: form.serialize(),
-        error: function () {
-            alert("Error al guardar nueva dirección.");
-            btn.find('.ld').toggle();
-            btn.prop('disabled', false);
-            return false;
-        },
-        success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          $("#li_real_estate_"+btn.val()).find('.btn_realestate_text').html(data.address)
-          $("#modal_edit_address").modal('hide')
-        }
-      });
-    })
-
-    $("#btn_add_address").unbind()
-    $("#btn_add_address").off()
-    $('#btn_add_address').on('click', function() {
-      var btn = $(this)
-      var form = $('#form_add_address')
-      btn.find('.ld').toggle();
-      btn.prop('disabled', true);
-      $.ajax({
-        url: "{% url 'ajax_add_address_url' %}",
-        type: 'post',
-        data: form.serialize(),
-        error: function () {
-            alert("Error al agregar nueva dirección.");
-            btn.find('.ld').toggle();
-            btn.prop('disabled', false);
-            return false;
-        },
-        success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          $("#address_list").html($.trim(data));
-          $("#modal_add_address").modal('hide');
-          set_address_list_actions();
-        }
-      });
-    })
-
-    $("#btn_remove_address").unbind()
-    $("#btn_remove_address").off()
-    $('#btn_remove_address').on('click', function() {
-      var btn = $(this)
-      var form = $('#form_remove_address')
-      btn.find('.ld').toggle();
-      btn.prop('disabled', true);
-      $.ajax({
-        url: "{% url 'ajax_remove_address_url' %}",
-        type: 'post',
-        data: form.serialize(),
-        error: function () {
-            alert("Error al agregar nueva dirección.");
-            btn.find('.ld').toggle();
-            btn.prop('disabled', false);
-            return false;
-        },
-        success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          console.log(btn.val(),$("#li_real_estate_"+btn.val()))
-          $("#li_real_estate_"+btn.val()).remove()
-          $("#modal_remove_address").modal('hide')
-        }
-      });
-    })
-  }
-
-  function set_property_list_actions() {
-
-    $('.btn_property').on('click', function() {
-      var btn = $(this)
-      var appraisal_id = "{{appraisal.id}}"
-      var real_estate_id = $("#property_list_data").data("real_estate_id")
-      var building_id = btn.closest('.building_list_item').data('building_id')
-      var property_id = btn.val()
-      console.log(appraisal_id,real_estate_id,building_id,property_id)
-      var url = "{% url 'ajax_show_property_url' %}"
-      $.ajax({
-        url: url,
-        type: 'get',
-        data: {"appraisal_id":appraisal_id,"real_estate_id":real_estate_id,"building_id":building_id,"property_id":property_id},
-        error: function () {
-            alert("Error al cargar información de la propiedad.");
-            btn.find('.ld').toggle();
-            btn.prop('disabled', false);
-            return false;
-        },
-        success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          $("#property_info").html($.trim(data));
-          $('#property_info').show();
-        }
-      });
-    })
-
-  }
-
   function set_address_list_actions() {
 
+    $('.btn_add_address_modal').unbind()
+    $('.btn_add_address_modal').off()
     $('.btn_add_address_modal').on('click', function() {
       var btn = $(this)
       var appraisal_id = "{{appraisal.id}}"
@@ -180,10 +59,12 @@
       });
     })
 
+    $('.btn_edit_address_modal').unbind()
+    $('.btn_edit_address_modal').off()
     $('.btn_edit_address_modal').on('click', function() {
       var btn = $(this)
       var appraisal_id = "{{appraisal.id}}"
-      var real_estate_id = btn.val()
+      var real_estate_id = $('#select_realestate').find(":selected").val();
       var url = "{% url 'ajax_edit_address_modal_url' %}"
       btn.find('.ld').toggle();
       btn.find('.icon').toggle();
@@ -241,18 +122,13 @@
       });
     })
 
-    $('.btn_realestate').on('click', function() {
+    $('#select_realestate').unbind()
+    $('#select_realestate').off()
+    $('#select_realestate').on('change', function() {
       var btn = $(this)
       var appraisal_id = "{{appraisal.id}}"
       var real_estate_id = btn.val()
       var url = "{% url 'ajax_load_realestate_url' %}"
-      btn.find('.ld').toggle();
-      btn.prop('disabled', true);
-      btn.addClass("border border-primary")
-      $("#address_list").find(".btn_realestate").each(function() {
-        $(this).removeClass("border border-primary")
-      })
-      btn.addClass("border border-primary")
       $.ajax({
         url: url,
         type: 'get',
@@ -264,8 +140,6 @@
             return false;
         },
         success: function (data) {
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
           $('#property_info').fadeOut();
           $('#property_list').html($.trim(data));
           set_property_list_actions();
@@ -274,8 +148,365 @@
     })
   }
 
+  function set_modal_actions() {
+
+    $("#btn_edit_address").unbind()
+    $("#btn_edit_address").off()
+    $('#btn_edit_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_edit_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_edit_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al guardar nueva dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $('#select_realestate').find(":selected").text(data.address);
+          $("#modal_edit_address").modal('hide')
+        }
+      });
+    })
+
+    $("#btn_add_address").unbind()
+    $("#btn_add_address").off()
+    $('#btn_add_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_add_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_add_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al agregar nueva dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#address_list").html($.trim(data));
+          set_address_list_actions();
+          $('#select_realestate').val($('#select_realestate option:last').val());
+          $("#modal_add_address").modal('hide');
+          $('#select_realestate').trigger('change');
+        }
+      });
+    })
+
+    $("#btn_remove_address").unbind()
+    $("#btn_remove_address").off()
+    $('#btn_remove_address').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_edit_address')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_remove_address_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al remover dirección.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $('#select_realestate').find(":selected").remove();
+          $('#select_realestate').val($('#select_realestate option:last').val());
+          $('#select_realestate').trigger('change');
+          $("#modal_edit_address").modal('hide')
+        }
+      });
+    })
+
+    $("#btn_add_property").unbind()
+    $("#btn_add_property").off()
+    $('#btn_add_property').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_add_property')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_add_property_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al agregar propiedad.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#modal_add_property").modal('hide')
+          $('#property_info').fadeOut();
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    })
+
+    $("#btn_edit_property").unbind()
+    $("#btn_edit_property").off()
+    $('#btn_edit_property').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_edit_property')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_edit_property_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al editar propiedad.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#modal_edit_property").modal('hide')
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    })
+
+    $("#btn_remove_property").unbind()
+    $("#btn_remove_property").off()
+    $('#btn_remove_property').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_edit_property')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_remove_property_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al remover propiedad.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#modal_edit_property").modal('hide')
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    })
+
+    $("#btn_add_apartment").unbind()
+    $("#btn_add_apartment").off()
+    $('#btn_add_apartment').on('click', function() {
+      var btn = $(this)
+      var form = $('#form_add_apartment')
+      btn.find('.ld').toggle();
+      btn.prop('disabled', true);
+      $.ajax({
+        url: "{% url 'ajax_add_apartment_url' %}",
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al agregar departamento.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          btn.find('.ld').toggle();
+          btn.prop('disabled', false);
+          $("#modal_add_apartment").modal('hide')
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    })
+  }
+
+  function save_property() {
+    var form = $('#form_property')
+    var url = "{% url 'ajax_save_property_url' %}"
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: form.serialize(),
+      async: false,
+      error: function () {
+          alert("Error al grabar.");
+          return false;
+      },
+      success: function (data) {
+        $("#property_info_alert").html($.trim(data));
+        $('#property_info_alert').show();
+      }
+    });
+  }
+
+  function set_property_list_actions() {
+
+    $(".btn_property").unbind()
+    $(".btn_property").off()
+    $('.btn_property').on('click', function() {
+      
+      event.preventDefault()
+
+      if (!$('#no_form').length) {
+        save_property()
+      }
+
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = $("#property_list_data").data("real_estate_id")
+      var building_id = btn.data('building_id')
+
+      if (btn.hasClass("btn_apartment")) {
+        var apartment_id = btn.data('apartment_id')
+      } else {
+        var apartment_id = -1;
+      }
+
+      $("#in_appraisal_id").val(appraisal_id)
+      $("#in_real_estate_id").val(real_estate_id)
+      $("#in_building_id").val(building_id)
+      $("#in_apartment_id").val(apartment_id)
+
+      var url = "{% url 'ajax_show_property_url' %}"
+
+      btn.addClass('building_list_item_selected')
+
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {
+          "appraisal_id":appraisal_id,
+          "real_estate_id":real_estate_id,
+          "building_id":building_id,
+          "apartment_id":apartment_id},
+        error: function () {
+            alert("Error al cargar información de la propiedad.");
+            return false;
+        },
+        success: function (data) {
+          $("#property_list").find(".btn_property").each(function() {
+            $(this).removeClass("btn-active")
+          })
+          btn.addClass('btn-active')
+          $("#property_info").html($.trim(data));
+          $('#property_info').show();
+        }
+      });
+    })
+
+    $("#btn_add_property_modal").unbind()
+    $("#btn_add_property_modal").off()
+    $('#btn_add_property_modal').on('click', function() {
+      event.preventDefault()
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = $("#property_list_data").data("real_estate_id")
+      var building_id = btn.closest('.building_list_item').data('building_id')
+      var property_id = btn.val()
+      var url = "{% url 'ajax_add_property_modal_url' %}"
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"appraisal_id":appraisal_id,"real_estate_id":real_estate_id,"building_id":building_id,"property_id":property_id},
+        error: function () {
+            alert("Error al cargar modal para agregar propiedad.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          $("#modal_add_property").html($.trim(data));
+          $("#modal_add_property").modal("show")
+          set_modal_actions()
+        }
+      });
+    })
+
+    $(".btn_add_apartment_modal").unbind()
+    $(".btn_add_apartment_modal").off()
+    $('.btn_add_apartment_modal').on('click', function() {
+      event.preventDefault()
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = $("#property_list_data").data("real_estate_id")
+      var building_id = btn.closest('.building_list_item').data('building_id')
+      var property_id = btn.data('value')
+      var url = "{% url 'ajax_add_apartment_modal_url' %}"
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {"appraisal_id":appraisal_id,"real_estate_id":real_estate_id,"building_id":building_id,"property_id":property_id},
+        error: function () {
+            alert("Error al cargar modal para agregar departamento.");
+            btn.find('.ld').toggle();
+            btn.prop('disabled', false);
+            return false;
+        },
+        success: function (data) {
+          $("#modal_add_apartment").html($.trim(data));
+          $("#modal_add_apartment").modal("show")
+          set_modal_actions()
+        }
+      });
+    })
+
+    $(".btn_edit_property_modal").unbind()
+    $(".btn_edit_property_modal").off()
+    $('.btn_edit_property_modal').on('click', function() {
+      event.preventDefault()
+      var btn = $(this)
+      var appraisal_id = "{{appraisal.id}}"
+      var real_estate_id = $("#property_list_data").data("real_estate_id")
+      var building_id = btn.data('building_id')
+      var apartment_id = btn.data('apartment_id')
+      var url = "{% url 'ajax_edit_property_modal_url' %}"
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {
+          "appraisal_id":appraisal_id,
+          "real_estate_id":real_estate_id,
+          "building_id":building_id,
+          "apartment_id":apartment_id},
+        error: function () {
+            alert("Error al cargar modal para editar propiedad.");
+            return false;
+        },
+        success: function (data) {
+          $("#modal_edit_property").html($.trim(data));
+          $("#modal_edit_property").modal("show")
+          set_modal_actions()
+        }
+      });
+    });
+  }
+
   $(document).ready(function($) {
-    set_address_list_actions()
+    set_address_list_actions();
+    $('#select_realestate').trigger('change');
   })
 
 </script>

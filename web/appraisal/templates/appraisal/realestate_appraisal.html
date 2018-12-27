@@ -10,9 +10,6 @@
 
 {% block content %}
 
-<form class="needs-validation" action="" method="post" id="form" enctype="multipart/form-data" novalidate>
-{% csrf_token %}
-
   <nav class="navbar justify-content-between">
     <!--<a class="navbar-brand" href="#">-->
     <h4>
@@ -140,8 +137,6 @@
   </div>
 
 {% include "appraisal/modals.html" %}
-
-</form>
 
 <!-- Script to go back to the same tab when refreshing webpage -->
 <script>

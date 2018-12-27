@@ -1,45 +1,76 @@
 <div id="property_list_data" data-real_estate_id="{{real_estate.id}}">
+	
+	<div class="row">
+		<div class="col">
+	    	<label>
+	      		Propiedades
+	    	</label>
+	  	</div>
+	  	<div class="col text-right">
+			<a href="#" id="btn_add_property_modal" style="font-size:0.9em;">
+				Agregar propiedad
+			</a>
+	  	</div>
+	</div>
+
 	{% if buildings|length == 0 %}
-	<div class="alert alert-warning ml-2 mr-2">
+
+	<div class="alert alert-warning">
 		No hay propiedades registradas en esta dirección.
 	</div>
+
 	{% else %}
 
-	<ul style="list-style-type: none;padding-left: 0em;">
-	{% for building in buildings %}
-	{% if building.is_apartmentbuilding %}
-		<li class="building_list_item" data-building_id="{{building.id}}">
-			<div class="mb-1 ml-2 mr-2">
-				<button class="btn btn btn-light btn-block text-left">Edificio</button>
-			</div>
-	{% endif %}				
-			<ul style="list-style-type: none;">
+	<div class="list-group">
+		{% for building in buildings %}
+	  	<div class="list-group-item flex-column align-items-start building_list_item" data-building_id="{{building.id}}">
+		<!--<li class="building_list_item" data-building_id="{{building.id}}">-->
+			<div class="row">
+				<div class="col-7 text-left" style="padding-left:0.4em;padding-right:0.0em;">
+				<!--<div class="mb-1 ml-2 mr-2">-->
+					<button type="button" class="btn btn-sm btn-outline-secondary btn_edit_property_modal" data-building_id="{{building.id}}" style="font-family:Material Icons;font-size:0.8em;margin-bottom:1px;padding-top:0em;padding-bottom:0em;padding-left:0.2em;padding-right:0.2em;">
+	          			<div class="icon">edit</div>
+	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
+	    		    </button>
+					<a href="#" class="text-left btn_property" data-building_id="{{building.id}}" style="vertical-align:bottom;">
+						{% if building.is_apartmentbuilding %}
+							Edificio {{building.apartmentbuilding.addressNumber2}}
+						{% elif building.is_house %}
+							Casa {{building.house.addressNumber2}}
+						{% else %}
+							?
+						{% endif %}
+					</a>
+				</div>
+				<div class="col-5 text-left" style="padding-left:0.4em;">
+	        		
+	      		</div>
+      		</div>
 	 		{% if building.is_apartmentbuilding %}
+			<ul style="list-style-type: none;padding-left:1.0em;" class="mb-0">
 	 		{% for apartment in building.apartmentbuilding.apartment_set.all %}
-	     		<li>
-	     			<div class="mb-1 ml-2 mr-2">
-						<button type="button" class="btn btn-sm btn-light text-left btn_property btn-block" value="{{apartment.id}}">
-							Departamento {{apartment.addressNumber2}}
-						</button>
-					</div>
+	     		<li class="apartment_list_item">
+	     			<button type="button" class="btn btn-sm btn-outline-secondary btn_edit_property_modal" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}" style="font-family:Material Icons;font-size:0.7em;margin-bottom:1px;padding-top:0em;padding-bottom:0em;padding-left:0.2em;padding-right:0.2em;">
+	          			<div class="icon">edit</div>
+	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
+	    		    </button>
+					<a href="#" class="text-left btn_property btn_apartment" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}">
+						<small>Departamento {{apartment.addressNumber2}}</small>
+					</a>
 				</li>
 			{% endfor %}
-			{% endif %}
 				<li>
-	     			<div class="mb-1 ml-2 mr-2">
-						<button type="button" class="btn btn-sm btn-light text-right btn_property btn-block" value="{{apartment.id}}">
-							Agregar
-						</button>
-					</div>
+					<a href="#" class="text-left btn_add_apartment_modal" value="{{apartment.id}}">
+						<small>Agregar departamento</small>
+					</a>
 				</li>
 			</ul>
-	 	</li>
-	 	{% endfor %}
-	 	{% endif %}
-	 	<li class="building_list_item" data-building_id="{{building.id}}">
-	 		<div class="mb-1 ml-2 mr-2">
-				<button class="btn btn btn-light btn-block text-left">Agregar</button>
-			</div>
-	 	</li>
-	</ul>
+			{% endif %}
+	 	<!--</li>-->
+	 	</div>
+ 		{% endfor %}
+	</div>
+
+	{% endif %}
+
 </div>

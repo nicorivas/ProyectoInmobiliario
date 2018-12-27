@@ -1,0 +1,39 @@
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Agregar propiedad</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form action="" method="post" id="form_add_property">
+      <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
+          <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{form_add_property.propertyType.label_tag}}
+                {{form_add_property.propertyType}}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{form_add_property.addressNumber2.label_tag}}
+                {{form_add_property.addressNumber2}}
+              </div>
+            </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_add_property">Agregar</button>
+      </div>
+    </form>
+  </div>
+</div>

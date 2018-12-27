@@ -89,3 +89,13 @@ button:focus {outline:0;}
   vertical-align: middle;
   align-items: center;
 }
+
+.btn {
+  border-width: 1px;
+}
+
+.btn-active {
+  border-width: 1px;
+  border-color: #007bff!important;
+  color: #000;
+}

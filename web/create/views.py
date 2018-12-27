@@ -54,7 +54,7 @@ def view_create(request):
             elif propertyType == Building.TYPE_CONDOMINIO:
                 propiedad = real_estate.createOrGetCondominio()
             elif propertyType == Building.TYPE_DEPARTAMENTO:
-                propiedad = real_estate.createOrGetDepartamento(addressNumber2=form.cleaned_data['addressNumber2'])
+                propiedad = real_estate.createOrGetDepartamento(addressNumber2=None,addressNumber3=form.cleaned_data['addressNumber2'])
             elif propertyType == Building.TYPE_OTRO:
                 pass
             else:

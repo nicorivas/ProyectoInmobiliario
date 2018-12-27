@@ -16,7 +16,7 @@
       <form action="" method="post" id="form_edit_address">
         {% csrf_token %}
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
-        <input type="hidden" id="in_appraisal_id" name="real_estate_id" value="{{real_estate.id}}">
+        <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
@@ -57,7 +57,10 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      <button name="btn_export" class="btn btn-primary" id="btn_edit_address" value="{{real_estate.id}}">
+      <button class="btn btn-danger" id="btn_remove_address" value="{{real_estate.id}}">
+        Borrar
+      </button>
+      <button class="btn btn-primary" id="btn_edit_address" value="{{real_estate.id}}">
         Guardar
         <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>

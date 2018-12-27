@@ -119,21 +119,34 @@ class RealEstate(models.Model):
         self.save()
         return casa
 
-    def createDepartamento(self, addressNumber2):
-        building = Building(real_estate=self, propertyType=Building.TYPE_EDIFICIO)
-        building.save()
-        apartment_building = ApartmentBuilding(building=building, fromApartment=True)
-        apartment_building.save()
-        departamento = Apartment(apartment_building=apartment_building ,addressNumber2=addressNumber2)
+    def createDepartamento(self, addressNumber2=None, addressNumber3=None):
+
+        if addressNumber2 == None:
+            # Si no nos dieron número de edificio, crearlo
+            building = Building(real_estate=self,propertyType=Building.TYPE_EDIFICIO)
+            building.save()
+            apartment_building = ApartmentBuilding(building=building, fromApartment=True)
+            apartment_building.save()
+        else:
+            # Si nos dieron, 
+            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
+            for building in buildings:
+                if building.apartmentbuilding.addressNumber2 ==addressNumber2:
+                    apartment_building = building.apartmentbuilding
+                    break
+    
+        departamento = Apartment(apartment_building=apartment_building ,addressNumber2=addressNumber3)
         departamento.save()
+        
         self.buildings.add(building)
         self.save()
+
         return departamento
 
     def createEdificio(self, addressNumber2):
         building = Building(real_estate=self, propertyType=Building.TYPE_EDIFICIO)
         building.save()
-        apartment_building = ApartmentBuilding(building=building, fromApartment=False)
+        apartment_building = ApartmentBuilding(building=building, addressNumber2=addressNumber2, fromApartment=False)
         apartment_building.save()
         self.buildings.add(building)
         self.save()
@@ -146,68 +159,53 @@ class RealEstate(models.Model):
         self.save()
         return building
 
-    def createOrGetCasa(self, addressNumber2=None):
+    def createOrGetCasa(self,addressNumber2=None,if_exists_false=False):
         try:
-            building = self.buildings.get(propertyType=Building.TYPE_CASA)
-            try:
-                if building.house.addressNumber2 == addressNumber2:
-                    return building.house
-                else:
-                    return self.createCasa(addressNumber2)
-            except ObjectDoesNotExist:
-                # This should never take place
-                return False
-        except Building.DoesNotExist:
-            return self.createCasa(addressNumber2)
-        except MultipleObjectsReturned:
             buildings = self.buildings.filter(propertyType=Building.TYPE_CASA)
             for building in buildings:
-                try:
-                    if building.house.addressNumber2 == addressNumber2:
+                if building.house.addressNumber2 == addressNumber2:
+                    if if_exists_false:
+                        return False
+                    else:
                         return building.house
-                except ObjectDoesNotExist:
-                    return self.createCasa(addressNumber2)
-
-    def createOrGetDepartamento(self,addressNumber2=None):
-        try:
-            building = self.buildings.get(propertyType=Building.TYPE_EDIFICIO)
-            print('building',building)
-            try:
-                # check all apartments of building
-                for apartment in building.apartmentbuilding.apartment_set.all():
-                    print('apartment',apartment)
-                    print('apartment.addressNumber2',apartment.addressNumber2)
-                    if apartment.addressNumber2 == addressNumber2:
-                        return apartment
-                return self.createDepartamento(addressNumber2)
-            except ObjectDoesNotExist:
-                # This should never take place
-                return False
+            return self.createCasa(addressNumber2)
         except Building.DoesNotExist:
-            print('Building.DoesNotExist')
-            return self.createDepartamento(addressNumber2)
-        except MultipleObjectsReturned:
-            print('MultipleObjectsReturned',addressNumber2)
+            return self.createCasa(addressNumber2)
+
+    def createOrGetDepartamento(self,addressNumber2=None,addressNumber3=None):
+        if addressNumber2 == None:
+            # Si el edificio no fue especificado, entonces tenemos que crear
+            # una torre sí o sí, y el correspondiente departamento
+            return self.createDepartamento(None,addressNumber3)
+        try:
+            # Si el edificio fue especificado, entonces tenemos que encontrarlo...
             buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
-            # check all apartments of all buildings
             for building in buildings:
-                for apartment in building.apartmentbuilding.apartment_set.all():
-                    if apartment.addressNumber2 == addressNumber2:
-                        print('apartment found')
-                        return apartment
-            return self.createDepartamento(addressNumber2)
-
-    def createOrGetEdificio(self,addressNumber2=None):
-        try:
-            building = self.buildings.get(propertyType=Building.TYPE_EDIFICIO)
-            return building
+                if building.apartmentbuilding.addressNumber2 == addressNumber2:
+                    # ... y encontrar el departamento.
+                    for apartment in building.apartmentbuilding.apartment_set.all():
+                        if apartment.addressNumber2 == addressNumber3:
+                            return apartment
+                    return self.createDepartamento(addressNumber2,addressNumber3)
+            # Si fue especificado el edificio pero no lo encontramos, crear la torre
+            # con el número que nos dieron, y el departamento.
+            return self.createDepartamento(addressNumber2,addressNumber3)
         except Building.DoesNotExist:
+            # Si no hay niun edificio pero nos dieron un número, crear la torre
+            # con el número que nos dieron, y el departamento.
+            return self.createDepartamento(addressNumber2,addressNumber3)
+
+    def createOrGetEdificio(self,addressNumber2=None,if_exists_false=False):
+        try:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
+            for building in buildings:
+                if building.apartmentbuilding.addressNumber2 == addressNumber2:
+                    if if_exists_false:
+                        return False
+                    else:
+                        return building.apartmentbuilding
             return self.createEdificio(addressNumber2)
-        except MultipleObjectsReturned:
-            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
-            for building in buildings:
-                if building.addressNumber2 == addressNumber2:
-                    return building
+        except Building.DoesNotExist:
             return self.createEdificio(addressNumber2)
 
     def createOrGetCondominio(self,addressNumber2=None):
@@ -240,6 +238,12 @@ class RealEstate(models.Model):
                 return True
             except Building.DoesNotExist:
                 return False
+
+    def createOrGetProperty(self, propertyType, addressNumber2,if_exists_false=False):
+        if propertyType == Building.TYPE_EDIFICIO:
+            return self.createOrGetEdificio(addressNumber2,if_exists_false=if_exists_false)
+        elif propertyType == Building.TYPE_CASA:
+            return self.createOrGetCasa(addressNumber2,if_exists_false=if_exists_false)
 
     @property
     def sourceNameNice(self):

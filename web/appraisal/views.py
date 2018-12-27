@@ -29,6 +29,9 @@ from .forms import FormPhotos
 from .forms import FormDocuments
 from .forms import FormEditAddress
 from .forms import FormAddAddress
+from .forms import FormAddProperty
+from .forms import FormEditProperty
+from .forms import FormAddApartment
 from .forms import FormCreateApartment
 from .forms import FormCreateHouse
 #from .forms import FormCreateConstruction
@@ -542,32 +545,6 @@ def valuation_remove_terrain(request,forms,appraisal,realestate):
         print('Error')
 '''
 
-def getAppraisalHistory(appraisal):
-    versions = list(Version.objects.get_for_object(appraisal))
-    appraisal_history = []
-    c = 0
-    for i in range(len(versions)):
-        if i == 0: continue
-        version_new = versions[i]
-        version_old = versions[i-1]
-
-        appraisal_history.append({})
-        appraisal_history[c]['user'] = version_new.revision.user
-        appraisal_history[c]['time'] = version_new.revision.date_created
-        appraisal_history[c]['diffs'] = []
-        for key, value in version_new.field_dict.items():
-            if value != version_old.field_dict[key]:
-                appraisal_history[c]['diffs'].append({
-                    'verbose_name':Appraisal._meta.get_field(key).verbose_name,
-                    'name':key,
-                    'value':version_old.field_dict[key],
-                    'value_old':value})
-        if len(appraisal_history[c]['diffs']) == 0:
-            appraisal_history.pop(c)
-        else:
-            c += 1
-    return appraisal_history
-
 def float_es(string):
     string = string.replace('.','')
     string = string.replace(',','.')
@@ -591,20 +568,10 @@ def view_appraisal(request, **kwargs):
     General view for appraisals. Gets a variable number of parameters depending
     on the type of realestate.
     '''
-
-    # Get current appraisal
     appraisal = getAppraisal(request,kwargs['appraisal_id'])
     if isinstance(appraisal,HttpResponse):
         return appraisal
 
-    appraisal_old = deepcopy(appraisal) # done to check differences when saving history
-
-    # Get realestate
-    #realestate = getRealEstate(request,appraisal.realEstate.id)
-    #if isinstance(realestate,HttpResponse):
-    #    return realestate
-
-    # if this is a POST request we need to process the form data
     if request.method == 'POST':
 
         request_post = clean_request_post(request.POST.copy())
@@ -738,10 +705,6 @@ def view_appraisal(request, **kwargs):
     tasadores = User.objects.filter(groups__name__in=['tasador'])
     visadores = User.objects.filter(groups__name__in=['visador'])
 
-    # History of changes, for the logbook
-    appraisal_history = []
-    #appraisal_history = getAppraisalHistory(appraisal)
-
     # Comments, for the logbook
     comments = []
     comments = Comment.objects.filter(appraisal=appraisal).order_by('-timeCreated')
@@ -825,7 +788,6 @@ def view_appraisal(request, **kwargs):
         #'stds': stds,
         'tasadores':tasadores,
         'visadores':visadores,
-        'appraisal_history': appraisal_history,
         'comments': comments,
         #'plot_map':plot_map,
         'htmlBits':htmlBits
@@ -949,7 +911,7 @@ def ajax_add_address(request):
     appraisal.real_estates.add(real_estate)
     appraisal.save()
 
-    return render(request,'appraisal/property_address_list.html', {'appraisal':appraisal})
+    return render(request,'appraisal/address_list.html', {'appraisal':appraisal})
 
 def ajax_remove_address(request):
 
@@ -980,30 +942,206 @@ def ajax_load_realestate(request):
 
     return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
 
-def ajax_show_property(request):
-
-    print('ajax_show_property')
+def ajax_add_property_modal(request):
 
     appraisal_id = int(request.GET['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
-    print('appraisal_id',appraisal_id)
 
     real_estate_id = int(request.GET['real_estate_id'])
     real_estate = appraisal.real_estates.get(id=real_estate_id)
-    print('real_estate_id',real_estate_id)
+
+    form_add_property = FormAddProperty()
+
+    return render(request,'appraisal/modals_add_property.html', 
+        {'appraisal':appraisal,'real_estate':real_estate,'form_add_property':form_add_property})
+
+def ajax_add_property(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    prop = real_estate.createOrGetProperty(
+        int(request.POST['propertyType']),
+        request.POST['addressNumber2'],
+        if_exists_false=True)
+
+    if isinstance(prop,type(True)):
+        if not prop:
+            return JsonResponse({'error':"La propiedad ya existe"})
+    else:
+        buildings = real_estate.buildings.all()
+        return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
+
+def ajax_add_apartment_modal(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.GET['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    form_add_apartment = FormAddApartment()
+
+    return render(request,'appraisal/modals_add_apartment.html', 
+        {'appraisal':appraisal,'real_estate':real_estate,'building':building,'form_add_apartment':form_add_apartment})
+
+def ajax_add_apartment(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.POST['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    real_estate.createOrGetDepartamento(building.apartmentbuilding.addressNumber2,request.POST['addressNumber2'])
+    
+    buildings = real_estate.buildings.all()
+    return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
+
+def ajax_edit_property_modal(request):
+
+    print(request)
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.GET['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    if building.propertyType == Building.TYPE_CASA:
+        form_edit_property = FormEditProperty(label_suffix='',
+            initial={'addressNumber2': building.house.addressNumber2})
+    elif building.propertyType == Building.TYPE_EDIFICIO:
+        if 'apartment_id' in request.GET:
+            apartment_id = int(request.GET['apartment_id'])
+            apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+            form_edit_property = FormEditProperty(label_suffix='',
+                initial={'addressNumber2': apartment.addressNumber2})
+            return render(request,'appraisal/modals_edit_property.html',{
+                'appraisal':appraisal,
+                'real_estate':real_estate,
+                'building':building,
+                'apartment':apartment,
+                'form_edit_property':form_edit_property})
+        else:
+            form_edit_property = FormEditProperty(label_suffix='',
+                initial={'addressNumber2': building.apartmentbuilding.addressNumber2})
+            return render(request,'appraisal/modals_edit_property.html',{
+                'appraisal':appraisal,
+                'real_estate':real_estate,
+                'building':building,
+                'form_edit_property':form_edit_property})
+
+def ajax_edit_property(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.POST['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    if building.propertyType == Building.TYPE_CASA:
+        building.house.addressNumber2 = request.POST['addressNumber2']
+        building.house.save()
+    elif building.propertyType == Building.TYPE_EDIFICIO:
+        if 'apartment_id' in request.POST:
+            apartment_id = int(request.POST['apartment_id'])
+            apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+            apartment.addressNumber2 = request.POST['addressNumber2']
+            apartment.save()
+        else:
+            building.apartmentbuilding.addressNumber2 = request.POST['addressNumber2']
+            building.apartmentbuilding.save()
+    
+    buildings = real_estate.buildings.all()
+    return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
+
+def ajax_remove_property(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.POST['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    if 'apartment_id' in request.POST:
+        apartment_id = int(request.POST['apartment_id'])
+        apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+        apartment.delete()
+    else:
+        building.delete()
+    
+    buildings = real_estate.buildings.all()
+    return render(request,'appraisal/property_list.html',{'buildings':buildings,'real_estate':real_estate})
+
+def ajax_show_property(request):
+
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.GET['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
 
     building_id = int(request.GET['building_id'])
     building = real_estate.buildings.get(id=building_id)
 
     if building.is_apartmentbuilding:
+    
+        if int(request.GET['apartment_id']) != -1:
+            # DEPARTAMENTO
+            apartment_id = int(request.GET['apartment_id'])
+            apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+            form_apartment = FormApartment(instance=apartment)
+            form_building = FormBuilding(instance=building)
+            forms = {
+                'apartment':form_apartment,
+                'building':form_building}
+            return render(request,'apartment/general.html', {'forms':forms})
+        else:
+            form_building = FormBuilding(instance=building)
+            forms = {
+                'building':form_building}
+            return render(request,'apartmentbuilding/general.html', {'forms':forms})
 
-        apartment_id = int(request.GET['property_id'])
-        apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+def ajax_save_property(request):
 
-        form_apartment = FormApartment(instance=apartment)
-        form_building = FormBuilding(instance=building)
-        forms = {
-            'apartment':form_apartment,
-            'building':form_building}
+    if request.POST['appraisal_id'] == '':
+        return JsonResponse({})
 
-        return render(request,'apartment/general.html', {'forms':forms})
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    real_estate_id = int(request.POST['real_estate_id'])
+    real_estate = appraisal.real_estates.get(id=real_estate_id)
+
+    building_id = int(request.POST['building_id'])
+    building = real_estate.buildings.get(id=building_id)
+
+    form_building = FormBuilding(request.POST,instance=building)
+    form_building.save()
+
+    apartment_id = int(request.POST['apartment_id'])
+    apartment = building.apartmentbuilding.apartment_set.get(id=apartment_id)
+
+    form_apartment = FormApartment(request.POST,instance=apartment)
+    form_apartment.save()
+
+    return JsonResponse({})

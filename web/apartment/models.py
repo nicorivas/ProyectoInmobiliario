@@ -77,6 +77,7 @@ class Apartment(models.Model):
 
     class Meta:
         app_label = 'apartment'
+        ordering = ['addressNumber2']
 
     def __init__(self, *args, **kwargs):
         super(Apartment, self).__init__(*args, **kwargs)
