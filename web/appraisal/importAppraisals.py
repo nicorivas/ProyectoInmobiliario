@@ -32,10 +32,14 @@ def get_clean_address(rawaddress):
     d = re.split(regex, rawaddress, re.I)
     if len(d) >= 1:
         data['addressNumber2'] = d[-1].strip(". ")
+        if len(d[0])>30:
+            data['addressNumber2'] = d[-1].strip(". ").split('(')[-1].strip(")")
+    print(n)
     if len(n) == 3:
         data['addressStreet'] = address.split(n[0])[0].strip().strip("N°n° ")
         data['addressNumber'] = n[0]
-        data['addressNumber2'] = d[0]
+        print(data['addressNumber2'])
+        print(2)
     elif len(n)== 2:
         data['addressStreet'] = address.split(n[0])[0].strip().strip("N°n° ")
         data['addressNumber'] = n[0]
@@ -459,6 +463,7 @@ def importAppraisalSantander(file):
     print(propiedad)
 
     # Crear building
+
     edificio = propiedad.createOrGetEdificio(addressNumber2=address['addressNumber2'])
     edificio.propertyType = propertyType
     edificio.name = str(file)
@@ -767,15 +772,20 @@ files_santander =  ['N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de
 'N-1777660 (16713130-1) Credito 596 Providencia.xlsx',
 'N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx',
 'N-1775967 (77557450-K) Lo Lopez 1469 Cerro Navia Rol 62851 (T 816) Terreno.xlsx']
+files_itau = []
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
-
+''' 
 for dir in files_santander:
     file = file_pc + dir
     print(file)
     importAppraisalSantander(file)
 
 #importAppraisalITAU(file)
+'''
 
+path = file_pc
 
-
+files = os.listdir(path)
+for name in files:
+    print(name)
