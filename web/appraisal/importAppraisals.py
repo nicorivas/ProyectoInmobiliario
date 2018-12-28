@@ -830,8 +830,6 @@ def importAppraisalITAU(file):
 
 
 
-
-
 files_santander =  ['N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de Santa Amalia La Florida inc min promesa 19-10-18.xlsx',
 'N-1777974 (16336209-0) Santa Isabel 797 dp 1016 Santiago.xlsx',
 'N-1774960 (13267388-8) Hernán Olguín 0359, Los Heroes Poniente Maipú.xlsx',
