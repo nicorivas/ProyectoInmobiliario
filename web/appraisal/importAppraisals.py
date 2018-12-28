@@ -4,8 +4,8 @@ import re
 import sys
 import os
 import django
-#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
-sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
+sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -515,7 +515,16 @@ def importAppraisalSantander(file):
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
     valorUF = excel_find_general(ws, "VALOR COMERCIAL")
-    habitaciones = findFromDescription(programa)
+    try:
+        habitaciones = findFromDescription(programa)
+    except AttributeError:
+        try:
+            habitaciones = findFromDescription(generalDescription)
+            if not isinstance(habitaciones[0],(float, int)):
+                habitaciones = 0,0
+        except AttributeError:
+            habitaciones = 0,0
+
     banos = habitaciones[0]
     dormitorios = habitaciones[1]
     #hardcoded for now
@@ -871,7 +880,7 @@ file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 
 for dir in files_santander:
-    file = file_mac + dir
+    file = file_pc + dir
     print(file)
     importAppraisalSantander(file)
 
