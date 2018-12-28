@@ -4,8 +4,8 @@ import re
 import sys
 import os
 import django
-sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
-#sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
+#sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/web/') #para pc
+sys.path.append('/Users/pabloferreiro/ProyectoInmobiliario/web') #para Mac
 os.environ['DJANGO_SETTINGS_MODULE'] = 'map.settings'
 django.setup()
 
@@ -92,8 +92,7 @@ def excel_find_import(workbook1, workbook2, term):
 def excel_find_general(file, term):
     # finds data by term in appraisal file
     print(term)
-    wb = load_workbook(filename=file, read_only=True, data_only=True)
-    ws = wb.worksheets[0]
+    ws = file
     if term == "PROPIEDAD ANALIZADA":
         for row in range(120, 200):
             for col in range(1, 10):
@@ -467,7 +466,7 @@ def importAppraisalSantander(file):
     file_path = os.path.join(module_dir, 'static/appraisal/santander-template.xlsx')
     wb = load_workbook(filename=file_path)
     wb2 = load_workbook(filename=file, read_only=True, data_only=True)
-
+    ws = wb2.worksheets[0]
     solicitanteCodigo = excel_find_import(wb, wb2, "solicitanteCodigo")
     id = excel_find_import(wb, wb2, "id")
     timeModified = excel_find_import(wb, wb2, "timeModified")
@@ -501,21 +500,21 @@ def importAppraisalSantander(file):
     usoActual = destinoSII_modified(excel_find_import(wb, wb2, "usoActual"))
     usoFuturo = destinoSII_modified(excel_find_import(wb, wb2, "usoFuturo"))
     permisoEdificacion = excel_find_import(wb, wb2, "permisoEdificacion")
-    recepcionFinal = date_to_datetimefield(excel_find_general(file, "RECEPCION FINAL N°"))
-    expropiacion = boolean_null_choices(excel_find_general(file, "EXPROPIACION"))
-    viviendaSocial = boolean_null_choices(excel_find_general(file, "VIVIENDA SOCIAL"))
-    adobe = boolean_null_choices(excel_find_general(file, "CONST. DE ADOBE"))
-    desmontable = boolean_null_choices(excel_find_general(file, "CONST. DESMONTABLES"))
-    generalDescription = excel_find_general(file, "DESCRIPCIÓN GENERAL")
-    descripcionSectorAll = excel_find_general(file, "DESCRIPCION SECTOR")
-    programa = excel_find_general(file, "Programa :")
+    recepcionFinal = date_to_datetimefield(excel_find_general(ws, "RECEPCION FINAL N°"))
+    expropiacion = boolean_null_choices(excel_find_general(ws, "EXPROPIACION"))
+    viviendaSocial = boolean_null_choices(excel_find_general(ws, "VIVIENDA SOCIAL"))
+    adobe = boolean_null_choices(excel_find_general(ws, "CONST. DE ADOBE"))
+    desmontable = boolean_null_choices(excel_find_general(ws, "CONST. DESMONTABLES"))
+    generalDescription = excel_find_general(ws, "DESCRIPCIÓN GENERAL")
+    descripcionSectorAll = excel_find_general(ws, "DESCRIPCION SECTOR")
+    programa = excel_find_general(ws, "Programa :")
     #estructuraTerminaciones = excel_find_general(file, "Estructura y Terminaciones :")
-    mm2 = excel_find_general(file, "PROPIEDAD ANALIZADA")
+    mm2 = excel_find_general(ws, "PROPIEDAD ANALIZADA")
     terrainSquareMeters = mm2[0]
     usefulSquareMeters = mm2[0]
     builtSquareMeters = mm2[1]
     terraceSquareMeters = mm2[1]
-    valorUF = excel_find_general(file, "VALOR COMERCIAL")
+    valorUF = excel_find_general(ws, "VALOR COMERCIAL")
     habitaciones = findFromDescription(programa)
     banos = habitaciones[0]
     dormitorios = habitaciones[1]
@@ -534,35 +533,7 @@ def importAppraisalSantander(file):
     propiedad.lng = lng
     print(propiedad)
 
-    # Crear building
 
-    edificio = propiedad.createOrGetEdificio(addressNumber2=address['addressNumber2'])
-    edificio.propertyType = propertyType
-    edificio.name = str(file)
-    # edificio.marketPrice = valorUF
-    edificio.vidaUtilRemanente = vidaUtil
-    edificio.dfl2 = dfl2
-    edificio.avaluoFiscal = avaluoFiscal
-    edificio.copropiedadInmobiliaria = copropiedadInmobiliaria
-    edificio.selloVerde = selloVerde
-    edificio.permisoEdificacionNo = permisoEdificacion
-    edificio.permisoEdificacionFecha = recepcionFinal
-    edificio.tipoBien = tipoBien
-    edificio.rol = rol
-    edificio.year = recepcionFinal
-    edificio.mercadoObjetivo = mercadoObjetivo
-    edificio.antiguedad = antiguedad
-    edificio.acogidaLey = acogidaLey
-    edificio.ocupante = ocupante
-    edificio.adobe = adobe
-    edificio.expropiacion = expropiacion
-    edificio.viviandaSocial = viviendaSocial
-    edificio.desmontable = desmontable
-    edificio.usoActual = usoActual
-    edificio.usoFuturo = usoFuturo
-    edificio.destinoSII = destinoSII
-
-    edificio.save()
 
     if propertyType == Building.TYPE_CASA:
         casa = propiedad.createOrGetCasa(addressNumber2=address['addressNumber2'])
@@ -572,6 +543,29 @@ def importAppraisalSantander(file):
         casa.terrainSquareMeters = terrainSquareMeters
         casa.generalDescription = generalDescription
         casa.marketPrice = valorUF
+        casa.building.name = str(file)
+        # casa.building.marketPrice = valorUF
+        casa.building.vidaUtilRemanente = vidaUtil
+        casa.building.dfl2 = dfl2
+        casa.building.avaluoFiscal = avaluoFiscal
+        casa.building.copropiedadInmobiliaria = copropiedadInmobiliaria
+        casa.building.selloVerde = selloVerde
+        casa.building.permisoEdificacionNo = permisoEdificacion
+        casa.building.permisoEdificacionFecha = recepcionFinal
+        casa.building.tipoBien = tipoBien
+        casa.building.rol = rol
+        casa.building.year = recepcionFinal
+        casa.building.mercadoObjetivo = mercadoObjetivo
+        casa.building.antiguedad = antiguedad
+        casa.building.acogidaLey = acogidaLey
+        casa.building.ocupante = ocupante
+        casa.building.adobe = adobe
+        casa.building.expropiacion = expropiacion
+        casa.building.viviandaSocial = viviendaSocial
+        casa.building.desmontable = desmontable
+        casa.building.usoActual = usoActual
+        casa.building.usoFuturo = usoFuturo
+        casa.building.destinoSII = destinoSII
 
         casa.save()
     elif propertyType == Building.TYPE_DEPARTAMENTO:
@@ -585,6 +579,30 @@ def importAppraisalSantander(file):
         departamento.generalDescription = generalDescription
         departamento.marketPrice = valorUF
         departamento.programa = programa
+        departamento.apartment_building.name = str(file)
+        # departamento.apartment_building.marketPrice = valorUF
+        departamento.apartment_building.vidaUtilRemanente = vidaUtil
+        departamento.apartment_building.dfl2 = dfl2
+        departamento.apartment_building.avaluoFiscal = avaluoFiscal
+        departamento.apartment_building.copropiedadInmobiliaria = copropiedadInmobiliaria
+        departamento.apartment_building.selloVerde = selloVerde
+        departamento.apartment_building.permisoEdificacionNo = permisoEdificacion
+        departamento.apartment_building.permisoEdificacionFecha = recepcionFinal
+        departamento.apartment_building.tipoBien = tipoBien
+        departamento.apartment_building.rol = rol
+        departamento.apartment_building.year = recepcionFinal
+        departamento.apartment_building.mercadoObjetivo = mercadoObjetivo
+        departamento.apartment_building.antiguedad = antiguedad
+        departamento.apartment_building.acogidaLey = acogidaLey
+        departamento.apartment_building.ocupante = ocupante
+        departamento.apartment_building.adobe = adobe
+        departamento.apartment_building.expropiacion = expropiacion
+        departamento.apartment_building.viviandaSocial = viviendaSocial
+        departamento.apartment_building.desmontable = desmontable
+        departamento.apartment_building.usoActual = usoActual
+        departamento.apartment_building.usoFuturo = usoFuturo
+        departamento.apartment_building.destinoSII = destinoSII
+
         departamento.save()
 
     elif propertyType == Building.TYPE_TERRENO:
@@ -680,6 +698,7 @@ def importAppraisalITAU(file):
     file_path = os.path.join(module_dir, 'static/appraisal/itau-template.xlsx')
     wb = load_workbook(filename=file_path)
     wb2 = load_workbook(filename=file, read_only=True, data_only=True)
+    ws = wb2.worksheets[0]
 
     solicitanteCodigo = excel_find_import(wb, wb2, "solicitanteCodigo")
     id = excel_find_import(wb, wb2, "id")
@@ -696,27 +715,27 @@ def importAppraisalITAU(file):
     rol1 = excel_find_general(file, "N° Rol Principal")
     fechaVisita = excel_find_import(wb, wb2, "timeModified")
     print(fechaVisita)
-    rol2 = excel_find_general(file, "N° Rol (es) Sec.")
+    rol2 = excel_find_general(ws, "N° Rol (es) Sec.")
     #tasadorUser = excel_find_import(wb, wb2, "tasadorUser")
     # lat = convert(excel_find_import(wb, wb2, "lat")) #Itau no viene con lat-long, usar función?
     # lng = convert(excel_find_import(wb, wb2, "lng"))
-    antiguedad = int(excel_find_general(file, "Antigüedad"))
-    vidaUtil = int(excel_find_general(file, "Vida Util"))
+    antiguedad = int(excel_find_general(ws, "Antigüedad"))
+    vidaUtil = int(excel_find_general(ws, "Vida Util"))
     vidaUtilRemanente = vidaUtil-antiguedad
-    avaluoFiscal = excel_find_general(file, "Total Avalúo Fiscal")
-    leyes = excel_find_general(file, "Leyes que se Acoge")
+    avaluoFiscal = excel_find_general(ws, "Total Avalúo Fiscal")
+    leyes = excel_find_general(ws, "Leyes que se Acoge")
     acogidaLey = leyes[0]
     acogidaLey2 = leyes[1]
-    selloVerde = green_stamp(excel_find_general(file, "Sello de Gases"))
-    tipoBien = estadoPropiedad(excel_find_general(file, "Tipo Propiedad"))
-    permiso = excel_find_general(file, "Permiso Edificación")
+    selloVerde = green_stamp(excel_find_general(ws, "Sello de Gases"))
+    tipoBien = estadoPropiedad(excel_find_general(ws, "Tipo Propiedad"))
+    permiso = excel_find_general(ws, "Permiso Edificación")
     permisoEdificacion = permiso[0]
     recepcionFinal = permiso[1]
-    generalDescription = excel_find_general(file, "II. DESCRIPCIÓN GENERAL DEL BIEN TASADO")
-    terrainSquareMeters = excel_find_general(file, "Sub Total Terreno")
-    builtSquareMeters = excel_find_general(file, "Sub Total Construcciones")
+    generalDescription = excel_find_general(ws, "II. DESCRIPCIÓN GENERAL DEL BIEN TASADO")
+    terrainSquareMeters = excel_find_general(ws, "Sub Total Terreno")
+    builtSquareMeters = excel_find_general(ws, "Sub Total Construcciones")
     propertyType = tipoPropiedad(excel_find_import(wb, wb2, "propertyType"))
-    valores = excel_find_general(file, "Valor Comercial")
+    valores = excel_find_general(ws, "Valor Comercial")
     valorUF = valores[0]
     valorLiquidez = valores[1]
     dfl2 = law_to_database(acogidaLey, acogidaLey2, "DFL2")
@@ -733,25 +752,6 @@ def importAppraisalITAU(file):
         addressRegion=Commune.objects.get(name=addressCommune).region)
     print(propiedad)
 
-    #Crear building
-    edificio = propiedad.createOrGetEdificio(addressNumber2=addressNumber2)
-    edificio.propertyType = propertyType
-    edificio.name = str(file)
-    #edificio.marketPrice = valorUF
-    edificio.vidaUtilRemanente = vidaUtilRemanente
-    edificio.dfl2 = dfl2
-    edificio.avaluoFiscal = avaluoFiscal
-    edificio.copropiedadInmobiliaria = copropiedadInmobiliaria
-    edificio.selloVerde = selloVerde
-    edificio.permisoEdificacionNo = permisoEdificacion
-    edificio.permisoEdificacionFecha = recepcionFinal
-    edificio.tipoPropiedad = tipoBien
-    edificio.rol = rol1
-    edificio.year = recepcionFinal
-
-    edificio.save()
-
-
     if propertyType == Building.TYPE_CASA:
         casa = propiedad.createOrGetCasa(addressNumber2=addressNumber2)
         #casa.bedrooms = bedrooms
@@ -760,6 +760,18 @@ def importAppraisalITAU(file):
         casa.terrainSquareMeters = terrainSquareMeters
         casa.generalDescription = generalDescription
         casa.marketPrice = valorUF
+        casa.building.name = str(file)
+        #casa.building.marketPrice = valorUF
+        casa.building.vidaUtilRemanente = vidaUtilRemanente
+        casa.building.dfl2 = dfl2
+        casa.building.avaluoFiscal = avaluoFiscal
+        casa.building.copropiedadInmobiliaria = copropiedadInmobiliaria
+        casa.building.selloVerde = selloVerde
+        casa.building.permisoEdificacionNo = permisoEdificacion
+        casa.building.permisoEdificacionFecha = recepcionFinal
+        casa.building.tipoPropiedad = tipoBien
+        casa.building.rol = rol1
+        casa.building.year = recepcionFinal
 
         casa.save()
     elif propertyType == Building.TYPE_DEPARTAMENTO:
@@ -771,6 +783,19 @@ def importAppraisalITAU(file):
         departamento.usefulSquaremeters = builtSquareMeters
         departamento.generalDescription = generalDescription
         departamento.marketPrice = valorUF
+        departamento.apartment_building.name = str(file)
+        # departamento.apartment_building.marketPrice = valorUF
+        departamento.apartment_building.vidaUtilRemanente = vidaUtilRemanente
+        departamento.apartment_building.dfl2 = dfl2
+        departamento.apartment_building.avaluoFiscal = avaluoFiscal
+        departamento.apartment_building.copropiedadInmobiliaria = copropiedadInmobiliaria
+        departamento.apartment_building.selloVerde = selloVerde
+        departamento.apartment_building.permisoEdificacionNo = permisoEdificacion
+        departamento.apartment_building.permisoEdificacionFecha = recepcionFinal
+        departamento.apartment_building.tipoPropiedad = tipoBien
+        departamento.apartment_building.rol = rol1
+        departamento.apartment_building.year = recepcionFinal
+
         departamento.save()
 
     elif propertyType == Building.TYPE_TERRENO:
@@ -846,7 +871,7 @@ file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 
 for dir in files_santander:
-    file = file_pc + dir
+    file = file_mac + dir
     print(file)
     importAppraisalSantander(file)
 
