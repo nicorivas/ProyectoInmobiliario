@@ -46,15 +46,22 @@ def view_create(request):
                 addressRegion=form.cleaned_data['addressRegion'])
 
             # Luego añadimos la propiedad principal al real estate
+            # (Además asignamos el rol)
+            if len(form.cleaned_data['rol']) > 0:
+                rol = Rol(code=form.cleaned_data['rol'])
             propertyType = int(form.cleaned_data['propertyType'])
             if propertyType == Building.TYPE_CASA:
                 propiedad = real_estate.createOrGetCasa(addressNumber2=form.cleaned_data['addressNumber2'])
+                rol.house = propiedad
             elif propertyType == Building.TYPE_EDIFICIO:
                 propiedad = real_estate.createOrGetEdificio()
+                rol.apartment_building = propiedad
             elif propertyType == Building.TYPE_CONDOMINIO:
                 propiedad = real_estate.createOrGetCondominio()
+                rol.condominium = propiedad
             elif propertyType == Building.TYPE_DEPARTAMENTO:
                 propiedad = real_estate.createOrGetDepartamento(addressNumber2=None,addressNumber3=form.cleaned_data['addressNumber2'])
+                rol.apartment = propiedad
             elif propertyType == Building.TYPE_OTRO:
                 pass
             else:
@@ -67,7 +74,6 @@ def view_create(request):
             else:
                 orderFile = None
             appraisal = create.createAppraisal(request,real_estate,
-                rol=form.cleaned_data['rol'],
                 solicitante=form.cleaned_data['solicitante'],
                 solicitanteOtro=form.cleaned_data['solicitanteOther'],
                 solicitanteSucursal=form.cleaned_data['solicitanteSucursal'],

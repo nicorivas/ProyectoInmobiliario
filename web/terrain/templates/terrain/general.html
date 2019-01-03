@@ -1,0 +1,51 @@
+{{forms.terrain.addressNumber2}}
+
+<div id="line_roles">
+{% include 'building/roles.html' %}
+</div>
+
+<hr/>
+
+<div class="row">
+	<div class="col-2">
+		<p class="text-right">Características generales</p>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.terrain.frente.label_tag}}
+			{{forms.terrain.frente}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.terrain.fondo.label_tag}}
+			{{forms.terrain.fondo}}
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-2"></div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.terrain.topography.label_tag}}
+			{{forms.terrain.topography}}
+		</div>
+	</div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.terrain.shape.label_tag}}
+			{{forms.terrain.shape}}
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-2"></div>
+	<div class="col-2">
+		<div class="form-group">
+			{{forms.terrain.area.label_tag}}
+			{{forms.terrain.area}}
+		</div>
+	</div>
+</div>

@@ -1,0 +1,7 @@
+{% if apartment %}
+	{% include 'apartment/otros.html' %}
+{% elif building.apartmentbuilding %}
+	{% include 'apartmentbuilding/otros.html' %}
+{% elif building.house %}
+	{% include 'house/otros.html' %}
+{% endif %}

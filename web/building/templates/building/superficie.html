@@ -1,0 +1,13 @@
+{% if apartment or building.house %}
+<hr/>
+<div class="row">
+	<div class="col-2">
+		<p class="text-right">Superficie</p>
+	</div>
+	{% if apartment %}
+		{% include 'apartment/superficie.html' %}
+	{% elif building.house %}
+		{% include 'house/superficie.html' %}
+	{% endif %}
+</div>
+{% endif %}

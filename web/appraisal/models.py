@@ -7,6 +7,11 @@ from django.contrib.postgres.fields import ArrayField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from terrain.models import Terrain
+from house.models import House
+from apartmentbuilding.models import ApartmentBuilding
+from apartment.models import Apartment
+
 import datetime
 import reversion
 
@@ -103,7 +108,9 @@ class Document(models.Model):
         options={'quality': 60})
 
 class Rol(models.Model):
+
     code = models.CharField("Rol",max_length=20,blank=True,null=True)
+
     SIN_DATOS = 0
     DEFINITIVO = 1
     MATRIZ = 2
@@ -123,6 +130,11 @@ class Rol(models.Model):
         (NO_ENROLADO, "No enrolado")
     ]
     state = models.IntegerField("Estado", choices=rolTypeChoices, blank=True,null=False,default=0)
+
+    apartment = models.ForeignKey(Apartment,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
+    house = models.ForeignKey(House,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
+    apartment_building = models.ForeignKey(ApartmentBuilding,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
+    terrain = models.ForeignKey(Terrain,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
 
 @reversion.register()
 class Appraisal(models.Model):

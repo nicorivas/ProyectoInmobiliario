@@ -21,5 +21,10 @@ urlpatterns = [
     path('ajax/remove_property/', views.ajax_remove_property, name='ajax_remove_property_url'),
     path('ajax/add_apartment_modal/', views.ajax_add_apartment_modal, name='ajax_add_apartment_modal_url'),
     path('ajax/add_apartment/', views.ajax_add_apartment, name='ajax_add_apartment_url'),
-    path('ajax/save_property/', views.ajax_save_property, name='ajax_save_property_url')
+    path('ajax/add_rol_modal/', views.ajax_add_rol_modal, name='ajax_add_rol_modal_url'),
+    path('ajax/add_rol/', views.ajax_add_rol, name='ajax_add_rol_url'),
+    path('ajax/save_property/', views.ajax_save_property, name='ajax_save_property_url'),
+
+   path('ajax/add_property_similar_modal/', views.ajax_add_property_similar_modal, name='ajax_add_property_similar_modal_url'),
+   path('ajax/add_property_similar/', views.ajax_add_property_similar, name='ajax_add_property_similar_url')
 ]

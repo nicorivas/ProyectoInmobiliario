@@ -5,9 +5,13 @@ class Terrain(models.Model):
     Parts of the terrain
     '''
 
-    TYPE_TERRAIN = 101
-
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
+
+    similar = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+
+    real_estate = models.ForeignKey('realestate.RealEstate', on_delete=models.CASCADE,verbose_name="Real estate",blank=False,null=False)
+
+    addressNumber2 = models.CharField("Dpto.",max_length=30,null=True,blank=True)
 
     frente = models.FloatField("Frente",blank=True,null=True)
 
@@ -29,8 +33,18 @@ class Terrain(models.Model):
 
     area = models.FloatField("Area",blank=True,null=False,default=0)
 
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
-
     uf_per_area = models.FloatField("UF per Area",blank=True,null=False,default=0)
 
     marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)
+
+    @property
+    def generic_name(self):
+        return "Terreno "+self.addressNumber2
+
+    @property
+    def name_or_generic(self):
+        if self.name:
+            return self.name
+        else:
+            return self.generic_name
+    

@@ -18,10 +18,35 @@
 	text-align: center;
 }
 
+.table_selected_terrain {
+    font-size: 0.85rem;
+    border-radius: 0.0rem;
+    background-color: #fff;
+}
+
+.table_selected_building {
+    font-size: 0.85rem;
+    border-radius: 0.0rem;
+    background-color: #fff;   
+}
+
 #table_terrains .form-control-sm {
 	padding: 0rem 0.3rem;
 	font-size: 0.7rem;
 	border-radius: 0.0rem;
+    background-color: #fff;
+}
+
+#table_terrains .form-control-sm:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+#table_terrains .form-control-sm:read-only {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
 }
 
 #table_terrains td {
@@ -35,6 +60,18 @@
 	padding: 0rem 0.3rem;
 	font-size: 0.7rem;
 	border-radius: 0.0rem;
+}
+
+#table_constructions .form-control-sm:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+#table_constructions .form-control-sm:read-only {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
 }
 
 #table_constructions td {

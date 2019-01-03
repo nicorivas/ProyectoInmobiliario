@@ -1,0 +1,31 @@
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Agregar rol</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form action="" method="post" id="form_add_rol">
+      <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" id="in_appraisal_id"   name="appraisal_id" value="{{appraisal.id}}">
+          <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
+          <input type="hidden" id="in_building_id"    name="building_id" value="{{building.id}}">
+          <input type="hidden" id="in_apartment_id"   name="apartment_id" value="{{apartment.id}}">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{form_add_rol.code.label_tag}}
+                {{form_add_rol.code}}
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_add_rol">Agregar</button>
+      </div>
+    </form>
+  </div>
+</div>
