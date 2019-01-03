@@ -1,0 +1,21 @@
+{% if apartment %}
+
+{% include 'apartment/data.html' %}
+
+{% endif %}
+
+<div id="line_roles">
+{% include 'building/roles.html' %}
+</div>
+
+<hr/>
+
+{% include 'building/caracteristicas_generales.html' %}
+
+{% include 'building/superficie.html' %}
+
+{% include 'building/descripciones.html' %}
+
+<hr/>
+
+{% include 'building/otros.html' %}

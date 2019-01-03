@@ -30,6 +30,10 @@
   {% include 'appraisal/modals_add_apartment.html' %}
 </div>
 
+<div class="modal fade" id="modal_add_rol" tabindex="-1" role="dialog" aria-hidden="true">
+  {% include 'appraisal/modals_add_rol.html' %}
+</div>
+
 <div class="modal fade" id="modalExport" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -119,185 +123,9 @@
   {% include 'main/modals_assign_visador.html' %}
 </div>
 
-
-<div class="modal fade" id="addRealEstate" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Añadir {{realestate.get_propertyType_display}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        <div class="row">
-          <div class="col-6">
-            <div class="form-group">
-              <label>Calle</label>
-              {{forms.createRealEstate.addressStreet}}
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="form-group">
-              <label>Número</label>
-              {{forms.createRealEstate.addressNumber}}
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="form-group">
-              <label>Comuna</label>
-              {{forms.createRealEstate.addressCommune}}
-            </div>
-          </div>
-        </div>
-
-        {% if realestate.is_apartment %}
-        <div class="row">
-          <div class="col-6">
-            <div class="form-group">
-              <label>Departamento</label>
-              {{forms.createRealEstate.addressNumber2}}
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="form-group">
-              <label>Piso</label>
-              {{forms.createRealEstate.floor}}
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="form-group">
-          <label>Fuente URL</label>
-          {{forms.createRealEstate.sourceUrl}}
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <div class="form-group">
-              <label>Fuente</label>
-              {{forms.createRealEstate.sourceName}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Código</label>
-              {{forms.createRealEstate.sourceId}}
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <div class="form-group">
-              <label>Dormitorios</label>
-              {{forms.createRealEstate.bedrooms}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Baños</label>
-              {{forms.createRealEstate.bathrooms}}
-            </div>
-          </div>
-          {% if realestate.is_apartment %}
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie útil</label>
-              {{forms.createRealEstate.usefulSquareMeters}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie terraza</label>
-              {{forms.createRealEstate.terraceSquareMeters}}
-            </div>
-          </div>
-          {% elif realestate.is_house %}
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie construida</label>
-              {{forms.createRealEstate.builtSquareMeters}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie terreno</label>
-              {{forms.createRealEstate.terrainSquareMeters}}
-            </div>
-          </div>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label>Precio mercado</label>
-          {{forms.createRealEstate.marketPrice}}
-        </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button id="id_btn_add_realestate" name="btn_add_realestate" class="btn btn-primary">Añadir</button>
-        <!--<button class="btn btn-danger" name="btn_delete_photo">Borrar</button>-->
-      </div>
-
-    </div>
-  </div>
+<div class="modal fade" id="modal_add_property_similar" tabindex="-2" role="dialog" aria-hidden="true">
+  {% include 'appraisal/modals_add_property_similar.html' %}
 </div>
-
-
-<script>
-  $("#form_create_apartment").validate({
-    rules: {
-      "vc-addressStreet": "required",
-      "vc-addressNumber": "required",
-      "vc-addressCommune": "required",
-      "vc-sourceUrl": "required",
-      "vc-sourceName": "required",
-      "vc-sourceId": "required",
-      "vc-bathrooms": "required",
-      "vc-bedrooms": "required",
-      "vc-usefulSquareMeters": "required",
-      "vc-terraceSquareMeters": "required",
-      "vc-marketPrice": "required"
-    }
-  });
-</script>
-
-<script>
-  // Modal things
-  function parseSource() {
-    var url = $("#id_vc-sourceUrl").val();
-    if (url == undefined) {
-      return
-    }
-    var urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
-    if (urlParts.length == 1) {
-      return
-    }
-    var domain = urlParts[0].replace('www.','');
-    var id = urlParts[4].split('-')[0]
-    if (domain == 'portalinmobiliario.com') {
-      $("#id_vc-sourceName").attr('value','portalinmobiliario');
-      $("#id_vc-sourceName").val('portalinmobiliario');
-      $("#id_vc-sourceId").attr('value',id);
-      $("#id_vc-sourceId").val(id);
-      var validator = $( "#form_create_apartment" ).validate();
-      validator.element( "#id_vc-sourceName" );
-      validator.element( "#id_vc-sourceId" );
-    }
-  }
-  $("#id_vc-sourceUrl").change(parseSource)
-  $(document).ready(function() {
-    parseSource();
-  })
-</script>
-
-
 
 <div class="modal fade" id="modal_photo" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">

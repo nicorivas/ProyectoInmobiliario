@@ -110,6 +110,11 @@ class RealEstate(models.Model):
         (3, "No")
     )
 
+    def createTerreno(self,addressNumber2):
+        terrain = self.terrains.create(real_estate=self, addressNumber2=addressNumber2)
+        self.save()
+        return terrain
+
     def createCasa(self,addressNumber2):
         building = Building(real_estate=self, propertyType=Building.TYPE_CASA)
         building.save()
@@ -158,6 +163,19 @@ class RealEstate(models.Model):
         self.buildings.add(building)
         self.save()
         return building
+
+    def createOrGetTerreno(self,addressNumber2=None,if_exists_false=False):
+        try:
+            terrains = self.terrains.all()
+            for terrain in terrains:
+                if terrain.addressNumber2 == addressNumber2:
+                    if if_exists_false:
+                        return False
+                    else:
+                        return terrain
+            return self.createTerreno(addressNumber2)
+        except Building.DoesNotExist:
+            return self.createTerreno(addressNumber2)
 
     def createOrGetCasa(self,addressNumber2=None,if_exists_false=False):
         try:
@@ -244,7 +262,8 @@ class RealEstate(models.Model):
             return self.createOrGetEdificio(addressNumber2,if_exists_false=if_exists_false)
         elif propertyType == Building.TYPE_CASA:
             return self.createOrGetCasa(addressNumber2,if_exists_false=if_exists_false)
-
+        elif propertyType == Building.TYPE_TERRENO:
+            return self.createOrGetTerreno(addressNumber2,if_exists_false=if_exists_false)
     @property
     def sourceNameNice(self):
         "Returns source to be printed in a nice way."

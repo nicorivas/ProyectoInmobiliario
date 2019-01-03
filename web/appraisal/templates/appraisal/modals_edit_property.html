@@ -1,4 +1,5 @@
 <div class="modal-dialog" role="document">
+  <form action="" method="post" id="form_edit_property">
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title">Editar propiedad</h5>
@@ -7,14 +8,15 @@
       </button>
     </div>
     <div class="modal-body">
-
-      <form action="" method="post" id="form_edit_property">
         {% csrf_token %}
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
         <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
         <input type="hidden" id="in_building_id" name="building_id" value="{{building.id}}">
         {% if apartment %}
         <input type="hidden" id="in_apartment_id" name="apartment_id" value="{{apartment.id}}">
+        {% endif %}
+        {% if terrain %}
+        <input type="hidden" id="in_terrain_id" name="terrain_id" value="{{terrain.id}}">
         {% endif %}
 
         <div class="row">
@@ -25,7 +27,6 @@
             </div>
           </div>
         </div>
-      </form>
 
     </div>
     <div class="modal-footer">
@@ -39,4 +40,5 @@
       </button>
     </div>
   </div>
+  </form>
 </div>

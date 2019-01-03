@@ -24,16 +24,16 @@ class Building(models.Model):
     TYPE_CONDOMINIO = 18
     propertyType_choices = [
         (TYPE_NONE,'---------'),
+        (TYPE_TERRENO, "Terreno"),
         (TYPE_CASA, "Casa"),
+        (TYPE_EDIFICIO, "Edificio"),
         (TYPE_DEPARTAMENTO, "Departamento"),
         (TYPE_OFICINA, "Oficina"),
         (TYPE_LOCAL_COMERCIAL, "Local Comercial"),
-        (TYPE_TERRENO, "Terreno"),
         (TYPE_INDUSTRIA, "Industria"),
         (TYPE_GALPON, "Galpon"),
         (TYPE_BODEGA, "Bodega"),
         (TYPE_ESTACIONAMIENTO, "Estacionamiento"),
-        (TYPE_EDIFICIO, "Edificio"),
         (TYPE_PARCELA, "Parcela"),
         (TYPE_BARCO, "Barco"),
         (TYPE_VEHICULO, "Vehiculo"),
@@ -309,4 +309,18 @@ class Building(models.Model):
     @property
     def is_apartmentbuilding(self):
         return int(self.propertyType == Building.TYPE_EDIFICIO)
+
+    @property
+    def generic_name(self):
+        if self.is_apartmentbuilding:
+            return "Edificio "+self.apartmentbuilding.addressNumber2
+        elif self.is_house:
+            return "Casa "+self.house.addressNumber2
+
+    @property
+    def name_or_generic(self):
+        if self.name:
+            return self.name
+        else:
+            return self.generic_name
 

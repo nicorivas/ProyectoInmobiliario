@@ -56,14 +56,13 @@ def createOrGetRealEstate(**kwargs):
     '''
     try:
         real_estate = RealEstate.objects.get(**kwargs)
-        return real_estate
+        return real_estate, True
     except RealEstate.DoesNotExist:
         real_estate = RealEstate(**kwargs)
         real_estate.save()
-        return real_estate
+        return real_estate, False
     except MultipleObjectsReturned:
-        context = {'error_message': 'RealEstate is repeated'}
-        return render(request, 'create/error.html', context)
+        return None, False
 
 def createAppraisal(request,real_estate,rol="",**kwargs):
     '''
@@ -80,14 +79,7 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
         timeCreated=datetime.datetime.now(datetime.timezone.utc))
     comment.save()
     appraisal.comments.add(comment)
-
-    if len(rol) > 0:
-        rol = Rol(code=rol)
-        rol.save()
-        appraisal.roles.add(rol)
-
     appraisal.real_estates.add(real_estate)
-    
     appraisal.save()
     
     return appraisal

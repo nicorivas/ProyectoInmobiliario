@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-2">
+    <p class="text-right">Rol(es)</p>
+  </div>
+  <div class="col-2">
+    <select class="form-control form-control-sm" id="select_roles">
+      {% for rol in roles.all %}
+        <option>{{rol.code}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-4">
+    <a href="#" style="font-size:0.9em;" id="btn_add_rol_modal">
+      Agregar rol
+    </a>
+  </div>
+</div>
