@@ -1,5 +1,8 @@
 from __future__ import print_function
 from openpyxl import load_workbook
+import openpyxl
+import xlrd
+import pyexcel
 import re
 import sys
 import os
@@ -19,6 +22,7 @@ from building.models import Building
 from apartment.models import Apartment
 from appraisal.models import Appraisal, Comment, Photo, Document
 from commune.models import Commune
+from region.models import Region
 
 from create.create import createOrGetRealEstate
 
@@ -706,6 +710,7 @@ def importAppraisalITAU(file):
     module_dir = os.path.dirname(__file__)  # get current directory
     file_path = os.path.join(module_dir, 'static/appraisal/itau-template.xlsx')
     wb = load_workbook(filename=file_path)
+
     wb2 = load_workbook(filename=file, read_only=True, data_only=True)
     ws = wb2.worksheets[0]
 
@@ -721,7 +726,7 @@ def importAppraisalITAU(file):
     addressNumber2 = excel_find_import(wb, wb2, "addressNumber2")
     addressCommune = get_commune_name(excel_find_import(wb, wb2, "addressCommune"))
     addressRegion = excel_find_import(wb, wb2, "addressRegion")
-    rol1 = excel_find_general(file, "N° Rol Principal")
+    rol1 = excel_find_general(ws, "N° Rol Principal")
     fechaVisita = excel_find_import(wb, wb2, "timeModified")
     print(fechaVisita)
     rol2 = excel_find_general(ws, "N° Rol (es) Sec.")
@@ -875,22 +880,39 @@ files_santander =  ['N-1775585 (15930247-4) Av. La Florida 9650 Casa 60 Altos de
 'N-1777660 (16713130-1) Credito 596 Providencia.xlsx',
 'N-1777834 (21254788-3) Tarapacá 782, Dp 206, Santiago.xlsx',
 'N-1775967 (77557450-K) Lo Lopez 1469 Cerro Navia Rol 62851 (T 816) Terreno.xlsx']
-files_itau = []
+files_itau = ['TMA 1800470 Perla Trejos Marin (17108443-1) Hacienda de Chacabuco parcela 4 K, Colina 24-10-18.xls',
+'TMI 1803234 Antonio Patricio Moder Donoso (13566161-9) Independencia 1142 Casa 4 Condominio Parque Don Antonio Puente Alto mod 23-10-18.xls',
+'TMI 1805243 Alex Jaques Goldenberg  (7849601-0) Charles Dickens 1576, Vitacura.xls',
+'TMI-1803741 Michael Alarcon Fernandez (13685545-K) Lago Hurón 1444 Villa Canadá Maipú inc 24-10-18.xls',
+'TMI-1805018 Julien Boyer (23475370-3) Pastor Fernandez 18069 Lo Barnechea 24-10-18.xls',
+'TMI-1805214 Elizaberth Machuca (13550848-9) Calatayud 482 La Reina.xls',
+'TMI-1805225 Gonzalo Garrido (13678613-K) Doctor Johow 550 Departamento 44-D Bloque D Conjunto Dr Johow Ñuñoa.xlsx',
+'TMI-1805264 Alejandro Avello Herrera (16951565-4) Pasaje San Gabriel 11411 Villa Juan Pablo II La Florida Rol 3807-10 (T 107 E 48) (A 1990).xls',
+'TMI-1805312 Carolina Veliz (16207917-4) San Pablo 2002  Departamento  1707  Santiago.xls',
+'TMI-1805393 Maria Puga Diaz (2795051-5) Marcel Duhaut 2931 Dpto 401 Providencia Rol 2150-181 (E 137) (A 1998) (6P).xls',
+'TMI-1805409 Oscar Montt Diaz (9402975-9) Galvarino Gallardo 1820 Dpto 1102 Providencia Rol 1523-29 (E 106) (A 1993) (13P).xls]']
+
 file_mac = '/Volumes/GoogleDrive/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
 file_pc = 'G:/Mi unidad/ProyectoInmobiliario/Datos/tasaciones/'
-
+'''  
 for dir in files_santander:
     file = file_pc + dir
     print(file)
     importAppraisalSantander(file)
-
-#importAppraisalITAU(file)
 '''
+#importAppraisalITAU(file)
 
+for dir in files_itau:
+    file = file_pc + dir
+    print(file)
+    file2 = file.replace(".xls", ".xlsx")
+    pyexcel.save_as(file_name=file, dest_file_name = file2)
+    importAppraisalITAU(file2)
+
+'''
 path = file_pc
 
 files = os.listdir(path)
 for name in files:
     print(name)
 '''
-
