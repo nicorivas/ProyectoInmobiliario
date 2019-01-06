@@ -7,6 +7,8 @@ class ApartmentBuilding(models.Model):
 	'''
 	building = models.OneToOneField(Building,on_delete=models.CASCADE,verbose_name="Edificio",null=True,blank=False)
 	
+	similar = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+
 	addressNumber2 = models.CharField("Dpto.",max_length=30,null=True,blank=True)
 	
 	marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)

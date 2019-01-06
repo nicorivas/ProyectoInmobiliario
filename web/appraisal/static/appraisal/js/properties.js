@@ -9,14 +9,16 @@ function properties_data() {
 }
 
 function btn_loading(btn) {
-  btn.find('.ld').toggle();
-  btn.find('.icon').toggle();
+  btn.addClass('running');
+  btn.find('.ld').show();
+  btn.find('.icon').show();
   btn.prop('disabled', true);
 }
 
 function btn_idle(btn) {
-  btn.find('.ld').toggle();
-  btn.find('.icon').toggle();
+  btn.removeClass('running');
+  btn.find('.ld').hide();
+  btn.find('.icon').hide();
   btn.prop('disabled', false);
 }
 
@@ -48,7 +50,7 @@ function set_address_list_actions() {
         btn_idle(btn);
         $("#modal_add_address").html($.trim(ret));
         $("#modal_add_address").modal('show')
-        set_modal_actions()
+        set_modal_actions_properties()
         set_address_list_actions()
       }
     });
@@ -81,7 +83,7 @@ function set_address_list_actions() {
         $("#properties_data").data(data)
         $('#modal_edit_address').html($.trim(ret));
         $("#modal_edit_address").modal('show')
-        set_modal_actions()
+        set_modal_actions_properties()
         set_address_list_actions()
       }
     });
@@ -128,7 +130,6 @@ function set_property_list_actions() {
 
     var btn = $(this)
     var data = properties_data()
-    console.log('btn_property',data)
     data["building_id"] = btn.data('building_id')
     data["apartment_id"] = btn.data('apartment_id')
     data["terrain_id"] = btn.data('terrain_id')
@@ -185,7 +186,7 @@ function set_property_list_actions() {
         $("#properties_data").data(data)
         $("#modal_add_property").html($.trim(ret));
         $("#modal_add_property").modal("show")
-        set_modal_actions()
+        set_modal_actions_properties()
       }
     });
   })
@@ -211,7 +212,7 @@ function set_property_list_actions() {
         $("#properties_data").data(data)
         $("#modal_add_apartment").html($.trim(ret));
         $("#modal_add_apartment").modal("show")
-        set_modal_actions()
+        set_modal_actions_properties()
       }
     });
   })
@@ -240,13 +241,13 @@ function set_property_list_actions() {
         $('properties_data').data(btn.data("apartment_id"))
         $("#modal_edit_property").html($.trim(data));
         $("#modal_edit_property").modal("show")
-        set_modal_actions()
+        set_modal_actions_properties()
       }
     });
   });
 }
 
-function set_modal_actions() {
+function set_modal_actions_properties() {
 
   $("#btn_edit_address").unbind()
   $("#btn_edit_address").off()
@@ -339,28 +340,30 @@ function set_modal_actions() {
 
   $("#btn_add_property").unbind()
   $("#btn_add_property").off()
-  $('#btn_add_property').on('click', function() {
-    var btn = $(this)
+  $("#btn_add_property").on('click', function() {
     var form = $('#form_add_property')
-    var url = $("#properties_data").data("ajax_add_property_url")
-    btn_loading(btn)
-    $.ajax({
-      url: url,
-      type: 'post',
-      data: form.serialize(),
-      error: function () {
+    if (form.valid()) {
+      var btn = $(this)
+      btn_loading(btn)
+      var url = $("#properties_data").data("ajax_add_property_url")
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            btn_idle(btn);
+            alert("Error al agregar propiedad.");
+            return false;
+        },
+        success: function (data) {
           btn_idle(btn);
-          alert("Error al agregar propiedad.");
-          return false;
-      },
-      success: function (data) {
-        btn_idle(btn);
-        $("#modal_add_property").modal('hide')
-        $('#property_info').fadeOut();
-        $('#property_list').html($.trim(data));
-        set_property_list_actions();
-      }
-    });
+          $("#modal_add_property").modal('hide')
+          $('#property_info').fadeOut();
+          $('#property_list').html($.trim(data));
+          set_property_list_actions();
+        }
+      });
+    }
   })
 
   $("#btn_edit_property").unbind()
@@ -443,7 +446,7 @@ function set_modal_actions() {
   $('#btn_add_rol').on('click', function() {
     var btn = $(this)
     var form = $('#form_add_rol')
-    data = join_data(form)
+    data = join_data(form,$("#properties_data"))
     var url = $("#properties_data").data("ajax_add_rol_url")
     btn_loading(btn)
     $.ajax({
@@ -453,6 +456,60 @@ function set_modal_actions() {
       error: function () {
           btn_idle(btn);
           alert("Error al agregar rol.");
+          return false;
+      },
+      success: function (data) {
+        btn_idle(btn);
+        $('#line_roles').html($.trim(data));
+        $("#modal_add_rol").modal('hide')
+        $('#select_roles').val($('#select_roles option:last').val());
+        set_property_view_actions()
+      }
+    })
+  });
+
+  $("#btn_edit_rol").unbind()
+  $("#btn_edit_rol").off()
+  $('#btn_edit_rol').on('click', function() {
+    var btn = $(this)
+    var form = $('#form_add_rol')
+    data = join_data(form,$("#properties_data"))
+    var url = $("#properties_data").data("ajax_edit_rol_url")
+    btn_loading(btn)
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: $.param(data),
+      error: function () {
+          btn_idle(btn);
+          alert("Error al editar rol.");
+          return false;
+      },
+      success: function (data) {
+        btn_idle(btn);
+        $('#line_roles').html($.trim(data));
+        $("#modal_add_rol").modal('hide')
+        $('#select_roles').val($('#select_roles option:last').val());
+        set_property_view_actions()
+      }
+    })
+  });
+
+  $("#btn_remove_rol").unbind()
+  $("#btn_remove_rol").off()
+  $('#btn_remove_rol').on('click', function() {
+    var btn = $(this)
+    var form = $('#form_add_rol')
+    data = join_data(form,$("#properties_data"))
+    var url = $("#properties_data").data("ajax_remove_rol_url")
+    btn_loading(btn)
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: $.param(data),
+      error: function () {
+          btn_idle(btn);
+          alert("Error al remover rol.");
           return false;
       },
       success: function (data) {
@@ -485,23 +542,26 @@ function join_data(form,element) {
 }
 
 function save_property() {
-  var form = $('#form_property')
-  var url = $("#properties_data").data("ajax_save_property_url")
-  data = join_data(form,$("#properties_data"))
-  $.ajax({
-    url: url,
-    type: 'post',
-    data: $.param(data),
-    async: false,
-    error: function () {
-        alert("Error al grabar.");
-        return false;
-    },
-    success: function (data) {
-      $("#property_info_alert").html($.trim(data));
-      $('#property_info_alert').show();
-    }
-  });
+  if ($("#property_info").children().length > 1) {
+    console.log('save')
+    var form = $('#form_property')
+    var url = $("#properties_data").data("ajax_save_property_url")
+    data = join_data(form,$("#properties_data"))
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: $.param(data),
+      async: false,
+      error: function () {
+          alert("Error al grabar.");
+          return false;
+      },
+      success: function (data) {
+        $("#property_info_alert").html($.trim(data));
+        $('#property_info_alert').show();
+      }
+    });
+  }
 }
 
 function set_property_view_actions() {
@@ -526,7 +586,31 @@ function set_property_view_actions() {
       success: function (data) {
         $("#modal_add_rol").html($.trim(data));
         $("#modal_add_rol").modal("show")
-        set_modal_actions()
+        set_modal_actions_properties()
+      }
+    });
+  })
+
+  $("#btn_edit_rol_modal").unbind()
+  $("#btn_edit_rol_modal").off()
+  $('#btn_edit_rol_modal').on('click', function() {
+    event.preventDefault()
+    var btn = $(this)
+    var data = properties_data()
+    data['code'] = $("#select_roles").val()
+    var url = $("#properties_data").data("ajax_edit_rol_modal_url");
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: data,
+      error: function () {
+          alert("Error al cargar modal para editar rol.");
+          return false;
+      },
+      success: function (data) {
+        $("#modal_add_rol").html($.trim(data));
+        $("#modal_add_rol").modal("show")
+        set_modal_actions_properties()
       }
     });
   })

@@ -1,0 +1,247 @@
+<table class="table table-sm mb-4 table_selected_buildings border-left border-right"
+    data-id="{{building.id}}"
+    data-house_id="{{building.house.id}}"
+    data-apartment_building_id="{{building.apartmentbuilding.id}}">
+
+    <thead class="thead">
+        <tr style="background: #eee;">
+            <!--<th scope="col">lat/lng</th>-->
+            <th scope="col" style="width: 2em;"></th>
+            <th scope="col" style="width: 2em;text-align:right;">#</th>
+            <th scope="col" style="width: 25em;text-align:left;">Dirección</th>
+            <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+            {% if building.is_house %}
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 4em;text-align:center;"><i class="fas fa-bath"></i></th>
+            <th scope="col" style="width: 9em;text-align:right;">m<sup>2</sup> construidos</th>
+            <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
+            <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> const.</th>
+            <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> tot.</th>
+            {% elif building.is_apartmentbuilding %}
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> construidos</th>
+            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
+            {% endif %}
+            <th scope="col" style="width: 6em;text-align:right;">
+                <a href="#" class="btn_similar_add_terrain_modal">
+                    Agregar
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody id="table_selected_building_{{building.id}}">
+
+        <tr class="tr_current">
+            <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
+            <td></td>
+            <td></td>
+            <td scope="row">{{building.name_or_generic}}</td>
+            <td></td>
+            {% if building.is_house %}
+            <td style="text-align:center;">{{building.house.bedrooms|default_if_none:"-"}}</td>
+            <td style="text-align:center;">{{building.house.bathrooms|default_if_none:"-"}}</td>
+            <td class="value" name="area" style="text-align:right;">{{building.house.builtSquareMeters|default_if_none:"-"}}</td>
+            <td class="value" name="market_value"  style="text-align:right;"></td>
+            <td class="value" name="market_value_density_1"  style="text-align:right;"></td>
+            <td class="value" name="market_value_density_2"  style="text-align:right;"></td>
+            {% elif building.is_apartmentbuilding %}
+            <td class="value" name="area" style="text-align:right;"></td>
+            <td class="value" name="market_price" style="text-align:right;"></td>
+            <td class="value" name="market_price_density" style="text-align:right;"></td>
+            {% endif %}
+            <td></td>
+            <td></td>
+        </tr>
+
+        {% if building.is_house %}
+        {% for o in building.house.house_set.all %}
+        <tr class="tr_selected">
+            <td></td>
+            <td style="text-align:right;"><small>{{forloop.counter}}.</small></td>
+            <td scope="row">{{o.building.real_estate.addressStreet}} {{o.building.real_estate.addressNumber}}</td>
+            <td><a href="{{o.sourceUrl}}">{{ o.building.real_estate.sourceNameNice }}</a></td>
+            <td style="text-align:center;">{{ o.bedrooms }}</td>
+            <td style="text-align:center;">{{ o.bathrooms }}</td>
+            <td class="value" name="area" style="text-align:right;" >{{ o.builtSquareMetersVerbose }}</td>
+            <td class="value" name="market_value" style="text-align:right;">{{ o.marketPrice }}</td>
+            <td class="value" name="market_value_density_1" style="text-align:right;">{{ o.marketPricePerBuiltSquareMeters }}</td>
+            <td class="value" name="market_value_density_2" style="text-align:right;">{{ o.marketPricePerBuiltSquareMeters }}</td>
+            <td style="padding:0em;text-align:right;">
+                {% if not appraisal.finished %}
+                <button type="button" class="btn btn-sm btn_edit_selected_property_modal" value="{{o.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">edit</i>
+                </button>
+                <button type="button" class="btn btn-sm btn_remove_selected_property" value="{{o.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">delete</i>
+                </button>
+                {% endif %}
+            </td>
+            <td></td>
+        </tr>
+        {% endfor %}
+
+        {% if building.house.house_set.all %}
+
+        <tr class="tr_averages border-bottom">
+            <td></td>
+            <td></td>
+            <td colspan="4" class="text-right">Promedios</td>
+            <td class='value td_area' style="text-align:right;"></td>
+            <td class='value td_market_value' style="text-align:right;"></td>
+            <td class='value td_market_value_density_1' style="text-align:right;"></td>
+            <td class='value td_market_value_density_2' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        {% else %}
+
+        <tr class="border-bottom">
+            <td></td>
+                <td colspan="10" style="text-align:center;">
+                    <span class="badge badge-info">No se han agregado propiedades similares</span>
+                </td>
+            <td></td>
+        </tr>
+
+        {% endif %}
+
+        {% endif %}
+
+        {% if building.is_apartmentbuilding %}
+        {% for o in building.apartmentbuilding.apartmentbuilding_set.all %}
+        <tr class="tr_selected">
+            <td></td>
+            <td style="text-align:right;"><small>{{forloop.counter}}.</small></td>
+            <td scope="row">{{o.building.real_estate.addressStreet}} {{o.building.real_estate.addressNumber}}</td>
+            <td><a href="{{o.sourceUrl}}">{{ o.building.real_estate.sourceNameNice }}</a></td>
+            <td class="value" name="area" style="text-align:right;" >{{ o.builtSquareMeters }}</td>
+            <td class="value" name="market_price" style="text-align:right;">{{ o.marketPrice }}</td>
+            <td class="value" name="market_price_density" style="text-align:right;">{{ o.marketPricePerTotalSquareMeters }}</td>
+            <td style="padding:0em;text-align:right;">
+                {% if not appraisal.finished %}
+                <button type="button" class="btn btn-sm btn_edit_selected_property_modal" value="{{o.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">edit</i>
+                </button>
+                <button type="button" class="btn btn-sm btn_remove_selected_property" value="{{o.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">delete</i>
+                </button>
+                {% endif %}
+            </td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        <tr class="tr_averages border-bottom">
+            <td></td>
+            <td></td>
+            <td colspan="2" class="text-right">Promedios</td>
+            <td class='value td_area' style="text-align:right;"></td>
+            <td class='value td_market_price' style="text-align:right;"></td>
+            <td class='value td_market_price_density' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+
+{% if building.is_apartmentbuilding %}
+{% for apt in building.apartmentbuilding.apartment_set.all %}
+<table class="table table-sm mb-4 table_selected_buildings border-left border-right"
+    data-id="{{building.id}}"
+    data-apartment_building_id="{{building.apartmentbuilding.id}}"
+    data-apartment_id="{{apt.id}}">
+
+    <thead class="thead">
+        <tr style="background: #eee;">
+        <!--<tr style="background: #fafafa; color: #888;">-->
+            <th></th>
+            <th scope="col" style="width: 1em;text-align:right;">#</th>
+            <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
+            <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bed"></i></th>
+            <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bath"></i></th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup></th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup></th>
+            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
+            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
+            <th scope="col" style="width: 5em;">
+                <a href="#" class="btn_similar_add_terrain_modal">
+                    Agregar
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr class="tr_current">
+            <!--<td><small>{{realestate.latlng_verbose}}</small></td>-->
+            <td></td>
+            <td></td>
+            <td scope="row">{{apt.name_or_generic}}</td>
+            <td></td>
+            <td style="text-align:center;">{{apt.bedrooms|default_if_none:"-"}}</td>
+            <td style="text-align:center;">{{apt.bathrooms|default_if_none:"-"}}</td>
+            <td class="td_c_area_1" style="text-align:right;">{{apt.builtSquareMeters|default_if_none:"-"}}</td>
+            <td class="td_c_area_2" style="text-align:right;">{{apt.terrainSquareMeters|default_if_none:"-"}}</td>
+            <td class="td_c_market_price" style="text-align:right;"></td>
+            <td class="td_c_market_price_per_built_square_meters" style="text-align:right;"></td>
+            <td class="td_c_market_price_per_total_square_meters" style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        {% for a in apt.apartment_set.all %}
+        <tr class="tr_selected">
+            <td></td>
+            <td style="text-align:right;"><small>{{forloop.counter}}.</small></td>
+            <td scope="row">
+                {{a.apartment_building.building.real_estate.addressStreet}} {{a.apartment_building.building.real_estate.addressNumber}}
+            </td>
+            <td><a href="{{o.sourceUrl}}">{{ a.apartmentbuilding.building.real_estate.sourceNameNice }}</a></td>
+            <td class="value" name="bedrooms" style="text-align:right;" >{{ a.bedrooms }}</td>
+            <td class="value" name="bathrooms" style="text-align:right;" >{{ a.bathrooms }}</td>
+            <td class="value" name="area_1" style="text-align:right;" >{{ a.usefulSquareMeters }}</td>
+            <td class="value" name="area_2" style="text-align:right;" >{{ a.terraceSquareMeters }}</td>
+            <td class="value" name="market_value" style="text-align:right;">{{ a.marketPrice }}</td>
+            <td class="value" name="market_value_density_1" style="text-align:right;">{{ a.marketPricePerTotalSquareMeters }}</td>
+            <td class="value" name="market_value_density_2" style="text-align:right;">{{ a.marketPricePerTotalSquareMeters }}</td>
+            <td style="padding:0em;text-align:right;">
+                {% if not appraisal.finished %}
+                <button type="button" class="btn btn-sm btn_edit_selected_property_modal" value="{{a.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">edit</i>
+                </button>
+                <button type="button" class="btn btn-sm btn_remove_selected_property" value="{{a.id}}" style="padding:0px; border:0px;">
+                    <i class="material-icons" style="font-size:16px;">delete</i>
+                </button>
+                {% endif %}
+            </td>
+            <td></td>
+        </tr>
+        {% endfor %}
+
+        <tr class="tr_averages border-bottom">
+            <td></td>
+            <td></td>
+            <td scope="row" colspan="4" style="text-align:right;">Promedios</td>
+            <td class='value td_area_1' style="text-align:right;"></td>
+            <td class='value td_area_2' style="text-align:right;"></td>
+            <td class='value td_market_value' style="text-align:right;"></td>
+            <td class='value td_market_value_density_1' style="text-align:right;"></td>
+            <td class='value td_market_value_density_2' style="text-align:right;"></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    </tbody>
+
+</table>
+{% endfor %}
+{% endif %}

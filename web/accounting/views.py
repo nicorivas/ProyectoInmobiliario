@@ -10,7 +10,7 @@ from django.http import HttpResponse
 def accountingView(request):
     if request.method == "GET":
         tasadores = list(User.objects.filter(groups__name__in=['tasador']))
-        
+
 
     context = {'tasadores':tasadores}
     return render(request, 'accounting/accounting.html', context)

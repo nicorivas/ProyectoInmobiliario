@@ -41,6 +41,7 @@ class Building(models.Model):
         (TYPE_ESTACION_DE_SERVICIO, "Estación de Servicio"),
         (TYPE_CONDOMINIO, "Condominio"),
         (TYPE_OTRO, "Otro"),]
+    propertyType_dict = {b:a for a,b in propertyType_choices}
     propertyType = models.PositiveIntegerField(
         choices=propertyType_choices,
         default=TYPE_OTRO)
@@ -256,13 +257,11 @@ class Building(models.Model):
         choices=MATERIAL_CHOICES,
         default=MATERIAL_UNKNOWN)
 
-    year = models.DateField("Año construcción",blank=True,null=False,default='1985-01-01')
+    year = models.DateField("Año construcción",blank=True,null=True)
 
     quality = models.IntegerField("Calidad",blank=True,null=True,choices=[(1,1),(2,2),(3,3),(4,4),(5,5)])
 
     state = models.IntegerField("Estado",blank=True,null=True,choices=[(1,'Sin valor'),(2,'Malo'),(3,'Regular'),(4,'Bueno'),(5,'Muy bueno')])
-
-    rol = models.CharField("Rol",max_length=20,blank=True,null=True)
 
     BOOLEAN_NULL_CHOICES = (
         (None, "S/A"),
@@ -286,13 +285,10 @@ class Building(models.Model):
         choices=RECEPCION_CHOICES,
         default=RECEPCION_NR,
         blank=True)
-
-    area = models.FloatField("Area",
-        blank=True,
-        null=False,
-        default=0)
     
-    UFPerArea = models.FloatField("Area",
+    area = models.FloatField("Area",blank=True,null=True)    
+
+    UFPerArea = models.FloatField("Area density",
         blank=True,
         null=False,
         default=0)

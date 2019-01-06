@@ -1,0 +1,185 @@
+{% extends "main/base.html" %}
+
+{% load tabs %}
+
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'appraisal/css/app.css' %}">
+<script src="{% static "main/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
+{% endblock head %}
+
+{% block content %}
+
+  <nav class="navbar justify-content-between">
+    <!--<a class="navbar-brand" href="#">-->
+    <h4>
+      <span class="badge badge-secondary mr-2" style="font-size: 100%;">{{realestate.get_propertyType_display}}</span>
+      {{real_estate.address}}
+    </h4>
+    <!--</a>-->
+    <ul class="navbar-nav mr-auto"> </ul>
+    {% if appraisal.paused %}
+    <button class="btn btn-outline-primary mr-2" type="button" data-toggle="modal" data-target="#modalExport">Resumir</button>
+    {% endif %}
+    {% if appraisal.finished %}
+    <button name="btn_export"  class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+    <button name="btn_restore" class="btn btn-outline-dark">Restaurar</button>
+    {% else %}
+    <button name="btn_export" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalExport">Exportar</button>
+    <button name="btn_finish" class="btn btn-outline-dark mr-2" type="button" data-toggle="modal" data-target="#modalFinish">Finalizar</button>
+    <button name="btn_save" class="btn btn-outline-dark mr-2" style="font-family:Material Icons;font-size:1em;">save</button>
+    <button name="btn_delete" class="btn btn-outline-dark" type="button" data-toggle="modal" data-target="#modalDelete" style="font-family:Material Icons;font-size:1em;">delete</button>
+    {% endif %}
+  </nav>
+
+  <div class="container-fluid">
+
+    <div class="row">
+
+      <div class="col text-center">
+        {% if appraisal.not_assigned %}
+        <div class="alert alert-warning" role="alert">Esperando asignación</div>
+        {% elif appraisal.active %}
+        <div class="alert alert-primary" role="alert">Activa</div>
+        {% elif appraisal.paused %}
+        <div class="alert alert-warning" role="alert">Pausada</div>
+        {% elif appraisal.finished %}
+        <div class="alert alert-secondary" role="alert">Terminada</div>
+        {% endif %}
+      </div>
+
+      <div class="col text-center">
+        <div class="alert alert-secondary" role="alert">
+          {% if appraisal.orderFile %}
+          <a href="{{appraisal.orderFile.url}}" style="color:#000;">Descargar archivo pedido</a>
+          {% else %}
+          Archivo de pedido no disponible
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col text-center">
+        {% if appraisal.daysLeft > 3 %}
+        <div class="alert alert-primary" role="alert" id="timeLeft"></div>
+        {% elif appraisal.daysLeft > 1 %}
+        <div class="alert alert-warning" role="alert" id="timeLeft"></div>
+        {% else %}
+        <div class="alert alert-danger" role="alert" id="timeLeft"></div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <ul class="nav nav-tabs card-header-tabs" role="tablist" id="myTab" >
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"general"}}" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"general"}}">
+              Aspectos generales
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"property"}}" id="property-tab" data-toggle="tab" href="#property" role="tab" aria-controls="property" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"property"}}">
+              Propiedad(es)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"surroundings"}}" id="surroundings-tab" data-toggle="tab" href="#surroundings" role="tab" aria-controls="surroundings" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"surroundings"}}">
+              Entorno
+            </a>
+          </li>
+          <li class="nav-item">
+            <a id="tab_value" class="{{request.GET.tab|tab_nav_class:"value"}}" id="value-tab" data-toggle="tab" href="#value" role="tab" aria-controls="value" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"value"}}">
+              Valoración
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"annex"}}" id="annex-tab" data-toggle="tab" href="#annex" role="tab" aria-controls="annex" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"annex"}}">
+              Anexos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="{{request.GET.tab|tab_nav_class:"logbook"}}" id="logbook-tab" data-toggle="tab" href="#logbook" role="tab" aria-controls="logbook" aria-selected="{{request.GET.tab|tab_nav_aria_selected:"logbook"}}">
+              Bitácora
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="tab-content" id="myTabContent">
+
+        <div class="{{request.GET.tab|tab_pane_class:"general"}}" id="general" role="tabpanel" aria-labelledby="general-tab">
+          {% include "appraisal/general.html" %}
+        </div>
+        <div class="{{request.GET.tab|tab_pane_class:"property"}}" id="property" role="tabpanel" aria-labelledby="property-tab">
+          {% include "appraisal/properties.html" %}
+        </div>
+        <div class="{{request.GET.tab|tab_pane_class:"surroundings"}}" id="surroundings" role="tabpanel" aria-labelledby="surroundings-tab">
+          {% include "appraisal/surroundings.html" %}
+        </div>
+        <div class="{{request.GET.tab|tab_pane_class:"value"}}" id="value" role="tabpanel" aria-labelledby="value-tab">
+          {% include "appraisal/value.html" %}
+        </div>
+        <div class="{{request.GET.tab|tab_pane_class:"annex"}}" id="annex" role="tabpanel" aria-labelledby="annex-tab">
+          {% include "appraisal/annex.html" %}
+        </div>
+        <div class="{{request.GET.tab|tab_pane_class:"logbook"}}" id="logbook" role="tabpanel" aria-labelledby="logbook-tab">
+          {% include "appraisal/logbook.html" %}
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+{% include "appraisal/modals.html" %}
+
+<!-- Script to go back to the same tab when refreshing webpage -->
+<script>
+
+  $(".nav-link").click(function(e) {
+    if ($("#property-tab").hasClass("active")) {
+      save_property()
+    }
+  })
+
+  $("#tab_value").click(function(e) {
+    var appraisal_id = {{appraisal.id}};
+    var url = "{% url 'ajax_load_tab_value' %}";
+    var data = {'appraisal_id':appraisal_id};
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: data,
+      error: function () {
+          alert("Error al cargar pestaña valor.");
+          return false;
+      },
+      success: function (ret) {
+        $("#value").html($.trim(ret));
+        console.log('b')
+      }
+    });
+  })
+
+  $('#myTab a').click(function(e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
+
+  // store the currently selected tab in the hash value
+  $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+    var id = $(e.target).attr("href").substr(1);
+    //window.location.hash = id;
+  });
+
+  // on load of the page: switch to the currently selected tab
+  var hash = window.location.hash;
+  $('#myTab a[href="' + hash + '"]').tab('show');
+</script>
+
+{% endblock content %}

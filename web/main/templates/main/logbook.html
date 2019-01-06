@@ -1,8 +1,13 @@
 {% load custom_tags %}
+{% load mathfilters %}
+
   <div class="row mb-2">
     <div class="col-9">
       <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
-        {{appraisal.realEstate.address}}
+        {{appraisal.real_estates.first.address}}
+        {% if appraisal.real_estates.all|length > 1 %}
+        (+{{appraisal.real_estates.all|length|sub:1}})
+        {% endif %}
       </p>
     </div>
     <div class="col-3" style="text-align:right;">
@@ -40,7 +45,7 @@
       <p class="text-right"><em>Pedido</em></p>
     </div>
     <div class="col-4">
-      <p class="text-left">{{appraisal.timeCreated | date:"d/m/Y G:i"}}</p>
+      <p class="text-left">{{appraisal.timeCreated|date:"d/m/Y G:i"}}</p>
     </div>
     <div class="col-2">
       <p class="text-right"><em>Entrega</em></p>

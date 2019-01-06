@@ -13,6 +13,7 @@
           <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
           <input type="hidden" id="in_building_id"    name="building_id" value="{{building.id}}">
           <input type="hidden" id="in_apartment_id"   name="apartment_id" value="{{apartment.id}}">
+          <input type="hidden" id="in_rol_id"         name="rol_id" value="{{rol.id}}">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
@@ -24,7 +25,12 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        {% if add  %}
         <button type="button" class="btn btn-primary" id="btn_add_rol">Agregar</button>
+        {% elif edit %}
+        <button type="button" class="btn btn-danger" id="btn_remove_rol">Eliminar</button>
+        <button type="button" class="btn btn-primary" id="btn_edit_rol">Editar</button>
+        {% endif %}
       </div>
     </form>
   </div>

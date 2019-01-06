@@ -1,0 +1,832 @@
+<div class="mr-4 ml-4">
+  
+  <div class="row">
+    <div class="col">
+      <h5 style="margin:0em;">Valoración</h5>
+    </div>
+    <div class="col text-right">
+      <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#avaluos" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+        more_vert
+      </a>
+    </div>
+  </div>
+
+  <div id="avaluos" class="collapse show mt-3 ml-4 mr-4" aria-labelledby="heading">
+
+    {% if appraisal.real_estates.first.terrains.all %}
+
+    <table id="table_terrains" class="table table-sm mb-0 mt-2 border-left border-right">
+
+      <thead class="thead">
+        <!-- Headers !-->
+        <tr style="background: #eee;">
+          <th></th>
+          <th scope="col" colspan="7">Terrenos</th>
+          <th scope="col" style="text-align:center;" class="border-left">Cantidad</th>
+          <th scope="col" colspan="4" style="text-align:center;" class="border-left">Valores</th>
+          <th scope="col"></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td style="width:30px;"></td>
+          <td style="width:30px;"></td>
+          <td style="width:300px;font-size:0.85em;">Descripción</td>
+          <td style="width:80px;font-size:0.85em;">Frente {{htmlBits.unitMeter|safe}}</td>
+          <td style="width:80px;font-size:0.85em;">Fondo {{htmlBits.unitMeter|safe}}</td>
+          <td style="width:80px;font-size:0.85em;">Topo.</td>
+          <td style="width:80px;font-size:0.85em;">Forma</td>
+          <td style="width:80px;font-size:0.85em;">Rol</td>
+          <td style="width:100px;text-align:center;font-size:0.85em;">Superficie {{htmlBits.unitSquaredMeter|safe}}</td>
+          <td style="width:100px;" class="td-center">{{htmlBits.unitPesos|safe}}</td>
+          <td style="width:100px;" class="td-center">{{htmlBits.unitUF|safe}}</td>
+          <td style="width:100px;" class="td-center">{{htmlBits.unitPesosPerSquaredMeter|safe}}</td>
+          <td style="width:100px;" class="td-center">{{htmlBits.unitUFPerSquaredMeter|safe}}</td>
+          <td style="width:20px;"></td>
+          <td></td>
+        </tr>
+
+        {% for ter in appraisal.real_estates.first.terrains.all %}
+        <tr class="terrain">
+          <!-- Hidden inputs are used for processing the form. 
+            Terrain id to get if the obejct exists !-->
+          <input type="hidden" name="terrain_id" id="in_terrain_id" value="{{ter.id}}">
+          <!-- And edited, to see if we have to consider this row. See comment in view. !-->
+          <input type="hidden" name="terrain_edited" id="in_terrain_edited" value="0">
+          <td></td>
+          <td style="font-size:0.85em;">
+            {{forloop.counter}}.
+          </td>
+          <td id='td_name' style="font-size:0.85em;">
+            {{ter.name_or_generic}}
+          </td>
+          <td id='td_frente' style="font-size:0.85em;">
+            {{ter.frente|default_if_none:"-"}}
+          </td>
+          <td id='td_fondo' style="font-size:0.85em;">
+            {{ter.fondo|default_if_none:"-"}}
+          </td>
+          <td id='td_topography' style="font-size:0.85em;">
+            {{ter.get_topography_display|default_if_none:"-"}}
+          </td>
+          <td id='td_shape' style="font-size:0.85em;">
+            {{ter.get_shape_display|default_if_none:"-"}}
+          </td>
+          <td id='td_rol' style="font-size:0.85em;">
+            {{ter.rol|default_if_none:"-"}}
+          </td>
+          <td class="value" name="area">
+            <input type="number" step="any" class="area form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ter.area}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td class="value" name="value_1">
+            <input class="value_1 form-control form-control-sm constructions" style="text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="value_2">
+            <input class="value_2 form-control form-control-sm constructions" style="text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="density_1">
+            <input class="density_1 form-control form-control-sm constructions" style="text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="density_2">
+            <input type="number" step="any" class="density_2 form-control form-control-sm constructions" style="text-align:right;" value="{{ter.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          {% if appraisal.active %}
+          <td style="padding:0em;text-align:right;">
+            <button class="btn btn-sm save_terrain" name="btn_valuation_add_terrain" style="padding:0px; border:0px; display: none;">
+              <i class="material-icons">save</i>
+            </button>
+            <button class="btn btn-sm edit_terrain" type="button" value="{{ter.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-sm" name="btn_valuation_remove_terrain" value="{{ter.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+          {% else %}
+          <td>
+          </td>
+          {% endif %}
+          <td></td>
+        </tr>
+        {% endfor %}
+
+        <!-- Totals -->
+        <tr id="total_terrains" class="border-bottom">
+          <td></td>
+          <td></td>
+          <td colspan="6" style="font-size:0.85em;font-weight:bold;text-align:right;padding-right:1em;">Total terrenos</td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total area form-control form-control-sm constructions" name="area" style="text-align:right;" disabled>
+          </td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total value_1 form-control form-control-sm constructions" name="value_1" style="text-align:right;" disabled>
+          </td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total value_2 form-control form-control-sm constructions" name="value_2" style="text-align:right;" disabled>
+          </td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total density_1 form-control form-control-sm constructions" name="density_1" style="text-align:right;" disabled>
+          </td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total density_2 form-control form-control-sm constructions" name="density_2" style="text-align:right;" disabled>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    {% endif %}
+
+    {% if appraisal.real_estates.first.buildings.all %}
+
+    <table id="table_buildings" class="table table-sm mt-4 mb-0 border-left border-right">
+
+      <thead class="thead">
+        <!-- Headers !-->
+        <tr style="background: #eee;">
+          <th></th>
+          <th scope="col" colspan="9">Construcciones</th>
+          <th scope="col" style="text-align:center;" class="border-left">Cantidad</th>
+          <th scope="col" colspan="4" style="text-align:center;" class="border-left">Valores</th>
+          <th scope="col"></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- Subdivision of table for constructions !-->
+        <tr>
+          <td style="width: 30px;"></td>
+          <td style="width: 30px;"></td>
+          <td style="width: 140px;font-size:0.85em;">Descripción</td>
+          <td style="width: 80px;font-size:0.85em;">Material</td>
+          <td style="width: 80px;font-size:0.85em;">Año</td>
+          <td style="width: 80px;font-size:0.85em;">Prenda</td>
+          <td style="width: 80px;font-size:0.85em;">Recep.</td>
+          <td style="width: 80px;font-size:0.85em;">Calidad</td>
+          <td style="width: 80px;font-size:0.85em;">Estado</td>
+          <td style="width: 80px;font-size:0.85em;">Rol</td>
+          <td style="width:100px;text-align:center;font-size:0.85em;">Superficie {{htmlBits.unitSquaredMeter|safe}}</td>
+          <td style="width: 100px" class="td-center">{{htmlBits.unitPesos|safe}}</td>
+          <td style="width: 100px" class="td-center" >{{htmlBits.unitUF|safe}}</td>
+          <td style="width: 100px" class="td-center" >{{htmlBits.unitPesosPerSquaredMeter|safe}}</td>
+          <td style="width: 100px" class="td-center">{{htmlBits.unitUFPerSquaredMeter|safe}}</td>
+          <td style="width: 20px;"></td>
+          <td></td>
+        </tr>
+
+        <!-- Iterate over constructions !-->
+        {% for con in appraisal.real_estates.first.buildings.all %}
+        <tr class="building">
+          <!-- Hidden inputs are used for processing the form. 
+            Construction id to get if the obejct exists !-->
+          <input type="hidden" name="construction_id" id="in_construction_id" value="{{con.id}}">
+          <!-- And edited, to see if we have to consider this row. See comment in view. !-->
+          <input type="hidden" name="construction_edited" id="in_construction_edited" value="0">
+          <td></td>
+          <td style="font-size:0.85em;">
+            {{forloop.counter}}.
+          </td>
+          <td id='td_name' style="font-size:0.85em;">
+            {% if con.name %}
+              {{con.name}}
+            {% else %}
+              {{con.generic_name}}
+            {% endif %}
+          </td>
+          <td id='td_material' style="font-size:0.85em;">
+            {{con.get_material_display}}
+          </td>
+          <td id='td_year' style="font-size:0.85em;">
+            {{con.year|date:'Y'|default_if_none:"-"}}
+          </td>
+          <td id='td_prenda' style="font-size:0.85em;">
+            {{con.get_prenda_display|default_if_none:"-"}}
+          </td>
+          <td id='td_recepcion' style="font-size:0.85em;">
+            {{con.get_recepcion_display|default_if_none:"-"}}
+          </td>
+          <td id='td_quality' style="font-size:0.85em;">
+            {{con.get_quality_display|default_if_none:"-"}}
+          </td>
+          <td id='td_state' style="font-size:0.85em;">
+            {{con.get_state_display|default_if_none:"-"}}
+          </td>
+          <td id='td_rol' style="font-size:0.85em;">
+            {{con.rol|default_if_none:"-"}}
+          </td>
+          <td class="value" name="area">
+            <input id="id_consArea" type="number" step="any" class="area form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td class="value" name="value_1">
+            <input id="id_consPesos" class="value_1 form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="value_2">
+            <input id="id_consUF" class="value_2 form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="density_1">
+            <input id="id_consPesosPerArea" class="density_1 form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="value" name="density_2">
+            <input id="id_consUFPerArea" type="number" step="any" class="density_2 form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td style="padding:0em;text-align:right;">
+            {% if appraisal.active %}
+            <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
+              <i class="material-icons">save</i>
+            </button>
+            <button type="button" class="btn btn-sm edit_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">delete</i>
+            </button>
+            {% endif %}
+          </td>
+          <td></td>
+        </tr>
+        {% if con.is_apartmentbuilding %}
+        {% for apt in con.apartmentbuilding.apartment_set.all %}
+        <tr class="building">
+          <!-- Hidden inputs are used for processing the form. 
+            Construction id to get if the obejct exists !-->
+          <input type="hidden" name="construction_id" id="in_construction_id" value="{{con.id}}">
+          <!-- And edited, to see if we have to consider this row. See comment in view. !-->
+          <input type="hidden" name="construction_edited" id="in_construction_edited" value="0">
+          <td></td>
+          <td style="font-size:0.85em;">
+            {{forloop.parentloop.counter}}.{{forloop.counter}}.
+          </td>
+          <td id='td_name' style="font-size:0.85em;">
+            {% if con.name %}
+              {{apt.name}}
+            {% else %}
+              {{apt.generic_name}}
+            {% endif %}
+          </td>
+          <td id='td_material' style="font-size:0.85em;">
+            {{con.get_material_display}}
+          </td>
+          <td id='td_year' style="font-size:0.85em;">
+            {{con.year|date:'Y'|default_if_none:"-"}}
+          </td>
+          <td id='td_prenda' style="font-size:0.85em;">
+            {{con.get_prenda_display|default_if_none:"-"}}
+          </td>
+          <td id='td_recepcion' style="font-size:0.85em;">
+            {{con.get_recepcion_display|default_if_none:"-"}}
+          </td>
+          <td id='td_quality' style="font-size:0.85em;">
+            {{con.get_quality_display|default_if_none:"-"}}
+          </td>
+          <td id='td_state' style="font-size:0.85em;">
+            {{con.get_state_display|default_if_none:"-"}}
+          </td>
+          <td id='td_rol' style="font-size:0.85em;">
+            {{con.rol|default_if_none:"-"}}
+          </td>
+          <td class="td_area">
+            <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td class="td_pesos">
+            <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="td_UF">
+            <input id="id_consUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="td_pesosPerArea">
+            <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="td_UFPerArea">
+            <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td style="padding:0em;text-align:right;">
+            {% if appraisal.active %}
+            <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
+              <i class="material-icons">save</i>
+            </button>
+            <button type="button" class="btn btn-sm edit_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">delete</i>
+            </button>
+            {% endif %}
+          </td>
+          <td></td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        {% endfor %}
+
+        <!-- Subtotals of constructions -->
+        <tr id="total_buildings" class="border-bottom">
+          <td></td>
+          <td></td>
+          <td colspan="8" style="font-size:0.85em;font-weight:bold;text-align:right;padding-right:1em;">Total construcciones</td>
+          <td class="value" style="text-align:right;font-size:0.85em;">
+            <input class="total area form-control form-control-sm constructions" name="area" style="text-align:right;" disabled>  
+          </td>
+          <td class="value_1" style="text-align:right;font-size:0.85em;">
+            <input  class="total value_1 form-control form-control-sm constructions" name="value_1" style="text-align:right;" disabled>  
+          </td>
+          <td class="value_2" style="text-align:right;font-size:0.85em;">
+            <input class="total value_2 form-control form-control-sm constructions" name="value_2" style="text-align:right;" disabled>  
+          </td>
+          <td class="density_1" style="text-align:right;font-size:0.85em;">
+            <input class="total density_1 form-control form-control-sm constructions" name="density_1" style="text-align:right;" disabled>  
+          </td>
+          <td class="density_2" style="text-align:right;font-size:0.85em;">
+            <input class="total density_2 form-control form-control-sm constructions" name="density_2" style="text-align:right;" disabled>  
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    {% endif %}
+
+    <table id="table_assets" class="table table-sm mt-4" style="display:none;">
+
+      <thead class="thead">
+
+        <!-- Headers !-->
+        <tr>
+          <th></th>
+          <th scope="col" colspan="2" style="width: 70em;">Otros bienes</th>
+          <th scope="col" colspan="4" style="width: 30em;text-align:center;" class="border-left">Valores</th>
+          <th scope="col" style="width:6em;"></th>
+          <th></th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <th style="width:30px;"></th>
+          <th style="width:30px;"></th>
+          <th style="width:700px;font-size:0.85em;">Descripción</th>
+          <th style="width:100px;" class="td-center">{{htmlBits.unitPesos|safe}}</th>
+          <th style="width:100px;" class="td-center">{{htmlBits.unitUF|safe}}</th>
+          <th style="width:100px;" class="td-center">{{htmlBits.unitPesosPerSquaredMeter|safe}}</th>
+          <th style="width:100px;" class="td-center">{{htmlBits.unitUFPerSquaredMeter|safe}}</th>
+          <td style="width:20px;"></td>
+          <th></th>
+        </tr>
+
+        {% for ass in realestate.assets.all %}
+        <tr class="tr_asset">
+          <!-- Hidden inputs are used for processing the form. 
+            Asset id to get if the obejct exists !-->
+          <input type="hidden" name="asset_id" id="in_asset_id" value="{{ass.id}}">
+          <!-- And edited, to see if we have to consider this row. See comment in view. !-->
+          <input type="hidden" name="asset_edited" id="in_asset_edited" value="0">
+          <td></td>
+          <td style="font-size:0.85em;">
+            {{forloop.counter}}.
+          </td>
+          <td id='td_name' style="font-size:0.85em;">
+            {{ass.name}}
+          </td>
+          <td class="td_pesos">
+            <input id="id_assetPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="td_UF">
+            <input name="a-value" id="id_assetUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{ass.value}}" {{appraisal.finished|yesno:"disabled,"}}>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          {% if appraisal.active %}
+          <td style="padding:0em;text-align:right;">
+            <button class="btn btn-sm save_asset" name="btn_valuation_add_asset" style="padding:0px; border:0px; display: none;">
+              <i class="material-icons">save</i>
+            </button>
+            <button class="btn btn-sm edit_asset" type="button" value="{{ass.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-sm" name="btn_valuation_remove_asset" value="{{ass.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+          {% endif %}
+          <td></td>
+        </tr>
+        {% endfor %}
+
+        <!-- This row is here to be copied when the add asset is clicked -->
+        <tr id='tr_create_asset' style="display:none;">
+          <input id="in_asset_id" type="hidden" name="asset_id" value="-1">
+          <input id="in_asset_edited" type="hidden" name="asset_edited" value="0">
+          <td></td>
+          <td></td>
+          <td>
+            {{forms.createAsset.name}}
+          </td>
+          <td class="td_pesos">
+            <input id="id_assetPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
+          </td>
+          <td class="td_UF">
+            {{forms.createAsset.value}}
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td style="padding:0em;text-align:right;">
+            <button class="btn btn-sm" name="btn_valuation_add_asset" style="padding:0px; border:0px;">
+              <i class="material-icons">save</i>
+            </button>
+          </td>
+          <td></td>
+        </tr>
+
+        <!-- This row only contains the add button -->
+        {% if appraisal.active %}
+        <tr>
+          <td></td>
+          <td colspan="7" style="padding:0em;text-align:right;">
+            <button id="add_asset" type="button" class="btn btn-sm" name="btn_valuation_add_asset" style="padding:0px; border:0px;">
+              <i class="material-icons">add_box</i>
+            </button>
+          </td>
+          <td></td>
+        </tr>
+        {% endif %}
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td style="font-size:0.85em;font-weight:bold;text-align:right;padding-right:1em;">Total otros </td>
+          <td id='id_ptotalAssetsPesos' style="text-align:right;font-size:0.85em;">1</td>
+          <td id='id_ptotalAssetsUF' style="text-align:right;font-size:0.85em;">2</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <table id="table_totals" class="table table-sm mt-2 border-left border-right">
+
+      <thead class="thead">
+        <!-- Headers !-->
+        <tr style="background: #eee;">
+          <th scope="col" style="width: 30px;"></th>
+          <th scope="col" style="width: 730px;text-align:left">Totales</th>
+          <th scope="col" style="width: 100px;"></th>
+          <th scope="col" style="width: 100px;"></th>
+          <th scope="col" style="width: 100px;"></th>
+          <th scope="col" style="width: 100px;"></th>
+          <th scope="col" style="width: 100px;"></th>
+          <th></th>
+        </tr>
+      </thead>
+      
+      </tbody>
+        <tr class="total" id="tasador">
+          <td></td>
+          <td style="font-weight:bold;text-align:right;padding-right:1em;font-size:0.85em;">Valor tasador</td>
+          <td>
+            <input class="gtotal area form-control form-control-sm constructions" name="area" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal value_1 form-control form-control-sm constructions" name="value_1" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal value_2 form-control form-control-sm constructions" name="value_2" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal density_1 form-control form-control-sm constructions" name="density_1" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal density_2 form-control form-control-sm constructions" name="density_2" style="text-align:right;" disabled></input>
+          </td>
+          <td></td>
+        </tr>
+        <tr class="total border-bottom" id="seguro">
+          <td></td>
+          <td style="font-weight:bold;text-align:right;padding-right:1em;font-size:0.85em;">Valor seguro</td>
+          <td>
+            <input class="gtotal area form-control form-control-sm constructions" name="area" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal value_1 form-control form-control-sm constructions" name="value_1" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal value_2 form-control form-control-sm constructions" name="value_2" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal density_1 form-control form-control-sm constructions" name="density_1" style="text-align:right;" disabled></input>
+          </td>
+          <td>
+            <input class="gtotal density_2 form-control form-control-sm constructions" name="density_2" style="text-align:right;" disabled></input>
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+<script>
+
+  function assetsTableComputeTotalsTerrains() {
+    sum = {}
+    $('#table_terrains .terrain .value').each(function() {
+      name = $(this).attr('name')
+      sum[name] = 0.0
+    })
+    $('#table_terrains .terrain .value').each(function() {
+      name = $(this).attr('name')
+      sum[name] += parseFloat($(this).find('input').val())
+    })
+    for (var key in sum) {
+      element = $('#total_terrains').find("."+key)
+      if (isNaN(sum[key])) {
+        element.val('-')
+      } else {
+        element.val(sum[key])
+      }
+    }
+  }
+
+  function assetsTableComputeTotalsConstructions() {
+    sum = {}
+    $('#table_buildings .building .value').each(function() {
+      name = $(this).attr('name')
+      sum[name] = 0.0
+    })
+    $('#table_buildings .building .value').each(function() {
+      name = $(this).attr('name')
+      sum[name] += parseFloat($(this).find('input').val())
+    })
+    for (var key in sum) {
+      element = $('#total_buildings').find("."+key)
+      if (isNaN(sum[key])) {
+        element.val('-')
+      } else {
+        element.val(sum[key])
+      }
+    }
+  }
+
+  function assetsTableComputeTotalsGlobal() {
+    sum = {}
+    sum_seguro = {}
+    $('#tasador input.gtotal').each(function() {
+      name = $(this).attr('name')
+      sum[name] = 0.0
+      sum_seguro[name] = 0.0
+    })
+    $('#table_buildings input.total').each(function() {
+      name = $(this).attr('name')
+      sum[name] += parseFloat($(this).val())
+      sum_seguro[name] += parseFloat($(this).val())
+    })
+    $('#table_terrains input.total').each(function() {
+      name = $(this).attr('name')
+      sum[name] += parseFloat($(this).val())
+    })
+    for (var key in sum) {
+      element = $('#tasador input.gtotal.'+key)
+      if (isNaN(sum[key])) {
+        element.val('-')
+      } else {
+        element.val(sum[key])
+      }
+      element = $('#seguro input.gtotal.'+key)
+      if (isNaN(sum_seguro[key])) {
+        element.val('-')
+      } else {
+        element.val(sum_seguro[key])
+      }
+    }
+  }
+
+  function assetsTableComputeTotals() {
+    assetsTableComputeTotalsTerrains();
+    assetsTableComputeTotalsConstructions();
+    assetsTableComputeTotalsGlobal();
+  }
+
+  function assetsTableUpdateRows() {
+    $('#table_terrains .terrain').each(function() {
+      uf = UF_IN_PESOS;
+      area = parseFloat($(this).find(".area").val());
+      UFPerArea = parseFloat($(this).find(".density_2").val());
+      $(this).find('.density_1').val(pesosFormat(UFPerArea*uf));
+      $(this).find('.value_1').val(pesosFormat(UFPerArea*uf*area));
+      $(this).find('.value_2').val(UFFormat(UFPerArea*area));
+    });
+    $('#table_buildings .building').each(function() {
+      uf = UF_IN_PESOS;
+      area = parseFloat($(this).find(".area").val());
+      UFPerArea = parseFloat($(this).find(".density_2").val());
+      $(this).find('.density_1').val(pesosFormat(UFPerArea*uf));
+      $(this).find('.value_1').val(pesosFormat(UFPerArea*uf*area));
+      $(this).find('.value_2').val(UFFormat(UFPerArea*area));
+    });
+    /*
+    $('#table_assets tr').each(function() {
+      uf = UF_IN_PESOS;
+      UF = parseFloat($(this).find(".td_UF").find('input').val());
+      $(this).find('.td_pesos').find('input').val(pesosFormat(UF*uf));
+    });
+    */
+  }
+
+  $(".constructions").change(function () {
+    assetsTableUpdateRows();
+    assetsTableComputeTotals();
+  });
+
+  $(document).ready(function() {
+
+    $('.edit_construction').click(function() {
+      row = $(this).closest('tr')
+
+      input = row.find('#in_construction_edited')
+      input.val('1')
+
+      btn = row.find('.save_construction')
+      btn.toggle()
+
+      cell = row.find('#td_name')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.name}}')
+      cell.find('#id_c-name').val(text.trim())
+
+      cell = row.find('#td_material')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.material|escapejs}}')
+      cell.find('#id_c-material option').filter(function() {
+        return $(this).text() == text.trim(); 
+      }).prop('selected', true);
+
+      cell = row.find('#td_year')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.year|escapejs}}')
+      cell.find('#id_c-year').val(text.trim())
+
+      cell = row.find('#td_prenda')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.prenda|escapejs}}')
+      cell.find('#id_c-prenda option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_recepcion')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.recepcion|escapejs}}')
+      cell.find('#id_c-recepcion option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_quality')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.quality|escapejs}}')
+      cell.find('#id_c-quality option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_state')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.state|escapejs}}')
+      cell.find('#id_c-state option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      cell = row.find('#td_rol')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createConstruction.rol|escapejs}}')
+      cell.find('#id_c-rol option').filter(function() {
+        return $(this).text() == text; 
+      }).prop('selected', true);
+
+      $(this).toggle()
+    });
+
+    $('.edit_terrain').click(function() {
+      row = $(this).closest('tr')
+
+      // Set hidden input value to 1, so that when saving know this row was editted
+      input = row.find('#in_terrain_edited')
+      input.val('1')
+
+      // Turn on the save button
+      btn = row.find('.save_terrain')
+      btn.toggle()
+
+      // Turn off button to edit.
+      $(this).toggle()
+
+      // Change row from text to input.
+      cell = row.find('#td_name')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createTerrain.name}}')
+      cell.find('#id_t-name').val(text.trim())
+
+    });
+
+    $('.edit_asset').click(function() {
+      row = $(this).closest('tr')
+
+      // Set hidden input value to 1, so that when saving know this row was editted
+      input = row.find('#in_asset_edited')
+      input.val('1')
+
+      // Turn on the save button
+      btn = row.find('.save_asset')
+      btn.toggle()
+
+      // Turn off button to edit.
+      $(this).toggle()
+
+      // Change row from text to input.
+      cell = row.find('#td_name')
+      text = cell.text()
+      cell.empty()
+      cell.append('{{forms.createAsset.name}}')
+      cell.find('#id_a-name').val(text.trim())
+
+    });
+
+    $('#add_terrain').click(function() {
+      var newRow = $('#tr_create_terrain').clone();
+      $('#tr_create_terrain').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_terrain_edited').val('1')
+      newRow.find('#id_t-area').change(function () {
+        assetsTableUpdateRows();
+        assetsTableComputeTotals();
+      });
+      newRow.find('#id_t-UFPerArea').change(function () {
+        assetsTableUpdateRows();
+        assetsTableComputeTotals();
+      });
+    });
+
+    $('#add_construction').click(function() {
+      var newRow = $('#tr_create_construction').clone();
+      $('#tr_create_construction').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_construction_edited').val('1')
+      newRow.find('#id_c-area').change(function () {
+        assetsTableUpdateRows();
+        assetsTableComputeTotals();
+      });
+      newRow.find('#id_c-UFPerArea').change(function () {
+        assetsTableUpdateRows();
+        assetsTableComputeTotals();
+      });
+    });
+
+    $('#add_asset').click(function() {
+      var newRow = $('#tr_create_asset').clone();
+      $('#tr_create_asset').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_asset_edited').val('1')
+      newRow.find('#id_a-value').change(function () {
+        assetsTableUpdateRows();
+        assetsTableComputeTotals();
+      });
+    });
+
+    $('#add_construction_comp').click(function() {
+      var newRow = $('#tr_create_construction_comp').clone();
+      //$(this).closest('tr').before(newRow)
+      $('#tr_create_construction_comp').before(newRow)
+      newRow.attr('id','')
+      newRow.toggle();
+      newRow.find('#in_construction_edited').val('1')
+    });
+
+    assetsTableUpdateRows();
+    assetsTableComputeTotals();
+
+  });
+</script>
+

@@ -2,7 +2,7 @@
 	font-size: 0.85em;
 }
 
-#table_constructions {
+#table_buildings {
 	font-size: 0.85em;
 }
 
@@ -18,13 +18,19 @@
 	text-align: center;
 }
 
-.table_selected_terrain {
+.table_selected_terrains {
     font-size: 0.85rem;
     border-radius: 0.0rem;
     background-color: #fff;
 }
 
-.table_selected_building {
+.table_selected_buildings {
+    font-size: 0.85rem;
+    border-radius: 0.0rem;
+    background-color: #fff;   
+}
+
+.table_selected_apartments {
     font-size: 0.85rem;
     border-radius: 0.0rem;
     background-color: #fff;   
@@ -56,25 +62,25 @@
     padding-right: 0.1rem;
 }
 
-#table_constructions .form-control-sm {
+#table_buildings .form-control-sm {
 	padding: 0rem 0.3rem;
 	font-size: 0.7rem;
 	border-radius: 0.0rem;
 }
 
-#table_constructions .form-control-sm:disabled {
+#table_buildings .form-control-sm:disabled {
     background-color: transparent;
     border: 1px solid #ddd;
     color: #666;
 }
 
-#table_constructions .form-control-sm:read-only {
+#table_buildings .form-control-sm:read-only {
     background-color: transparent;
     border: 1px solid #ddd;
     color: #666;
 }
 
-#table_constructions td {
+#table_buildings td {
 	padding-top: .2rem;
     padding-bottom: .2rem;
     padding-left: 0.1rem;
@@ -105,6 +111,12 @@
     padding-bottom: .2rem;
     padding-left: 0.1rem;
     padding-right: 0.1rem;
+}
+
+#table_totals .form-control-sm:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
 }
 
 input[type="text"] {
@@ -183,4 +195,34 @@ textarea.form-control:disabled {
 
 #property_info label {
     font-size:0.9em;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.container:hover .image {
+  opacity: 0.3;
+}
+
+.container:hover .middle {
+  opacity: 1;
+}
+
+.image {
+    position:absolute;
+    top:-9999px;
+    left:-9999px;
+    right:-9999px;
+    bottom:-9999px;
+    margin:auto;
+    opacity:1;
+    transition:.5s ease;
 }

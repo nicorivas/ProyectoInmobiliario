@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'viz',
     'evaluation',
     'accounting',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [

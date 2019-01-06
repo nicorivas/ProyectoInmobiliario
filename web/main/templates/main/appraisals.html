@@ -111,6 +111,8 @@
 
 {% include "main/modals.html" %}
 
+</div>
+
 <script>
 
   var assignLogbookModalActions = function() {
@@ -468,9 +470,12 @@
     // alert of no elements if the table returned has elements.
     $("#"+table_name).html($.trim(data))
     var nrows = $("#"+table_name+" tr").length;
-    if (nrows == 1) {
-      $("#"+table_name).fadeToggle()
-      $("#div_alert_"+table_name).fadeToggle()
+    if (nrows == 0) {
+      $("#"+table_name).fadeOut()
+      $("#div_alert_"+table_name).fadeIn()
+    } else {
+      $("#"+table_name).fadeIn()
+      $("#div_alert_"+table_name).fadeOut()
     }
   }
 

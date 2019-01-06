@@ -1,7 +1,7 @@
 from django import forms
 from realestate.models import RealEstate, Asset
 from apartment.models import Apartment
-from appraisal.models import Appraisal, Rol, Comment
+from appraisal.models import Appraisal, Rol, Comment, Photo
 from building.models import Building
 from apartmentbuilding.models import ApartmentBuilding
 from terrain.models import Terrain
@@ -254,128 +254,133 @@ class FormAppraisal(forms.ModelForm):
             'descripcionExpropiacion':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5})
         }
 
-class FormCreateApartment(forms.ModelForm):
-    class Meta:
-        model = Apartment
-        fields = [
-            #'addressCommune',
-            #'addressStreet',
-            #'addressNumber',
-            'addressNumber2',
-            'floor',
-            #'sourceUrl',
-            #'sourceName',
-            #'sourceId',
-            'bedrooms',
-            'bathrooms',
-            'usefulSquareMeters',
-            'terraceSquareMeters',
-            #'marketPrice'
-            ]
-        class_bs = {'class':"form-control form-control-sm"}
-        widgets = {
-            #'addressCommune': forms.Select(attrs=class_bs),
-            #'addressStreet': forms.TextInput(attrs=class_bs),
-            #'addressNumber': forms.TextInput(attrs=class_bs),
-            'addressNumber2': forms.NumberInput(attrs=class_bs),
-            'floor': forms.NumberInput(attrs=class_bs),
-            #'sourceUrl': forms.URLInput(attrs=class_bs),
-            #'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
-            #'sourceId': forms.TextInput(attrs=class_bs),
-            'bedrooms': forms.NumberInput(attrs=class_bs),
-            'bathrooms': forms.NumberInput(attrs=class_bs),
-            'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
-            'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
-            #'marketPrice': forms.NumberInput(attrs=class_bs)
-            }
-
-class FormCreateHouse(forms.ModelForm):
-    class Meta:
-        model = House
-        fields = [
-            #'addressCommune',
-            #'addressStreet',
-            #'addressNumber',
-            'addressNumber2',
-            #'sourceUrl',
-            #'sourceName',
-            #'sourceId',
-            'bedrooms',
-            'bathrooms',
-            'builtSquareMeters',
-            'terrainSquareMeters',
-            #'marketPrice'
-            ]
-        class_bs = {'class':"form-control form-control-sm"}
-        widgets = {
-            #'addressCommune': forms.Select(attrs=class_bs),
-            #addressStreet': forms.TextInput(attrs=class_bs),
-            #'addressNumber': forms.TextInput(attrs=class_bs),
-            'addressNumber2': forms.TextInput(attrs=class_bs),
-            #'sourceUrl': forms.URLInput(attrs=class_bs),
-            #'sourceName': forms.TextInput(attrs={'class':"form-control form-control-sm sourceName"}),
-            #'sourceId': forms.TextInput(attrs=class_bs),
-            'bedrooms': forms.NumberInput(attrs=class_bs),
-            'bathrooms': forms.NumberInput(attrs=class_bs),
-            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
-            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
-            #'marketPrice': forms.NumberInput(attrs=class_bs)
-            }
-
 class FormCreateTerrain(forms.ModelForm):
     class Meta:
         model = Terrain
         fields = [
+            'addressNumber2',
             'name',
             'frente',
             'fondo',
             'topography',
             'shape',
             'area',
-            'uf_per_area'
+            'marketPrice'
             ]
         class_bs = {'class':"form-control form-control-sm terrains"}
         class_bs_right = {'class':"form-control form-control-sm terrains",'style':'text-align:right;'}
         widgets = {
+            'addressNumber2': forms.TextInput(attrs=class_bs),
             'name': forms.TextInput(attrs=class_bs),
             'frente': forms.NumberInput(attrs=class_bs),
             'fondo': forms.NumberInput(attrs=class_bs),
             'topography': forms.Select(attrs=class_bs),
             'shape': forms.Select(attrs=class_bs),
             'area': forms.NumberInput(attrs=class_bs_right),
-            'uf_per_area': forms.NumberInput(attrs=class_bs_right)
+            'marketPrice': forms.NumberInput(attrs=class_bs_right)
+            }
+
+class FormCreateHouse(forms.ModelForm):
+    class Meta:
+        model = House
+        fields = [
+            'addressNumber2',
+            'bedrooms',
+            'bathrooms',
+            'builtSquareMeters',
+            'terrainSquareMeters',
+            'marketPrice'
+            ]
+        class_bs = {'class':"form-control form-control-sm terrains"}
+        widgets = {
+            'addressNumber2': forms.TextInput(attrs=class_bs),
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terrainSquareMeters': forms.NumberInput(attrs=class_bs),
+            'marketPrice': forms.NumberInput(attrs=class_bs)
+            }
+
+class FormCreateApartmentBuilding(forms.ModelForm):
+    class Meta:
+        model = ApartmentBuilding
+        fields = [
+            'addressNumber2',
+            'builtSquareMeters',
+            'marketPrice'
+            ]
+        class_bs = {'class':"form-control form-control-sm"}
+        widgets = {
+            'addressNumber2': forms.TextInput(attrs=class_bs),
+            'builtSquareMeters': forms.NumberInput(attrs=class_bs),
+            'marketPrice': forms.NumberInput(attrs=class_bs)
+            }
+
+class FormCreateApartment(forms.ModelForm):
+    class Meta:
+        model = Apartment
+        fields = [
+            'addressNumber2',
+            'floor',
+            'bedrooms',
+            'bathrooms',
+            'usefulSquareMeters',
+            'terraceSquareMeters',
+            'marketPrice'
+            ]
+        class_bs = {'class':"form-control form-control-sm"}
+        widgets = {
+            'addressNumber2': forms.TextInput(attrs=class_bs),
+            'floor': forms.NumberInput(attrs=class_bs),
+            'bedrooms': forms.NumberInput(attrs=class_bs),
+            'bathrooms': forms.NumberInput(attrs=class_bs),
+            'usefulSquareMeters': forms.NumberInput(attrs=class_bs),
+            'terraceSquareMeters': forms.NumberInput(attrs=class_bs),
+            'marketPrice': forms.NumberInput(attrs=class_bs)
+            }
+
+class FormCreateRealEstate(forms.ModelForm):
+    class Meta:
+        model = RealEstate
+        fields = [
+            'addressStreet',
+            'addressNumber',
+            'addressCommune',
+            'addressRegion',
+            'sourceUrl',
+            'sourceName',
+            'sourceId'
+            ]
+        class_bs = {'class':"form-control form-control-sm"}
+        widgets = {
+            'addressStreet': forms.TextInput(attrs=class_bs),
+            'addressNumber': forms.TextInput(attrs=class_bs),
+            'addressCommune': forms.Select(attrs=class_bs),
+            'addressRegion': forms.Select(attrs=class_bs),
+            'sourceUrl': forms.TextInput(attrs=class_bs),
+            'sourceName': forms.TextInput(attrs=class_bs),
+            'sourceId': forms.TextInput(attrs=class_bs)
             }
 
 class FormCreateProperty(forms.Form):
 
+    class_bs = {'class':"form-control form-control-sm"}
+
     addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
-    addressRegion.widget.attrs.update({'class':"form-control"})
+    addressRegion.widget.attrs.update(class_bs)
 
     addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
-    addressCommune.widget.attrs.update({'class':"form-control"})
+    addressCommune.widget.attrs.update(class_bs)
 
     addressStreet = forms.CharField(max_length=200,label="Calle")
-    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressStreet.widget.attrs.update(class_bs)
 
     addressNumber = forms.CharField(max_length=30,label="Número")
-    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressNumber.widget.attrs.update(class_bs)
 
     addressNumber2 = forms.CharField(max_length=30,label="Número")
-    addressNumber2.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressNumber2.widget.attrs.update(class_bs)
 
-class FormAddSimilar(forms.Form):
-
-    marketPrice = forms.FloatField(label="Precio (UF/m2)")
-    marketPrice.widget.attrs.update({'class':"form-control"})
-
-    sourceUrl = forms.CharField(max_length=500,label="Fuente")
-    sourceUrl.widget.attrs.update({'class':"form-control"})
-
-    sourceName = forms.CharField(max_length=200,label="Fuente")
-    sourceName.widget.attrs.update({'class':"form-control",'data-validation':"required"})
-
-    sourceId = forms.CharField(max_length=30,label="Código")
-    sourceId.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
 class FormCreateAsset(forms.ModelForm):
     class Meta:
@@ -450,7 +455,7 @@ class FormAddApartment(forms.Form):
     addressNumber2 = forms.CharField(max_length=30,label="Departamento",required=True)
     addressNumber2.widget.attrs.update({'class':"form-control"})
 
-class FormAddRol(forms.Form):
+class FormAddRol(forms.ModelForm):
 
     code = forms.CharField(max_length=20,label="Rol",required=True)
     code.widget.attrs.update({'class':"form-control"})
@@ -462,29 +467,14 @@ class FormPhotos(forms.Form):
         required=False,
         widget=forms.ClearableFileInput(
             attrs={'class':"custom-file-input",'multiple': False}))
-
-    NULL = ''
-    PHOTO_CATEGORY_ENTORNO = 0
-    PHOTO_CATEGORY_EMPLAZAMIENTO = 1
-    PHOTO_CATEGORY_FACHADA = 2
-    PHOTO_CATEGORY_ESPACIOS_COMUNES = 3
-    PHOTO_CATEGORY_OTHER = 4
-    PHOTO_CATEGORIES = (
-        (NULL,'---------'),
-        (PHOTO_CATEGORY_ENTORNO,'Entorno'),
-        (PHOTO_CATEGORY_EMPLAZAMIENTO,'Emplazamiento'),
-        (PHOTO_CATEGORY_FACHADA,'Fachada'),
-        (PHOTO_CATEGORY_ESPACIOS_COMUNES,'Espacios comunes'),
-        (PHOTO_CATEGORY_OTHER,'Otra')
-        )
     category = forms.ChoiceField(
         label='Categoría',
         required=False,
-        choices=PHOTO_CATEGORIES,
+        choices=Photo.PHOTO_CATEGORIES,
         widget=forms.Select(attrs={'class':"form-control"}))
     description = forms.CharField(
         label='Descripción',
-        max_length=60,
+        max_length=200,
         required=False,
         widget=forms.TextInput(attrs={'size':20,'class':"form-control"}))
 

@@ -3,7 +3,13 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Añadir {{realestate.get_propertyType_display}}</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Añadir 
+          {% if terrain %}
+          terreno
+          {% elif house %}
+          casa
+          {% endif %}
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -14,13 +20,13 @@
           <div class="col-6">
             <div class="form-group">
               <label>Calle</label>
-              {{form_property.addressStreet}}
+              {{form_real_estate.addressStreet}}
             </div>
           </div>
           <div class="col-6">
             <div class="form-group">
               <label>Número</label>
-              {{form_property.addressNumber}}
+              {{form_real_estate.addressNumber}}
             </div>
           </div>
         </div>
@@ -35,114 +41,150 @@
           <div class="col-6">
             <div class="form-group">
               <label>Comuna</label>
-              {{form_property.addressCommune}}
+              {{form_real_estate.addressCommune}}
             </div>
           </div>
         </div>
 
         {% if terrain %}
         <div class="row">
+          <div class="col-4">
+            <div class="form-group">
+              {{form_property.area.label_tag}}
+              {{form_property.area}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              {{form_property.fondo.label_tag}}
+              {{form_property.fondo}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              {{form_property.frente.label_tag}}
+              {{form_property.frente}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-6">
             <div class="form-group">
-              {{form_terrain.frente.label_tag}}
-              {{form_terrain.frente}}
+              {{form_property.shape.label_tag}}
+              {{form_property.shape}}
             </div>
           </div>
           <div class="col-6">
             <div class="form-group">
-              {{form_terrain.fondo.label_tag}}
-              {{form_terrain.fondo}}
+              {{form_property.topography.label_tag}}
+              {{form_property.topography}}
             </div>
           </div>
         </div>
         {% endif %}
 
+        {% if house %}
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              {{form_property.bedrooms.label_tag}}
+              {{form_property.bedrooms}}
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              {{form_property.bathrooms.label_tag}}
+              {{form_property.bathrooms}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              {{form_property.builtSquareMeters.label_tag}}
+              {{form_property.builtSquareMeters}}
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              {{form_property.terrainSquareMeters.label_tag}}
+              {{form_property.terrainSquareMeters}}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if apartment_building %}
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group">
+              {{form_property.builtSquareMeters.label_tag}}
+              {{form_property.builtSquareMeters}}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if apartment %}
+        <div class="row">
+          <div class="col-4">
+            <div class="form-group">
+              <label>Piso</label>
+              {{form_property.floor}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              <label>Piesas</label>
+              {{form_property.bedrooms}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+              <label>Baños</label>
+              {{form_property.bathrooms}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <label>Superficie útil</label>
+              {{form_property.usefulSquareMeters}}
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label>Superficie terraza</label>
+              {{form_property.terraceSquareMeters}}
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
         <div class="form-group">
           <label>Fuente URL</label>
-          {{form_similar.sourceUrl}}
+          {{form_real_estate.sourceUrl}}
         </div>
 
         <div class="row">
           <div class="col">
             <div class="form-group">
               <label>Fuente</label>
-              {{form_similar.sourceName}}
+              {{form_real_estate.sourceName}}
             </div>
           </div>
           <div class="col">
             <div class="form-group">
               <label>Código</label>
-              {{form_similar.sourceId}}
+              {{form_real_estate.sourceId}}
             </div>
           </div>
         </div>
-
-        {% if building %}
-        {% if building.is_apartment %}
-        <div class="row">
-          <div class="col-6">
-            <div class="form-group">
-              <label>Departamento</label>
-              {{form.addressNumber2}}
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="form-group">
-              <label>Piso</label>
-              {{form.floor}}
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="row">
-          <div class="col">
-            <div class="form-group">
-              <label>Dormitorios</label>
-              {{form.bedrooms}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Baños</label>
-              {{form.bathrooms}}
-            </div>
-          </div>
-          {% if realestate.is_apartment %}
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie útil</label>
-              {{form.usefulSquareMeters}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie terraza</label>
-              {{form.terraceSquareMeters}}
-            </div>
-          </div>
-          {% elif realestate.is_house %}
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie construida</label>
-              {{form.builtSquareMeters}}
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label>Superficie terreno</label>
-              {{form.terrainSquareMeters}}
-            </div>
-          </div>
-          {% endif %}
-        </div>
-
-        {% endif %}
 
         <div class="form-group">
           <label>Precio mercado</label>
-          {{form_similar.marketPrice}}
+          {{form_property.marketPrice}}
         </div>
 
       </div>
