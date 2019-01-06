@@ -27,7 +27,7 @@
           <tbody>
             {% for tasador in tasadores %}
             <tr class="tasador">
-              <td></td>
+              <td></td> {{tasador.user.first_name}} {{tasador.user.last_name}}
               <td>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{tasador.user.id}}">

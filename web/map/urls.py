@@ -30,6 +30,7 @@ urlpatterns = [
     path('realestate/', include('realestate.urls')),
     path('create/', include('create.urls')),
     path('appraisal/', include('appraisal.urls')),
+    path('accounting/', include('accounting.urls')),
     path('region/', include('region.urls')),
     path('province/', include('province.urls')),
     path('commune/', include('commune.urls')),

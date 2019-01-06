@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'vis',
     'viz',
     'evaluation',
+    'accounting',
 ]
 
 MIDDLEWARE = [
