@@ -181,11 +181,14 @@ class RealEstate(models.Model):
         try:
             buildings = self.buildings.filter(propertyType=Building.TYPE_CASA)
             for building in buildings:
-                if building.house.addressNumber2 == addressNumber2:
-                    if if_exists_false:
-                        return False
-                    else:
-                        return building.house
+                try:
+                    if building.house.addressNumber2 == addressNumber2:
+                        if if_exists_false:
+                            return False
+                        else:
+                            return building.house
+                except ObjectDoesNotExist:
+                    continue
             return self.createCasa(addressNumber2)
         except Building.DoesNotExist:
             return self.createCasa(addressNumber2)
