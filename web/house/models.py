@@ -63,8 +63,10 @@ class House(models.Model):
             return "{:10.2f}".format(x)
 
     def __str__(self):
-        return "{} {}, {}, {}".format(
+        return "{}, {} {} {}, {}, {}".format(
+            self.building.name,
             self.building.real_estate.addressStreet,
             self.building.real_estate.addressNumber,
+            self.addressNumber2,
             self.building.real_estate.addressCommune,
             self.building.real_estate.addressRegion)
