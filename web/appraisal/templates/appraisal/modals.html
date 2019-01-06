@@ -19,7 +19,6 @@
 </div>
 
 <div class="modal fade" id="modal_add_property" tabindex="-1" role="dialog" aria-hidden="true">
-  {% include 'appraisal/modals_add_property.html' %}
 </div>
 
 <div class="modal fade" id="modal_edit_property" tabindex="-1" role="dialog" aria-hidden="true">
@@ -128,55 +127,7 @@
 </div>
 
 <div class="modal fade" id="modal_photo" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Photo</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <img id="photo" class="img-fluid rounded" src=""/>
-        <div class="form-group row">
-          <div class="col-6">
-            {{forms.photos.photos.label_tag}}
-            <div class="custom-file">
-              {{forms.photos.photos}}
-              <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
-            </div>
-          </div>
-          <div class="col-6">
-            {{forms.photos.category.label_tag}}
-            {{forms.photos.category}}
-          </div>
-        </div>
-        <div class="form-group row mb-4">
-          <div class="col-12">
-            {{forms.photos.description.label_tag}}
-            {{forms.photos.description}}
-          </div>
-        </div>
-        <script>
-          $('#id_photos').change(function() {
-            if ($('#id_photos')[0].files.length == 1) {
-              var file = $('#id_photos')[0].files[0].name;
-              $('.custom-file-label').text(file);
-            }
-          });
-        </script>
-      </div>
-      <div class="modal-footer">
-        <!--<input id="photo_id" name="photo_id" type="hidden" value="0">-->
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button id='btn_upload_photo' class="btn btn-primary ld-ext-right">
-          Agregar foto
-          <div class="ld ld-ring ld-spin"></div>
-        </button>
-        <!--<button class="btn btn-danger" name="btn_delete_photo">Borrar</button>-->
-      </div>
-    </div>
-  </div>
+  {% include 'appraisal/modals_photo.html' %}
 </div>
 
 <div class="modal fade" id="modalDocument" tabindex="-2" role="dialog" aria-labelledby="label" aria-hidden="true">

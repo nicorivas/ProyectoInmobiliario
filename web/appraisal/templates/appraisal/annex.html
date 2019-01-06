@@ -1,0 +1,241 @@
+<div class="row mt-4 ml-4 mr-4">
+  <div class="col">
+
+<h5>Fotografías</h5>
+
+<!-- Form to insert a picture -->
+<div class="row">
+
+  {% for photo in appraisal.photos.all %}
+  <div id="photo_container_{{photo.id}}">
+    {% include 'appraisal/annex_photo.html' %}
+  </div>
+  {% endfor %}
+
+</div>
+
+</div>
+</div>
+
+
+<h5>Documentos</h5>
+
+<!-- Form to insert a document -->
+{% if not appraisal.finished %}
+<div class="form-group row mb-4">
+  <div class="col-md-4">
+    <div class="custom-file">
+      {{forms.documents.documents}}
+      <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+    </div>
+  </div>
+  <div class="col-md-4">
+    {{forms.documents.description}}
+  </div>
+  <div class="col-md">
+    <button name='btn_upload_document' class="btn btn-primary">Agregar documento</button>
+  </div>
+</div>
+
+<script>
+  $('#id_documents').change(function() {
+    //var i = $(this).prev('label').clone();
+    var filesn = $('#id_documents')[0].files.length
+    if (filesn == 1) {
+      var file = $('#id_documents')[0].files[0].name;
+      $('.custom-file-label').text(file);
+    } else {
+      $('.custom-file-label').text(filesn+' archivos');
+    }
+  });
+</script>
+{% endif %}
+
+<!-- Documents -->
+<div class="container-fluid">
+  <div class="row">
+    {% for document in appraisal.documents.all %}
+    <div class="card mr-2 mb-2" style="width: 16rem;">
+      <a class="document_show" data-url="{{document.photo.url}}" data-id="{{document.id}}">
+        <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{document.thumbnail.url}}"/>
+      </a>
+      <div class="card-body">
+        <input name="document_description_{{document.id}}" class="form-control form-control-sm in_description" style="display:none;">
+        <p class="card-title description">
+          {{document.description}}
+        </p>
+        <p class="card-text" style="text-align:right">
+          <a class="btn btn-sm document_show" data-url="{{document.document.url}}" data-id="{{document.id}}">
+            <i class="material-icons">zoom_in</i>
+          </a>
+          {% if not appraisal.finished %}
+          <button type="button" class="btn btn-sm edit_document" style="padding:0px; border:0px;">
+            <i class="material-icons">edit</i>
+          </button>
+          <button name="btn_save_document" value="{{document.id}}" class="btn btn-sm save_document" style="padding:0px; border:0px; display:none;">
+            <i class="material-icons">save</i>
+          </button>
+          <button name="btn_delete_document" value="{{document.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
+            <i class="material-icons">delete</i>
+          </button>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+<script>
+  
+  $(document).ready(function() {
+
+    $('.edit_photo').click(function() {
+      card = $(this).closest('.card-body')
+      p = card.find('.description')
+      description = p.html()
+      p.empty()
+      input = card.find('.in_description')
+      input.val(description.trim())
+      input.toggle()
+      $(this).toggle()
+      btn = card.find('.save_photo')
+      btn.toggle()
+    })
+
+    $('.edit_document').click(function() {
+      card = $(this).closest('.card-body')
+      p = card.find('.description')
+      description = p.html()
+      p.empty()
+      input = card.find('.in_description')
+      input.val(description.trim())
+      input.toggle()
+      $(this).toggle()
+      btn = card.find('.save_document')
+      btn.toggle()
+    })
+    
+  })
+
+  $(".photo_modal").on('click', function() {
+    var url = "{% url 'ajax_photo_modal_url' %}";
+    data = {}
+    data['photo_id'] = $(this).data('photo_id');
+    data['appraisal_id'] = {{appraisal.id}};
+    $.ajax({
+        url: url,
+        type:'get',
+        data: data,
+        error: function(){
+          alert('Error al cargar modal de foto')
+        },
+        success: function(ret){
+          $('#modal_photo').html($.trim(ret))
+          $('#modal_photo').modal('show')
+          $('#modal_photo input.appraisal_id').val(data['appraisal_id'])
+          $('#modal_photo input.photo_id').val(data['photo_id'])
+          photo_modal_actions()
+        },
+    });
+  });
+
+  function photo_modal_actions() {
+
+    $("#btn_photo_save").unbind()
+    $("#btn_photo_save").off()
+    $("#btn_photo_save").on('click', function() {
+      event.preventDefault()
+      var url = "{% url 'ajax_photo_save_url' %}";
+      var form = document.getElementById("form_photo");
+      console.log(form)
+      var form_data = new FormData(form);
+      console.log(form_data)
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: form_data,
+        processData: false,
+        contentType: false,
+        error: function(){
+          alert('Error al grabar foto')
+        },
+        success: function(data) {
+          $('#modal_photo').modal('hide');
+        }
+      });
+    })
+
+  }
+
+  $(document).on('click','#btn_upload_photo',function() {
+    var url = "{% url 'ajax_photo_save_url' %}";
+    var form = document.getElementById('form');
+    console.log(form)
+    var form_data = new FormData(form);
+    btn = $(this);
+    btn.addClass('running');
+    btn.prop('disabled', true);
+    console.log(form_data)
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: form_data,
+      processData: false,
+      contentType: false,
+      error: function(){
+        console.log('error')
+      },
+      success: function(data) {
+        btn.removeClass('running');
+        btn.prop('disabled', false);
+        console.log('a')
+      }
+    });
+  })
+
+  $(document).on('click','.document_show',function(){
+      var url = $(this).data('url');
+      var id = $(this).data('id');
+      $.ajax({
+          url:'',
+          type:'POST',
+          data:{
+              'url':url,
+              'id':id,
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success:function(data){
+              console.log(id)
+              $('#document').attr("src",url);
+              $('#document_id').val(id);
+              $('#modalDocument').modal('show');
+          },
+          error:function(){
+              console.log('error')
+          },
+      });
+  });
+</script>

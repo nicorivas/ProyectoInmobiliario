@@ -2,7 +2,9 @@
   <div class="row mb-2">
     <div class="col-9">
       <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
-        {{appraisal.realEstate.address}}
+        {{appraisal.real_estates.first.address}}
+        {% if {{appraisal.real_estates %}
+        {% endif %}
       </p>
     </div>
     <div class="col-3" style="text-align:right;">

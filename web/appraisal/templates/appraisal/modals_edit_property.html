@@ -22,7 +22,11 @@
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
-              {{form_edit_property.addressNumber2.label_tag}}
+              {% if terrain %}
+              <label>Lote</label>
+              {% elif apartment %}
+              <label>Departamento</label>
+              {% endif %}
               {{form_edit_property.addressNumber2}}
             </div>
           </div>

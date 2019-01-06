@@ -86,11 +86,33 @@ class Comment(models.Model):
             return True
 
 class Photo(models.Model):
-    photo = models.ImageField(upload_to='test/',default='no-img.jpg')
+    
+    photo = models.ImageField(upload_to='test/',default='no-img.jpg',null=True)
+    
+    NULL = ''
+    PHOTO_CATEGORY_ENTORNO = 0
+    PHOTO_CATEGORY_EMPLAZAMIENTO = 1
+    PHOTO_CATEGORY_FACHADA = 2
+    PHOTO_CATEGORY_ESPACIOS_COMUNES = 3
+    PHOTO_CATEGORY_OTHER = 4
+    PHOTO_CATEGORIES = (
+        (NULL,'---------'),
+        (PHOTO_CATEGORY_ENTORNO,'Entorno'),
+        (PHOTO_CATEGORY_EMPLAZAMIENTO,'Emplazamiento'),
+        (PHOTO_CATEGORY_FACHADA,'Fachada'),
+        (PHOTO_CATEGORY_ESPACIOS_COMUNES,'Espacios comunes'),
+        (PHOTO_CATEGORY_OTHER,'Otra')
+        )
+    category = models.IntegerField("Categoría",
+        choices=PHOTO_CATEGORIES,
+        blank=True,
+        null=True)
+
     description = models.CharField("Descripción",
         max_length=200,
         blank=True,
         null=True)
+
     thumbnail = ImageSpecField(source='photo',
         processors=[ResizeToFill(400, 400)],
         format='JPEG',

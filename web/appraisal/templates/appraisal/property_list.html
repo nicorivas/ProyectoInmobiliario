@@ -32,7 +32,7 @@
 	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
 	    		    </button>
 					<a href="#" class="text-left btn_property" data-terrain_id="{{terrain.id}}" style="vertical-align:bottom;">
-						Terreno {{terrain.addressNumber2}}
+						{{terrain.name_or_generic}}
 					</a>
 				</div>
 				<div class="col-5 text-left" style="padding-left:0.4em;">
@@ -53,9 +53,9 @@
 	    		    </button>
 					<a href="#" class="text-left btn_property" data-building_id="{{building.id}}" style="vertical-align:bottom;">
 						{% if building.is_apartmentbuilding %}
-							Edificio {{building.apartmentbuilding.addressNumber2}}
+							{{building.name_or_generic}}
 						{% elif building.is_house %}
-							Casa {{building.house.addressNumber2}}
+							{{building.name_or_generic}}
 						{% else %}
 							?
 						{% endif %}
@@ -73,7 +73,7 @@
 	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
 	    		    </button>
 					<a href="#" class="text-left btn_property btn_apartment" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}">
-						<small>Departamento {{apartment.addressNumber2}}</small>
+						<small>{{apartment.name_or_generic}}</small>
 					</a>
 				</li>
 			{% endfor %}

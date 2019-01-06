@@ -15,6 +15,10 @@ class Apartment(models.Model):
         ('W', 'Oriente'),
         ('NW', 'Nororiente')
     )
+
+    name = models.CharField("Nombre",max_length=300,default="",blank=True)
+
+    similar = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     
     apartment_building = models.ForeignKey(ApartmentBuilding, on_delete=models.CASCADE,verbose_name="Edificio",blank=False,null=False)
     

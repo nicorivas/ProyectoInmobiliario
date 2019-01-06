@@ -3,11 +3,21 @@
     <p class="text-right">Rol(es)</p>
   </div>
   <div class="col-2">
-    <select class="form-control form-control-sm" id="select_roles">
-      {% for rol in roles.all %}
-        <option>{{rol.code}}</option>
-      {% endfor %}
-    </select>
+    <div class="form-group row">
+      <div class="col-9" style="padding-right:0em;">
+        <select class="form-control form-control-sm" id="select_roles">
+          {% for rol in roles.all %}
+            <option>{{rol.code}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-3" style="padding-left:0.3em;">
+        <button id="btn_edit_rol_modal" type="button" class="btn btn-sm btn-outline-dark" value="{{real_estate.id}}" style="font-family:Material Icons;font-size:1.2em;margin-bottom:1px;">
+          <div class="icon" style="font-size:0.74em;">edit</div>
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+      </div>
+    </div>
   </div>
   <div class="col-4">
     <a href="#" style="font-size:0.9em;" id="btn_add_rol_modal">

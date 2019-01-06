@@ -8,6 +8,8 @@ import datetime
 class House(models.Model):
 
     building = models.OneToOneField(Building,on_delete=models.CASCADE,verbose_name="Edificio",null=True,blank=False)
+
+    similar = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     
     addressNumber2 = models.TextField("Lote",max_length=30,null=True,blank=True)
     
@@ -61,9 +63,8 @@ class House(models.Model):
             return "{:10.2f}".format(x)
 
     def __str__(self):
-        return "{}, {} {}, {}, {}".format(
-            self.name,
-            self.addressStreet,
-            self.addressNumber,
-            self.addressCommune,
-            self.addressRegion)
+        return "{} {}, {}, {}".format(
+            self.building.real_estate.addressStreet,
+            self.building.real_estate.addressNumber,
+            self.building.real_estate.addressCommune,
+            self.building.real_estate.addressRegion)

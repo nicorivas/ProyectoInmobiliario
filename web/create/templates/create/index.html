@@ -31,7 +31,7 @@
             </div>
           </div>
           <div class="col-1">
-            <button id="populate" class="btn btn-primary ld-ext-right">
+            <button id="btn_import" class="btn btn-primary ld-ext-right">
               Importar
               <div class="ld ld-ring ld-spin"></div>
             </button>
@@ -591,13 +591,23 @@
       })
     }
 
-    var populateFromFile = function () {
+    function btn_loading(btn) {
+      btn.addClass('running');
+      btn.find('.ld').show();
+      btn.prop('disabled', true);
+    }
+
+    function btn_idle(btn) {
+      btn.removeClass('running');
+      btn.find('.ld').hide();
+      btn.prop('disabled', false);
+    }
+
+    var populateFromFile = function (btn) {
       var form = document.getElementById('form');
       var formData = new FormData(form);
       var url = $("#form").attr("data-populate-from-file-url");
-      btn = $(this)
-      btn.addClass('running')
-      btn.prop('disabled', true);
+      btn_loading(btn)
       $.ajax({
           url: url,
           type: 'post',
@@ -607,8 +617,7 @@
           dataType: 'json',
           error: function () {
             alert("Error al procesar archivo.");
-            btn.removeClass('running')
-            btn.prop('disabled', false);
+            btn_idle(btn)
             return false;
           },
           success: function (data) {
@@ -644,16 +653,15 @@
               showApartmentNumber();
               $("#form").valid();
             }
-            btn.removeClass('running')
-            btn.prop('disabled', false);
+            btn_idle(btn)
           }
       });
       return false;
     }
 
-    $("#populate").on("click", function (e) {
+    $("#btn_import").on("click", function (e) {
       e.preventDefault();
-      populateFromFile();
+      populateFromFile($(this));
     });
 
     $("#btn_create").on("click", function (e) {

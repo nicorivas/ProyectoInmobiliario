@@ -4,7 +4,7 @@ from realestate.models import RealEstate
 #from house.models import House
 #from building.models import Building
 #from apartment.models import Apartment
-from appraisal.models import Appraisal, Comment, Rol
+from appraisal.models import Appraisal, Comment, Rol, Photo
 from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import render
 
@@ -80,6 +80,10 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
     comment.save()
     appraisal.comments.add(comment)
     appraisal.real_estates.add(real_estate)
+    appraisal.photos.create(category=Photo.PHOTO_CATEGORY_ENTORNO)
+    appraisal.photos.create(category=Photo.PHOTO_CATEGORY_EMPLAZAMIENTO)
+    appraisal.photos.create(category=Photo.PHOTO_CATEGORY_FACHADA)
+    appraisal.photos.create(category=Photo.PHOTO_CATEGORY_ESPACIOS_COMUNES)
     appraisal.save()
     
     return appraisal

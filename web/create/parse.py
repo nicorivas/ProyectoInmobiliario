@@ -20,7 +20,8 @@ def parseAddress(address,commune=None):
     address = address.lower().strip()
 
     if commune:
-        if address.endswith(commune):
+        print(commune)
+        if address.endswith(commune.lower()):
             address = address[:address.find(commune)].strip()
 
     dpto_strings = ["dpto.","dpto","depto.","depto","departamento"]
@@ -527,7 +528,7 @@ def parseSantander(text):
         elif 'Centro de Costo' in line.strip():
             c = 1
             data['comments'] = ''
-            while not 'Página 1 de 2' in text[i+c].strip():
+            while i+c < len(text) and not 'Página 1 de 2' in text[i+c].strip() and not 'Incidencia' in text[i+c].strip():
                 if len(text[i+c]) > 1 and text[i+c].strip()[1:-1] not in data['comments']:
                     data['comments'] += text[i+c].strip()
                 c += 1

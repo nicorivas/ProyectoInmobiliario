@@ -6,7 +6,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <form action="" method="post" id="form_add_property">
+    <form action="" method="post" id="form_add_property" class="needs-validation" novalidate>
       <div class="modal-body">
           {% csrf_token %}
           <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
@@ -20,11 +20,12 @@
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" id="addressNumber2_div" style="display:none;">
             <div class="col-md-12">
               <div class="form-group">
-                {{form_add_property.addressNumber2.label_tag}}
-                {{form_add_property.addressNumber2}}
+                <div id="addressNumber2_label">{{form_add_property.addressNumber2.label_tag}}</div>
+                <div id="addressNumber2">{{form_add_property.addressNumber2}}</div>
+                <small id="addressNumber2_help" class="form-text text-muted" style="display:none;"></small>
               </div>
             </div>
           </div>
@@ -32,8 +33,61 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btn_add_property">Agregar</button>
+        <button type="button" class="btn btn-primary ld-ext-right" id="btn_add_property">
+          Agregar
+          <div class="ld ld-ring ld-spin"></div>
+        </button>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+
+  form_rules = {
+    rules: {
+      "propertyType":"required",
+      "addressNumber2": {
+        required: {
+          depends: function(element) {
+            return ($("#id_propertyType").val() == {{property_types.Departamento}})
+          }
+        }
+      }
+    },
+    messages: {
+      "propertyType": "Campo requerido",
+      "addressNumber2": "Campo requerido"
+    }
+  }
+
+  $("#form_add_property").validate(form_rules);
+
+  $("#id_propertyType").on('change', function() {
+    $("#addressNumber2_div").hide()
+    $("#addressNumber2_help").hide()
+    if ($(this).val() == {{property_types.Terreno}}) {
+      $("#addressNumber2_div").show()
+      $("#addressNumber2_label label").text("Lote")
+      $("#addressNumber2_help").show()
+      $("#addressNumber2_help").text("Si no se entrega un identificador del terreno, simplemente se numerará.")
+    }
+    if ($(this).val() == {{property_types.Casa}}) {
+      $("#addressNumber2_div").show()
+      $("#addressNumber2_label label").text("Número de casa")
+      $("#addressNumber2_help").show()
+      $("#addressNumber2_help").text("Si no se entrega un identificador de la casa, simplemente se numerará.")
+    }
+    if ($(this).val() == {{property_types.Edificio}}) {
+      $("#addressNumber2_div").show()
+      $("#addressNumber2_label label").text("Número de torre")
+      $("#addressNumber2_help").show()
+      $("#addressNumber2_help").text("Si no se entrega un identificador del edificio, simplemente se numerará.")
+    }
+    if ($(this).val() == {{property_types.Departamento}}) {
+      $("#addressNumber2_div").show()
+      $("#addressNumber2_label label").text("Número de departamento")
+      //$("#addressNumber2_help").text("Si no se entrega un identificador del edificio, simplemente se numerará.")
+    }
+  })
+</script>

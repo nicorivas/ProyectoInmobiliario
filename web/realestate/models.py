@@ -124,26 +124,26 @@ class RealEstate(models.Model):
         self.save()
         return casa
 
-    def createDepartamento(self, addressNumber2=None, addressNumber3=None):
-
-        if addressNumber2 == None:
-            # Si no nos dieron número de edificio, crearlo
-            building = Building(real_estate=self,propertyType=Building.TYPE_EDIFICIO)
-            building.save()
-            apartment_building = ApartmentBuilding(building=building, fromApartment=True)
-            apartment_building.save()
-        else:
-            # Si nos dieron, 
-            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
-            for building in buildings:
-                if building.apartmentbuilding.addressNumber2 ==addressNumber2:
-                    apartment_building = building.apartmentbuilding
-                    break
+    def createDepartamento(self, addressNumber2=None, addressNumber3=None, apartment_building=None):
+        if apartment_building == None:
+            if addressNumber2 == None:
+                # Si no nos dieron número de edificio, crearlo
+                building = Building(real_estate=self,propertyType=Building.TYPE_EDIFICIO)
+                building.save()
+                apartment_building = ApartmentBuilding(building=building, fromApartment=True)
+                apartment_building.save()
+            else:
+                # Si nos dieron, 
+                buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
+                for building in buildings:
+                    if building.apartmentbuilding.addressNumber2 == addressNumber2:
+                        apartment_building = building.apartmentbuilding
+                        break
     
         departamento = Apartment(apartment_building=apartment_building ,addressNumber2=addressNumber3)
         departamento.save()
         
-        self.buildings.add(building)
+        self.buildings.add(apartment_building.building)
         self.save()
 
         return departamento
@@ -172,10 +172,13 @@ class RealEstate(models.Model):
                     if if_exists_false:
                         return False
                     else:
-                        return terrain
-            return self.createTerreno(addressNumber2)
+                        return terrain, True
+            return self.createTerreno(addressNumber2), False
         except Building.DoesNotExist:
-            return self.createTerreno(addressNumber2)
+            return self.createTerreno(addressNumber2), False
+
+    def createOrGetTerrain(self,**kwargs):
+        return self.createOrGetTerreno(**kwargs)
 
     def createOrGetCasa(self,addressNumber2=None,if_exists_false=False):
         try:
@@ -185,33 +188,45 @@ class RealEstate(models.Model):
                     if if_exists_false:
                         return False
                     else:
-                        return building.house
-            return self.createCasa(addressNumber2)
+                        return building.house, True
+            return self.createCasa(addressNumber2), False
         except Building.DoesNotExist:
-            return self.createCasa(addressNumber2)
+            return self.createCasa(addressNumber2), False
+    
+    def createOrGetHouse(self,**kwargs):
+        return self.createOrGetCasa(**kwargs)
 
-    def createOrGetDepartamento(self,addressNumber2=None,addressNumber3=None):
-        if addressNumber2 == None:
-            # Si el edificio no fue especificado, entonces tenemos que crear
-            # una torre sí o sí, y el correspondiente departamento
-            return self.createDepartamento(None,addressNumber3)
-        try:
-            # Si el edificio fue especificado, entonces tenemos que encontrarlo...
-            buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
-            for building in buildings:
-                if building.apartmentbuilding.addressNumber2 == addressNumber2:
-                    # ... y encontrar el departamento.
-                    for apartment in building.apartmentbuilding.apartment_set.all():
-                        if apartment.addressNumber2 == addressNumber3:
-                            return apartment
-                    return self.createDepartamento(addressNumber2,addressNumber3)
-            # Si fue especificado el edificio pero no lo encontramos, crear la torre
-            # con el número que nos dieron, y el departamento.
-            return self.createDepartamento(addressNumber2,addressNumber3)
-        except Building.DoesNotExist:
-            # Si no hay niun edificio pero nos dieron un número, crear la torre
-            # con el número que nos dieron, y el departamento.
-            return self.createDepartamento(addressNumber2,addressNumber3)
+    def createOrGetDepartamento(self,addressNumber2=None,addressNumber3=None,apartment_building=None):
+        if apartment_building == None:
+            if addressNumber2 == None:
+                # Si el edificio no fue especificado, entonces tenemos que crear
+                # una torre sí o sí, y el correspondiente departamento
+                return self.createDepartamento(None,addressNumber3), False
+            try:
+                # Si el edificio fue especificado, entonces tenemos que encontrarlo...
+                buildings = self.buildings.filter(propertyType=Building.TYPE_EDIFICIO)
+                for building in buildings:
+                    if building.apartmentbuilding.addressNumber2 == addressNumber2:
+                        # ... y encontrar el departamento.
+                        for apartment in building.apartmentbuilding.apartment_set.all():
+                            if apartment.addressNumber2 == addressNumber3:
+                                return apartment, True
+                        return self.createDepartamento(addressNumber2,addressNumber3), False
+                # Si fue especificado el edificio pero no lo encontramos, crear la torre
+                # con el número que nos dieron, y el departamento.
+                return self.createDepartamento(addressNumber2,addressNumber3), False
+            except Building.DoesNotExist:
+                # Si no hay niun edificio pero nos dieron un número, crear la torre
+                # con el número que nos dieron, y el departamento.
+                return self.createDepartamento(addressNumber2,addressNumber3), False
+        else:
+            for apartment in apartment_building.apartment_set.all():
+                if apartment.addressNumber2 == addressNumber3:
+                    return apartment, True
+            return self.createDepartamento(apartment_building=apartment_building,addressNumber3=addressNumber3), False
+
+    def createOrGetApartment(self,**kwargs):
+        return self.createOrGetDepartamento(**kwargs)
 
     def createOrGetEdificio(self,addressNumber2=None,if_exists_false=False):
         try:
@@ -221,10 +236,13 @@ class RealEstate(models.Model):
                     if if_exists_false:
                         return False
                     else:
-                        return building.apartmentbuilding
-            return self.createEdificio(addressNumber2)
+                        return building.apartmentbuilding, True
+            return self.createEdificio(addressNumber2), False
         except Building.DoesNotExist:
-            return self.createEdificio(addressNumber2)
+            return self.createEdificio(addressNumber2), False
+
+    def createOrGetApartmentBuilding(self,**kwargs):
+        return self.createOrGetEdificio(**kwargs)
 
     def createOrGetCondominio(self,addressNumber2=None):
         try:
@@ -326,7 +344,6 @@ class RealEstate(models.Model):
     @property
     def addressOrCoords(self):
         # Returns whole address in a nice format
-        print('addressStreet',self.addressStreet)
         if self.addressStreet != '':
             return self.addressStreet+' '+str(self.addressNumber)
         else:
