@@ -1050,7 +1050,7 @@ def ajax_add_address(request):
 
     pd = propertyData(request.POST)
     commune = Commune.objects.get(code=request.POST['addressCommune'])
-    real_estate = create.createOrGetRealEstate(
+    real_estate, created = create.createOrGetRealEstate(
         addressNumber=request.POST['addressNumber'],
         addressStreet=request.POST['addressStreet'],
         addressCommune=commune,

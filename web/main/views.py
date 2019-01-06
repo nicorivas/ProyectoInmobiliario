@@ -23,6 +23,7 @@ def assign_tasador(appraisal_id,tasador_id,user_id):
     user = User.objects.get(id=user_id)
 
     appraisal.tasadorUser = tasador
+    appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
     appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(datetime.timezone.utc),
         text="Tasación solicitada a "+tasador.user.full_name)
     return
@@ -341,8 +342,7 @@ def ajax_accept_appraisal(request):
 
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_ACTIVE
-
-    appraisal.addComment(Comment.EVENT_ASIGNACION_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
+    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
 
     appraisals_active = appraisals_get_active(request.user)
 
@@ -358,7 +358,7 @@ def ajax_reject_appraisal(request):
     appraisal.tasadorUser = None
     appraisal.save()
 
-    appraisal.addComment(Comment.EVENT_ASIGNACION_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
+    appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
 
     appraisals_not_assigned = appraisals_get_not_assigned(request.user)
 

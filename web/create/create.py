@@ -71,6 +71,7 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
     '''
     appraisal = Appraisal(**kwargs)
     appraisal.state = Appraisal.STATE_NOTASSIGNED
+    appraisal.timeCreated = datetime.datetime.now()
     appraisal.save()
     
     comment = Comment(

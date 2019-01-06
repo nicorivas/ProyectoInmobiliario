@@ -365,8 +365,7 @@ def parseBancoDeChile(text):
         if c[1] == 'Banco de Chile':
             data['solicitante'] = c[0]
     for i, line in enumerate(text):
-        print(line)
-        if 'ID' in line.strip():
+        if 'ID' == line.strip():
             data['solicitanteCodigo'] = text[i+6].strip()
         if 'TIPO OPERACION' in line.strip():
             if text[i+6].strip() == "Crédito Hipotecario":
