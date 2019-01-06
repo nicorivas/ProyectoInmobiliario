@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from appraisal.models import Appraisal
 from commune.models import Commune
 from region.models import Region
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 import datetime
+from django.core.mail import send_mail
+from django.template import loader
 
 class Notification(models.Model):
     ntype = models.CharField(max_length=100, default='')
@@ -80,7 +83,28 @@ class UserProfile(models.Model):
                 self.notifications.remove(notification)
 
     def addNotification(self,ntype="",appraisal_id="",comment_id=""):
-        n = Notification(ntype=ntype,appraisal_id=appraisal_id,comment_id=comment_id,time_created=datetime.datetime.now(datetime.timezone.utc))
+        n = Notification(
+            ntype=ntype,
+            appraisal_id=appraisal_id,
+            comment_id=comment_id,
+            time_created=datetime.datetime.now(datetime.timezone.utc))
+        appraisal = Appraisal.objects.get(id=appraisal_id)
+        html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal': appraisal})
+        send_mail(
+            subject='Asignación de tasación',
+            message='',
+            from_email='soporte@dataurbana.io',
+            recipient_list=['nicorivas@gmail.com'],
+            fail_silently=False,
+            html_message=html_message
+        )
+        '''
+        'Estimado '+self.full_name+',\n\n'+"""
+                ProTasa le ha solicitado una nueva tasación.
+                Dirección: """+appraisal.real_estates.first().address+""".
+                Tipo de propiedad: """+appraisal.real_estates.first().address+""".
+                Para obtener más información, haga <a href="a">click aquí</a>"""
+        '''
         n.save()
         self.notifications.add(n)
 

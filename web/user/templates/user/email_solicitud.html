@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <p>Estimado {{ user.first_name }} {{ user.last_name }},</p>
+        <p>ProTasa le ha solicitiado realizar una tasación, con los siguientes detalles:</p>
+        <div style="padding-left:4em;">
+        	<p>Solicitante: {{appraisal.get_solicitante_display}}</p>
+        	<p>Tipo de tasación: {{appraisal.get_tipoTasacion_display}}</p>
+      		<p>Dirección: {{appraisal.real_estates.first.address}}</p>
+      	</div>
+        <p>Para ver más detalles y rechazar o aceptar esta solicitud, haga <a href="http://127.0.0.1:8000/main/">click aquí</a>.</p>
+    </body>
+</html>
