@@ -10,10 +10,21 @@
 
 {% block content %}
 
+<div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Contabiidad</p>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Tasadores</label>
+              <select name="tasador" class="form-control" required="" id="id_tasdor">
+  <option value="" selected="">---------</option>
 {% for tasador in tasadores %}
-
-{{tasador.first_name}} {{tasador.last_name}}
-
+  <option value="{{tasador.id}}">{{tasador.first_name}} {{tasador.last_name}}</option>
 {% endfor %}
+</select>
+                </div>
+          </div>
+</div>
 
 {% endblock %}
