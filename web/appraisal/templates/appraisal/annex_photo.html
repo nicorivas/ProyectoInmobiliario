@@ -1,33 +1,33 @@
-    <div class="col-md-4">
-      <div class="card mr-2 mb-2 rounded-0">
-        {% if 'no-img.jpg' not in photo.photo.url %}
-        <div style="position: relative;width: 100%;height: 300px;overflow: hidden;" class="container">
-          <img class="image" src="{{photo.photo.url}}"/>
-          <div class="middle">
-            <button type="button" class="btn btn-dark photo_modal" data-photo_id="{{photo.id}}">
-              Modificar imagen
-            </button>
-          </div>
-        </div>
-        {% else %}
-        <button type="button" class="btn btn-dark btn-block rounded-0 border-0 photo_modal" data-photo_id="{{photo.id}}" style="height:300px;padding: 30% 0;">
-          Agregar imagen
+<div class="col-md-4">
+  <div class="card mr-2 mb-2 rounded-0" style="width:400px;">
+    {% if 'no-img.jpg' not in photo.photo.url %}
+    <div style="position: relative;width: 100%;height: 300px;overflow: hidden;" class="container">
+      <img class="image" src="{{photo.photo.url}}"/>
+      <div class="middle">
+        <button type="button" class="btn btn-dark photo_modal" data-photo_id="{{photo.id}}">
+          Modificar imagen
         </button>
-        {% endif %}
-        <div class="card-body">
-          <input name="photo_description_{{photo.id}}" class="form-control form-control-sm in_description" style="display:none;">
-          <div class="row">
-            <div class="col text-left">
-              <p class="card-title description mb-0">
-                {{photo.get_category_display}}
-              </p>
-            </div>
-            <div class="col text-right">
-              <button name="btn_delete_photo" value="{{photo.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
-                <i class="material-icons">delete</i>
-              </button>
-            </div>
-          </div>
+      </div>
+    </div>
+    {% else %}
+    <button type="button" class="btn btn-dark btn-block rounded-0 border-0 photo_modal" data-photo_id="{{photo.id}}" style="height:300px;padding: 30% 0;">
+      Agregar imagen
+    </button>
+    {% endif %}
+    <div class="card-body">
+      <input name="photo_description_{{photo.id}}" class="form-control form-control-sm in_description" style="display:none;">
+      <div class="row">
+        <div class="col text-left">
+          <p class="card-title description mb-0">
+            {{photo.get_category_display}}
+          </p>
+        </div>
+        <div class="col text-right">
+          <button name="btn_delete_photo" value="{{photo.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
+            <i class="material-icons">delete</i>
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>

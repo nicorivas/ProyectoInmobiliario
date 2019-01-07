@@ -1,0 +1,27 @@
+<div class="card mr-2 mb-2" style="width: 16rem;">
+  <a class="document_show" data-url="{{document.photo.url}}" data-id="{{document.id}}">
+    <img class="card-img-top" src="{{settings.MEDIA_ROOT}}{{document.thumbnail.url}}"/>
+  </a>
+  <div class="card-body">
+    <input name="document_description_{{document.id}}" class="form-control form-control-sm in_description" style="display:none;">
+    <p class="card-title description">
+      {{document.description}}
+    </p>
+    <p class="card-text" style="text-align:right">
+      <a class="btn btn-sm document_show" data-url="{{document.document.url}}" data-id="{{document.id}}">
+        <i class="material-icons">zoom_in</i>
+      </a>
+      {% if not appraisal.finished %}
+      <button type="button" class="btn btn-sm edit_document" style="padding:0px; border:0px;">
+        <i class="material-icons">edit</i>
+      </button>
+      <button name="btn_save_document" value="{{document.id}}" class="btn btn-sm save_document" style="padding:0px; border:0px; display:none;">
+        <i class="material-icons">save</i>
+      </button>
+      <button name="btn_delete_document" value="{{document.id}}" class="btn btn-sm" style="padding:0px; border:0px;">
+        <i class="material-icons">delete</i>
+      </button>
+      {% endif %}
+    </p>
+  </div>
+</div>

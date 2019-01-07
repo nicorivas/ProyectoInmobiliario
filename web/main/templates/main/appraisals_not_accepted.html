@@ -11,13 +11,13 @@
     <th scope="col" style="width:11em;">Visador</th>
     <th scope="col" style="width:8em;">Creada</th>
     <th scope="col" style="width:8em;">Entrega</th>
-    <th scope="col" style="width:4em;"></th>
+    <th scope="col" style="width:6em;"></th>
   </tr>
 </thead>
 <tbody>
   {% for appraisal in appraisals_not_accepted %}
   <tr class='not_accepted {{appraisal.tasadorUser.id}}' id="tr_table_not_accepted-{{appraisal.id}}">
-    <td>
+    <td class="id">
       <small>{{ appraisal.id }}</small>
     </td>
     <td class="solicitante">
@@ -31,7 +31,7 @@
     </td>
     <td>
       <a href="{{appraisal.url}}" class="address">
-        {{ appraisal.real_estates.first.addressVerboseNoRegion }}
+        {{ appraisal.address_no_region }}
       </a>
     </td>
     <td>
@@ -73,14 +73,7 @@
     {% endif %}
     </td>
     <td>
-      {% has_notification_appraisal request.user appraisal.id as hna %}
-      <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}" data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        <span id='icon'>assignment</span>
-        <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      </button>
-      <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal_modal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        delete
-      </button>
+      {% include 'main/btn_logbook.html' %}
     </td>
   </tr>
   {% endfor %}

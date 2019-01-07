@@ -13,8 +13,8 @@
   <nav class="navbar justify-content-between">
     <!--<a class="navbar-brand" href="#">-->
     <h4>
-      <span class="badge badge-secondary mr-2" style="font-size: 100%;">{{realestate.get_propertyType_display}}</span>
-      {{real_estate.address}}
+      <span class="badge badge-secondary mr-2" style="font-size: 100%;">{{appraisal.real_estates.first.buildings.first.get_propertyType_display}}</span>
+      {{appraisal.address}}
     </h4>
     <!--</a>-->
     <ul class="navbar-nav mr-auto"> </ul>
@@ -51,7 +51,7 @@
       <div class="col text-center">
         <div class="alert alert-secondary" role="alert">
           {% if appraisal.orderFile %}
-          <a href="{{appraisal.orderFile.url}}" style="color:#000;">Descargar archivo pedido</a>
+          <a href="{{appraisal.orderFile.url}}" style="color:#000;">Descargar solicitud</a>
           {% else %}
           Archivo de pedido no disponible
           {% endif %}
@@ -60,11 +60,17 @@
 
       <div class="col text-center">
         {% if appraisal.daysLeft > 3 %}
-        <div class="alert alert-primary" role="alert" id="timeLeft"></div>
+        <div class="alert alert-primary" role="alert" id="timeLeft">
+          Entrega: {{appraisal.timeDue|date:"d/m G:i"}}
+        </div>
         {% elif appraisal.daysLeft > 1 %}
-        <div class="alert alert-warning" role="alert" id="timeLeft"></div>
+        <div class="alert alert-warning" role="alert" id="timeLeft">
+          Entrega: {{appraisal.timeDue|date:"d/m G:i"}}
+        </div>
         {% else %}
-        <div class="alert alert-danger" role="alert" id="timeLeft"></div>
+        <div class="alert alert-danger" role="alert" id="timeLeft">
+          Entrega: {{appraisal.timeDue|date:"d/m G:i"}}
+        </div>
         {% endif %}
       </div>
 

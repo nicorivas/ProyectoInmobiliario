@@ -16,26 +16,26 @@
 </thead>
 <tbody>
   {% for appraisal in appraisals_finished %}
-  <tr class="previas {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
-    <td>
+  <tr class="finished {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
+    <td class="id">
       {{ appraisal.id }}
     </td>
-    <td>
+    <td class="solicitante">
       {{ appraisal.solicitanteVerbose }}
     </td>
-    <td>
+    <td class="solicitanteCodigo">
       {{ appraisal.solicitanteCodigo }}
     </td>
     <td style="text-align:center;">
       <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
     </td>
-    <td>
+    <td class="address">
       <a href={{appraisal.url}}>
-        {{ appraisal.real_estates.first.addressVerboseNoRegion }}
+        {{ appraisal.address_no_region }}
       </a>
     </td>
     <td>
-      <span style="vertical-align: middle;">
+      <span style="vertical-align: middle;" class="tasador">
         {% if appraisal.tasadorUser %}
           {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
         {% else %}
@@ -54,9 +54,7 @@
     <td>
     </td>
     <td style="text-align:right;">
-      <button id='btn-vis' onclick="location.href='{{appraisal.url}}'" type="button" class="btn btn-dark btn-sm btn-delete" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        visibility
-      </button>
+      {% include 'main/btn_logbook.html' %}
       {% if perms.appraisal.assign_visador %}
       <button type="button" id="{{appraisal.tasadorUser.id}}" 
               value="{{appraisal.id}}"
