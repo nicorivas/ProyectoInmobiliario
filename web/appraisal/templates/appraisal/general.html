@@ -1,4 +1,8 @@
 
+<form id="form_appraisal">
+{% csrf_token %}
+<div id="appraisal_data" data-appraisal_id={{appraisal.id}}>
+</div>
 <div class="row ml-4 mt-5 mr-4 mb-4">
 <div class="col">
 
@@ -236,44 +240,9 @@
 
 </div>
 </div>
+</form>
 
 <script>
-
-  $('.add_rol').click(
-    function() {
-      var row = $('.rol_row:visible');
-      console.log(row.length)
-      if (row.length > 1) {
-        row = row.last();
-      }
-      var newRow = row.clone();
-      newRow.removeClass('mt-4')
-      newRow.find('#id_title').html('')
-      newRow.find('#rol_id').val(-1)
-      newRow.find('#id_codigo').find('label').hide()
-      newRow.find('#id_estado').find('label').hide()
-      newRow.find('#id_div_btn').html('')
-      newRow.find('#id_r-code').val('')
-      newRow.find('#id_r-state').val(0)
-      row.after(newRow);
-      newRow.find('.remove_rol').show()
-      $('.remove_rol').click(
-        function() {
-          var row = $(this).closest('.row');
-          row.find('#rol_delete').val(1)
-          row.hide()
-        }
-      );
-    }
-  );
-
-  $('.remove_rol').click(
-    function() {
-      var row = $(this).closest('.row');
-      row.find('#rol_delete').val(1)
-      row.hide()
-    }
-  );
 
   function valid_rut(rut) {
     function dv(T) {
@@ -313,11 +282,23 @@
     }
   });
 
-
-  //url_ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
-  //btn_assign_tasador_actions();
-
-  //url_ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
-  //btn_assign_tasador_actions();
+  function save_appraisal() {
+    var form = $('#form_appraisal')
+    data = join_data(form,$("#appraisal_data"))
+    url = "{% url 'ajax_save_appraisal_url' %}"
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: $.param(data),
+      //async: false,
+      error: function () {
+        alert("Error al grabar.");
+        return false;
+      },
+      success: function (data) {
+        return true;
+      }
+    });
+  }
 
 </script>

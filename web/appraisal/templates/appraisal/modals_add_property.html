@@ -50,7 +50,11 @@
       "addressNumber2": {
         required: {
           depends: function(element) {
-            return ($("#id_propertyType").val() == {{property_types.Departamento}})
+            return (
+              $("#id_propertyType").val() == {{property_types.Departamento}}
+              ||
+              $("#id_propertyType").val() == {{property_types.Terreno}}
+              )
           }
         }
       }

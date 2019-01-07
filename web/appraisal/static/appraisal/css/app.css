@@ -147,6 +147,10 @@ select.custom-select {
     border-color: #777;
 }
 
+input.custom-file-input {
+    border-color: #777;
+}
+
 textarea.form-control {
     border-color: #777;
 }

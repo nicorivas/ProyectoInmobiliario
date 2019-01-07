@@ -43,6 +43,9 @@ class Photo(models.Model):
         blank=True,
         null=True)
 
+    # Photos with fixed cannot be deleted (the image of course yes).
+    fixed = models.BooleanField("Fixed",blank=False,default=False)
+
     thumbnail = ImageSpecField(source='photo',
         processors=[ResizeToFill(400, 400)],
         format='JPEG',

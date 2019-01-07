@@ -8,21 +8,6 @@ function properties_data() {
   return data
 }
 
-function btn_loading(btn) {
-  console.log('btn_loading')
-  btn.addClass('running');
-  btn.find('.ld').show();
-  btn.find('.icon').hide();
-  btn.prop('disabled', true);
-}
-
-function btn_idle(btn) {
-  btn.removeClass('running');
-  btn.find('.ld').hide();
-  btn.find('.icon').show();
-  btn.prop('disabled', false);
-}
-
 function set_address_list_actions() {
 
   $('#btn_add_address_modal').unbind()
@@ -285,32 +270,34 @@ function set_modal_actions_properties() {
   $('#btn_add_address').on('click', function() {
     var btn = $(this)
     var form = $('#form_add_address')
-    var url = $("#properties_data").data("ajax_add_address_url")
-    btn_loading(btn)
-    $.ajax({
-      url: url,
-      type: 'post',
-      data: form.serialize(),
-      error: function () {
-          btn_idle(btn);
-          alert("Error al agregar nueva dirección.");
-          return false;
-      },
-      success: function (data) {
-        if (data.error) {
-          btn_idle(btn);
-          $('#add_address_alert').fadeIn()
-          $('#add_address_alert').html(data.error)
-        } else {
-          btn_idle(btn);
-          $("#address_list").html($.trim(data));
-          set_address_list_actions();
-          $('#select_realestate').val($('#select_realestate option:last').val());
-          $("#modal_add_address").modal('hide');
-          $('#select_realestate').trigger('change');
+    if (form.valid()) {
+      var url = $("#properties_data").data("ajax_add_address_url")
+      btn_loading(btn)
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            btn_idle(btn);
+            alert("Error al agregar nueva dirección.");
+            return false;
+        },
+        success: function (data) {
+          if (data.error) {
+            btn_idle(btn);
+            $('#add_address_alert').fadeIn()
+            $('#add_address_alert').html(data.error)
+          } else {
+            btn_idle(btn);
+            $("#address_list").html($.trim(data));
+            set_address_list_actions();
+            $('#select_realestate').val($('#select_realestate option:last').val());
+            $("#modal_add_address").modal('hide');
+            $('#select_realestate').trigger('change');
+          }
         }
-      }
-    });
+      });
+    }
   })
 
   $("#btn_remove_address").unbind()
@@ -524,27 +511,8 @@ function set_modal_actions_properties() {
   });
 }
 
-function join_data(form,element) {
-  var data_form = form.serializeArray(); // convert form to array
-  var data_html = element.data()
-  for (var k in data_html) {
-    var found = 0
-    for (var i in data_form) {
-      if (data_form[i].name == k) {
-        data_form[i].value = data_html[k]
-        found = 1
-      }
-    }
-    if (!found) {
-      data_form.push({'name':k,'value':data_html[k]})
-    }
-  }
-  return data_form
-}
-
 function save_property() {
   if ($("#property_info").children().length > 1) {
-    console.log('save')
     var form = $('#form_property')
     var url = $("#properties_data").data("ajax_save_property_url")
     data = join_data(form,$("#properties_data"))
@@ -597,6 +565,7 @@ function set_property_view_actions() {
   $('#btn_edit_rol_modal').on('click', function() {
     event.preventDefault()
     var btn = $(this)
+    btn_loading(btn)
     var data = properties_data()
     data['code'] = $("#select_roles").val()
     var url = $("#properties_data").data("ajax_edit_rol_modal_url");
@@ -605,10 +574,12 @@ function set_property_view_actions() {
       type: 'get',
       data: data,
       error: function () {
+          btn_idle(btn)
           alert("Error al cargar modal para editar rol.");
           return false;
       },
       success: function (data) {
+        btn_idle(btn)
         $("#modal_add_rol").html($.trim(data));
         $("#modal_add_rol").modal("show")
         set_modal_actions_properties()

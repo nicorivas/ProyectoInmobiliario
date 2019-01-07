@@ -8,6 +8,8 @@ from appraisal.models import Appraisal, Comment
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 
+import pytz
+
 import reversion, datetime
 from copy import deepcopy
 from reversion.models import Version
@@ -461,6 +463,7 @@ def ajax_finish_appraisal(request):
     appraisal_id = int(request.GET['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_FINISHED
+    appraisal.timeFinished = datetime.datetime.now(pytz.utc)
     appraisal.save()
     appraisals_finished = appraisals_get_finished(request.user)
     return render(request,'main/appraisals_finished.html',{'appraisals_finished': appraisals_finished})

@@ -1,17 +1,23 @@
 <div class="row mt-4 ml-4 mr-4">
   <div class="col">
 
-    <h5>Fotografías</h5>
+    <div class="row">
+      <div class="col">
+        <h5>Fotografías
+        <button type="button" class="btn btn-sm btn-primary btn_photo_modal ld-ext-right">
+          Agregar
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+        </h5>
+      </div>
+      <div class="col" style="text-align:right;">
+        
+      </div>
+    </div>
 
     <!-- Form to insert a picture -->
-    <div class="row">
-
-      {% for photo in appraisal.photos.all %}
-      <div id="photo_container_{{photo.id}}">
-        {% include 'appraisal/annex_photo.html' %}
-      </div>
-      {% endfor %}
-
+    <div id="photo_container">
+      {% include 'appraisal/annex_photo_container.html' %}
     </div>
 
   </div>
@@ -37,7 +43,6 @@
 
     <!-- Documents -->
     <div class="row">
-      
       {% for document in appraisal.documents.all %}
       <div id="document_container_{{document.id}}">
         {% include 'appraisal/annex_document.html' %}
@@ -90,7 +95,13 @@
 <script>
   
   $(document).ready(function() {
+    photo_list_actions()
+  })
 
+  function photo_list_actions() {
+
+    $('.edit_photo').off()
+    $('.edit_photo').unbind()
     $('.edit_photo').click(function() {
       card = $(this).closest('.card-body')
       p = card.find('.description')
@@ -104,6 +115,8 @@
       btn.toggle()
     })
 
+    $('.edit_document').off()
+    $('.edit_document').unbind()
     $('.edit_document').click(function() {
       card = $(this).closest('.card-body')
       p = card.find('.description')
@@ -116,70 +129,118 @@
       btn = card.find('.save_document')
       btn.toggle()
     })
-    
-  })
 
-  $(".photo_modal").on('click', function() {
-    var url = "{% url 'ajax_photo_modal_url' %}";
-    data = {}
-    data['photo_id'] = $(this).data('photo_id');
-    data['appraisal_id'] = {{appraisal.id}};
-    $.ajax({
-        url: url,
-        type:'get',
-        data: data,
-        error: function(){
-          alert('Error al cargar modal de foto')
-        },
-        success: function(ret){
-          $('#modal_photo').html($.trim(ret))
-          $('#modal_photo').modal('show')
-          $('#modal_photo input.appraisal_id').val(data['appraisal_id'])
-          $('#modal_photo input.photo_id').val(data['photo_id'])
-          photo_modal_actions()
-        },
+    $('.btn_remove_photo').off()
+    $('.btn_remove_photo').unbind()
+    $('.btn_remove_photo').click(function() {
+      var btn = $(this)
+      btn_loading(btn)
+      var url = "{% url 'ajax_photo_remove_url' %}";
+      data = {}
+      data['photo_fixed'] = btn.data('photo_fixed');
+      data['photo_id'] = btn.data('photo_id');
+      data['appraisal_id'] = {{appraisal.id}};
+      $.ajax({
+          url: url,
+          type:'get',
+          data: data,
+          error: function(){
+            btn_idle(btn)
+            alert('Error al remover foto')
+          },
+          success: function(ret){
+            if (data['photo_fixed']=="True") {
+              $('#photo_container_'+data['photo_id']).html($.trim(ret))
+              photo_list_actions()
+            } else {
+              $('#photo_container_'+data['photo_id']).fadeOut(complete=function() {
+                $(this).remove()
+              })
+              photo_list_actions()
+            }
+            btn_idle(btn)
+          },
+      });
     });
-  });
+
+    $('.btn_photo_modal').off()
+    $('.btn_photo_modal').unbind()
+    $(".btn_photo_modal").on('click', function() {
+      var btn = $(this)
+      btn_loading(btn)
+      var url = "{% url 'ajax_photo_modal_url' %}";
+      var data = {}
+      data['photo_id'] = btn.data('photo_id');
+      data['appraisal_id'] = {{appraisal.id}};
+      $.ajax({
+          url: url,
+          type:'get',
+          data: data,
+          error: function(){
+            alert('Error al cargar modal de foto')
+            btn_idle(btn)
+          },
+          success: function(ret){
+            $('#modal_photo').html($.trim(ret))
+            $('#modal_photo').modal('show')
+            $('#modal_photo input.appraisal_id').val(data['appraisal_id'])
+            $('#modal_photo input.photo_id').val(data['photo_id'])
+            photo_modal_actions()
+            btn_idle(btn)
+          }
+      });
+    });
+  }
 
   function photo_modal_actions() {
 
     $("#btn_photo_save").unbind()
     $("#btn_photo_save").off()
     $("#btn_photo_save").on('click', function() {
-      event.preventDefault()
-      var url = "{% url 'ajax_photo_save_url' %}";
-      var form = document.getElementById("form_photo");
-      var form_data = new FormData(form);
-      var photo_id = $("#photo_id").val()
-      $.ajax({
-        url: url,
-        type: 'post',
-        data: form_data,
-        processData: false,
-        contentType: false,
-        error: function(){
-          alert('Error al grabar foto')
-        },
-        success: function(data) {
-          $('#modal_photo').modal('hide');
-          console.log(photo_id)
-          console.log($('#photo_container_'+photo_id))
-          $('#photo_container_'+photo_id).html($.trim(data))
-        }
-      });
+      if ($("#form_photo").valid()) {
+        var btn = $(this)
+        btn_loading(btn)
+        var url = "{% url 'ajax_photo_save_url' %}";
+        var form = document.getElementById("form_photo");
+        var form_data = new FormData(form);
+        var photo_id = $("#photo_id").val()
+        $.ajax({
+          url: url,
+          type: 'post',
+          data: form_data,
+          processData: false,
+          contentType: false,
+          error: function(){
+            alert('Error al grabar foto')
+            btn_idle(btn)
+          },
+          success: function(data) {
+            if (photo_id) {
+              $('#modal_photo').modal('hide');
+              $('#photo_container_'+photo_id).html($.trim(data))
+              photo_list_actions()
+            } else {
+              $('#modal_photo').modal('hide');
+              $('#photo_container').html($.trim(data))
+              photo_list_actions()
+            }
+            btn_idle(btn)
+          }
+        });
+      }
     })
 
   }
 
-  $(document).on('click','#btn_upload_photo',function() {
+  $("#btn_upload_photo").unbind()
+  $("#btn_upload_photo").off()
+  $('#btn_upload_photo').on('click', function() {
     var url = "{% url 'ajax_photo_save_url' %}";
     var form = document.getElementById('form');
-    console.log(form)
     var form_data = new FormData(form);
     btn = $(this);
     btn.addClass('running');
     btn.prop('disabled', true);
-    console.log(form_data)
     $.ajax({
       url: url,
       type: 'post',
@@ -192,7 +253,6 @@
       success: function(data) {
         btn.removeClass('running');
         btn.prop('disabled', false);
-        console.log('a')
       }
     });
   })

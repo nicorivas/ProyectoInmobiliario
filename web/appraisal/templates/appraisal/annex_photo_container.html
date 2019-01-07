@@ -1,0 +1,7 @@
+<div class="row mt-2">
+	{% for photo in appraisal.photos.all %}
+		<div id="photo_container_{{photo.id}}">
+			{% include 'appraisal/annex_photo.html' %}
+		</div>
+	{% endfor %}
+</div>

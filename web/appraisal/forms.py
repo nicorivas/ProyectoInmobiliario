@@ -11,6 +11,76 @@ from commune.models import Commune
 from multiupload.fields import MultiImageField
 from dbase.globals import *
 
+class FormAppraisal(forms.ModelForm):
+
+    class Meta:
+        model = Appraisal
+        fields = [
+            'solicitante',
+            'solicitanteCodigo',
+            'solicitanteSucursal',
+            'solicitanteEjecutivo',
+            'solicitanteEjecutivoEmail',
+            'solicitanteEjecutivoTelefono',
+            'cliente',
+            'clienteRut',
+            'clienteEmail',
+            'clienteTelefono',
+            'contacto',
+            'contactoRut',
+            'contactoEmail',
+            'contactoTelefono',
+            'propietario',
+            'propietarioRut',
+            'propietarioEmail',
+            'propietarioTelefono',
+            'propietarioReferenceSII',
+            'visadorEmpresa',
+            'visadorEmpresaMail',
+            'valorUF',
+            'tipoTasacion',
+            'finalidad',
+            'visita',
+            'descripcionSector',
+            'descripcionPlanoRegulador',
+            'descripcionExpropiacion'
+        ]
+        attrs = {'class':"form-control"}
+        attrs_sm = {'class':"form-control form-control-sm"}
+        attrs_check = {'class':"form-check-input"}
+        attrs_req = {'class':"form-control form-control-sm",'data-validation':"required"}
+        attrs_rut = {'class':"form-control",'data-validation':"rut"}
+        widgets = {
+            'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=attrs),
+            'solicitanteCodigo': forms.TextInput(attrs=attrs),
+            'solicitanteSucursal': forms.TextInput(attrs=attrs),
+            'solicitanteEjecutivo': forms.TextInput(attrs=attrs),
+            'solicitanteEjecutivoEmail': forms.TextInput(attrs=attrs),
+            'solicitanteEjecutivoTelefono': forms.TextInput(attrs=attrs),
+            'contacto': forms.TextInput(attrs=attrs),
+            'contactoRut': forms.TextInput(attrs=attrs_rut),
+            'contactoEmail': forms.TextInput(attrs=attrs),
+            'contactoTelefono': forms.TextInput(attrs=attrs),
+            'cliente': forms.TextInput(attrs=attrs),
+            'clienteRut': forms.TextInput(attrs=attrs_rut),
+            'clienteEmail': forms.TextInput(attrs=attrs),
+            'clienteTelefono': forms.TextInput(attrs=attrs),
+            'propietario': forms.TextInput(attrs=attrs),
+            'propietarioRut': forms.TextInput(attrs=attrs_rut),
+            'propietarioEmail': forms.TextInput(attrs=attrs),
+            'propietarioTelefono': forms.TextInput(attrs=attrs_rut),
+            'propietarioReferenceSII': forms.CheckboxInput(attrs=attrs_check),
+            'visadorEmpresa': forms.TextInput(attrs=attrs),
+            'visadorEmpresaMail': forms.EmailInput(attrs=attrs),
+            'valorUF': forms.TextInput(attrs={'class':"form-control text-right",'lang':"es-ES"}),
+            'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=attrs),
+            'finalidad':forms.Select(attrs=attrs,choices=Appraisal.petitioner_choices),
+            'visita':forms.Select(attrs=attrs,choices=Appraisal.visit_choices),
+            'descripcionSector':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'descripcionPlanoRegulador':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
+            'descripcionExpropiacion':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5})
+        }
+
 class FormBuilding(forms.ModelForm):
 
     class Meta:
@@ -182,76 +252,6 @@ class FormTerrain(forms.ModelForm):
             'topography': forms.Select(attrs={'class':"custom-select custom-select-sm"}),
             'shape': forms.Select(attrs={'class':"custom-select custom-select-sm"}),
             'area': forms.NumberInput(attrs=class_bs)
-        }
-
-class FormAppraisal(forms.ModelForm):
-
-    class Meta:
-        model = Appraisal
-        fields = [
-            'solicitante',
-            'solicitanteCodigo',
-            'solicitanteSucursal',
-            'solicitanteEjecutivo',
-            'solicitanteEjecutivoEmail',
-            'solicitanteEjecutivoTelefono',
-            'cliente',
-            'clienteRut',
-            'clienteEmail',
-            'clienteTelefono',
-            'contacto',
-            'contactoRut',
-            'contactoEmail',
-            'contactoTelefono',
-            'propietario',
-            'propietarioRut',
-            'propietarioEmail',
-            'propietarioTelefono',
-            'propietarioReferenceSII',
-            'visadorEmpresa',
-            'visadorEmpresaMail',
-            'valorUF',
-            'tipoTasacion',
-            'finalidad',
-            'visita',
-            'descripcionSector',
-            'descripcionPlanoRegulador',
-            'descripcionExpropiacion'
-        ]
-        attrs = {'class':"form-control"}
-        attrs_sm = {'class':"form-control form-control-sm"}
-        attrs_check = {'class':"form-check-input"}
-        attrs_req = {'class':"form-control form-control-sm",'data-validation':"required"}
-        attrs_rut = {'class':"form-control",'data-validation':"rut"}
-        widgets = {
-            'solicitante': forms.Select(choices=Appraisal.petitioner_choices, attrs=attrs),
-            'solicitanteCodigo': forms.TextInput(attrs=attrs),
-            'solicitanteSucursal': forms.TextInput(attrs=attrs),
-            'solicitanteEjecutivo': forms.TextInput(attrs=attrs),
-            'solicitanteEjecutivoEmail': forms.TextInput(attrs=attrs),
-            'solicitanteEjecutivoTelefono': forms.TextInput(attrs=attrs),
-            'contacto': forms.TextInput(attrs=attrs),
-            'contactoRut': forms.TextInput(attrs=attrs_rut),
-            'contactoEmail': forms.TextInput(attrs=attrs),
-            'contactoTelefono': forms.TextInput(attrs=attrs),
-            'cliente': forms.TextInput(attrs=attrs),
-            'clienteRut': forms.TextInput(attrs=attrs_rut),
-            'clienteEmail': forms.TextInput(attrs=attrs),
-            'clienteTelefono': forms.TextInput(attrs=attrs),
-            'propietario': forms.TextInput(attrs=attrs),
-            'propietarioRut': forms.TextInput(attrs=attrs_rut),
-            'propietarioEmail': forms.TextInput(attrs=attrs),
-            'propietarioTelefono': forms.TextInput(attrs=attrs_rut),
-            'propietarioReferenceSII': forms.CheckboxInput(attrs=attrs_check),
-            'visadorEmpresa': forms.TextInput(attrs=attrs),
-            'visadorEmpresaMail': forms.EmailInput(attrs=attrs),
-            'valorUF': forms.TextInput(attrs={'class':"form-control text-right",'lang':"es-ES"}),
-            'tipoTasacion':forms.Select(choices=Appraisal.tipoTasacion_choices, attrs=attrs),
-            'finalidad':forms.Select(attrs=attrs,choices=Appraisal.petitioner_choices),
-            'visita':forms.Select(attrs=attrs,choices=Appraisal.visit_choices),
-            'descripcionSector':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
-            'descripcionPlanoRegulador':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
-            'descripcionExpropiacion':forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5})
         }
 
 class FormCreateTerrain(forms.ModelForm):
@@ -457,6 +457,8 @@ class FormAddApartment(forms.Form):
 
 class FormAddRol(forms.ModelForm):
 
+    
+
     code = forms.CharField(max_length=20,label="Rol",required=True)
     code.widget.attrs.update({'class':"form-control"})
 
@@ -469,13 +471,13 @@ class FormPhotos(forms.Form):
             attrs={'class':"custom-file-input",'multiple': False}))
     category = forms.ChoiceField(
         label='Categoría',
-        required=False,
+        required=True,
         choices=Photo.PHOTO_CATEGORIES,
         widget=forms.Select(attrs={'class':"form-control"}))
     description = forms.CharField(
         label='Descripción',
         max_length=200,
-        required=False,
+        required=True,
         widget=forms.TextInput(attrs={'size':20,'class':"form-control"}))
 
 class FormDocuments(forms.Form):
