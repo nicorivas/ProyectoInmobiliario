@@ -9,16 +9,17 @@ function properties_data() {
 }
 
 function btn_loading(btn) {
+  console.log('btn_loading')
   btn.addClass('running');
   btn.find('.ld').show();
-  btn.find('.icon').show();
+  btn.find('.icon').hide();
   btn.prop('disabled', true);
 }
 
 function btn_idle(btn) {
   btn.removeClass('running');
   btn.find('.ld').hide();
-  btn.find('.icon').hide();
+  btn.find('.icon').show();
   btn.prop('disabled', false);
 }
 
@@ -65,10 +66,10 @@ function set_address_list_actions() {
     corresponding data.
     */
     var btn = $(this)
+    btn_loading(btn)
     var data = properties_data()
     data['real_estate_id'] = $('#select_realestate').find(":selected").val();
     var url = $("#properties_data").data("ajax_edit_address_modal_url")
-    btn_loading(btn)
     $.ajax({
       url: url,
       type: 'get',

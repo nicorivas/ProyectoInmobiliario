@@ -18,7 +18,7 @@
 <tbody>
   {% for appraisal in appraisals_active %}
   <tr class='active {{appraisal.tasadorUser.id}}' id="tr_table_active-{{appraisal.id}}">
-    <td>
+    <td class="id">
       <small>{{ appraisal.id }}</small>
     </td>
     <td class="solicitante">
@@ -32,7 +32,7 @@
     </td>
     <td>
       <a href="{{appraisal.url}}" class="address">
-        {{ appraisal.real_estates.first.addressVerboseNoRegion }}
+        {{ appraisal.address_no_region }}
       </a>
     </td>
     <td>
@@ -95,24 +95,16 @@
       {{appraisal.timeCreated | date:"d/m"}}
     </td>
     <td>
-    {% if appraisal.daysLeft > 3 %}
-      <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
-    {% elif appraisal.daysLeft > 1 %}
-      <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
-    {% else %}
-      <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
-    {% endif %}
+      {% if appraisal.daysLeft > 3 %}
+        <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+      {% elif appraisal.daysLeft > 1 %}
+        <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+      {% else %}
+        <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+      {% endif %}
     </td>
     <td>
-    {% has_notification_appraisal request.user appraisal.id as hna %}
-    <button type="button" class="btn btn-sm btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}"
-            data-logbook-url="{% url 'ajax_logbook_url' %}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-      <span id='icon'>assignment</span>
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-    <button type="button" data-id="{{appraisal.id}}" class="btn btn-dark btn-sm btn_delete_appraisal_modal" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-      delete
-    </button>
+      {% include 'main/btn_logbook.html' %}
     </td>
   </tr>
   {% endfor %}

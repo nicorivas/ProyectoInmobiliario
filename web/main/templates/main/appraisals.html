@@ -10,32 +10,33 @@
 
 <!-- SEARCH -->
 
-<div class="card mb-4" id="div_not_assigned" style="font-size:0.8em;">
+<div class="card mb-1" id="div_not_assigned">
   <div class="card-body">
 
-    <h5 class="card-title">Buscar</h5>
+    <p class="card-title">Buscar</p>
 
-    <table class="table table-sm table-borderless">
+    <table class="table table-sm table-borderless" style="font-size:0.8em;">
       <thead>
         <tr>
-          <th scope="col" style="width:2em">
+          <th scope="col" style="width:2em;">
+            <input class="form-control form-control-sm" placeholder="ID" id="buscar_id"></input>
           </th>
           <th scope="col" style="width:8em">
-            <input class="form-control form-control-sm mb-2" placeholder="Cliente" id="buscar_solicitante"></input>
+            <input class="form-control form-control-sm" placeholder="Cliente" id="buscar_solicitante"></input>
           </th>
           <th scope="col" style="width:6.5em">
-            <input class="form-control form-control-sm mb-2" placeholder="Código" id="buscar_solicitanteCodigo"></input>
+            <input class="form-control form-control-sm" placeholder="Código" id="buscar_solicitanteCodigo"></input>
           </th>
           <th scope="col" style="width:1em;text-align:center;">
           </th>
           <th scope="col" style="width:19em;">
-            <input class="form-control form-control-sm mb-2" placeholder="Dirección" id="buscar_address"></input>
+            <input class="form-control form-control-sm" placeholder="Dirección" id="buscar_address"></input>
           </th>
           <th scope="col" style="width:11em;">
-            <input class="form-control form-control-sm mb-2" placeholder="Tasador" id="buscar_tasador"></input>
+            <input class="form-control form-control-sm" placeholder="Tasador" id="buscar_tasador"></input>
           </th>
           <th scope="col" style="width:11em;">
-            <input class="form-control form-control-sm mb-2" placeholder="Visador" id="buscar_visador"></input>
+            <input class="form-control form-control-sm" placeholder="Visador" id="buscar_visador"></input>
           </th>
           <th scope="col" style="width:8em;">
           </th>
@@ -53,13 +54,13 @@
 
 {% if request.user|has_group:"asignador" or user.is_superuser %} 
 
-<div class="card mb-4" id="div_not_assigned" style="font-size:0.8em;">
+<div class="card mb-1" id="div_not_assigned">
   <div class="card-body">
-    <h5 class="card-title">Tasaciones por asignar</h5>
+    <p class="card-title">Tasaciones por asignar</p>
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_assigned" style="display:none;">
       No hay tasaciones por asignar
     </div>
-    <table class="table table-sm table-borderless" id="table_not_assigned" style="display:none;">
+    <table class="table table-sm table-borderless" id="table_not_assigned" style="display:none;font-size:0.8em;">
       {% include 'main/appraisals_not_assigned.html' %}
     </table>
   </div>
@@ -69,13 +70,13 @@
 
 <!-- NOT ACCEPTED -->
 
-<div class="card mb-4" id="div_not_accepted" style="font-size:0.8em;">
+<div class="card mb-1" id="div_not_accepted">
   <div class="card-body">
-    <h5 class="card-title">Tasaciones por aceptar</h5>
+    <p class="card-title">Tasaciones por aceptar</p>
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_accepted" style="display:none;">
       No tiene tasaciones por aceptar
     </div>
-    <table class="table table-sm table-borderless" id="table_not_accepted" style="display:none;">
+    <table class="table table-sm table-borderless" id="table_not_accepted" style="display:none;font-size:0.8em;">
       {% include 'main/appraisals_not_accepted.html' %}      
     </table>
   </div>
@@ -83,13 +84,13 @@
 
 <!-- ACTIVE -->
 
-<div class="card mb-4" id="div_active" style="font-size:0.8em;">
+<div class="card mb-1" id="div_active">
   <div class="card-body">
-    <h5 class="card-title">Tasaciones activas</h5>
+    <p class="card-title">Tasaciones activas</p>
     <div class="alert alert-primary" role="alert" id="div_alert_table_active" style="display: none;">
       No hay tasaciones activas
     </div>
-    <table class="table table-sm table-borderless" id="table_active" style="display:none;">
+    <table class="table table-sm table-borderless" id="table_active" style="display:none;font-size:0.8em;">
       {% include 'main/appraisals_active.html' %}
     </table>
   </div>
@@ -97,13 +98,13 @@
 
 <!-- FINISHED -->
 
-<div class="card mb-4" id="div_finished" style="font-size:0.8em;">
+<div class="card mb-4" id="div_finished">
   <div class="card-body">
-    <h5 class="card-title">Tasaciones finalizadas</h5>
+    <p class="card-title">Tasaciones finalizadas</p>
     <div class="alert alert-primary" role="alert" id="div_alert_table_finished" style="display: none;">
       No hay tasaciones finalizadas
     </div>
-    <table class="table table-sm table-borderless" id="table_finished" style="display: none;">
+    <table class="table table-sm table-borderless" id="table_finished" style="display:none;font-size:0.8em;">
       {% include 'main/appraisals_finished.html' %}
     </table>
   </div>
@@ -115,17 +116,70 @@
 
 <script>
 
+  function buttonClick(btn,hide_text) {
+    // Remove notification if it has
+    btn.removeClass('btn-not');
+    btn.find('.notification').fadeOut();
+    // Activate loading wheel
+    btn.find('.ld').show();
+    // Deactivate icon
+    btn.find('.icon').hide();
+    btn.prop('disabled', true);
+    if (hide_text) {
+      btn.find('.text').hide()
+    }
+  }
+
+  function buttonIdle(btn) {
+    btn.find('.ld').hide();
+    btn.find('.icon').show();
+    btn.prop('disabled', false);
+    btn.find('.text').show()
+  }
+
+
+  var removeRow = function(table_name,appraisal_id) {
+    // Remove row from table. Takes into account if this is
+    // the last row remaining, in that case it hides the whole
+    // table and shows the no elements alert div.
+    var nrows = $("#"+table_name+" tr").length;
+    if (nrows > 2) {
+      $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
+    } else {
+      $("#"+table_name).fadeOut()
+      $("#div_alert_"+table_name).fadeToggle()
+    }
+  }
+
+  var replaceTable = function(table_name,data) {
+    // Replaces a table, usuallhy from data from AJAX. Takes
+    // into account the size of the table and hides the 
+    // alert of no elements if the table returned has elements.
+    console.log('replaceTable',$("#"+table_name))
+    $("#"+table_name).html($.trim(data))
+    var nrows = $("#"+table_name+" tr").length;
+    if (nrows == 0) {
+      $("#"+table_name).fadeOut()
+      $("#div_alert_"+table_name).fadeIn()
+    } else {
+      $("#"+table_name).fadeIn()
+      $("#div_alert_"+table_name).fadeOut()
+    }
+  }
+
   var assignLogbookModalActions = function() {
     
     $("#id_event").unbind()
     $("#id_event").off()
     $("#id_event").on("change", function (event) {
-      console.log('change')
-      console.log($(this).val())
+      console.log('a')
       if ($(this).val() == 3) {
         $("#div_datetime").slideDown()
+      } else if ($(this).val() == 8) {
+        $("#div_warning_entregada").slideDown()
       } else {
         $("#div_datetime").slideUp()
+        $("#div_warning_entregada").slideUp()
       }
     })
 
@@ -134,11 +188,14 @@
     $("#btn_comment").on("click", function (event) {
       // Click of comment button in comment form.
       event.preventDefault();
+      btn = $(this)
+      buttonClick(btn,hide_text=true)
       var form = document.getElementById('form_comment');
       var formData = new FormData(form);
       var url = $("#form_comment").attr("data-comment-url");
       var appraisal_id = $("#in_appraisal_id").val()
-      $('#logbook').find('#loading').show()
+      var event = $("#id_event").val()
+      //$('#logbook').find('#loading').show()
       $.ajax({
         url: url,
         type: 'post',
@@ -146,13 +203,18 @@
         processData: false,
         contentType: false,
         error: function () {
-          $('#logbook').find('#loading').hide()
+          buttonIdle(btn)
           alert("Error al comentar.");
           return false;
         },
         success: function (data) {
+          buttonIdle(btn)
           $('#logbook').find('.modal-body').html($.trim(data));
           $("#in_appraisal_id").val(appraisal_id); // hidden input
+          if (event == 8) {
+            $('#logbook').modal('hide');
+            finish_appraisal(appraisal_id)
+          }
         },
         complete: function (data) {
           assignLogbookModalActions();
@@ -163,7 +225,10 @@
     $(".delete_comment").unbind()
     $(".delete_comment").off()
     $(".delete_comment").on('click',function() {
+      var btn = $(this)
+      buttonClick(btn)
       var comment_id = $(this).data('id');
+      var event = $(this).data('event');
       var appraisal_id = $(this).data('appraisal-id');
       var url = $(this).data('delete-comment-url');
       $.ajax({
@@ -171,10 +236,12 @@
         type: 'get',
         data: {'comment_id':comment_id,'appraisal_id':appraisal_id},
         error: function () {
+          buttonIdle(btn)
           alert("Error al eliminar comentario.");
           return false;
         },
         success: function (data) {
+          buttonIdle(btn)
           $('#id_event').empty()
           for (var i=0; i<data.choices.length; i++) {
             $('#id_event').append($("<option></option>")
@@ -182,6 +249,11 @@
                     .text(data.choices[i][1]));
           }
           $('#comment_'+data.comment_id).fadeOut()
+          $("#id_event").trigger("change")
+          if (event == 8) {
+            $('#logbook').modal('hide');
+            unfinish_appraisal(appraisal_id)
+          }
         }
       });
     })
@@ -266,6 +338,44 @@
     });
   }
 
+  var finish_appraisal = function(appraisal_id) {
+    var url = "{% url 'ajax_finish_appraisal_url' %}"
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id},
+      error: function () {
+        alert("Error al finalizar tasación.");
+        return false;
+      },
+      success: function (ret) {
+        console.log(ret)
+        removeRow("table_active",appraisal_id)
+        replaceTable("table_finished",ret)
+        assignTableActions();
+      },
+    })
+  }
+
+  var unfinish_appraisal = function(appraisal_id) {
+    var url = "{% url 'ajax_unfinish_appraisal_url' %}"
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id},
+      error: function () {
+        alert("Error al desfinalizar tasación.");
+        return false;
+      },
+      success: function (ret) {
+        console.log(ret)
+        removeRow("table_finished",appraisal_id)
+        replaceTable("table_active",ret)
+        assignTableActions();
+      },
+    })
+  }
+
   var assignTableActions = function() {
 
     $(".btn_logbook").unbind()
@@ -278,10 +388,7 @@
       btn = $(this)
       table = btn.closest('table').attr('id')
       id = btn.val(); // button has id of appraisal
-      btn.removeClass('btn-not');
-      btn.find('.ld').toggle();
-      btn.find('#icon').toggle();
-      btn.prop('disabled', true);
+      buttonClick(btn)
       // ajax
       var url = $(this).attr("data-logbook-url");
       $.ajax({
@@ -303,10 +410,9 @@
           }
         },
         complete: function (data) {
-          btn.find('.ld').toggle();
-          btn.find('#icon').toggle();
-          btn.prop('disabled', false);
+          buttonIdle(btn)
           assignLogbookModalActions();
+          $("#id_event").trigger("change")
         }
       });
     });
@@ -449,34 +555,6 @@
         }
       });
     });
-  }
-
-  var removeRow = function(table_name,appraisal_id) {
-    // Remove row from table. Takes into account if this is
-    // the last row remaining, in that case it hides the whole
-    // table and shows the no elements alert div.
-    var nrows = $("#"+table_name+" tr").length;
-    if (nrows > 2) {
-      $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
-    } else {
-      $("#"+table_name).fadeOut()
-      $("#div_alert_"+table_name).fadeToggle()
-    }
-  }
-
-  var replaceTable = function(table_name,data) {
-    // Replaces a table, usuallhy from data from AJAX. Takes
-    // into account the size of the table and hides the 
-    // alert of no elements if the table returned has elements.
-    $("#"+table_name).html($.trim(data))
-    var nrows = $("#"+table_name+" tr").length;
-    if (nrows == 0) {
-      $("#"+table_name).fadeOut()
-      $("#div_alert_"+table_name).fadeIn()
-    } else {
-      $("#"+table_name).fadeIn()
-      $("#div_alert_"+table_name).fadeOut()
-    }
   }
 
   $(document).ready(function($) {
@@ -623,10 +701,11 @@ $(function () {
     if (!val) {
       return
     }
-    var row_class = ["tr.not_assigned","tr.not_accepted","tr.active"];
+    var row_class = ["tr.not_assigned","tr.not_accepted","tr.active","tr.finished"];
     for (var i=0; i<row_class.length; i++) {
       $(row_class[i]).each(function() {
         var field_value = $(this).find("."+field).html().trim();
+        console.log(field_value)
         field_value = field_value.toLowerCase()
         if (field_value.indexOf(val) < 0) {
           $(this).hide()
@@ -644,6 +723,11 @@ $(function () {
     $("tr.active").each(function() {
       $(this).show()
     })
+    $("tr.finished").each(function() {
+      $(this).show()
+    })
+    val = $("#buscar_id").val()
+    search_appraisals('id',val)
     val = $("#buscar_solicitante").val()
     search_appraisals('solicitante',val)
     val = $("#buscar_solicitanteCodigo").val()
@@ -655,6 +739,9 @@ $(function () {
     val = $("#buscar_visador").val()
     search_appraisals('visador',val)
   }
+  $("#buscar_id").on('keyup',function() {
+    search_all()
+  })
   $("#buscar_solicitante").on('keyup',function() {
     search_all()
   })

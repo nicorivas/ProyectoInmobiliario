@@ -18,4 +18,6 @@ urlpatterns = [
     path('ajax/unassign_visador/', views.ajax_unassign_visador, name='ajax_unassign_visador_url'),
     path('ajax/comment/', views.ajax_comment, name='ajax_comment_url'),
     path('ajax/delete_comment/', views.ajax_delete_comment, name='ajax_delete_comment_url'),
+    path('ajax/finish_appraisal/', views.ajax_finish_appraisal, name='ajax_finish_appraisal_url'),
+    path('ajax/unfinish_appraisal/', views.ajax_unfinish_appraisal, name='ajax_unfinish_appraisal_url'),
 ]

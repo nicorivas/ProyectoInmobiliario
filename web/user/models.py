@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from appraisal.models import Appraisal
+from appraisal.models import Appraisal, Comment
 from commune.models import Commune
 from region.models import Region
 from django.db.models.signals import post_save
@@ -83,30 +83,26 @@ class UserProfile(models.Model):
                 self.notifications.remove(notification)
 
     def addNotification(self,ntype="",appraisal_id="",comment_id=""):
-        n = Notification(
+        notification = Notification(
             ntype=ntype,
             appraisal_id=appraisal_id,
             comment_id=comment_id,
             time_created=datetime.datetime.now(datetime.timezone.utc))
-        appraisal = Appraisal.objects.get(id=appraisal_id)
-        html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal': appraisal})
-        send_mail(
-            subject='Asignación de tasación',
-            message='',
-            from_email='soporte@dataurbana.io',
-            recipient_list=['nicorivas@gmail.com'],
-            fail_silently=False,
-            html_message=html_message
-        )
-        '''
-        'Estimado '+self.full_name+',\n\n'+"""
-                ProTasa le ha solicitado una nueva tasación.
-                Dirección: """+appraisal.real_estates.first().address+""".
-                Tipo de propiedad: """+appraisal.real_estates.first().address+""".
-                Para obtener más información, haga <a href="a">click aquí</a>"""
-        '''
-        n.save()
-        self.notifications.add(n)
+        notification.save()
+        self.notifications.add(notification)
+
+        comment = Comment.objects.get(id=comment_id)
+        # Send email
+        if comment.event == Comment.EVENT_TASADOR_SOLICITADO:
+            appraisal = Appraisal.objects.get(id=appraisal_id)
+            html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal': appraisal})
+            send_mail(
+                subject='Asignación de tasación',
+                message='',
+                from_email='soporte@dataurbana.io',
+                recipient_list=[self.user.email],
+                fail_silently=False,
+                html_message=html_message)
 
     def hasNotificationAppraisal(self,id):
         '''

@@ -1423,6 +1423,7 @@ def ajax_photo_modal(request):
     appraisal = Appraisal.objects.get(id=request.GET['appraisal_id'])
     photo = appraisal.photos.get(id=request.GET['photo_id'])
     data['form'] = FormPhotos(initial={'category':photo.category,'description':photo.description})
+    data['form'].fields['photos'].widget['initial_text'] = 'a'
     return render(request,'appraisal/modals_photo.html', data)
 
 def ajax_photo_save(request):
@@ -1434,4 +1435,4 @@ def ajax_photo_save(request):
         photo.description = request.POST['description']
         photo.save()
 
-    return render(request,'appraisal/modals_photo.html')
+    return render(request,'appraisal/annex_photo.html',{'photo':photo})

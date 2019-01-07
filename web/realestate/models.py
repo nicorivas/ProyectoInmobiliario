@@ -331,7 +331,7 @@ class RealEstate(models.Model):
         return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
 
     @property
-    def addressVerboseNoRegion(self):
+    def address_no_region(self):
         if self.addressCommune == None:
             return self.addressStreet+' '+str(self.addressNumber)
         else:

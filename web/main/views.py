@@ -375,9 +375,9 @@ def ajax_logbook(request):
     '''
     Called when opening the logbook modal, through AJAX. Returns the comments of the relevant appraisal.
     '''
-    id = int(request.GET['id'])
+    appraisal_id = int(request.GET['id'])
 
-    appraisal = Appraisal.objects.get(id=id)
+    appraisal = Appraisal.objects.get(id=appraisal_id)
     comments = appraisal.comments.all().order_by('-timeCreated')
     form_comment = FormComment(label_suffix='')
     form_comment.fields['event'].choices = appraisal.getCommentChoices(comments)
@@ -425,11 +425,11 @@ def ajax_comment(request):
     if appraisal.tasadorUser != None:
         if appraisal.tasadorUser != request.user: # dont add notifications to yourself
             appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
-    if appraisal.tasadorUser != None:
+    if appraisal.visadorUser != None:
         if appraisal.visadorUser != request.user: # dont add notifications to yourself
             appraisal.visadorUser.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
     # add notifications to all asignadores
-    appraisal.visadorUser.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
+    # appraisal.visadorUser.user.addNotification(ntype="comment",appraisal_id=id,comment_id=comment.id)
 
     asignadores = User.objects.filter(groups__name='asignador')
     for asignador in asignadores:
@@ -456,3 +456,19 @@ def ajax_delete_comment(request):
     choices = appraisal.getCommentChoices()
 
     return JsonResponse({'comment_id':comment_id,'choices':choices})
+
+def ajax_finish_appraisal(request):
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.state = Appraisal.STATE_FINISHED
+    appraisal.save()
+    appraisals_finished = appraisals_get_finished(request.user)
+    return render(request,'main/appraisals_finished.html',{'appraisals_finished': appraisals_finished})
+
+def ajax_unfinish_appraisal(request):
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.state = Appraisal.STATE_ACTIVE
+    appraisal.save()
+    appraisals_active = appraisals_get_active(request.user)
+    return render(request,'main/appraisals_active.html',{'appraisals_active': appraisals_active})

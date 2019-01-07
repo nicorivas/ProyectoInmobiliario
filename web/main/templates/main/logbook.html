@@ -2,15 +2,17 @@
 {% load mathfilters %}
 
   <div class="row mb-2">
-    <div class="col-9">
-      <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
-        {{appraisal.real_estates.first.address}}
-        {% if appraisal.real_estates.all|length > 1 %}
-        (+{{appraisal.real_estates.all|length|sub:1}})
-        {% endif %}
-      </p>
+    <div class="col-8">
+      <a href="{{appraisal.url}}">
+        <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+          {{appraisal.real_estates.first.address}}
+          {% if appraisal.real_estates.all|length > 1 %}
+          (+{{appraisal.real_estates.all|length|sub:1}})
+          {% endif %}
+        </p>
+      </a>
     </div>
-    <div class="col-3" style="text-align:right;">
+    <div class="col-4" style="text-align:right;">
       {% if appraisal.orderFile %}
       <div class="btn btn-light">
         <a href="{{appraisal.orderFile.url}}">
@@ -19,16 +21,6 @@
         </a>
       </div>
       {% endif %}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-9">
-      <p>
-        {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
-        <span style='font-weight: 800; color:#999;'>{{appraisal.get_tipoTasacion_display}}</span>
-      </p> 
-    </div>
-    <div class="col-3" style="text-align:right;">
       {% if appraisal.orderFile %}
       <div class="btn btn-light">
         <a href="{{appraisal.orderFile.url}}">
@@ -39,22 +31,30 @@
       {% endif %}
     </div>
   </div>
+  <div class="row">
+    <div class="col-9">
+      <p style="font-size:0.9em;margin-bottom:0em;">
+        {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
+         | <span style='font-weight: 800; color:#000;'>{{appraisal.get_tipoTasacion_display}}</span>
+      </p> 
+    </div>
+    <div class="col-3" style="text-align:right;">
+
+    </div>
+  </div>
+
+  <hr/>
+
   <!--<h6> Contactos </h6>-->
   <div class="row mt-2" style="font-size:0.8em;">
     <div class="col-2">
-      <p class="text-right"><em>Pedido</em></p>
+      <p class="text-right"><b>Pedido</b></p>
     </div>
-    <div class="col-4">
+    <div class="col-3">
       <p class="text-left">{{appraisal.timeCreated|date:"d/m/Y G:i"}}</p>
     </div>
     <div class="col-2">
-      <p class="text-right"><em>Entrega</em></p>
-    </div>
-    <div class="col-4">
-      <p class="text-left">{{appraisal.timeDue|date:"d/m/Y G:i"}}</p>
-    </div>
-    <div class="col-2">
-      <p class="text-right"><em>Tasador</em></p>
+      <p class="text-right"><b>Tasador</b></p>
     </div>
     <div class="col-4">
       {% if appraisal.tasadorUser %}
@@ -63,12 +63,20 @@
       </p>
       {% else %}
       <p>
-        -
+      <em>No asignado</em>
       </p>
       {% endif %}
     </div>
+  </div>
+  <div class="row" style="font-size:0.8em;">
     <div class="col-2">
-      <p class="text-right"><em>Visador</em></p>
+      <p class="text-right"><b>Entrega</b></p>
+    </div>
+    <div class="col-3">
+      <p class="text-left">{{appraisal.timeDue|date:"d/m/Y G:i"}}</p>
+    </div>
+    <div class="col-2">
+      <p class="text-right"><b>Visador</b></p>
     </div>
     <div class="col-4">
       {% if appraisal.visadorUser %}
@@ -77,12 +85,12 @@
       </p>
       {% else %}
       <p>
-        -
+      <em>No asignado</em>
       </p>
       {% endif %}
     </div>
     <div class="col-2">
-      <p class="text-right"><em>Ejecutivo/a</em></p>
+      <p class="text-right"><b>Ejecutivo/a</b></p>
     </div>
     <div class="col-10">
       <p>
@@ -99,12 +107,12 @@
       -
       {% endif %}
       {% else %}
-      No hay información
+      <em>No hay información</em>
       {% endif %}
       </p>
     </div>
     <div class="col-2">
-      <p class="text-right"><em>Cliente</em></p>
+      <p class="text-right"><b>Cliente</b></p>
     </div>
     <div class="col-10">
       <p>
@@ -121,12 +129,12 @@
       -
       {% endif %}
       {% else %}
-      No hay información
+      <em>No hay información</em>
       {% endif %}
       </p>
     </div>
     <div class="col-2">
-      <p class="text-right"><em>Contacto</em></p>
+      <p class="text-right"><b>Contacto</b></p>
     </div>
     <div class="col-10">
       <p>
@@ -143,12 +151,12 @@
       -
       {% endif %}
       {% else %}
-      No hay información
+      <em>No hay información</em>
       {% endif %}
       </p>
     </div>
     <div class="col-2">
-      <p class="text-right"><em>Propietario/a</em></p>
+      <p class="text-right"><b>Propietario/a</b></p>
     </div>
     <div class="col-10">
       <p>
@@ -165,7 +173,7 @@
       -
       {% endif %}
       {% else %}
-      No hay información
+      <em>No hay información</em>
       {% endif %}
       </p>
     </div>
@@ -193,6 +201,9 @@
             </div>
           </div>
         </div>
+        <div class="alert alert-warning" id="div_warning_entregada" style="display:none;">
+          La tasación se marcará como finalizada
+        </div>
         <script type="text/javascript">
           $(function () {
             $('#datetimepicker1').datetimepicker({
@@ -212,20 +223,24 @@
         </div>
         <div class="form-group row" id="div_comment_btn">
           <div class="col-12">
-            <button type="button" class="btn btn-dark btn-block" name="btn_comment" id="btn_comment">Registrar evento</button>
+            <button type="button" class="btn btn-dark btn-block" name="btn_comment" id="btn_comment">
+              <span class="text">Registrar evento</span>
+              <div class="ld ld-ring ld-spin" style="display:none;"></div>
+            </button>
           </div>
         </div>
         <div class="form-group row" id="div_accept_reject" style="display:none;">
           <div class="col-6">
-            <button type="button" class="btn btn-sm btn-dark btn-block btn_accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}"
-                style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-              <span id='icon'>thumb_up</span>
+            <button type="button" class="btn btn-sm btn-dark btn-block btn_accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}">
+              <!--<span id='icon'>thumb_up</span>-->
+              Aceptar tasación
               <div class="ld ld-ring ld-spin" style="display:none;"></div>
             </button>
           </div>
           <div class="col-6">
-            <button type="button" class="btn btn-dark btn-sm btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-              <span id='icon'>thumb_down</span>
+            <button type="button" class="btn btn-dark btn-sm btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}">
+              <!--<span id='icon'>thumb_down</span>-->
+              Declinar tasación
               <div class="ld ld-ring ld-spin" style="display:none;"></div>
             </button>
           </div>
@@ -250,7 +265,7 @@
         {% for comment in comments %}
         {% has_notification_comment request.user comment.id as hnc %}
         {% if hnc %}
-        <li class="list-group-item list-group-item-primary" id="comment_{{comment.id}}">
+        <li class="list-group-item list-group-item-warning" id="comment_{{comment.id}}">
         {% else %}
         <li class="list-group-item" id="comment_{{comment.id}}">
         {% endif %}
@@ -264,11 +279,9 @@
               {% if request.user|has_group:"asignador" or user.is_superuser %}
             </div>
             <div class="col-2 text-right">
-              <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="  {{comment.id}}" class="btn btn-light btn-sm delete_comment ml-3" style="
-                padding-top:0em;
-                padding-bottom:0em;
-                font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-                delete
+              <button type="button" data-appraisal-id={{appraisal.id}} data-delete-comment-url="{% url 'ajax_delete_comment_url' %}" data-id="{{comment.id}}" data-event="{{comment.event}}" class="btn btn-light btn-sm delete_comment ml-3" style="border:0px;padding: 3px 5px 1px 5px;">
+                <i class="icon material-icons" style="font-size:15px;vertical-align: text-top;">delete</i>
+                <div class="ld ld-ring ld-spin" style="display:none;"></div>
               </button>
             </div>
           </div>

@@ -15,76 +15,6 @@ from apartment.models import Apartment
 import datetime
 import reversion
 
-class Comment(models.Model):
-    EVENT_CONTACTO_VALIDADO = 1
-    EVENT_SOLICITUD_ACEPTADA = 2
-    EVENT_SOLICITUD_RECHAZADA = 6
-    EVENT_VISITA_ACORDADA = 3
-    EVENT_PROPIEDAD_VISITADA = 4
-    EVENT_ENVIADA_A_VISADOR = 5
-    EVENT_ENTREGADO_AL_CLIENTE = 8
-    EVENT_CLIENTE_VALIDADO = 9
-    EVENT_CONTABILIZACION = 10
-    EVENT_ABORTADO = 18
-    EVENT_INCIDENCIA = 19
-    EVENT_CORRECCION_INFORME = 20
-    EVENT_OBSERVACION_VISADOR = 21
-    EVENT_OBJECION = 22
-    EVENT_TASADOR_SOLICITADO = 23
-    EVENT_TASADOR_DESASIGNADO = 25
-    EVENT_VISADOR_ASIGNADO = 26
-    EVENT_VISADOR_DESASIGNADO = 27
-    EVENT_TASACION_INGRESADA = 24
-    EVENT_OTRO = 0
-    event_choices = (
-        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
-        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
-        (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
-        (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
-        (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
-        (EVENT_TASADOR_DESASIGNADO, "Tasador desasignado"),
-        (EVENT_VISADOR_ASIGNADO, "Visador asignado"),
-        (EVENT_VISADOR_DESASIGNADO, "Visador desasignado"),
-        (EVENT_TASACION_INGRESADA, "Tasación ingresada"),
-        (EVENT_VISITA_ACORDADA, "Visita acordada"),
-        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
-        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
-        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
-        (EVENT_CONTABILIZACION, "Contabilización"),
-        (EVENT_ABORTADO, "Abortado"),
-        (EVENT_INCIDENCIA, "Incidencia"),
-        (EVENT_CORRECCION_INFORME, "Corrección informe"),
-        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
-        (EVENT_OBJECION, "Objeción"),
-        (EVENT_OTRO, "Otro")
-    )
-    event_choices_form = (
-        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
-        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
-        (EVENT_VISITA_ACORDADA, "Visita acordada"),
-        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
-        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
-        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
-        (EVENT_ABORTADO, "Abortado"),
-        (EVENT_INCIDENCIA, "Incidencia"),
-        (EVENT_CORRECCION_INFORME, "Corrección informe"),
-        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
-        (EVENT_OBJECION, "Objeción"),
-        (EVENT_OTRO, "Otro")
-    )
-    event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    text = models.CharField("Comment",max_length=500)
-    conflict = models.BooleanField("Incidencia",default=False)
-    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
-
-    @property
-    def hasText(self):
-        if self.text == "" or self.text == None:
-            return False
-        else:
-            return True
-
 class Photo(models.Model):
     
     photo = models.ImageField(upload_to='test/',default='no-img.jpg',null=True)
@@ -317,8 +247,6 @@ class Appraisal(models.Model):
 
     documents = models.ManyToManyField(Document)
 
-    comments = models.ManyToManyField(Comment)
-
     commentsOrder = models.CharField("Comentarios pedido",max_length=1000,null=True,blank=True)
 
     descripcionSector = models.TextField("Descripción sector",max_length=10000,default="",null=True,blank=True)
@@ -328,7 +256,21 @@ class Appraisal(models.Model):
     # valor
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
+    @property
+    def address(self):
+        address = self.real_estates.first().address
+        rss = self.real_estates.count()
+        if rss > 1:
+            address += " (+"+str(rss-1)+")"
+        return address
 
+    @property
+    def address_no_region(self):
+        address = self.real_estates.first().address_no_region
+        rss = self.real_estates.count()
+        if rss > 1:
+            address += " (+"+str(rss-1)+")"
+        return address
 
 
     def addComment(self,event_id,user,timeCreated,text=None):
@@ -481,6 +423,77 @@ class AppProperty(models.Model):
     property_type = models.PositiveIntegerField();
     property_id = models.PositiveIntegerField();
     appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    EVENT_CONTACTO_VALIDADO = 1
+    EVENT_SOLICITUD_ACEPTADA = 2
+    EVENT_SOLICITUD_RECHAZADA = 6
+    EVENT_VISITA_ACORDADA = 3
+    EVENT_PROPIEDAD_VISITADA = 4
+    EVENT_ENVIADA_A_VISADOR = 5
+    EVENT_ENTREGADO_AL_CLIENTE = 8
+    EVENT_CLIENTE_VALIDADO = 9
+    EVENT_CONTABILIZACION = 10
+    EVENT_ABORTADO = 18
+    EVENT_INCIDENCIA = 19
+    EVENT_CORRECCION_INFORME = 20
+    EVENT_OBSERVACION_VISADOR = 21
+    EVENT_OBJECION = 22
+    EVENT_TASADOR_SOLICITADO = 23
+    EVENT_TASADOR_DESASIGNADO = 25
+    EVENT_VISADOR_ASIGNADO = 26
+    EVENT_VISADOR_DESASIGNADO = 27
+    EVENT_TASACION_INGRESADA = 24
+    EVENT_OTRO = 0
+    event_choices = (
+        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
+        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
+        (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
+        (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
+        (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
+        (EVENT_TASADOR_DESASIGNADO, "Tasador desasignado"),
+        (EVENT_VISADOR_ASIGNADO, "Visador asignado"),
+        (EVENT_VISADOR_DESASIGNADO, "Visador desasignado"),
+        (EVENT_TASACION_INGRESADA, "Tasación ingresada"),
+        (EVENT_VISITA_ACORDADA, "Visita acordada"),
+        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
+        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
+        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
+        (EVENT_CONTABILIZACION, "Contabilización"),
+        (EVENT_ABORTADO, "Abortado"),
+        (EVENT_INCIDENCIA, "Incidencia"),
+        (EVENT_CORRECCION_INFORME, "Corrección informe"),
+        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
+        (EVENT_OBJECION, "Objeción"),
+        (EVENT_OTRO, "Otro")
+    )
+    event_choices_form = (
+        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
+        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
+        (EVENT_VISITA_ACORDADA, "Visita acordada"),
+        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
+        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
+        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
+        (EVENT_ABORTADO, "Abortado"),
+        (EVENT_INCIDENCIA, "Incidencia"),
+        (EVENT_CORRECCION_INFORME, "Corrección informe"),
+        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
+        (EVENT_OBJECION, "Objeción"),
+        (EVENT_OTRO, "Otro")
+    )
+    event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    text = models.CharField("Comment",max_length=500)
+    conflict = models.BooleanField("Incidencia",default=False)
+    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
+    appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE, blank=True, null=True, related_name="comments")
+
+    @property
+    def hasText(self):
+        if self.text == "" or self.text == None:
+            return False
+        else:
+            return True
 
 class AppraisalEvaluation(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
