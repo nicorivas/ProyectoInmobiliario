@@ -1,5 +1,5 @@
-<div class="modal-dialog modal-lg" role="document">
-	<form method="post" id="form_photo" enctype="multipart/form-data" novalidate>
+<div class="modal-dialog" role="document">
+	<form method="post" id="form_photo" enctype="multipart/form-data" class="needs-validation">
 		{% csrf_token %}
 		<div class="modal-content">
 			<div class="modal-header">
@@ -11,14 +11,16 @@
 	  		<div class="modal-body">
 	    		<img id="photo" class="img-fluid rounded" src=""/>
 				<div class="form-group row">
-	  				<div class="col-6">
+	  				<div class="col-12">
 	    				{{form.photos.label_tag}}
 	    				<div class="custom-file">
 	      					{{form.photos}}
-	      					<label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+	      					<label class="custom-file-label" for="validatedCustomFile">{{photo.photo.name}}</label>
 	    				</div>
 	  				</div>
-	  				<div class="col-6">
+				</div>
+				<div class="form-group row">
+					<div class="col-12">
 	    				{{form.category.label_tag}}
 	    				{{form.category}}
 	  				</div>
@@ -39,8 +41,8 @@
 				</script>
 	  		</div>
 	  		<div class="modal-footer">
-	  			<input id="photo_id" class="appraisal_id" name="appraisal_id" type="hidden" value="0">
-	    		<input class="photo_id" name="photo_id" type="hidden" value="0">
+	  			<input id="appraisal_id" class="appraisal_id" name="appraisal_id" type="hidden">
+	    		<input id="photo_id" class="photo_id" name="photo_id" type="hidden">
 	    		<button type="button" class="btn btn-secondary" data-dismiss="modal">
 	    			Cerrar
 	    		</button>
@@ -53,3 +55,19 @@
 		</div>
 	</form>
 </div>
+
+<script>
+	validation_config =  {
+		rules: {
+			"photos": "required",
+			"category": "required",
+			"description": "required"
+		},
+		messages: {
+			"photos": "Campo requerido",
+			"category": "Campo requerido",
+			"description": "Campo requerido"
+		}
+	}
+	$("#form_photo").validate(validation_config);
+</script>

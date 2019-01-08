@@ -1,13 +1,12 @@
-
-<div class="modal-dialog" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Agregar dirección</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <form action="" method="post" id="form_add_address">
+<form action="" method="post" id="form_add_address">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar dirección</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
       <div class="modal-body">
         {% csrf_token %}
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
@@ -48,8 +47,29 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button name="btn_export" class="btn btn-primary" id="btn_add_address">Agregar</button>
+        <button name="btn_export" class="btn btn-primary ld-ext-right" id="btn_add_address">
+          Agregar
+          <div class="ld ld-ring ld-spin"></div>
+        </button>
       </div>
-    </form>
+    </div>
   </div>
-</div>
+</form>
+
+<script>
+  validation_config =  {
+    rules: {
+      "addressRegion": "required",
+      "addressCommune": "required",
+      "addressStreet": "required",
+      "addressNumber": "required"
+    },
+    messages: {
+      "addressRegion": "Campo requerido",
+      "addressCommune": "Campo requerido",
+      "addressStreet": "Campo requerido",
+      "addressNumber": "Campo requerido"
+    }
+  }
+  $("#form_add_address").validate(validation_config);
+</script>

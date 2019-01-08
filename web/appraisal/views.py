@@ -17,6 +17,7 @@ import reversion
 from copy import deepcopy
 from reversion.models import Version
 
+import pytz
 import os
 import csv
 
@@ -819,6 +820,19 @@ def ajax_computeValuations(request):
         }
     return HttpResponse(json.dumps(dict))
 
+def ajax_save_appraisal(request):
+
+    if request.POST['appraisal_id'] == '':
+        return JsonResponse({})
+
+    pd = propertyData(request.POST)
+
+    if pd['appraisal']:
+        form_appraisal = FormAppraisal(request.POST,instance=pd['appraisal'])
+        form_appraisal.save()
+
+    return JsonResponse({})
+
 def ajax_upload_photo(request):
     print(request.POST)
     print(request.FILES)
@@ -1182,7 +1196,7 @@ def ajax_show_property(request):
 
 def ajax_add_rol_modal(request):
 
-    form_add_rol = FormAddRol(label_suffix='')
+    form_add_rol = FormCreateRol(label_suffix='')
     pd = propertyData(request.GET)
     return render(request,'appraisal/modals_add_rol.html', 
         {'form_add_rol':form_add_rol,
@@ -1421,18 +1435,48 @@ def ajax_photo_modal(request):
     
     data = {}
     appraisal = Appraisal.objects.get(id=request.GET['appraisal_id'])
-    photo = appraisal.photos.get(id=request.GET['photo_id'])
-    data['form'] = FormPhotos(initial={'category':photo.category,'description':photo.description})
-    data['form'].fields['photos'].widget['initial_text'] = 'a'
-    return render(request,'appraisal/modals_photo.html', data)
+    if 'photo_id' in request.GET:
+        photo = appraisal.photos.get(id=request.GET['photo_id'])
+        data['form'] = FormPhotos(label_suffix='',initial={'category':photo.category,'description':photo.description})
+        data['photo'] = photo
+        if photo.fixed:
+            data['form'].fields['category'].widget.attrs['disabled'] = True
+        return render(request,'appraisal/modals_photo.html', data)
+    else:
+        data['form'] = FormPhotos(label_suffix='')
+        return render(request,'appraisal/modals_photo.html', data)
 
 def ajax_photo_save(request):
-    
-    for photo_file in request.FILES.getlist('photos'):
-        appraisal = Appraisal.objects.get(id=request.POST['appraisal_id'])
+    print(request.POST)
+
+    appraisal = Appraisal.objects.get(id=request.POST['appraisal_id'])
+    if 'photo_id' in request.POST and request.POST['photo_id'] != '':
         photo = appraisal.photos.get(id=request.POST['photo_id'])
-        photo.photo = photo_file
+        for photo_file in request.FILES.getlist('photos'):
+            photo.photo = photo_file
         photo.description = request.POST['description']
         photo.save()
+        return render(request,'appraisal/annex_photo.html',{'photo':photo})
+    else:
+        photo = appraisal.photos.create(
+            category=request.POST['category'],
+            description=request.POST['description'],
+            fixed=False)
+        for photo_file in request.FILES.getlist('photos'):
+            photo.photo = photo_file
+        photo.save()
+        return render(request,'appraisal/annex_photo_container.html',{'appraisal':appraisal})
+
+def ajax_photo_remove(request):
+
+    appraisal = Appraisal.objects.get(id=request.GET['appraisal_id'])
+    photo = appraisal.photos.get(id=request.GET['photo_id'])
+    if photo.fixed:
+        photo.photo = None
+        photo.description = None
+        photo.save()
+    else:
+        appraisal.photos.remove(photo)
+        appraisal.save()
 
     return render(request,'appraisal/annex_photo.html',{'photo':photo})

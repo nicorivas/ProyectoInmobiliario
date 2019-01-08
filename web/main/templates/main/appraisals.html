@@ -421,7 +421,7 @@
     $(".btn_delete_appraisal_modal").off()
     $(".btn_delete_appraisal_modal").on("click", function (event) {
       // Called on click of delete button in the active table.
-      var appraisal_id = $(this).data('id');
+      var appraisal_id = $(this).data('appraisal_id');
       var source_table = $(this).closest('table').attr('id');
       $('#modal_delete').find('#appraisal_id').val(appraisal_id);
       $('#modal_delete').find('#source_table').val(source_table);

@@ -8,6 +8,7 @@ urlpatterns = [
     
     path('ajax/photo_modal/', views.ajax_photo_modal, name='ajax_photo_modal_url'),
     path('ajax/photo_save/', views.ajax_photo_save, name='ajax_photo_save_url'),
+    path('ajax/photo_remove/', views.ajax_photo_remove, name='ajax_photo_remove_url'),
 
     path('ajax/load_realestate/', views.ajax_load_realestate, name='ajax_load_realestate_url'),
     path('ajax/edit_address_modal/', views.ajax_edit_address_modal, name='ajax_edit_address_modal_url'),
@@ -29,7 +30,9 @@ urlpatterns = [
     path('ajax/edit_rol_modal/', views.ajax_edit_rol_modal, name='ajax_edit_rol_modal_url'),
     path('ajax/edit_rol/', views.ajax_edit_rol, name='ajax_edit_rol_url'),
     path('ajax/remove_rol/', views.ajax_remove_rol, name='ajax_remove_rol_url'),
+    
     path('ajax/save_property/', views.ajax_save_property, name='ajax_save_property_url'),
+    path('ajax/save_appraisal/', views.ajax_save_appraisal, name='ajax_save_appraisal_url'),
 
     path('ajax/load_tab_value/', views.ajax_load_tab_value, name="ajax_load_tab_value"),
 

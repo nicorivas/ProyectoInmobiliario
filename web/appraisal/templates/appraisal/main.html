@@ -6,6 +6,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'appraisal/css/app.css' %}">
 <script src="{% static "main/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
+<script src="{% static "main/js/tools.js" %}" type="text/javascript"></script>
 {% endblock head %}
 
 {% block content %}
@@ -151,6 +152,9 @@
     if ($("#property-tab").hasClass("active")) {
       save_property()
     }
+    if ($("#general-tab").hasClass("active") || $("#surroundings-tab").hasClass("active")) {
+      save_appraisal()
+    }
   })
 
   $("#tab_value").click(function(e) {
@@ -167,7 +171,6 @@
       },
       success: function (ret) {
         $("#value").html($.trim(ret));
-        console.log('b')
       }
     });
   })

@@ -3,6 +3,7 @@ from commune.models import Commune
 from building.models import Building
 from dbase.globals import *
 from appraisal.models import Appraisal
+import datetime
 import re
 
 def parse_email(string):

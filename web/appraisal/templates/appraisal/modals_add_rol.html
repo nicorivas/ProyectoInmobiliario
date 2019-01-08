@@ -24,12 +24,23 @@
           </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancelar
+        </button>
         {% if add  %}
-        <button type="button" class="btn btn-primary" id="btn_add_rol">Agregar</button>
+        <button type="button" class="btn btn-primary ld-ext-right" id="btn_add_rol">
+          Agregar
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
         {% elif edit %}
-        <button type="button" class="btn btn-danger" id="btn_remove_rol">Eliminar</button>
-        <button type="button" class="btn btn-primary" id="btn_edit_rol">Editar</button>
+        <button type="button" class="btn btn-danger ld-ext-right" id="btn_remove_rol">
+          Eliminar
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+        <button type="button" class="btn btn-primary ld-ext-right" id="btn_edit_rol">
+          Cambiar
+          <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
         {% endif %}
       </div>
     </form>

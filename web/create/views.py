@@ -79,6 +79,8 @@ def view_create(request):
             # crear el rol
             if len(form.cleaned_data['rol']) > 0:
                 rol = Rol(code=form.cleaned_data['rol'])
+            else:
+                rol = Rol()
 
             # crear propiedad y asignar rol
             propertyType = int(form.cleaned_data['propertyType'])
