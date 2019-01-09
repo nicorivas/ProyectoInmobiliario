@@ -57,20 +57,26 @@ def assign_tasadorNF(request):
 
 def appraiserWork(tasadores):
     list = []
-    for users in tasadores:
-        activeAppraisals = Appraisal.objects.filter(tasadorUser=users)
-        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
-        doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
-        list.append({'user': users, 'activeAppraisals':len(activeAppraisals),
+    for user in tasadores:
+        activeAppraisals = Appraisal.objects.filter(tasadorUser=user)
+        try:
+            lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+            doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
+        except AttributeError:
+            continue
+        list.append({'user': user, 'activeAppraisals':len(activeAppraisals),
                       'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
     return list
 
 def visadorWork(visadores):
     list = []
     for users in visadores:
-        activeAppraisals = Appraisal.objects.filter(visadorUser=users)
-        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
-        doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
+        try:
+            activeAppraisals = Appraisal.objects.filter(visadorUser=users)
+            lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+            doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
+        except AttributeError:
+            continue
         list.append({'user': users, 'activeAppraisals':len(activeAppraisals),
                       'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
     return list
@@ -99,7 +105,7 @@ def view_profile(request, pk=None):
         user = request.user
         userprofile = UserProfile.objects.get(user=request.user)
 
-    appraisals_active, appraisals_finished = userAppraisals(request)
+    appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
     tasadores = list(User.objects.filter(groups__name__in=['tasador']))
     visadores = list(User.objects.filter(groups__name__in=['visador']))
     lista = appraiserWork(tasadores)
