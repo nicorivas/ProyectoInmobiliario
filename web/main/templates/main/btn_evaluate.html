@@ -1,0 +1,17 @@
+<button type="button" id="{{appraisal.tasadorUser.id}}" 
+        value="{{appraisal.id}}"
+        class="btn btn-dark btn-sm btn-evaluate evaluateAppraisal"
+        data-toggle="modal"
+        data-target="#evaluateAppraisal" 
+        data-ontime="{{appraisal.appraisalevaluation.onTime}}"
+        data-completeness="{{appraisal.appraisalevaluation.completeness}}"
+        data-correctsurface = "{{appraisal.appraisalevaluation.correctSurface}}"
+        data-completenormative = "{{appraisal.appraisalevaluation.completeNormative}}"
+        data-homologatedreferences = "{{appraisal.appraisalevaluation.homologatedReferences}}"
+        data-commenttext="{{appraisal.appraisalevaluation.commentText}}"
+        data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}"
+        data-commentfeedback="{{appraisal.appraisalevaluation.commentFeedback}}"
+        style="border:0px;padding: 3px 5px 1px 5px;">
+  <i class="icon material-icons" style="font-size:15px;vertical-align: text-top;">assessment</i>
+  <div class="ld ld-ring ld-spin" style="display:none;"></div>
+</button>

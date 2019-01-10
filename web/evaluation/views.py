@@ -77,6 +77,8 @@ def appraiserEvaluationView(request):
     lista = appraiserWork(tasadores)
     context = {'appraisals_active': appraisals_active,
                'appraisals_finished': appraisals_finished,
-               'evaluationForm': evaluationForm, 'lista':lista,
-               'tasadores': tasadores,'visadores': visadores,}
+               'evaluationForm': evaluationForm,
+               'lista':lista,
+               'tasadores': tasadores,
+               'visadores': visadores}
     return render(request, 'appraiser_evaluation.html', context)

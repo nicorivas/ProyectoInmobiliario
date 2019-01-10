@@ -141,8 +141,6 @@
 
     {% endif %}
 
-    {% if appraisal.real_estates.first.buildings.all %}
-
     <table id="table_buildings" class="table table-sm mt-4 mb-0 border-left border-right">
 
       <thead class="thead">
@@ -180,7 +178,10 @@
         </tr>
 
         <!-- Iterate over constructions !-->
-        {% for con in appraisal.real_estates.first.buildings.all %}
+        {% for ap in appraisal.appproperty_set.all %}
+        {% with building=ap.get_building %}
+        {% if building %}
+        {% with property=ap.get_property %}
         <tr class="building">
           <!-- Hidden inputs are used for processing the form. 
             Construction id to get if the obejct exists !-->
@@ -192,35 +193,31 @@
             {{forloop.counter}}.
           </td>
           <td id='td_name' style="font-size:0.85em;">
-            {% if con.name %}
-              {{con.name}}
-            {% else %}
-              {{con.generic_name}}
-            {% endif %}
+            {{property.generic_name}}
           </td>
           <td id='td_material' style="font-size:0.85em;">
-            {{con.get_material_display}}
+            {{building.get_material_display}}
           </td>
           <td id='td_year' style="font-size:0.85em;">
-            {{con.year|date:'Y'|default_if_none:"-"}}
+            {{building.year|date:'Y'|default_if_none:"-"}}
           </td>
           <td id='td_prenda' style="font-size:0.85em;">
-            {{con.get_prenda_display|default_if_none:"-"}}
+            {{building.get_prenda_display|default_if_none:"-"}}
           </td>
           <td id='td_recepcion' style="font-size:0.85em;">
-            {{con.get_recepcion_display|default_if_none:"-"}}
+            {{building.get_recepcion_display|default_if_none:"-"}}
           </td>
           <td id='td_quality' style="font-size:0.85em;">
-            {{con.get_quality_display|default_if_none:"-"}}
+            {{building.get_quality_display|default_if_none:"-"}}
           </td>
           <td id='td_state' style="font-size:0.85em;">
-            {{con.get_state_display|default_if_none:"-"}}
+            {{building.get_state_display|default_if_none:"-"}}
           </td>
           <td id='td_rol' style="font-size:0.85em;">
-            {{con.rol|default_if_none:"-"}}
+            {{building.rol|default_if_none:"-"}}
           </td>
           <td class="value" name="area">
-            <input id="id_consArea" type="number" step="any" class="area form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}" {{appraisal.finished|yesno:"disabled,"}}>
+            <input id="id_consArea" type="number" step="any" class="area form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{building.area}}" {{appraisal.finished|yesno:"disabled,"}}>
           </td>
           <td class="value" name="value_1">
             <input id="id_consPesos" class="value_1 form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
@@ -239,88 +236,19 @@
             <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
               <i class="material-icons">save</i>
             </button>
-            <button type="button" class="btn btn-sm edit_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+            <button type="button" class="btn btn-sm edit_construction" value="{{building.id}}" style="padding:0px; border:0px;">
               <i class="material-icons">edit</i>
             </button>
-            <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
+            <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{building.id}}" style="padding:0px; border:0px;">
               <i class="material-icons">delete</i>
             </button>
             {% endif %}
           </td>
           <td></td>
         </tr>
-        {% if con.is_apartmentbuilding %}
-        {% for apt in con.apartmentbuilding.apartment_set.all %}
-        <tr class="building">
-          <!-- Hidden inputs are used for processing the form. 
-            Construction id to get if the obejct exists !-->
-          <input type="hidden" name="construction_id" id="in_construction_id" value="{{con.id}}">
-          <!-- And edited, to see if we have to consider this row. See comment in view. !-->
-          <input type="hidden" name="construction_edited" id="in_construction_edited" value="0">
-          <td></td>
-          <td style="font-size:0.85em;">
-            {{forloop.parentloop.counter}}.{{forloop.counter}}.
-          </td>
-          <td id='td_name' style="font-size:0.85em;">
-            {% if con.name %}
-              {{apt.name}}
-            {% else %}
-              {{apt.generic_name}}
-            {% endif %}
-          </td>
-          <td id='td_material' style="font-size:0.85em;">
-            {{con.get_material_display}}
-          </td>
-          <td id='td_year' style="font-size:0.85em;">
-            {{con.year|date:'Y'|default_if_none:"-"}}
-          </td>
-          <td id='td_prenda' style="font-size:0.85em;">
-            {{con.get_prenda_display|default_if_none:"-"}}
-          </td>
-          <td id='td_recepcion' style="font-size:0.85em;">
-            {{con.get_recepcion_display|default_if_none:"-"}}
-          </td>
-          <td id='td_quality' style="font-size:0.85em;">
-            {{con.get_quality_display|default_if_none:"-"}}
-          </td>
-          <td id='td_state' style="font-size:0.85em;">
-            {{con.get_state_display|default_if_none:"-"}}
-          </td>
-          <td id='td_rol' style="font-size:0.85em;">
-            {{con.rol|default_if_none:"-"}}
-          </td>
-          <td class="td_area">
-            <input id="id_consArea" type="number" name="c-area" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.area}}" {{appraisal.finished|yesno:"disabled,"}}>
-          </td>
-          <td class="td_pesos">
-            <input id="id_consPesos" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
-          </td>
-          <td class="td_UF">
-            <input id="id_consUF" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
-          </td>
-          <td class="td_pesosPerArea">
-            <input id="id_consPesosPerArea" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" readonly="true">
-          </td>
-          <td class="td_UFPerArea">
-            <input id="id_consUFPerArea" type="number" name="c-UFPerArea" step="any" class="form-control form-control-sm constructions" style="width:100%;text-align:right;" value="{{con.UFPerArea}}" {{appraisal.finished|yesno:"disabled,"}}>
-          </td>
-          <td style="padding:0em;text-align:right;">
-            {% if appraisal.active %}
-            <button class="btn btn-sm save_construction" name="btn_valuation_add_construction" style="padding:0px; border:0px; display: none;">
-              <i class="material-icons">save</i>
-            </button>
-            <button type="button" class="btn btn-sm edit_construction" value="{{con.id}}" style="padding:0px; border:0px;">
-              <i class="material-icons">edit</i>
-            </button>
-            <button class="btn btn-sm" name="btn_valuation_remove_construction" value="{{con.id}}" style="padding:0px; border:0px;">
-              <i class="material-icons">delete</i>
-            </button>
-            {% endif %}
-          </td>
-          <td></td>
-        </tr>
-        {% endfor %}
+        {% endwith %}
         {% endif %}
+        {% endwith %}
         {% endfor %}
 
         <!-- Subtotals of constructions -->
@@ -348,8 +276,6 @@
         </tr>
       </tbody>
     </table>
-
-    {% endif %}
 
     <table id="table_assets" class="table table-sm mt-4" style="display:none;">
 

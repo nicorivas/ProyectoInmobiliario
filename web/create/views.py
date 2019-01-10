@@ -38,6 +38,14 @@ def view_create(request):
         form = AppraisalCreateForm(request_post)
         if form.is_valid():
 
+            propertyType = int(form.cleaned_data['propertyType'])
+            if not (propertyType == Building.TYPE_TERRENO or 
+               propertyType == Building.TYPE_CASA or
+               propertyType == Building.TYPE_EDIFICIO or 
+               propertyType == Building.TYPE_DEPARTAMENTO):
+                context = {'error_message': 'Tipo de propiedad no ha sido implementado'}
+                return render(request, 'create/error.html',context)
+
             # 1. Crear real estate
             real_estate, created = create.createOrGetRealEstate(
                 addressNumber=form.cleaned_data['addressNumber'],
@@ -100,21 +108,10 @@ def view_create(request):
                 propiedad, created = real_estate.createOrGetEdificio(addressNumber2=form.cleaned_data['addressNumber2'])
                 appraisal.addAppProperty(propertyType,propiedad.id)
                 rol.apartment_building = propiedad
-            elif propertyType == Building.TYPE_CONDOMINIO:
-                propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id) # en general se tasa el terreno Y la casa
-                propiedad, created = real_estate.createOrGetCondominio(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
-                rol.condominium = propiedad
             elif propertyType == Building.TYPE_DEPARTAMENTO:
                 propiedad, created = real_estate.createOrGetDepartamento(addressNumber2=None,addressNumber3=form.cleaned_data['addressNumber2'])
                 appraisal.addAppProperty(propertyType,propiedad.id)
                 rol.apartment = propiedad
-            elif propertyType == Building.TYPE_OTRO:
-                pass
-            else:
-                context = {'error_message': 'Tipo de propiedad no ha sido implementado'}
-                return render(request, 'create/error.html',context)
             
             rol.save()
             appraisal.save()
@@ -181,7 +178,7 @@ def populate_from_file(request):
         if ws['C1'].value != None and 'SOLICITUD DE TASACIÓN' in ws['C1'].value.strip():
             data = parse.parseItau(ws)
         elif ws['B5'].value != None and 'SOLICITUD DE INFORME' in ws['B5'].value.strip():
-            data = parse.parseBancoDeChileAvance(ws)
+            data = parse.parseBancoDeChileAvance(wb)
         else:
             data['error'] = "Formato de tasación no reconocido."
 

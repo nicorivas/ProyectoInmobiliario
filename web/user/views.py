@@ -59,7 +59,7 @@ def appraiserWork(tasadores):
     list = []
     for users in tasadores:
         activeAppraisals = Appraisal.objects.filter(tasadorUser=users)
-        lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+        lateAppraisals = [x for x in activeAppraisals if x.timeDue and x.daysLeft <= 0]
         doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
         list.append({'user': users, 'activeAppraisals':len(activeAppraisals),
                       'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})

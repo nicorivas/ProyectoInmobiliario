@@ -9,93 +9,91 @@
 {% endblock %}
 
 {% block content %}
-<h1>Contabilidad de tasaciones</h1>
-<form class="needs-validation" action="/accounting/" method="post" id="form" enctype="multipart/form-data" novalidate>
+<div class="container mb-4" style="max-width:100%">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Contabilidad</h5>
+        <form class="needs-validation" action="/accounting/" method="post" id="form" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-    <div class="row">
-        <div class="col-md-2 text-right">
-                <p class="font-weight-bold">Elegir los parámetros </p>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Tasadores</label>
-                <select name="tasador" class="form-control" required="" id="id_tasador">
-                    <option value="" selected="">---------</option>
-                    <option value="0">Todos los tasadores</option>
-                    {% for tasador in tasadores %}
-                    <option value="{{tasador.id}}">{{tasador.first_name}} {{tasador.last_name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <div class="col-md-1">
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                   <label for="id_appraisalTimeRequest">Fecha Inicio</label>
-                  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                    <input type="text" name="appraisalTimeRequest" class="form-control datetimepicker-input"
-                           data-target="#datetimepicker1" required="" id="id_appraisalTimeRequest">
-                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <script type="text/javascript">
-                $(function () {
-                  $('#datetimepicker1').datetimepicker({
-                    locale: 'es',
-                    icons: {
-                      time: "far fa-clock",
-                      date: "far fa-calendar-alt",
-                      up: "fas fa-arrow-up",
-                      down: "fas fa-arrow-down"
-                    }
-                  });
-                });
-              </script>
-
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label for="id_appraisalTimeRequest2">Fecha fin</label>
-                  <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-                    <input type="text" name="appraisalTimeRequest2" class="form-control datetimepicker-input"
-                           data-target="#datetimepicker1" required="" id="id_appraisalTimeRequest2">
-                    <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <script type="text/javascript">
-                $(function () {
-                  $('#datetimepicker2').datetimepicker({
-                    locale: 'es',
-                    icons: {
-                      time: "far fa-clock",
-                      date: "far fa-calendar-alt",
-                      up: "fas fa-arrow-up",
-                      down: "fas fa-arrow-down"
-                    }
-                  });
-                });
-              </script>
-
-    </div>
-
-
-    <div class="form-group row mt-4">
-             <div class="col-md-2">
-             </div>
-             <div class="col-md-2">
-                <button class="btn btn-dark btn-block align-bottom ld-ext-right" id="btn_generate">
-                  Generar Archivo
-                  <div class="ld ld-ring ld-spin"></div>
-                </button>
-             </div>
+        <div class="row">
+          <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Búsqueda</p>
           </div>
-</form>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Tasador</label>
+              <select name="tasador" class="form-control" required="" id="id_tasador">
+                <option value="" selected="">---------</option>
+                <option value="0">Todos los tasadores</option>
+                {% for tasador in tasadores %}
+                <option value="{{tasador.id}}">{{tasador.first_name}} {{tasador.last_name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+               <label for="id_appraisalTimeRequest">Fecha Inicio</label>
+              <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                <input type="text" name="appraisalTimeRequest" class="form-control datetimepicker-input"
+                       data-target="#datetimepicker1" required="" id="id_appraisalTimeRequest">
+                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script type="text/javascript">
+            $(function () {
+              $('#datetimepicker1').datetimepicker({
+                locale: 'es',
+                icons: {
+                  time: "far fa-clock",
+                  date: "far fa-calendar-alt",
+                  up: "fas fa-arrow-up",
+                  down: "fas fa-arrow-down"
+                }
+              });
+            });
+          </script>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="id_appraisalTimeRequest2">Fecha Término</label>
+              <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                <input type="text" name="appraisalTimeRequest2" class="form-control datetimepicker-input"
+                       data-target="#datetimepicker1" required="" id="id_appraisalTimeRequest2">
+                <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script type="text/javascript">
+            $(function () {
+              $('#datetimepicker2').datetimepicker({
+                locale: 'es',
+                icons: {
+                  time: "far fa-clock",
+                  date: "far fa-calendar-alt",
+                  up: "fas fa-arrow-up",
+                  down: "fas fa-arrow-down"
+                }
+              });
+            });
+          </script>
+
+          <div class="col-md-2">
+            <label for="id_appraisalTimeRequest">&nbsp;</label>
+            <button class="btn btn-dark btn-block align-bottom ld-ext-right" id="btn_generate">
+              Generar Archivo
+              <div class="ld ld-ring ld-spin"></div>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

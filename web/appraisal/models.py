@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import ArrayField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from building.models import Building
 from terrain.models import Terrain
 from house.models import House
 from apartmentbuilding.models import ApartmentBuilding
@@ -366,12 +367,6 @@ class Appraisal(models.Model):
         return diff.days
 
     @property
-    def daysLeft(self):
-        today = datetime.date.today()
-        diff  = self.timeDue.date()-today
-        return diff.days
-
-    @property
     def is_appraisalOverdue(self):
         if self.timeDue < datetime.date.today():
             return True
@@ -407,9 +402,29 @@ class Appraisal(models.Model):
                         return choice[1]
             return '-'
 
+    def buildings(self):
+        buildings = []
+        print('buildings',self.appproperty_set.all())
+        for prop in self.appproperty_set.all():
+            print('bld')
+            bld = prop.get_building()
+            print('bld',bld)
+            if bld != None:
+                buildings.append(bld)
+        return buildings
+
     @property
     def timeLeft(self):
         return self.timeDue - self.timeCreated
+
+    @property
+    def daysLeft(self):
+        today = datetime.date.today()
+        if self.timeDue:
+            diff  = self.timeDue.date()-today
+            return diff.days
+        else:
+            return None
 
     class Meta:
         app_label = 'appraisal'
@@ -423,9 +438,36 @@ class Appraisal(models.Model):
             yield (field_name.name, value)
 
 class AppProperty(models.Model):
+    
     property_type = models.PositiveIntegerField();
     property_id = models.PositiveIntegerField();
     appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
+
+    def is_apartment(self):
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return True
+        else:
+            return False
+
+    def get_property(self):
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return Apartment.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_CASA:
+            return House.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_EDIFICIO:
+            return ApartmentBuilding.objects.get(id=self.property_id)
+
+    def get_building(self):
+        print('get_building')
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return Apartment.objects.get(id=self.property_id).apartment_building.building
+        elif self.property_type == Building.TYPE_CASA:
+            print('house')
+            return House.objects.get(id=self.property_id).building
+        elif self.property_type == Building.TYPE_EDIFICIO:
+            return ApartmentBuilding.objects.get(id=self.property_id).building
+        else:
+            return None
 
 class Comment(models.Model):
     EVENT_CONTACTO_VALIDADO = 1

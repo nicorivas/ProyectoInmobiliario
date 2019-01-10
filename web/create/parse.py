@@ -21,7 +21,6 @@ def parseAddress(address,commune=None):
     address = address.lower().strip()
 
     if commune:
-        print(commune)
         if address.endswith(commune.lower()):
             address = address[:address.find(commune)].strip()
 
@@ -34,7 +33,7 @@ def parseAddress(address,commune=None):
                 address = address[:address.index(dpto_string)]
                 break
 
-    casa_strings = ["casa.","casa"]
+    casa_strings = ["casa.","casa "]
     for casa_string in casa_strings:
         if casa_string in address:
             match = re.search(casa_string+' ?[a-zA-Z0-9]', address)
@@ -46,6 +45,7 @@ def parseAddress(address,commune=None):
     address = address.strip()
     if address[-1] == ',' or address[-1] == '.' or address[-1] == '-':
         address = address[:-1].strip()
+
     match = re.search('(\d+)$', address) 
     if match:
         addressNumber = match.group(0)
@@ -61,6 +61,7 @@ def parseAddress(address,commune=None):
     for no_string in no_strings:
         if address.endswith(no_string):
             addressStreet = address[:address.find(no_string)]
+            break
 
     if addressStreet.startswith('calle'):
         addressStreet = addressStreet[5:].strip()
@@ -77,7 +78,8 @@ def parseCommune(string):
     commune = string.strip().title()
     if '(' in commune:
         commune = commune[:commune.index('(')].strip()
-    commune = COMMUNE_NAME_ASCII__UTF[commune]
+    if commune in COMMUNE_NAME_ASCII__UTF.keys():
+        commune = COMMUNE_NAME_ASCII__UTF[commune]
     commune = Commune.objects.get(name=commune)
     region = commune.region.code
     commune = commune.id
@@ -248,11 +250,13 @@ def parseItau(ws):
 
     return data
 
-def parseBancoDeChileAvance(ws):
+def parseBancoDeChileAvance(wb):
     '''
     Sacar información de solicitu de Banco de Chile, para tasaciones
     de avance de obras. Recibe un archivo excel.
     '''
+
+    ws = wb.worksheets[0]
 
     data = {}
 
@@ -279,7 +283,7 @@ def parseBancoDeChileAvance(ws):
     if solicitanteEjecutivoTelefono != '':
         data['solicitanteEjecutivoTelefono'] = str(solicitanteEjecutivoTelefono)
 
-    solicitanteEjecutivoRut = ws['M61'].value+ws['N61'].value
+    solicitanteEjecutivoRut = str(ws['M61'].value)+str(ws['N61'].value)
     if isinstance(solicitanteEjecutivoRut,type('')):
         if solicitanteEjecutivoRut != '':
             data['solicitanteEjecutivoRut'] = parseRut(solicitanteEjecutivoRut)
@@ -318,12 +322,12 @@ def parseBancoDeChileAvance(ws):
     tipo = ws['H17'].value
     if isinstance(tipo,type('')):
         tipo = tipo.strip()
+        if tipo == 'Casas':
+            data['propertyType'] = Building.TYPE_CONDOMINIO
         if tipo == 'CASA':
             data['propertyType'] = Building.TYPE_CASA
         elif tipo == 'DEPARTAMENTO':
             data['propertyType'] = Building.TYPE_DEPARTAMENTO
-        else:
-            data['propertyType'] = Building.TYPE_OTRO
 
     address = ws['K17'].value
     if isinstance(address,type('')):
@@ -345,7 +349,8 @@ def parseBancoDeChileAvance(ws):
     except Commune.DoesNotExist:
         pass
 
-    data['appraisalTimeRequest'] = ws['N6'].value.strftime('%d/%m/%Y %H:%M')
+    if ws['N6'].value:
+        data['appraisalTimeRequest'] = ws['N6'].value.strftime('%d/%m/%Y %H:%M')
 
     ws = wb.worksheets[1]
 
@@ -495,7 +500,7 @@ def parseSantander(text):
             if 'DEPARTAMENTO' in propertyType:
                 data['propertyType'] = Building.TYPE_DEPARTAMENTO
             elif 'VIVIENDA' in propertyType:
-                data['propertyType'] = Building.TYPE_CASA
+                pass # Puede ser casa o departamento
             elif 'TERRENO' in propertyType:
                 data['propertyType'] = Building.TYPE_TERRENO
             elif 'LOCAL COMERCIAL' in propertyType:

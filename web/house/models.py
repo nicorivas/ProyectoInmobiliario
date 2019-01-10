@@ -25,6 +25,14 @@ class House(models.Model):
 
     marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)
 
+    @property 
+    def generic_name(self):
+        return "Casa "+str(self.addressNumber2)
+
+    @property
+    def name_or_generic(self):
+        return self.generic_name
+
     @property
     def addressVerboseNoRegionNoCommune(self):
         return self.addressStreet+' '+str(self.addressNumber)+' '+str(self.addressNumber2)
