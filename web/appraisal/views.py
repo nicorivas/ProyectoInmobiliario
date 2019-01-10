@@ -996,9 +996,7 @@ def propertyData(rd):
 def propertyListHTML(request,real_estate):
 
     buildings = real_estate.buildings.all()
-    print(buildings)
     terrains = real_estate.terrains.all()
-    print(terrains)
     return render(request,'appraisal/property_list.html',
         {'real_estate':real_estate,
          'terrains':terrains,

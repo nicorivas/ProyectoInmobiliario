@@ -309,9 +309,15 @@ class Building(models.Model):
     @property
     def generic_name(self):
         if self.is_apartmentbuilding:
-            return "Edificio "+self.apartmentbuilding.addressNumber2
+            if self.apartmentbuilding.addressNumber2:
+                return "Edificio "+self.apartmentbuilding.addressNumber2
+            else:
+                return "Edificio"
         elif self.is_house:
-            return "Casa "+self.house.addressNumber2
+            if self.house.addressNumber2:
+                return "Casa "+self.house.addressNumber2
+            else:
+                return "Casa"
 
     @property
     def name_or_generic(self):

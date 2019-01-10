@@ -42,6 +42,7 @@
       	{% endfor %}
 
 		{% for building in buildings %}
+		{% if not building.is_apartment %}
 	  	<div class="list-group-item flex-column align-items-start building_list_item" data-building_id="{{building.id}}">
 		<!--<li class="building_list_item" data-building_id="{{building.id}}">-->
 			<div class="row">
@@ -57,7 +58,7 @@
 						{% elif building.is_house %}
 							{{building.name_or_generic}}
 						{% else %}
-							?
+							{{building.id}}
 						{% endif %}
 					</a>
 				</div>
@@ -86,6 +87,7 @@
 			{% endif %}
 	 	<!--</li>-->
 	 	</div>
+		{% endif %}
  		{% endfor %}
 	</div>
 

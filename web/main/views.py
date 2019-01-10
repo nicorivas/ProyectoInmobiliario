@@ -106,6 +106,11 @@ def main(request):
     appraisals_finished = appraisals_get_finished(request.user)
     appraisals_imported = appraisals_get_imported(request.user)
 
+    for ap in appraisals_not_assigned:
+        print('length',ap.real_estates.count())
+        if ap.real_estates.count() == 0:
+            ap.delete()
+
     # Form to create a comment
 
     form_comment = FormComment(label_suffix='')
@@ -187,6 +192,7 @@ def appraisals_get_not_assigned(user):
         "realEstate__addressStreet",
         "realEstate__addressNumber",
         "realEstate__addressCommune__name")
+    print('appraisals_not_assigned',appraisals_not_assigned)
     return appraisals_not_assigned
 
 def appraisals_get_not_accepted(user):

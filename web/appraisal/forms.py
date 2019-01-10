@@ -165,12 +165,14 @@ class FormApartmentBuilding(forms.ModelForm):
     class Meta:
         model = ApartmentBuilding
         fields = [
+            'floors',
             'generalDescription',
             'builtSquareMeters'
         ]
         class_bs = {'class':"form-control"}
         class_bs_sm = {'class':"form-control form-control-sm"}
         widgets = {
+            'floors': forms.NumberInput(attrs=class_bs),
             'generalDescription': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':5}),
             'builtSquareMeters': forms.NumberInput(attrs=class_bs)
         }

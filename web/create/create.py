@@ -62,7 +62,8 @@ def createOrGetRealEstate(**kwargs):
         real_estate.save()
         return real_estate, False
     except MultipleObjectsReturned:
-        return None, False
+        real_estate = RealEstate.objects.filter(**kwargs)
+        return real_estate.first(), False
 
 def createAppraisal(request,real_estate,rol="",**kwargs):
     '''

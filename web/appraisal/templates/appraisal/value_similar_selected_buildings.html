@@ -17,16 +17,21 @@
             <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
             <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> const.</th>
             <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> tot.</th>
-            {% elif building.is_apartmentbuilding %}
-            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> construidos</th>
-            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
-            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
-            {% endif %}
             <th scope="col" style="width: 6em;text-align:right;">
                 <a href="#" class="btn_similar_add_terrain_modal">
                     Agregar
                 </a>
             </th>
+            {% elif building.is_apartmentbuilding %}
+            <th scope="col" style="width: 17em;text-align:right;">m<sup>2</sup> construidos</th>
+            <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
+            <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup></th>
+            <th scope="col" style="width: 18em;text-align:right;">
+                <a href="#" class="btn_similar_add_terrain_modal">
+                    Agregar
+                </a>
+            </th>
+            {% endif %}
             <th></th>
         </tr>
     </thead>
@@ -83,7 +88,6 @@
         {% endfor %}
 
         {% if building.house.house_set.all %}
-
         <tr class="tr_averages border-bottom">
             <td></td>
             <td></td>
@@ -95,9 +99,7 @@
             <td></td>
             <td></td>
         </tr>
-
         {% else %}
-
         <tr class="border-bottom">
             <td></td>
                 <td colspan="10" style="text-align:center;">
@@ -105,7 +107,6 @@
                 </td>
             <td></td>
         </tr>
-
         {% endif %}
 
         {% endif %}
@@ -133,6 +134,8 @@
             <td></td>
         </tr>
         {% endfor %}
+
+        {% if building.house.house_set.all %}
         <tr class="tr_averages border-bottom">
             <td></td>
             <td></td>
@@ -143,6 +146,15 @@
             <td></td>
             <td></td>
         </tr>
+        {% else %}
+        <tr class="border-bottom">
+            <td></td>
+                <td colspan="7" style="text-align:center;">
+                    <span class="badge badge-info">No se han agregado propiedades similares</span>
+                </td>
+            <td></td>
+        </tr>     
+        {% endif %}
         {% endif %}
 
     </tbody>
@@ -160,18 +172,18 @@
     <thead class="thead">
         <tr style="background: #eee;">
         <!--<tr style="background: #fafafa; color: #888;">-->
-            <th></th>
-            <th scope="col" style="width: 1em;text-align:right;">#</th>
-            <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
-            <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+            <th scope="col" style="width: 2em;">
+            <th scope="col" style="width: 2em;text-align:right;">#</th>
+            <th scope="col" style="width: 25em;text-align:left;">Dirección</th>
+            <th scope="col" style="width: 5em;text-align:center;">Fuente</th>
             <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bed"></i></th>
             <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bath"></i></th>
-            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup></th>
-            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup></th>
-            <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
-            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
-            <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup></th>
-            <th scope="col" style="width: 5em;">
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> útiles</th>
+            <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terraza</th>
+            <th scope="col" style="width: 10em;text-align:right;">P.M.</th>
+            <th scope="col" style="width: 10em;text-align:right;">PM/m<sup>2</sup> út.</th>
+            <th scope="col" style="width: 10em;text-align:right;">PM/m<sup>2</sup> ter.</th>
+            <th scope="col" style="width: 8em;text-align:right;">
                 <a href="#" class="btn_similar_add_terrain_modal">
                     Agregar
                 </a>
@@ -227,18 +239,28 @@
         </tr>
         {% endfor %}
 
+        {% if apt.apartment_set.all %}
         <tr class="tr_averages border-bottom">
             <td></td>
             <td></td>
-            <td scope="row" colspan="4" style="text-align:right;">Promedios</td>
-            <td class='value td_area_1' style="text-align:right;"></td>
-            <td class='value td_area_2' style="text-align:right;"></td>
-            <td class='value td_market_value' style="text-align:right;"></td>
-            <td class='value td_market_value_density_1' style="text-align:right;"></td>
-            <td class='value td_market_value_density_2' style="text-align:right;"></td>
+            <td colspan="4" class="text-right">Promedios</td>
+            <td class='value td_area' style="text-align:right;"></td>
+            <td class='value td_area' style="text-align:right;"></td>
+            <td class='value td_market_price' style="text-align:right;"></td>
+            <td class='value td_market_price_density' style="text-align:right;"></td>
+            <td class='value td_market_price_density' style="text-align:right;"></td>
             <td></td>
             <td></td>
         </tr>
+        {% else %}
+        <tr class="border-bottom">
+            <td></td>
+                <td colspan="11" style="text-align:center;">
+                    <span class="badge badge-info">No se han agregado propiedades similares</span>
+                </td>
+            <td></td>
+        </tr>     
+        {% endif %}
 
     </tbody>
 

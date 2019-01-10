@@ -34,9 +34,11 @@
           {% if re.buildings.all %}
             <p style="font-size:0.9em;"> Construcciones </p>
             {% for building in re.buildings.all %}
+              {% if not building.is_apartment %}
               <div id="building_{{building.id}}">
                 {% include 'appraisal/value_similar_selected_buildings.html' %}
               </div>
+              {% endif %}
             {% endfor %}
           {% endif %}
   
