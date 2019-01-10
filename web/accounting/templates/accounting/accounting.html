@@ -23,7 +23,6 @@
             <div class="form-group">
               <label>Tasador</label>
               <select name="tasador" class="form-control" required="" id="id_tasador">
-                <option value="" selected="">---------</option>
                 <option value="0">Todos los tasadores</option>
                 {% for tasador in tasadores %}
                 <option value="{{tasador.id}}">{{tasador.first_name}} {{tasador.last_name}}</option>
