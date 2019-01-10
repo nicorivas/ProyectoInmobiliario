@@ -65,6 +65,7 @@ def appraiserWork(tasadores):
         except AttributeError:
             continue
         list.append({'user': user, 'activeAppraisals':len(activeAppraisals),
+                      'lateAppraisals':len(lateAppraisals), 'doneAppraisals' : len(doneAppraisals)})
     return list
 
 def visadorWork(visadores):
