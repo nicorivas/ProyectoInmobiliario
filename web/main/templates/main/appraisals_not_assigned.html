@@ -2,16 +2,16 @@
 
 <thead>
   <tr>
-    <th scope="col" style="width:2em">ID</th>
-    <th scope="col" style="width:8em">Cliente</th>
-    <th scope="col" style="width:6.5em">Código</th>
-    <th scope="col" style="width:2em;text-align:center;">T.</th>
-    <th scope="col" style="width:19em;">Dirección</th>
-    <th scope="col" style="width:11em;">Tasador</th>
-    <th scope="col" style="width:11em;">Visador</th>
-    <th scope="col" style="width:8em;">Creada</th>
-    <th scope="col" style="width:8em;">Entrega</th>
-    <th scope="col" style="width:6em;text-align:right;"></th>
+    <th scope="col" style="width:20px">ID</th>
+    <th scope="col" style="width:100px">Cliente</th>
+    <th scope="col" style="width:80px">Código</th>
+    <th scope="col" style="width:20px;text-align:center;">T.</th>
+    <th scope="col" style="width:300px;">Dirección</th>
+    <th scope="col" style="width:120px;">Tasador</th>
+    <th scope="col" style="width:120px;">Visador</th>
+    <th scope="col" style="width:100px;">Creada</th>
+    <th scope="col" style="width:100px;">Entrega</th>
+    <th scope="col" style="width:60px;"></th>
   </tr>
 </thead>
 <tbody>
@@ -88,7 +88,7 @@
       <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
     {% endif %}
     </td>
-    <td>
+    <td style="text-align:right;">
       {% include 'main/btn_logbook.html' %}
       {% include 'main/btn_delete.html' %}
     </td>

@@ -60,7 +60,7 @@ def appraiserWork(tasadores):
     for user in tasadores:
         activeAppraisals = Appraisal.objects.filter(tasadorUser=user)
         try:
-            lateAppraisals = [x for x in activeAppraisals if x.daysLeft <= 0]
+            lateAppraisals = [x for x in activeAppraisals if x.daysLeft and x.daysLeft <= 0]
             doneAppraisals = [x for x in activeAppraisals if x.state == Appraisal.STATE_FINISHED]
         except AttributeError:
             continue

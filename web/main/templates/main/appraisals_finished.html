@@ -2,29 +2,27 @@
 
 <thead>
   <tr>
-    <th scope="col" style="width:2em">ID</th>
-    <th scope="col" style="width:8em">Cliente</th>
-    <th scope="col" style="width:8em">Código</th>
-    <th scope="col" style="width:2em;text-align:center;">T.</th>
-    <th scope="col" style="width:19em">Dirección</th>
-    <th scope="col" style="width:11em">Tasador</th>
-    <!--<th scope="col">Fecha creación</th>-->
-    <th scope="col" style="width:11em">Entregada</th>
-    <th scope="col" style="width:17em"></th>
-    <th scope="col" style="width:5em"></th>
+    <th scope="col" style="width:20px">ID</th>
+    <th scope="col" style="width:100px">Cliente</th>
+    <th scope="col" style="width:80px">Código</th>
+    <th scope="col" style="width:20px;text-align:center;">T.</th>
+    <th scope="col" style="width:420px;">Dirección</th>
+    <th scope="col" style="width:120px;">Tasador</th>
+    <th scope="col" style="width:200px;">Entregada</th>
+    <th scope="col" style="width:60px;"></th>
   </tr>
 </thead>
 <tbody>
   {% for appraisal in appraisals_finished %}
   <tr class="finished {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
     <td class="id">
-      {{ appraisal.id }}
+      <small>{{ appraisal.id }}</small>
     </td>
     <td class="solicitante">
       {{ appraisal.solicitanteVerbose }}
     </td>
     <td class="solicitanteCodigo">
-      {{ appraisal.solicitanteCodigo }}
+      <small>{{ appraisal.solicitanteCodigo }}</small>
     </td>
     <td style="text-align:center;">
       <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
@@ -50,8 +48,6 @@
     -->
     <td>
       {{appraisal.timeFinished | date:"d/m/Y G:i" }}
-    </td>
-    <td>
     </td>
     <td style="text-align:right;">
       {% include 'main/btn_logbook.html' %}

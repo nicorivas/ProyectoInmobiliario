@@ -26,7 +26,7 @@ def assign_tasador(appraisal_id,tasador_id,user_id):
 
     appraisal.tasadorUser = tasador
     comment = appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(datetime.timezone.utc),
-        text="Tasación solicitada a "+tasador.user.full_name)
+        text="Tasación solicitada a "+tasador.first_name +' '+ tasador.last_name)
     appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
     return
 

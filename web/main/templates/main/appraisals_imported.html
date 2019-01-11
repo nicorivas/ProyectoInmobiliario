@@ -1,42 +1,9 @@
-<!--
-<script>
-  function timeCreated(string) {
-    var s = moment(string).format("D MMM HH:MM");
-    document.write(s)
-  }
-</script>
-
-<script>
-  function timeLeft(string) {
-    var m = moment(string);
-    document.write(m.fromNow());
-  }
-</script>
-
-<script>
-  function timeFinished(string) {
-    var s = moment(string).format("D MMM HH:MM");
-    document.write(s)
-  }
-</script>
--->
 {% extends "main/base.html" %}
 {% load static %}
 {% load custom_tags %}
-{% block head %}
-        <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
-        {% load static %}
-        <script>
-          function timeCreated(string) {
-            var s = moment(string).format("D MMM HH:MM");
-            document.write(s)
-          }
-        </script>
-
-{% endblock %}
 
 {% block content %}
-<div class="card mb-4" id="div_imported" style="font-size:0.8em;">
+<div class="card mb-4 ml-4 mr-4" id="div_imported" style="font-size:0.8em;">
   <div class="card-body">
     <h5 class="card-title">Tasaciones importadas</h5>
     <div class="alert alert-primary" role="alert" id="div_alert_imported" style="display: none;">
@@ -65,20 +32,20 @@
           {% for appraisal in appraisals_imported %}
           <tr class="previas {{appraisal.tasadorUser.id}}" id="app2-{{appraisal.tasadorUser.id}}">
             <td>
-              {{ appraisal.id }}
+              <small>{{ appraisal.id }}</small>
             </td>
             <td>
               {{ appraisal.solicitanteVerbose }}
             </td>
             <td>
-              {{ appraisal.solicitanteCodigo }}
+              <small>{{ appraisal.solicitanteCodigo }}</small>
             </td>
             <td style="text-align:center;">
               <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
             </td>
             <td>
               <a href={{appraisal.url}}>
-                {{ appraisal.real_estates.first.addressVerboseNoRegion }}
+                {{ appraisal.address_no_region }}
               </a>
             </td>
             <td>
