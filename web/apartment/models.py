@@ -85,6 +85,8 @@ class Apartment(models.Model):
             x = self.marketPrice/(self.usefulSquareMeters+self.terraceSquareMeters)
             return "{:10.2f}".format(x)
     
+    def propertyTypeIcon(self):
+        return "fas fa-building"
 
     class Meta:
         app_label = 'apartment'

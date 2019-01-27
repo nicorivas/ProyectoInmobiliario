@@ -70,8 +70,9 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
     Crea appraisal. Lo más común es desde create/views.py, donde se explicitan los kwargs.
     # TODO: VER COMO CHECKEAR EXISTENCIA DE APPRAISAL
     '''
+    
     appraisal = Appraisal(**kwargs)
-    appraisal.state = Appraisal.STATE_NOTASSIGNED
+    appraisal.state = Appraisal.STATE_NOT_ASSIGNED
     appraisal.timeCreated = datetime.datetime.now()
     appraisal.save()
     
@@ -79,6 +80,8 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
         event=Comment.EVENT_TASACION_INGRESADA,
         user=request.user,
         timeCreated=datetime.datetime.now(datetime.timezone.utc))
+    if kwargs['commentsOrder'] != "":
+        comment.text = kwargs['commentsOrder']
     comment.save()
     appraisal.comments.add(comment)
     appraisal.real_estates.add(real_estate)

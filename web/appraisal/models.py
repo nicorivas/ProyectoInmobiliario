@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from realestate.models import RealEstate
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.utils.functional import cached_property
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -99,6 +100,8 @@ class Appraisal(models.Model):
     '''
 
     real_estates = models.ManyToManyField(RealEstate)
+    real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
+    property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
 
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
@@ -108,18 +111,30 @@ class Appraisal(models.Model):
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
 
     STATE_IMPORTED = 0
-    STATE_NOTASSIGNED = 4
-    STATE_ACTIVE = 1
     STATE_PAUSED = 2
     STATE_FINISHED = 3
+    STATE_NOT_ASSIGNED = 4
+    STATE_NOT_ACCEPTED = 5
+    STATE_IN_APPRAISAL = 1
+    STATE_IN_REVISION = 6
+    STATE_SENT = 7
+    STATE_ARCHIVED = 8
+    STATE_ABORTED = 9
     STATES = (
-        (STATE_NOTASSIGNED,'not assigned'),
-        (STATE_ACTIVE,'active'),
-        (STATE_FINISHED,'finished'),
+        (STATE_IMPORTED,'imported'),
+        (STATE_NOT_ASSIGNED,'not assigned'),
+        (STATE_NOT_ACCEPTED,'not accepted'),
+        (STATE_IN_APPRAISAL,'in appraisal'),
+        (STATE_IN_REVISION,'in revision'),
+        (STATE_SENT,'sent'),
+        (STATE_ARCHIVED,'archivada'),
+        (STATE_ABORTED,'abortada'),
         (STATE_PAUSED,'paused'),
-        (STATE_IMPORTED, 'imported')
+        (STATE_FINISHED,'finished')
     )
-    state = models.IntegerField("Estado",choices=STATES,default=STATE_ACTIVE)
+    state = models.IntegerField("Estado",choices=STATES,null=True)
+
+    in_conflict = models.BooleanField("En conflicto",default=False,null=False)
 
     APPRAISAL = 1
     PORTAL = 2
@@ -219,22 +234,24 @@ class Appraisal(models.Model):
     solicitanteCodigo = models.CharField("Solicitante código",max_length=100,blank=True,null=True)
     solicitanteEjecutivo = models.CharField("Solicitante ejecutivo",max_length=100,blank=True,null=True)
     solicitanteEjecutivoEmail = models.CharField("Solicitante email",max_length=100,blank=True,null=True)
-    solicitanteEjecutivoTelefono = models.CharField("Solicitante teléfono",max_length=20,blank=True,null=True)
+    solicitanteEjecutivoTelefono = models.CharField("Solicitante teléfono",max_length=30,blank=True,null=True)
 
     cliente = models.CharField("Cliente",max_length=100,blank=True,null=True)
     clienteRut = models.CharField("Cliente RUT",max_length=13,blank=True,null=True)
     clienteEmail = models.CharField("Cliente Email",max_length=100,blank=True,null=True)
-    clienteTelefono = models.CharField("Cliente Teléfono",max_length=20,blank=True,null=True)
+    clienteTelefono = models.CharField("Cliente Teléfono",max_length=30,blank=True,null=True)
+    clienteValidado = models.BooleanField("Cliente validado",blank=True,null=False,default=False)
 
     contacto = models.CharField("Contacto",max_length=100,blank=True,null=True)
     contactoRut = models.CharField("Contacto RUT",max_length=13,blank=True,null=True)
     contactoEmail = models.CharField("Contacto Email",max_length=100,blank=True,null=True)
-    contactoTelefono = models.CharField("Contacto Teléfono",max_length=20,blank=True,null=True)
+    contactoTelefono = models.CharField("Contacto Teléfono",max_length=30,blank=True,null=True)
+    contactoValidado = models.BooleanField("Cliente validado",blank=True,null=False,default=False)
 
     propietario = models.CharField("Propietario",max_length=100,blank=True,null=True)
     propietarioRut = models.CharField("Propietario RUT",max_length=13,blank=True,null=True)
     propietarioEmail = models.CharField("Contacto Email",max_length=100,blank=True,null=True)
-    propietarioTelefono = models.CharField("Contacto Teléfono",max_length=20,blank=True,null=True)
+    propietarioTelefono = models.CharField("Contacto Teléfono",max_length=30,blank=True,null=True)
     propietarioReferenceSII = models.BooleanField("Propietario Referencia SII",blank=True,default=False)
     
     tasadorUser = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='appraisals_tasador')
@@ -260,7 +277,7 @@ class Appraisal(models.Model):
     # valor
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
-    @property
+    @cached_property
     def address(self):
         address = self.real_estates.first().address
         rss = self.real_estates.count()
@@ -268,14 +285,118 @@ class Appraisal(models.Model):
             address += " (+"+str(rss-1)+")"
         return address
 
-    @property
+    @cached_property
     def address_no_region(self):
-        address = self.real_estates.first().address_no_region
-        rss = self.real_estates.count()
-        if rss > 1:
-            address += " (+"+str(rss-1)+")"
+        address = self.real_estate_main.address_no_region
+        #rss = self.real_estates.count()
+        #if rss > 1:
+        #    address += " (+"+str(rss-1)+")"
         return address
 
+    @cached_property
+    def status_verbose(self):
+        return str([state[1] for state in self.STATES if state[0] == self.state][0])
+
+    @cached_property
+    def hasTasador(self):
+        print(self.tasadorUser)
+
+    @cached_property
+    def not_assigned(self):
+        if self.state == self.STATE_NOT_ASSIGNED:
+            return True
+        else:
+            return False
+
+    @cached_property
+    def finished(self):
+        if self.state == self.STATE_FINISHED:
+            return True
+        else:
+            return False
+
+    @cached_property
+    def in_appraisal(self):
+        if self.state == self.STATE_IN_APPRAISAL:
+            return True
+        else:
+            return False
+
+    @cached_property
+    def paused(self):
+        if self.state == self.STATE_PAUSED:
+            return True
+        else:
+            return False
+
+    @cached_property
+    def timeDueReal(self):
+        if self.state == self.STATE_PAUSED:
+            if self.timePaused != None:
+                return self.timeDue+(datetime.datetime.now(datetime.timezone.utc)-self.timePaused)
+            else:
+                return self.timeDue
+        else:
+            return self.timeDue
+
+    @cached_property
+    def url(self):
+        return "/appraisal/{}/".format(self.id)
+
+    @cached_property
+    def daySinceCreated(self):
+        today = datetime.date.today()
+        diff  = today - self.timeCreated.date()
+        return diff.days
+
+    @cached_property
+    def is_appraisalOverdue(self):
+        if self.timeDue < datetime.date.today():
+            return True
+        return False
+
+    @cached_property
+    def solicitanteVerbose(self):
+        if isinstance(self.solicitante,type(None)):
+            return '-'
+        else:
+            for choice in self.petitioner_choices:
+                if self.solicitante == choice[0]:
+                    if choice[1] == "Banco Internacional":
+                        return "Banco Internacional"
+                    if choice[1] == "Banco de Chile":
+                        return "Banco de Chile"
+                    else:
+                        return choice[1]
+            return '-'
+
+    @cached_property
+    def solicitanteVerboseShort(self):
+        if isinstance(self.solicitante,type(None)):
+            return '-'
+        else:
+            for choice in self.petitioner_choices:
+                if self.solicitante == choice[0]:
+                    if choice[1] == "Banco Internacional":
+                        return "Internacional"
+                    if choice[1] == "Banco de Chile":
+                        return "B. de Chile"
+                    else:
+                        return choice[1]
+            return '-'
+
+    @cached_property
+    def timeLeft(self):
+        return self.timeDue - self.timeCreated
+
+    @cached_property
+    def daysLeft(self):
+        today = datetime.date.today()
+        if self.timeDue:
+            diff  = self.timeDue.date()-today
+            return diff.days
+        else:
+            return None
 
     def addComment(self,event_id,user,timeCreated,text=None):
         comment = Comment(event=event_id,user=user,timeCreated=timeCreated)
@@ -291,7 +412,7 @@ class Appraisal(models.Model):
         app_property.save()
         return app_property
 
-    def getCommentChoices(self,comments=None):
+    def getCommentChoices(self,comments=None,state=None):
         # List of comment types that can only happen once:
         once_ids = [
             Comment.EVENT_CONTACTO_VALIDADO,
@@ -301,136 +422,35 @@ class Appraisal(models.Model):
             Comment.EVENT_ENVIADA_A_VISADOR,
             Comment.EVENT_ENTREGADO_AL_CLIENTE,
             Comment.EVENT_ABORTADO]
+
         if comments == None:
             comments = self.comments.all()
-        event_choices = Comment.event_choices_form
+
+        event_choices = Comment.event_choices_state[state]
+        print(event_choices)
+
+        # already commented
         comment_ids = comments.values_list('event',flat=True)
-        for once_id in once_ids:
-            if once_id in comment_ids:
-                event_choices = [x for x in event_choices if x[0] != once_id]
+
+        event_choices = [x for x in event_choices if x not in comment_ids or (x in comment_ids and x not in once_ids)]
+        event_choices = [x for x in Comment.event_choices if x[0] in event_choices]
+        print(event_choices)
         return event_choices
-
-    @property
-    def status_verbose(self):
-        return str([state[1] for state in self.STATES if state[0] == self.state][0])
-
-    @property
-    def hasTasador(self):
-        print(self.tasadorUser)
-
-    @property
-    def not_assigned(self):
-        if self.state == self.STATE_NOTASSIGNED:
-            return True
-        else:
-            return False
-
-    @property
-    def finished(self):
-        if self.state == self.STATE_FINISHED:
-            return True
-        else:
-            return False
-
-    @property
-    def active(self):
-        if self.state == self.STATE_ACTIVE:
-            return True
-        else:
-            return False
-
-    @property
-    def paused(self):
-        if self.state == self.STATE_PAUSED:
-            return True
-        else:
-            return False
-
-    @property
-    def timeDueReal(self):
-        if self.state == self.STATE_PAUSED:
-            if self.timePaused != None:
-                return self.timeDue+(datetime.datetime.now(datetime.timezone.utc)-self.timePaused)
-            else:
-                return self.timeDue
-        else:
-            return self.timeDue
-
-    @property
-    def url(self):
-        return "/appraisal/{}/".format(self.id)
-
-    @property
-    def daySinceCreated(self):
-        today = datetime.date.today()
-        diff  = today - self.timeCreated.date()
-        return diff.days
-
-    @property
-    def is_appraisalOverdue(self):
-        if self.timeDue < datetime.date.today():
-            return True
-        return False
-
-    @property
-    def solicitanteVerbose(self):
-        if isinstance(self.solicitante,type(None)):
-            return '-'
-        else:
-            for choice in self.petitioner_choices:
-                if self.solicitante == choice[0]:
-                    if choice[1] == "Banco Internacional":
-                        return "Banco Internacional"
-                    if choice[1] == "Banco de Chile":
-                        return "Banco de Chile"
-                    else:
-                        return choice[1]
-            return '-'
-
-    @property
-    def solicitanteVerboseShort(self):
-        if isinstance(self.solicitante,type(None)):
-            return '-'
-        else:
-            for choice in self.petitioner_choices:
-                if self.solicitante == choice[0]:
-                    if choice[1] == "Banco Internacional":
-                        return "Internacional"
-                    if choice[1] == "Banco de Chile":
-                        return "B. de Chile"
-                    else:
-                        return choice[1]
-            return '-'
 
     def buildings(self):
         buildings = []
-        print('buildings',self.appproperty_set.all())
         for prop in self.appproperty_set.all():
-            print('bld')
             bld = prop.get_building()
-            print('bld',bld)
             if bld != None:
                 buildings.append(bld)
         return buildings
-
-    @property
-    def timeLeft(self):
-        return self.timeDue - self.timeCreated
-
-    @property
-    def daysLeft(self):
-        today = datetime.date.today()
-        if self.timeDue:
-            diff  = self.timeDue.date()-today
-            return diff.days
-        else:
-            return None
 
     class Meta:
         app_label = 'appraisal'
         permissions = (
             ("assign_tasador", "Can assign tasadores"),
-            ("assign_visador", "Can assign visadores"),)
+            ("assign_visador", "Can assign visadores"),
+            ("validate_contact", "Can validate contacts"))
 
     def __iter__(self):
         for field_name in self._meta.get_fields():
@@ -439,7 +459,7 @@ class Appraisal(models.Model):
 
 class AppProperty(models.Model):
     
-    property_type = models.PositiveIntegerField();
+    property_type = models.PositiveIntegerField(choices=Building.propertyType_choices,default=Building.TYPE_OTRO);
     property_id = models.PositiveIntegerField();
     appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
 
@@ -456,21 +476,25 @@ class AppProperty(models.Model):
             return House.objects.get(id=self.property_id)
         elif self.property_type == Building.TYPE_EDIFICIO:
             return ApartmentBuilding.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_TERRENO:
+            return Terrain.objects.get(id=self.property_id)
 
     def get_building(self):
-        print('get_building')
         if self.property_type == Building.TYPE_DEPARTAMENTO:
             return Apartment.objects.get(id=self.property_id).apartment_building.building
         elif self.property_type == Building.TYPE_CASA:
-            print('house')
             return House.objects.get(id=self.property_id).building
         elif self.property_type == Building.TYPE_EDIFICIO:
             return ApartmentBuilding.objects.get(id=self.property_id).building
         else:
             return None
 
+    def propertyTypeIcon(self):
+        return Building.property_type_icon[self.property_type]
+
 class Comment(models.Model):
     EVENT_CONTACTO_VALIDADO = 1
+    EVENT_CONTACTO_INVALIDADO = 30
     EVENT_SOLICITUD_ACEPTADA = 2
     EVENT_SOLICITUD_RECHAZADA = 6
     EVENT_VISITA_ACORDADA = 3
@@ -478,6 +502,7 @@ class Comment(models.Model):
     EVENT_ENVIADA_A_VISADOR = 5
     EVENT_ENTREGADO_AL_CLIENTE = 8
     EVENT_CLIENTE_VALIDADO = 9
+    EVENT_CLIENTE_INVALIDADO = 29
     EVENT_CONTABILIZACION = 10
     EVENT_ABORTADO = 18
     EVENT_INCIDENCIA = 19
@@ -489,10 +514,13 @@ class Comment(models.Model):
     EVENT_VISADOR_ASIGNADO = 26
     EVENT_VISADOR_DESASIGNADO = 27
     EVENT_TASACION_INGRESADA = 24
+    EVENT_COMENTARIO = 28
     EVENT_OTRO = 0
     event_choices = (
         (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
+        (EVENT_CONTACTO_INVALIDADO, "Contacto invalidado"),
         (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
+        (EVENT_CLIENTE_INVALIDADO, "Cliente invalido"),
         (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
         (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
         (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
@@ -505,27 +533,39 @@ class Comment(models.Model):
         (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
         (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
         (EVENT_CONTABILIZACION, "Contabilización"),
-        (EVENT_ABORTADO, "Abortado"),
         (EVENT_INCIDENCIA, "Incidencia"),
         (EVENT_CORRECCION_INFORME, "Corrección informe"),
         (EVENT_OBSERVACION_VISADOR, "Observación visador"),
-        (EVENT_OBJECION, "Objeción"),
+        (EVENT_COMENTARIO, "Comentario"),
         (EVENT_OTRO, "Otro")
     )
-    event_choices_form = (
-        (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
-        (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
-        (EVENT_VISITA_ACORDADA, "Visita acordada"),
-        (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
-        (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
-        (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
-        (EVENT_ABORTADO, "Abortado"),
-        (EVENT_INCIDENCIA, "Incidencia"),
-        (EVENT_CORRECCION_INFORME, "Corrección informe"),
-        (EVENT_OBSERVACION_VISADOR, "Observación visador"),
-        (EVENT_OBJECION, "Objeción"),
-        (EVENT_OTRO, "Otro")
-    )
+    event_choices_state = {
+        Appraisal.STATE_NOT_ASSIGNED:[
+            EVENT_VISITA_ACORDADA,
+            EVENT_INCIDENCIA,
+            EVENT_COMENTARIO
+        ],
+        Appraisal.STATE_NOT_ACCEPTED:[
+            EVENT_VISITA_ACORDADA,
+            EVENT_INCIDENCIA,
+            EVENT_COMENTARIO
+        ],
+        Appraisal.STATE_IN_APPRAISAL:[
+            EVENT_VISITA_ACORDADA,
+            EVENT_PROPIEDAD_VISITADA,
+            EVENT_ENVIADA_A_VISADOR,
+            EVENT_INCIDENCIA,
+            EVENT_COMENTARIO
+        ],
+        Appraisal.STATE_IN_REVISION:[
+            EVENT_ENTREGADO_AL_CLIENTE,
+            EVENT_INCIDENCIA,
+            EVENT_COMENTARIO
+        ],
+        Appraisal.STATE_SENT:[
+            EVENT_COMENTARIO
+        ]
+    }
     event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     text = models.CharField("Comment",max_length=500)
@@ -534,6 +574,12 @@ class Comment(models.Model):
     appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE, blank=True, null=True, related_name="comments")
 
     @property
+    def incidencia(self):
+        return self.event == self.EVENT_INCIDENCIA
+    @property
+    def deletable(self):
+        return self.event != self.EVENT_TASACION_INGRESADA
+    
     def hasText(self):
         if self.text == "" or self.text == None:
             return False

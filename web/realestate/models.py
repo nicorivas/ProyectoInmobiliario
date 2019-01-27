@@ -386,25 +386,3 @@ class RealEstate(models.Model):
             return "condominium"
         else:
             return None
-
-    def get_propertyTypeIcon(self):
-        if self.buildings.count() == 0:
-            if self.terrains.count() == 0:
-                return "far fa-times-circle"
-            else:
-                return "fas fa-mountain"
-        else:
-            propertyType = self.buildings.first().propertyType
-            if propertyType == Building.TYPE_OTRO:
-                return "far fa-times-circle"
-            elif propertyType == Building.TYPE_CASA:
-                return "fas fa-home"
-            elif propertyType == Building.TYPE_DEPARTAMENTO:
-                return "fas fa-building"
-            elif propertyType == Building.TYPE_EDIFICIO:
-                return "fas fa-city"
-            elif propertyType == Building.TYPE_CONDOMINIO:
-                return "fas fa-torii-gate"
-            else:
-                return "far fa-times-circle"
-    

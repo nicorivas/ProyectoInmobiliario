@@ -1,0 +1,90 @@
+<td class="id">
+  <small>{{ appraisal.id }}</small>
+</td>
+<td class="solicitante">
+  {{ appraisal.solicitanteVerboseShort }}
+</td>
+<td class="solicitanteCodigo">
+  <small>{{ appraisal.solicitanteCodigo }}</small>
+</td>
+<td style="text-align:center;">
+  {% include 'main/td_property_type_icon.html' %}
+</td>
+<td>
+  <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
+    {{ appraisal.address_no_region }}
+  </a>
+</td>
+<td>
+  <div class="row">
+    <div class="col-auto">
+      <span style="vertical-align: middle;" class="tasador">
+      {% if appraisal.tasadorUser %}
+        {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
+      {% else %}
+      -
+      {% endif %}
+      </span>
+    </div>
+    {% if perms.appraisal.assign_tasador %}
+    {% if appraisal.active %}
+    <div class="col text-right">
+      <button type="button" class="btn btn-sm btn-light btn_unassign_tasador_modal" data-toggle="modal" data-target="#modal_unassign_tasador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        remove_circle_outline
+      </button>
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+</td>
+<td>
+  <div class="row">
+    <div class="col-auto">
+      <span style="vertical-align: middle;" class="visador">
+      {% if appraisal.visadorUser %}
+        {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
+      {% else %}
+      -
+      {% endif %}
+      </span>
+    </div>
+    {% if perms.appraisal.assign_visador %}
+    {% if appraisal.in_appraisal %}
+    <div class="col text-right">
+      {% if appraisal.visadorUser %}
+      <button type="button" class="btn btn-sm btn-light btn_unassign_visador_modal" data-toggle="modal" data-target="#modal_unassign_visador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+        remove_circle_outline
+      </button>
+      {% endif %}
+      {% with class="btn_assign_tasador_modal" %}
+        {% include 'main/btn_assign_user.html' %}
+      {% endwith %}
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+</td>
+<td style="text-align:center;">
+  {% if appraisal.active %}
+  <i class="fas fa-play"></i>
+  {% elif appraisal.paused %}
+  <i class="fas fa-pause"></i>
+  {% endif %}
+</td>
+<td class="Creada">
+  {{appraisal.timeCreated | date:"d/m"}}
+</td>
+<td>
+  {% if appraisal.daysLeft > 3 %}
+    <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+  {% elif appraisal.daysLeft > 1 %}
+    <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+  {% else %}
+    <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+  {% endif %}
+</td>
+<td style="text-align:right;">
+  {% with table="active" %}
+    {% include 'main/btn_logbook.html' %}
+  {% endwith %}
+</td>

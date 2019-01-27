@@ -70,6 +70,10 @@ class House(models.Model):
             x = self.marketPrice/(self.builtSquareMeters+self.terrainSquareMeters)
             return "{:10.2f}".format(x)
 
+    @property
+    def propertyTypeIcon(self):
+        return "fas fa-home"
+
     def __str__(self):
         return "{}, {} {} {}, {}, {}".format(
             self.building.name,

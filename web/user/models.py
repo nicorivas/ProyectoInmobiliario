@@ -20,7 +20,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', primary_key=True)
     first_name = models.CharField(max_length=100, default='')
     last_name = models.CharField(max_length=100, default='')
-    email = models.EmailField(unique=True, blank=False, default='')
+    email = models.EmailField(blank=False, default='')
     address =  models.CharField(max_length=100, default='')
     phone = models.IntegerField(default=0)
     rut = models.CharField('RUT', max_length=14, null=True)
@@ -96,6 +96,7 @@ class UserProfile(models.Model):
         if comment.event == Comment.EVENT_TASADOR_SOLICITADO:
             appraisal = Appraisal.objects.get(id=appraisal_id)
             html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal': appraisal})
+            '''
             send_mail(
                 subject='Asignación de tasación',
                 message='',
@@ -103,6 +104,7 @@ class UserProfile(models.Model):
                 recipient_list=[self.user.email],
                 fail_silently=False,
                 html_message=html_message)
+            '''
 
     def hasNotificationAppraisal(self,id):
         '''

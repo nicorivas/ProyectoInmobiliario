@@ -52,6 +52,32 @@ input.error
     border: 1px solid #dc3545 !important; 
 }
 
+input.search
+{
+  margin: 0.0;
+  padding: 0.0em 0.0em 0.0em 0.3em;
+  font-size: 0.9em;
+  border-radius: 0;
+  height: 2.4em;
+}
+
+input.edit_contact
+{
+  margin: 0.0;
+  padding: 0.0em 0.0em 0.0em 0.4em;
+  font-size: 0.9em;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  height: 2.4em;
+}
+
+table.table-appraisals {
+  table-layout:fixed;
+  display:none;
+  font-size:0.8em;
+  width:1350px;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */

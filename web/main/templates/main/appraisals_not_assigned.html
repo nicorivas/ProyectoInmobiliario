@@ -1,20 +1,12 @@
 {% load custom_tags %}
 
 <thead>
-  <tr>
-    <th scope="col" style="width:20px">ID</th>
-    <th scope="col" style="width:100px">Cliente</th>
-    <th scope="col" style="width:80px">Código</th>
-    <th scope="col" style="width:20px;text-align:center;">T.</th>
-    <th scope="col" style="width:300px;">Dirección</th>
-    <th scope="col" style="width:120px;">Tasador</th>
-    <th scope="col" style="width:120px;">Visador</th>
-    <th scope="col" style="width:100px;">Creada</th>
-    <th scope="col" style="width:100px;">Entrega</th>
-    <th scope="col" style="width:60px;"></th>
-  </tr>
+  {% include 'main/appraisals_table_header.html' %}
 </thead>
 <tbody>
+  <tr>
+    {% include 'main/appraisals_table_search.html' %}
+  </tr>
   {% for appraisal in appraisals_not_assigned %}
   <tr class='not_assigned {{appraisal.tasadorUser.id}}' id="tr_table_not_assigned-{{appraisal.id}}">
     <td class="id">
@@ -26,11 +18,11 @@
     <td class="solicitanteCodigo">
       <small>{{ appraisal.solicitanteCodigo }}</small>
     </td>
-    <td style="text-align:center;" data-toggle="tooltip" data-placement="top" title="{{appraisal.realEstate.get_propertyType_display}}">
-      <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
+    <td style="text-align:center;">
+      {% include 'main/td_property_type_icon.html' %}
     </td>
     <td>
-      <a href="{{appraisal.url}}" class="address">
+      <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
         {{ appraisal.address_no_region }}
       </a>
     </td>
@@ -47,10 +39,9 @@
         </div>
         {% if perms.appraisal.assign_tasador %}
         <div class="col text-right">
-          <button type="button" class="btn btn-sm btn-light btn_assign_tasador_modal"
-                  value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-            person_add
-          </button>
+          {% with class="btn_assign_tasador_modal" %}
+            {% include 'main/btn_assign_user.html' %}
+          {% endwith %}
         </div>
         {% endif %}
       </div>
@@ -68,10 +59,9 @@
         </div>
         {% if perms.appraisal.assign_visador %}
         <div class="col text-right">
-          <button type="button" class="btn btn-sm btn-light btn_assign_visador_modal"
-                  value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-            person_add
-          </button>
+          {% with class="btn_assign_visador_modal" %}
+            {% include 'main/btn_assign_user.html' %}
+          {% endwith %}
         </div>
         {% endif %}
       </div>
@@ -89,8 +79,12 @@
     {% endif %}
     </td>
     <td style="text-align:right;">
-      {% include 'main/btn_logbook.html' %}
-      {% include 'main/btn_delete.html' %}
+      {% with table="not_assigned" %}
+        {% include 'main/btn_logbook.html' %}
+      {% endwith %}
+      {% with class="btn_delete_appraisal_modal" %}
+        {% include 'main/btn_delete.html' %}
+      {% endwith %}
     </td>
   </tr>
   {% endfor %}

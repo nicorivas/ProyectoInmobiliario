@@ -1,0 +1,25 @@
+{% load custom_tags %}
+{% has_notification_comment request.user comment.id as hnc %}
+<li class="list-group-item {{hnc|yesno:"list-group-item-warning,"}} {{comment.incidencia|yesno:"list-group-item-danger,"}}" id="comment_{{comment.id}}">
+  <div class="row">
+    <div class="col-3">
+      <span style="font-size:0.9em;color:#000;">{{comment.user.first_name}} {{comment.user.last_name}}</span>
+    </div>
+    <div class="col-5">
+      <span style="font-weight:800;color:#000;">{{comment.get_event_display}}</span>
+    </div>
+    <div class="col-4 text-right">
+      <small style="color:#666;padding-right:1em;">{{comment.timeCreated|date:"d/m G:i"}}</small>
+      {% if "asignador" in groups or request.user.is_superuser %}
+        {% if comment.deletable %}
+          {% with class="btn_delete_comment" %}
+            {% include 'main/btn_delete.html' %}
+          {% endwith %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% if comment.hasText %}
+  <p class="mb-0 mt-2 ml-0" style="color:#333;font-size:0.8em">{{comment.text}}</p>
+  {% endif %}
+</li>

@@ -1,0 +1,7 @@
+<button id={{id}} class="btn_validate btn btn-block btn-sm {{validated|yesno:"btn-outline-success,btn-dark"}}" style="padding:0.18em;" {{validated|yesno:"disabled,"}} data-type={{type}}>
+	<span class="text">
+		{{validated|yesno:"Validado,Validar"}}
+	</span>
+	<i class="validated_check material-icons" style="font-size:1.0em;{{validated|yesno:",display:none;"}}">check_circle</i>
+	<div class="ld ld-ring ld-spin" style="display:none;"></div>
+</button>

@@ -39,12 +39,6 @@ def view_create(request):
         if form.is_valid():
 
             propertyType = int(form.cleaned_data['propertyType'])
-            if not (propertyType == Building.TYPE_TERRENO or 
-               propertyType == Building.TYPE_CASA or
-               propertyType == Building.TYPE_EDIFICIO or 
-               propertyType == Building.TYPE_DEPARTAMENTO):
-                context = {'error_message': 'Tipo de propiedad no ha sido implementado'}
-                return render(request, 'create/error.html',context)
 
             # 1. Crear real estate
             real_estate, created = create.createOrGetRealEstate(
@@ -94,30 +88,37 @@ def view_create(request):
             propertyType = int(form.cleaned_data['propertyType'])
             if propertyType == Building.TYPE_TERRENO:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
+                appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
                 rol.terrain = propiedad
             elif propertyType == Building.TYPE_CASA:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id) # en general se tasa el terreno Y la casa
+                appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id) # en general se tasa el terreno Y la casa
                 propiedad, created = real_estate.createOrGetCasa(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
+                appraisal.addAppProperty(Building.TYPE_CASA,propiedad.id)
                 rol.house = propiedad
             elif propertyType == Building.TYPE_EDIFICIO:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
+                appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
                 propiedad, created = real_estate.createOrGetEdificio(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
+                appraisal.addAppProperty(Building.TYPE_EDIFICIO,propiedad.id)
                 rol.apartment_building = propiedad
             elif propertyType == Building.TYPE_DEPARTAMENTO:
                 propiedad, created = real_estate.createOrGetDepartamento(addressNumber2=None,addressNumber3=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(propertyType,propiedad.id)
+                appraisal.addAppProperty(Building.TYPE_DEPARTAMENTO,propiedad.id)
                 rol.apartment = propiedad
+            else:
+                """
+                Otro tipo de propiedades de las que no tenemos clases.
+                """
+                pass
             
             rol.save()
             appraisal.save()
             
             # Go to appraisal url
-            return HttpResponseRedirect(appraisal.url)
+            #return HttpResponseRedirect(appraisal.url)
+            # Go to appraisal main
+            return HttpResponseRedirect('/main/')
 
         else:
             errordata = form.errors.as_data()

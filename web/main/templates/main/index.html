@@ -1,22 +1,8 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% block head %}
-        <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
-        {% load static %}
-        <script>
-          function timeCreated(string) {
-            var s = moment(string).format("D MMM HH:MM");
-            document.write(s)
-          }
-        </script>
-
-        <script>
-          function timeLeft(string) {
-            var m = moment(string);
-            document.write(m.fromNow());
-          }
-        </script>
-
+  <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+  {% load static %}
 {% endblock %}
 
 {% block content %}
