@@ -323,8 +323,10 @@
             <div class="col-md-2">
                <div class="form-group">
                   <div class="valign-center">
-                    <label><span>Rol</span>
-                      <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Rol principal. Si existe más de un rol, es posible ingresarlo más tarde en el formulario de tasación.">help_outline</i></label>
+                    <label>
+                      <span>Rol</span>
+                      <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Rol principal, del SII. Si existe más de un rol, es posible ingresarlo más tarde en el formulario de tasación.">help_outline</i>
+                    </label>
                   </div>
                   {{form.rol}}
                </div>
@@ -365,8 +367,11 @@
 
          <div class="col-md-1" id="div_addressNumber2">
             <div class="form-group">
-               {{form.addressNumber2.label_tag}}
-               {{form.addressNumber2}}
+              <label>
+                <span>Rol</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
+              </label>
+              {{form.addressNumber2}}
             </div>
          </div>
       </div>
@@ -416,41 +421,26 @@
    </form>
 </div>
 
-<!--
-<script>
- $("#id_addressRegion").change(function () {
-    var url = $("#form").attr("data-commune-url");
-    var regionId = $(this).val();
-    $.ajax({
-      url: url,
-      data: {
-       'region': regionId
-    },
-    success: function (data) {
-        $("#id_addressCommune").html($.trim(data));
-     }
-  });
- });
-</script>
--->
+<script src="{% static 'main/js/tools.js' %}" type="text/javascript"></script>
 
 <script>
 
-  function showApartmentNumber() {
+  function setAddressNumber2Label() {
     var type = $("#propertyType option:selected");
     if (type.val() == 2) {
-      $("#div_addressNumber2").find('label').html('Dpto.');
+      $("#div_addressNumber2").find('label span').html('Dpto.');
+    } else if (type.val() == 6) {
     } else {
-      $("#div_addressNumber2").find('label').html('Unidad');
+      $("#div_addressNumber2").find('label span').html('Oficina');
     }
   }
 
   $('#propertyType').on('change', function() {
-    showApartmentNumber();
+    setAddressNumber2Label();
   });
 
   $(document).ready(function() {
-    showApartmentNumber();
+    setAddressNumber2Label();
   });
 
   function valid_rut(rut) {
@@ -591,18 +581,6 @@
       })
     }
 
-    function btn_loading(btn) {
-      btn.addClass('running');
-      btn.find('.ld').show();
-      btn.prop('disabled', true);
-    }
-
-    function btn_idle(btn) {
-      btn.removeClass('running');
-      btn.find('.ld').hide();
-      btn.prop('disabled', false);
-    }
-
     var populateFromFile = function (btn) {
       var form = document.getElementById('form');
       var formData = new FormData(form);
@@ -630,14 +608,14 @@
             if (data.solicitante == 3) {
               // ITAU: warn about things we don't do
               $('#id_import_alert').show()
-              $('#id_import_alert').html('Observaciones al importar de Itaú: banco no provee código.\
-                Se han ignorado campos. De antecedentes del cliente: N° Cuenta, Personería, Detalle de cuenta.\
+              $('#id_import_alert').html('<b>Observaciones.</b><br><small>Banco no provee código.\
+                Se han ignorado campos, de antecedentes del cliente: N° Cuenta, Personería, Detalle de cuenta.\
                 Del bien: Estado, Valor estimado, Otros datos, Antecedentes. \
-                Tipo, finalidad y visita no han sido rellenados.')
+                Tipo, finalidad y visita no han sido rellenados.</small>')
             } else if (data.solicitante == 2) {
               // Santander
               $('#id_import_alert').show()
-              $('#id_import_alert').html('Observaciones al importar de Santander. Se han ignorado los campos: seguimiento, proveedor, estado, coordinar antes de (fecha), visitar propiedad antes de (fecha), localidad, rubro, grupo, nombre formalizador, email formalizador y centro de costo.')
+              $('#id_import_alert').html('<b>Observaciones.</b><br><small>Se han ignorado los campos: seguimiento, proveedor, estado, coordinar antes de (fecha), visitar propiedad antes de (fecha), localidad, nombre formalizador, email formalizador y centro de costo. El tipo y finalidad de la tasación fueron inferidos (si es posible) de rubro y grupo.</small>')
             } else if (data.solicitante == 5) {
               // Chile
               $('#id_import_alert').show()
@@ -650,7 +628,7 @@
               $('#id_import_alert').html(data['error'])
             } else {
               formatFields();
-              showApartmentNumber();
+              setAddressNumber2Label();
               $("#form").valid();
             }
             btn_idle(btn)

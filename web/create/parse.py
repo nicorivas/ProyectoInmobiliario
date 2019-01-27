@@ -24,7 +24,7 @@ def parseAddress(address,commune=None):
         if address.endswith(commune.lower()):
             address = address[:address.find(commune)].strip()
 
-    dpto_strings = ["dpto.","dpto","depto.","depto","departamento"]
+    dpto_strings = ["dpto.","dpto","depto.","depto","departamento","oficina"]
     for dpto_string in dpto_strings:
         if dpto_string in address:
             match = re.search(dpto_string+' ?(\d+)', address)
@@ -51,9 +51,11 @@ def parseAddress(address,commune=None):
         addressNumber = match.group(0)
         address = address[:address.index(addressNumber)]
     address = address.strip()
-    address.replace('avenida','av.')
-    address.replace('aven','av.')
-    address.replace('avnda','av.')
+    print(address)
+    address = address.replace("avenida","av.")
+    address = address.replace('aven','av.')
+    address = address.replace('avnda','av.')
+    print(address)
 
     addressStreet = address
 
@@ -72,7 +74,7 @@ def parseAddress(address,commune=None):
 
 def parseRut(rut):
     rut = rut.replace('.','').replace(',','').replace('-','').lower()
-    return rut[:-1]+'-'+rut[-1]
+    return rut[:-1].strip()+'-'+rut[-1].strip()
 
 def parseCommune(string):
     commune = string.strip().title()
@@ -195,30 +197,31 @@ def parseItau(ws):
             data['contactoTelefono'] = ws['C30'].value.strip().replace(' ','')
 
     tipo = ws['C37'].value
-    if isinstance(tipo,type('')):
-        tipo = tipo.strip()
-    if tipo == 'CASAS':
-        data['propertyType'] = Building.TYPE_CASA
-    elif tipo == 'DEPARTAMENTOS':
-        data['propertyType'] = Building.TYPE_DEPARTAMENTO
-    elif tipo == 'OFICINAS':
-        data['propertyType'] = Building.TYPE_OFICINA
-    elif tipo == 'TERRENO PROYECTO INMOBILIARIO':
-        data['propertyType'] = Building.TYPE_TERRENO
-    elif tipo == 'SITIOS Y TERRENOS URBANOS':
-        data['propertyType'] = Building.TYPE_TERRENO
-    elif tipo == 'LOCALES COMERCIALES':
-        data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
-    elif tipo == 'CONSTRUCCIONES INDUSTRIALES':
-        data['propertyType'] = Building.TYPE_INDUSTRIA
-    elif 'BODEGAS' in tipo:
-        data['propertyType'] = Building.TYPE_BODEGA
-    elif 'ESTACIONAMIENTOS' in tipo:
-        data['propertyType'] = Building.TYPE_ESTACIONAMIENTO
-    elif 'BIENES RAICES RURALES' in tipo:
-        data['propertyType'] = Building.TYPE_PARCELA
-    else:
-        data['propertyType'] = Building.TYPE_OTRO
+    if tipo != None:
+        if isinstance(tipo,type('')):
+            tipo = tipo.strip()
+        if tipo == 'CASAS':
+            data['propertyType'] = Building.TYPE_CASA
+        elif tipo == 'DEPARTAMENTOS':
+            data['propertyType'] = Building.TYPE_DEPARTAMENTO
+        elif tipo == 'OFICINAS':
+            data['propertyType'] = Building.TYPE_OFICINA
+        elif tipo == 'TERRENO PROYECTO INMOBILIARIO':
+            data['propertyType'] = Building.TYPE_TERRENO
+        elif tipo == 'SITIOS Y TERRENOS URBANOS':
+            data['propertyType'] = Building.TYPE_TERRENO
+        elif tipo == 'LOCALES COMERCIALES':
+            data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
+        elif tipo == 'CONSTRUCCIONES INDUSTRIALES':
+            data['propertyType'] = Building.TYPE_INDUSTRIA
+        elif 'BODEGAS' in tipo:
+            data['propertyType'] = Building.TYPE_BODEGA
+        elif 'ESTACIONAMIENTOS' in tipo:
+            data['propertyType'] = Building.TYPE_ESTACIONAMIENTO
+        elif 'BIENES RAICES RURALES' in tipo:
+            data['propertyType'] = Building.TYPE_PARCELA
+        else:
+            data['propertyType'] = Building.TYPE_OTRO
 
     try :
         commune, region = parseCommune(ws['C45'].value)

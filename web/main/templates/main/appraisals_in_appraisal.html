@@ -1,23 +1,18 @@
 {% load custom_tags %}
 
 <thead>
-  <tr>
-    <th scope="col" style="width:20px">ID</th>
-    <th scope="col" style="width:100px">Cliente</th>
-    <th scope="col" style="width:80px">Código</th>
-    <th scope="col" style="width:20px;text-align:center;">T.</th>
-    <th scope="col" style="width:300px;">Dirección</th>
-    <th scope="col" style="width:120px;">Tasador</th>
-    <th scope="col" style="width:120px;">Visador</th>
-    <th scope="col" style="width:20px;text-align:center;">E.</th>
-    <th scope="col" style="width:80px;">Creada</th>
-    <th scope="col" style="width:100px;">Entrega</th>
-    <th scope="col" style="width:60px;"></th>
-  </tr>
+  {% with state=1 %}
+  {% include 'main/appraisals_table_header.html' %}
+  {% endwith %}
 </thead>
 <tbody>
-  {% for appraisal in appraisals_active %}
-  <tr class='active {{appraisal.tasadorUser.id}}' id="tr_table_active-{{appraisal.id}}">
+  <tr>
+    {% with state=1 %}
+    {% include 'main/appraisals_table_search.html' %}
+    {% endwith %}
+  </tr>
+  {% for appraisal in appraisals_in_appraisal %}
+  <tr class='in_appraisal {{appraisal.tasadorUser.id}}' id="tr_table_in_appraisal-{{appraisal.id}}">
     <td class="id">
       <small>{{ appraisal.id }}</small>
     </td>
@@ -27,11 +22,11 @@
     <td class="solicitanteCodigo">
       <small>{{ appraisal.solicitanteCodigo }}</small>
     </td>
-    <td style="text-align:center;" data-toggle="tooltip" data-placement="top" title="{{appraisal.realEstate.get_propertyType_display}}">
-      <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
+    <td style="text-align:center;">
+      {% include 'main/td_property_type_icon.html' %}
     </td>
     <td>
-      <a href="{{appraisal.url}}" class="address">
+      <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
         {{ appraisal.address_no_region }}
       </a>
     </td>
@@ -47,7 +42,7 @@
           </span>
         </div>
         {% if perms.appraisal.assign_tasador %}
-        {% if appraisal.active %}
+        {% if appraisal.in_appraisal %}
         <div class="col text-right">
           <button type="button" class="btn btn-sm btn-light btn_unassign_tasador_modal" data-toggle="modal" data-target="#modal_unassign_tasador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
             remove_circle_outline
@@ -69,23 +64,23 @@
           </span>
         </div>
         {% if perms.appraisal.assign_visador %}
-        {% if appraisal.active %}
+        {% if appraisal.in_appraisal %}
         <div class="col text-right">
           {% if appraisal.visadorUser %}
           <button type="button" class="btn btn-sm btn-light btn_unassign_visador_modal" data-toggle="modal" data-target="#modal_unassign_visador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
             remove_circle_outline
           </button>
           {% endif %}
-          <button type="button" class="btn btn-sm btn-light btn_assign_visador_modal" data-toggle="modal" data-target="#modal_assign_visador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-            person_add
-          </button>
+          {% with class="btn_assign_visador_modal" %}
+            {% include 'main/btn_assign_user.html' %}
+          {% endwith %}
         </div>
         {% endif %}
         {% endif %}
       </div>
     </td>
     <td style="text-align:center;">
-      {% if appraisal.active %}
+      {% if appraisal.in_appraisal %}
       <i class="fas fa-play"></i>
       {% elif appraisal.paused %}
       <i class="fas fa-pause"></i>
@@ -104,7 +99,9 @@
       {% endif %}
     </td>
     <td style="text-align:right;">
-      {% include 'main/btn_logbook.html' %}
+      {% with table="in_appraisal" %}
+        {% include 'main/btn_logbook.html' %}
+      {% endwith %}
     </td>
   </tr>
   {% endfor %}

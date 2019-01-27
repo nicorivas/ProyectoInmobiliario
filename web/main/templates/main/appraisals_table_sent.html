@@ -1,0 +1,21 @@
+{% load custom_tags %}
+
+<thead>
+  <tr>
+    <th scope="col" style="width:20px">ID</th>
+    <th scope="col" style="width:100px">Cliente</th>
+    <th scope="col" style="width:80px">Código</th>
+    <th scope="col" style="width:20px;text-align:center;">T.</th>
+    <th scope="col" style="width:420px;">Dirección</th>
+    <th scope="col" style="width:120px;">Tasador</th>
+    <th scope="col" style="width:200px;">Entregada</th>
+    <th scope="col" style="width:60px;"></th>
+  </tr>
+</thead>
+<tbody>
+  {% for appraisal in appraisals_sent %}
+  <tr class="sent" id="tr_table_sent-{{appraisal.id}}">
+    {% include 'main/appraisals_table_sent_tr.html' %}
+  </tr>
+  {% endfor %}
+</tbody>

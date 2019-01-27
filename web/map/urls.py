@@ -21,6 +21,7 @@ from django.views.generic import RedirectView
 
 from django.conf import settings
 from django.conf.urls.static import static
+import debug_toolbar
 
 urlpatterns = [
     path('viz/', include('viz.urls')),
@@ -41,4 +42,5 @@ urlpatterns = [
     #path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
     #    form_class=AuthenticationFormB), name='login'),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),
+    path('__debug__/', include(debug_toolbar.urls)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -41,7 +41,7 @@
               <small>{{ appraisal.solicitanteCodigo }}</small>
             </td>
             <td style="text-align:center;">
-              <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
+              {% include 'main/td_property_type_icon.html' %}
             </td>
             <td>
               <a href={{appraisal.url}}>

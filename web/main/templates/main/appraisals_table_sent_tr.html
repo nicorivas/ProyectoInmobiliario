@@ -1,0 +1,37 @@
+<td class="id">
+  <small>{{ appraisal.id }}</small>
+</td>
+<td class="solicitante">
+  {{ appraisal.solicitanteVerboseShort }}
+</td>
+<td class="solicitanteCodigo">
+  <small>{{ appraisal.solicitanteCodigo }}</small>
+</td>
+<td style="text-align:center;">
+  {% include 'main/td_property_type_icon.html' %}
+</td>
+<td class="address">
+  <a href="{{appraisal.url}}">
+    {{ appraisal.address_no_region }}
+  </a>
+</td>
+<td>
+  <span style="vertical-align: middle;" class="tasador">
+    {% if appraisal.tasadorUser %}
+      {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
+    {% else %}
+    -
+    {% endif %}
+  </span>
+</td>
+<td>
+  {{appraisal.timeFinished | date:"d/m/Y G:i" }}
+</td>
+<td style="text-align:right;">
+  {% with table="active" %}
+    {% include 'main/btn_logbook.html' %}
+  {% endwith %}
+  {% if perms.appraisal.assign_visador %}
+    {% include 'main/btn_evaluate.html' %}
+  {% endif %}
+</td>

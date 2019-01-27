@@ -52,3 +52,7 @@ class Terrain(models.Model):
         else:
             return self.generic_name
     
+    @property
+    def propertyTypeIcon(self):
+        return "fas fa-mountain"
+        

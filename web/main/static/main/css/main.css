@@ -6,3 +6,8 @@
   font-family: "Material Icons";
 }
 
+input:disabled {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}

@@ -1,20 +1,12 @@
 {% load custom_tags %}
 
 <thead>
-  <tr>
-    <th scope="col" style="width:20px">ID</th>
-    <th scope="col" style="width:100px">Cliente</th>
-    <th scope="col" style="width:80px">Código</th>
-    <th scope="col" style="width:20px;text-align:center;">T.</th>
-    <th scope="col" style="width:300px;">Dirección</th>
-    <th scope="col" style="width:120px;">Tasador</th>
-    <th scope="col" style="width:120px;">Visador</th>
-    <th scope="col" style="width:100px;">Creada</th>
-    <th scope="col" style="width:100px;">Entrega</th>
-    <th scope="col" style="width:60px;"></th>
-  </tr>
+  {% include 'main/appraisals_table_header.html' %}
 </thead>
 <tbody>
+  <tr>
+    {% include 'main/appraisals_table_search.html' %}
+  </tr>
   {% for appraisal in appraisals_not_accepted %}
   <tr class='not_accepted {{appraisal.tasadorUser.id}}' id="tr_table_not_accepted-{{appraisal.id}}">
     <td class="id">
@@ -26,11 +18,11 @@
     <td class="solicitanteCodigo">
       <small>{{ appraisal.solicitanteCodigo }}</small>
     </td>
-    <td style="text-align:center;" data-toggle="tooltip" data-placement="top" title="{{appraisal.realEstate.get_propertyType_display}}">
-      <i class="{{ appraisal.real_estates.first.get_propertyTypeIcon }}"></i>
+    <td style="text-align:center;">
+        {% include 'main/td_property_type_icon.html' %}
     </td>
     <td>
-      <a href="{{appraisal.url}}" class="address">
+      <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
         {{ appraisal.address_no_region }}
       </a>
     </td>
@@ -41,7 +33,7 @@
           {% if appraisal.tasadorUser %}
             {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
           {% else %}
-          -
+            -
           {% endif %}
           </span>
         </div>
@@ -54,7 +46,7 @@
           {% if appraisal.visadorUser %}
             {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
           {% else %}
-          -
+            -
           {% endif %}
           </span>
         </div>
@@ -73,7 +65,9 @@
     {% endif %}
     </td>
     <td style="text-align:right;">
-      {% include 'main/btn_logbook.html' %}
+      {% with table="not_accepted" %}
+        {% include 'main/btn_logbook.html' %}
+      {% endwith %}
     </td>
   </tr>
   {% endfor %}

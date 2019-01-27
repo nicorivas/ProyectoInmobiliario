@@ -1,15 +1,25 @@
-function btn_loading(btn) {
+function btn_loading(btn,hide_text) {
+  // Remove notifications
+  btn.removeClass('btn-not');
+  btn.find('.notification').fadeOut();
+  // Add circle
   btn.addClass('running');
   btn.find('.ld').show();
   btn.find('.icon').hide();
+  // Disable
   btn.prop('disabled', true);
+  if (hide_text) {
+    btn.find('.text').hide()
+  }
 }
 
 function btn_idle(btn) {
+  console.log('btn_idle')
   btn.removeClass('running');
   btn.find('.ld').hide();
   btn.find('.icon').show();
   btn.prop('disabled', false);
+  btn.find('.text').show()
 }
 
 function join_data(form,element) {

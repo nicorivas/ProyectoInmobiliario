@@ -3,52 +3,13 @@
 
 <script src="{% static "main/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
 <script src="{% static "main/js/modal_assign_visador.js" %}" type="text/javascript"></script>
+<script>
+  comment_class = {{comment_class|safe}}
+</script>
 
 {% load custom_tags %}
 
 <div class="container" style="max-width:100%">
-
-<!-- SEARCH -->
-
-<div class="card mb-1" id="div_not_assigned">
-  <div class="card-body">
-
-    <p class="card-title">Buscar</p>
-
-    <table class="table table-sm table-borderless" style="font-size:0.8em;">
-      <thead>
-        <tr>
-          <th scope="col" style="width:20px;">
-            <input class="form-control form-control-sm" placeholder="ID" id="buscar_id"></input>
-          </th>
-          <th scope="col" style="width:100px">
-            <input class="form-control form-control-sm" placeholder="Cliente" id="buscar_solicitante"></input>
-          </th>
-          <th scope="col" style="width:80px">
-            <input class="form-control form-control-sm" placeholder="Código" id="buscar_solicitanteCodigo"></input>
-          </th>
-          <th scope="col" style="width:20px;text-align:center;">
-          </th>
-          <th scope="col" style="width:300px;">
-            <input class="form-control form-control-sm" placeholder="Dirección" id="buscar_address"></input>
-          </th>
-          <th scope="col" style="width:120px;">
-            <input class="form-control form-control-sm" placeholder="Tasador" id="buscar_tasador"></input>
-          </th>
-          <th scope="col" style="width:120px;">
-            <input class="form-control form-control-sm" placeholder="Visador" id="buscar_visador"></input>
-          </th>
-          <th scope="col" style="width:100px;">
-          </th>
-          <th scope="col" style="width:100px;">
-          </th>
-          <th scope="col" style="width:60px;"></th>
-        </tr>
-      </thead>
-    </table>
-
-  </div>
-</div>
 
 <!-- NOT ASSIGNED -->
 
@@ -60,7 +21,7 @@
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_assigned" style="display:none;">
       No hay tasaciones por asignar
     </div>
-    <table class="table table-sm table-borderless" id="table_not_assigned" style="display:none;font-size:0.8em;">
+    <table class="table table-sm table-borderless table-appraisals" id="table_not_assigned">
       {% include 'main/appraisals_not_assigned.html' %}
     </table>
   </div>
@@ -76,36 +37,50 @@
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_accepted" style="display:none;">
       No tiene tasaciones por aceptar
     </div>
-    <table class="table table-sm table-borderless" id="table_not_accepted" style="display:none;font-size:0.8em;">
+    <table class="table table-sm table-borderless table-appraisals" id="table_not_accepted">
       {% include 'main/appraisals_not_accepted.html' %}      
     </table>
   </div>
 </div>
 
-<!-- ACTIVE -->
+<!-- IN APPRAISAL -->
 
-<div class="card mb-1" id="div_active">
+<div class="card mb-1" id="div_in_appraisal">
   <div class="card-body">
-    <p class="card-title">Tasaciones activas</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_active" style="display: none;">
-      No hay tasaciones activas
+    <p class="card-title">Tasaciones en proceso</p>
+    <div class="alert alert-primary" role="alert" id="div_alert_table_in_appraisal" style="display: none;">
+      No hay tasaciones en proceso
     </div>
-    <table class="table table-sm table-borderless" id="table_active" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_active.html' %}
+    <table class="table table-sm table-borderless table-appraisals" id="table_in_appraisal">
+      {% include 'main/appraisals_in_appraisal.html' %}
     </table>
   </div>
 </div>
 
-<!-- FINISHED -->
+<!-- IN REVISION -->
 
-<div class="card mb-4" id="div_finished">
+<div class="card mb-1" id="div_in_revision">
   <div class="card-body">
-    <p class="card-title">Tasaciones finalizadas</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_finished" style="display: none;">
-      No hay tasaciones finalizadas
+    <p class="card-title">Tasaciones en visación</p>
+    <div class="alert alert-primary" role="alert" id="div_alert_table_in_revision" style="display: none;">
+      No hay tasaciones en visación
     </div>
-    <table class="table table-sm table-borderless" id="table_finished" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_finished.html' %}
+    <table class="table table-sm table-borderless" id="table_in_revision" style="display:none;font-size:0.8em;">
+      {% include 'main/appraisals_table_in_revision.html' %}
+    </table>
+  </div>
+</div>
+
+<!-- SENT -->
+
+<div class="card mb-4" id="div_sent">
+  <div class="card-body">
+    <p class="card-title">Tasaciones enviadas</p>
+    <div class="alert alert-primary" role="alert" id="div_alert_table_sent" style="display: none;">
+      No hay tasaciones enviadas
+    </div>
+    <table class="table table-sm table-borderless" id="table_sent" style="display:none;font-size:0.8em;">
+      {% include 'main/appraisals_table_sent.html' %}
     </table>
   </div>
 </div>
@@ -114,36 +89,30 @@
 
 </div>
 
+<script src="{% static 'main/js/tools.js' %}" type="text/javascript"></script>
+
+<script src="{% static 'main/js/search.js' %}" type="text/javascript"></script>
+
+<script src="{% static 'main/js/logbook.js' %}" type="text/javascript"></script>
+
 <script>
 
-  function buttonClick(btn,hide_text) {
-    // Remove notification if it has
-    btn.removeClass('btn-not');
-    btn.find('.notification').fadeOut();
-    // Activate loading wheel
-    btn.find('.ld').show();
-    // Deactivate icon
-    btn.find('.icon').hide();
-    btn.prop('disabled', true);
-    if (hide_text) {
-      btn.find('.text').hide()
-    }
+  function addRow(table_name, appraisal_id, html) {
+    // Remove row from table. Takes into account if this is
+    // the last row remaining, in that case it hides the whole
+    // table and shows the no elements alert div.
+    $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name+' tr:last')).slideDown()
+    //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
+    $("#div_alert_"+table_name).fadeOut()
+    $("#"+table_name).fadeIn()
   }
 
-  function buttonIdle(btn) {
-    btn.find('.ld').hide();
-    btn.find('.icon').show();
-    btn.prop('disabled', false);
-    btn.find('.text').show()
-  }
-
-
-  var removeRow = function(table_name,appraisal_id) {
+  function removeRow(table_name, appraisal_id) {
     // Remove row from table. Takes into account if this is
     // the last row remaining, in that case it hides the whole
     // table and shows the no elements alert div.
     var nrows = $("#"+table_name+" tr").length;
-    if (nrows > 2) {
+    if (nrows > 3) {
       $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
     } else {
       $("#"+table_name).fadeOut()
@@ -151,11 +120,27 @@
     }
   }
 
-  var replaceTable = function(table_name,data) {
+  function moveRow(table_from, table_to, appraisal_id) {
+    var url = "{% url 'ajax_get_appraisal_row_url' %}"
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id,'table':table_to},
+      error: function() {
+        alert("Error al cambiar fila.");
+      },
+      success: function (ret) {
+        removeRow(table_from,appraisal_id)
+        addRow(table_to,appraisal_id,ret)
+        assignTableActions();
+      }
+    })
+  }
+
+  function replaceTable(table_name,data) {
     // Replaces a table, usuallhy from data from AJAX. Takes
     // into account the size of the table and hides the 
     // alert of no elements if the table returned has elements.
-    console.log('replaceTable',$("#"+table_name))
     $("#"+table_name).html($.trim(data))
     var nrows = $("#"+table_name+" tr").length;
     if (nrows == 0) {
@@ -165,177 +150,6 @@
       $("#"+table_name).fadeIn()
       $("#div_alert_"+table_name).fadeOut()
     }
-  }
-
-  var assignLogbookModalActions = function() {
-    
-    $("#id_event").unbind()
-    $("#id_event").off()
-    $("#id_event").on("change", function (event) {
-      console.log('a')
-      if ($(this).val() == 3) {
-        $("#div_datetime").slideDown()
-      } else if ($(this).val() == 8) {
-        $("#div_warning_entregada").slideDown()
-      } else {
-        $("#div_datetime").slideUp()
-        $("#div_warning_entregada").slideUp()
-      }
-    })
-
-    $("#btn_comment").unbind()
-    $("#btn_comment").off()
-    $("#btn_comment").on("click", function (event) {
-      // Click of comment button in comment form.
-      event.preventDefault();
-      btn = $(this)
-      buttonClick(btn,hide_text=true)
-      var form = document.getElementById('form_comment');
-      var formData = new FormData(form);
-      var url = $("#form_comment").attr("data-comment-url");
-      var appraisal_id = $("#in_appraisal_id").val()
-      var event = $("#id_event").val()
-      //$('#logbook').find('#loading').show()
-      $.ajax({
-        url: url,
-        type: 'post',
-        data: formData,
-        processData: false,
-        contentType: false,
-        error: function () {
-          buttonIdle(btn)
-          alert("Error al comentar.");
-          return false;
-        },
-        success: function (data) {
-          buttonIdle(btn)
-          $('#logbook').find('.modal-body').html($.trim(data));
-          $("#in_appraisal_id").val(appraisal_id); // hidden input
-          if (event == 8) {
-            $('#logbook').modal('hide');
-            finish_appraisal(appraisal_id)
-          }
-        },
-        complete: function (data) {
-          assignLogbookModalActions();
-        }
-      });
-    });
-    
-    $(".delete_comment").unbind()
-    $(".delete_comment").off()
-    $(".delete_comment").on('click',function() {
-      var btn = $(this)
-      buttonClick(btn)
-      var comment_id = $(this).data('id');
-      var event = $(this).data('event');
-      var appraisal_id = $(this).data('appraisal-id');
-      var url = $(this).data('delete-comment-url');
-      $.ajax({
-        url: url,
-        type: 'get',
-        data: {'comment_id':comment_id,'appraisal_id':appraisal_id},
-        error: function () {
-          buttonIdle(btn)
-          alert("Error al eliminar comentario.");
-          return false;
-        },
-        success: function (data) {
-          buttonIdle(btn)
-          $('#id_event').empty()
-          for (var i=0; i<data.choices.length; i++) {
-            $('#id_event').append($("<option></option>")
-                    .attr("value",data.choices[i][0])
-                    .text(data.choices[i][1]));
-          }
-          $('#comment_'+data.comment_id).fadeOut()
-          $("#id_event").trigger("change")
-          if (event == 8) {
-            $('#logbook').modal('hide');
-            unfinish_appraisal(appraisal_id)
-          }
-        }
-      });
-    })
-
-    $(".btn_accept").unbind()
-    $(".btn_accept").off()
-    $(".btn_accept").on("click", function (event) {
-      // Button to accept an appraisals that has been requested.
-      var appraisal_id = $(this).val(); // button has id of appraisal
-      var url = "{% url 'ajax_accept_appraisal_url' %}"
-      var btn = $(this)
-      var form = document.getElementById('form_comment');
-      var formData = new FormData(form);
-      btn.find('.ld').toggle();
-      btn.find('#icon').toggle();
-      btn.prop('disabled', true);
-      $.ajax({
-        url: url,
-        type: 'post',
-        data: formData,
-        processData: false,
-        contentType: false,
-        error: function() {
-          alert("Error al aceptar tasación.");
-          btn.find('.ld').toggle();
-          btn.find('#icon').toggle();
-          btn.prop('disabled',false);
-          return false;
-        },
-        success: function (data) {
-          removeRow("table_not_accepted",appraisal_id)
-          replaceTable("table_active",data)
-          assignTableActions();
-        },
-        complete: function (data) {
-          btn.find('.ld').toggle();
-          btn.find('#icon').toggle();
-          btn.prop('disabled', false);
-          $('#logbook').modal('hide');
-        }
-      })
-    });
-
-    $(".btn_reject").unbind()
-    $(".btn_reject").off()
-    $(".btn_reject").on("click", function (event) {
-      // Button to reject an appraisals that has been requested.
-      var appraisal_id = $(this).val(); // button has id of appraisal
-      var url = "{% url 'ajax_reject_appraisal_url' %}"
-      var btn = $(this)
-      var form = document.getElementById('form_comment');
-      var formData = new FormData(form);
-      event.preventDefault();
-      btn.find('.ld').toggle();
-      btn.find('#icon').toggle();
-      btn.prop('disabled', true);
-      $.ajax({
-        url: url,
-        type: 'post',
-        data: formData,
-        processData: false,
-        contentType: false,
-        error: function() {
-          alert("Error al rechazar tasación.");
-          btn.find('.ld').toggle();
-          btn.find('#icon').toggle();
-          btn.prop('disabled', false);
-          return false;
-        },
-        success: function (data) {
-          removeRow("table_not_accepted",appraisal_id)
-          replaceTable("table_not_assigned",data)
-          assignTableActions();
-        },
-        complete: function (data) {
-          btn.find('.ld').toggle();
-          btn.find('#icon').toggle();
-          btn.prop('disabled', false);
-          $('#logbook').modal('hide');
-        }
-      })
-    });
   }
 
   var finish_appraisal = function(appraisal_id) {
@@ -349,8 +163,7 @@
         return false;
       },
       success: function (ret) {
-        console.log(ret)
-        removeRow("table_active",appraisal_id)
+        removeRow("table_in_appraisal",appraisal_id)
         replaceTable("table_finished",ret)
         assignTableActions();
       },
@@ -368,10 +181,25 @@
         return false;
       },
       success: function (ret) {
-        console.log(ret)
         removeRow("table_finished",appraisal_id)
-        replaceTable("table_active",ret)
+        replaceTable("table_in_appraisal",ret)
         assignTableActions();
+      },
+    })
+  }
+
+  var unvalidate_cliente = function(appraisal_id) {
+    var url = "{% url 'ajax_unvalidate_cliente_url' %}"
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id},
+      error: function () {
+        alert("Error al desvalidar cliente/contacto.");
+        return false;
+      },
+      success: function (ret) {
+        return true;
       },
     })
   }
@@ -386,33 +214,37 @@
       // the appraisal id to have at the post request.
       event.preventDefault();
       btn = $(this)
-      table = btn.closest('table').attr('id')
-      id = btn.val(); // button has id of appraisal
-      buttonClick(btn)
+      table = btn.data('table')
+      $("#logbook").data('table',table)
+      appraisal_id = btn.val(); // button has id of appraisal
+      btn_loading(btn)
       // ajax
       var url = $(this).attr("data-logbook-url");
       $.ajax({
         url: url,
         type: 'get',
-        data: {'id':id},
+        data: {'appraisal_id':appraisal_id,'table':table},
         error: function () {
             alert("Error al abrir la bitacora.");
             return false;
         },
         success: function (data) {
           $('#logbook').find('.modal-body').html($.trim(data));
-          $("#in_appraisal_id").val(id); // hidden input
+          $("#in_appraisal_id").val(appraisal_id); // hidden input
           $('#logbook').modal('show');
-          if (table == "table_not_accepted") {
+          if (table == "not_accepted") {
             $('#logbook').find('#div_event').hide()
             $('#logbook').find('#div_comment_btn').hide()
+            $('#logbook').find('#div_datetime').hide()
             $('#logbook').find('#div_accept_reject').show()
           }
         },
         complete: function (data) {
-          buttonIdle(btn)
+          btn_idle(btn)
           assignLogbookModalActions();
-          $("#id_event").trigger("change")
+          if (table != "not_accepted") {
+            $("#id_event").trigger("change")
+          }
         }
       });
     });
@@ -453,7 +285,6 @@
         success: function (data) {
           btn.removeClass('running');
           btn.prop('disabled', false);
-          console.log(source_table)
           removeRow(source_table,appraisal_id)
           assignTableActions()
           $("#modal_delete").modal('hide')
@@ -524,7 +355,7 @@
         success: function (data) {
           btn.removeClass('running');
           btn.prop('disabled', false);
-          removeRow("table_active",appraisal_id)
+          removeRow("table_in_appraisal",appraisal_id)
           replaceTable("table_not_assigned",data)
           assignTableActions()
           $("#modal_unassign_tasador").modal('hide')
@@ -549,7 +380,7 @@
             return false;
         },
         success: function (data) {
-          replaceTable("table_active",data)
+          replaceTable("table_in_appraisal",data)
           assignTableActions()
           $("#modal_unassign_visador").modal('hide')
         }
@@ -575,18 +406,25 @@
       $("#div_alert_table_not_accepted").toggle()
     }
 
-    appraisals_active_n = {{appraisals_active|length}}
-    if (appraisals_active_n > 0) {
-      $("#table_active").toggle()
+    appraisals_in_appraisal_n = {{appraisals_in_appraisal|length}}
+    if (appraisals_in_appraisal_n > 0) {
+      $("#table_in_appraisal").toggle()
     } else {
-      $("#div_alert_table_active").toggle()
+      $("#div_alert_table_in_appraisal").toggle()
     }
 
-    appraisals_finished_n = {{appraisals_finished|length}}
-    if (appraisals_finished_n > 0) {
-      $("#table_finished").toggle()
+    appraisals_in_revision_n = {{appraisals_in_revision|length}}
+    if (appraisals_in_revision_n > 0) {
+      $("#table_in_revision").toggle()
     } else {
-      $("#div_alert_table_finished").toggle()
+      $("#div_alert_table_in_revision").toggle()
+    }
+
+    appraisals_sent_n = {{appraisals_sent|length}}
+    if (appraisals_sent_n > 0) {
+      $("#table_sent").toggle()
+    } else {
+      $("#div_alert_table_sent").toggle()
     }
 
     appraisals_imported_n = {{appraisals_imported|length}}
@@ -602,13 +440,14 @@
 
     $('#logbook').on('hidden.bs.modal', function (e) {
       // When the logbook modal is closed, we delete the notifications
-      // related to this appraisal. For that we need AJAX
+      // related to this appraisal. We also save the form.
       var appraisal_id = $("#in_appraisal_id").val();
       var url = "{% url 'ajax_logbook_close_url' %}";
+      var form = $('#logbook_form')
       $.ajax({
         url: url,
-        type: 'get',
-        data: {'appraisal_id':appraisal_id},
+        type: 'post',
+        data: form.serialize(),
         error: function () {
             alert("Error al cerrar la bitacora.");
             return false;
@@ -627,7 +466,6 @@
       var url = "{% url 'ajax_logbook_change_event_url' %}";
       $("#id_text").text('hola')
     });
-
   });
 
 </script>
@@ -690,86 +528,7 @@
 </script>
 
 <script>
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
-
-<script>
-  var search_appraisals = function(field,val) {
-    val = val.toLowerCase()
-    if (!val) {
-      return
-    }
-    var row_class = ["tr.not_assigned","tr.not_accepted","tr.active","tr.finished"];
-    for (var i=0; i<row_class.length; i++) {
-      $(row_class[i]).each(function() {
-        var field_value = $(this).find("."+field).html().trim();
-        console.log(field_value)
-        field_value = field_value.toLowerCase()
-        if (field_value.indexOf(val) < 0) {
-          $(this).hide()
-        }
-      });
-    }
-  }
-  var search_all = function() {
-    $("tr.not_assigned").each(function() {
-      $(this).show()
-    })
-    $("tr.not_accepted").each(function() {
-      $(this).show()
-    })
-    $("tr.active").each(function() {
-      $(this).show()
-    })
-    $("tr.finished").each(function() {
-      $(this).show()
-    })
-    val = $("#buscar_id").val()
-    search_appraisals('id',val)
-    val = $("#buscar_solicitante").val()
-    search_appraisals('solicitante',val)
-    val = $("#buscar_solicitanteCodigo").val()
-    search_appraisals('solicitanteCodigo',val)
-    val = $("#buscar_address").val()
-    search_appraisals('address',val)
-    val = $("#buscar_tasador").val()
-    search_appraisals('tasador',val)
-    val = $("#buscar_visador").val()
-    search_appraisals('visador',val)
-  }
-  $("#buscar_id").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_solicitante").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_solicitante").on('change',function() {
-    search_all()
-  })
-  $("#buscar_solicitanteCodigo").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_solicitanteCodigo").on('change',function() {
-    search_all()
-  })
-  $("#buscar_address").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_address").on('change',function() {
-    search_all()
-  })
-  $("#buscar_tasador").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_tasador").on('change',function() {
-    search_all()
-  })
-  $("#buscar_visador").on('keyup',function() {
-    search_all()
-  })
-  $("#buscar_visador").on('change',function() {
-    search_all()
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
   })
 </script>

@@ -17,7 +17,10 @@ urlpatterns = [
     path('ajax/unassign_tasador/', views.ajax_unassign_tasador, name='ajax_unassign_tasador_url'),
     path('ajax/unassign_visador/', views.ajax_unassign_visador, name='ajax_unassign_visador_url'),
     path('ajax/comment/', views.ajax_comment, name='ajax_comment_url'),
+    path('ajax/validate_cliente/', views.ajax_validate_cliente, name='ajax_validate_cliente_url'),
+    path('ajax/unvalidate_cliente/', views.ajax_unvalidate_cliente, name='ajax_unvalidate_cliente_url'),
     path('ajax/delete_comment/', views.ajax_delete_comment, name='ajax_delete_comment_url'),
     path('ajax/finish_appraisal/', views.ajax_finish_appraisal, name='ajax_finish_appraisal_url'),
     path('ajax/unfinish_appraisal/', views.ajax_unfinish_appraisal, name='ajax_unfinish_appraisal_url'),
+    path('ajax/get_appraisal_row/',views.ajax_get_appraisal_row,name="ajax_get_appraisal_row_url")
 ]

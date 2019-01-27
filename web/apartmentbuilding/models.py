@@ -20,3 +20,8 @@ class ApartmentBuilding(models.Model):
 	generalDescription = models.TextField("Descripcion general",max_length=10000,default="",null=True,blank=True)
 
 	builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)
+
+	@property
+	def propertyTypeIcon(self):
+		return "fas fa-city"
+	

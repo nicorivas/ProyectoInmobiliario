@@ -60,13 +60,15 @@ INSTALLED_APPS = [
     'viz',
     'evaluation',
     'accounting',
-    'mathfilters'
+    'mathfilters',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -167,6 +169,8 @@ GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
 LOGIN_REDIRECT_URL = '/login/'
 
 LOGOUT_REDIRECT_URL = '/'
+
+INTERNAL_IPS = ['127.0.0.1']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #cambiar cuando exista sistema para enviar correos
 EMAIL_USE_TLS = True

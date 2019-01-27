@@ -46,6 +46,13 @@ class Building(models.Model):
         choices=propertyType_choices,
         default=TYPE_OTRO)
 
+    property_type_icon = {
+        TYPE_TERRENO: "fas fa-mountain",
+        TYPE_CASA: "fas fa-home",
+        TYPE_EDIFICIO: "fas fa-city",
+        TYPE_DEPARTAMENTO: "fas fa-building"
+    }
+
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
 
     marketPrice = models.DecimalField("Precio mercado UF",max_digits=10,decimal_places=2,null=True,blank=True)
