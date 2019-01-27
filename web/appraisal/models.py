@@ -617,3 +617,11 @@ class AppraisalEvaluation(models.Model):
         if self.generalQuality:
             grade += 0.025
         return grade
+
+class AppraiserExpenses(models.Model):
+    description = models.CharField("Descripcion del gasto", null=False, blank=True, max_length=1000)
+    totalPrice = models.IntegerField(default=0, blank=False, null=False)
+    appraisal = models.ForeignKey(Appraisal, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return self.totalPrice
