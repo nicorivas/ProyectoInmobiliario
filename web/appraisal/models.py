@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from realestate.models import RealEstate
+from realestate.models import RealEstate, Price
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.utils.functional import cached_property
@@ -101,7 +101,7 @@ class Appraisal(models.Model):
 
     real_estates = models.ManyToManyField(RealEstate)
     real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
-    property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
+    property_main = models.ForeignKey(AppProperty,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
 
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
@@ -445,6 +445,10 @@ class Appraisal(models.Model):
                 buildings.append(bld)
         return buildings
 
+    def getAppraisalPrice(self):
+        precios = Price.objects.get_related
+        return
+
     class Meta:
         app_label = 'appraisal'
         permissions = (
@@ -459,8 +463,8 @@ class Appraisal(models.Model):
 
 class AppProperty(models.Model):
     
-    property_type = models.PositiveIntegerField(choices=Building.propertyType_choices,default=Building.TYPE_OTRO);
-    property_id = models.PositiveIntegerField();
+    property_type = models.PositiveIntegerField(choices=Building.propertyType_choices,default=Building.TYPE_OTRO)
+    property_id = models.PositiveIntegerField()
     appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
 
     def is_apartment(self):
@@ -617,6 +621,7 @@ class AppraisalEvaluation(models.Model):
         if self.generalQuality:
             grade += 0.025
         return grade
+
 
 class AppraiserExpenses(models.Model):
     description = models.CharField("Descripcion del gasto", null=False, blank=True, max_length=1000)
