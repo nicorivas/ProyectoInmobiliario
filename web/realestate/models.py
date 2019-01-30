@@ -7,6 +7,8 @@ from building.models import Building
 from house.models import House
 from apartmentbuilding.models import ApartmentBuilding
 from apartment.models import Apartment
+from appraisal.models import Appraisal
+from datetime import date
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 class Asset(models.Model):
@@ -386,3 +388,38 @@ class RealEstate(models.Model):
             return "condominium"
         else:
             return None
+
+
+class Price(models.Model):
+
+    #Actualizar si se cambia algo en Building
+
+    price_UF = models.DecimalField("Precio UF", max_digits=10, decimal_places=2, null=True, blank=True)
+    price_Peso = models.IntegerField("Precio Peso", default=0, blank=False, null=False)
+    property_id = models.PositiveIntegerField()
+    property_type = models.PositiveIntegerField(choices=Building.propertyType_choices, default=Building.TYPE_OTRO)
+    appraisal = models.ForeignKey(Appraisal, verbose_name="Tasacion", on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateField(default=date.today, blank=True, null=True)
+
+    TYPE_BLANK = 0
+    TYPE_MARKET = 1
+    TYPE_APPRAISAL = 2
+    TYPE_CONSERVADOR = 3
+
+    pricetype_choices = [
+        (TYPE_MARKET, "Precio de Mercado"),
+        (TYPE_APPRAISAL, "Precio de Tasación"),
+        (TYPE_CONSERVADOR, "Precio Conservador de Bienes Raíces"),
+        (TYPE_BLANK, "----")
+    ]
+    price_Type = models.PositiveIntegerField(choices=pricetype_choices, default=TYPE_BLANK)
+
+    def get_property(self):
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return Apartment.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_CASA:
+            return House.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_EDIFICIO:
+            return ApartmentBuilding.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_TERRENO:
+            return Terrain.objects.get(id=self.property_id)
