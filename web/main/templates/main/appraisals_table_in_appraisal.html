@@ -1,20 +1,20 @@
 {% load custom_tags %}
 
 <thead>
-  {% with state=3 %}
+  {% with state=2 %}
   {% include 'main/appraisals_table_header.html' %}
   {% endwith %}
 </thead>
 <tbody>
   <tr>
-    {% with state=3 %}
+    {% with state=1 %}
     {% include 'main/appraisals_table_search.html' %}
     {% endwith %}
   </tr>
-  {% for appraisal in appraisals_in_revision %}
+  {% for appraisal in appraisals_in_appraisal %}
   {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
-  <tr class='appraisal in_revision {{hna|yesno:"notification,"}}' id="tr_table_in_revision-{{appraisal.id}}">
-    {% include 'main/appraisals_table_in_revision_tr.html' %}
+  <tr class='appraisal in_appraisal {{hna|yesno:"notification,"}}' id="tr_table_in_appraisal-{{appraisal.id}}">
+    {% include 'main/appraisals_table_in_appraisal_tr.html' %}
   </tr>
   {% endfor %}
 </tbody>

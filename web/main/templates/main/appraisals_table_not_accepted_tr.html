@@ -1,0 +1,60 @@
+<td>
+  <small><span class="id">{{ appraisal.id }}</span></small>
+</td>
+<td>
+  <span class="solicitante">{{ appraisal.solicitanteVerboseShort }}</span>
+</td>
+<td>
+  <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
+</td>
+<td class="propertyType" style="text-align:center;">
+    {% include 'main/td_property_type_icon.html' %}
+</td>
+<td>
+  <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
+    {{ appraisal.address_no_region }}
+  </a>
+</td>
+<td>
+  <div class="row">
+    <div class="col-auto">
+      <span style="vertical-align: middle;" class="tasadorUser">
+      {% if appraisal.tasadorUser %}
+        {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
+      {% else %}
+        -
+      {% endif %}
+      </span>
+    </div>
+  </div>
+</td>
+<td>
+  <div class="row">
+    <div class="col-auto">
+      <span style="vertical-align: middle;" class="visadorUser">
+      {% if appraisal.visadorUser %}
+        {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
+      {% else %}
+        -
+      {% endif %}
+      </span>
+    </div>
+  </div>
+</td>
+<td class="Creada">
+  {{appraisal.timeCreated | date:"d/m/Y"}}
+</td>
+<td>
+{% if appraisal.daysLeft > 3 %}
+  <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+{% elif appraisal.daysLeft > 1 %}
+  <p style="margin-bottom:0em;" class="text-warning font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+{% else %}
+  <p style="margin-bottom:0em;" class="text-danger font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
+{% endif %}
+</td>
+<td style="text-align:right;">
+  {% with table="not_accepted" %}
+    {% include 'main/btn_logbook.html' %}
+  {% endwith %}
+</td>

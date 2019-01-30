@@ -96,9 +96,9 @@
       </div>
       <div class="col-10" style="padding:0em;">
         <p>
-          <input name="solicitante" class="edit_contact" value="{{appraisal.solicitanteEjecutivo|default_if_none:""}}" placeholder="Nombre" style="width:240px">
-          <input name="solicitanteEmail" class="edit_contact" value="{{appraisal.solicitanteEjecutivoEmail|default_if_none:""}}" placeholder="Email" style="width:180px">
-          <input name="solicitanteTelefono" class="edit_contact" value="{{appraisal.solicitanteEjecutivoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px">
+          <input name="solicitanteEjecutivo" class="edit_contact" value="{{appraisal.solicitanteEjecutivo|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="solicitanteEjecutivoEmail" class="edit_contact" value="{{appraisal.solicitanteEjecutivoEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="solicitanteEjecutivoTelefono" class="edit_contact" value="{{appraisal.solicitanteEjecutivoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
         </p>
       </div>
       <div class="col-2" style="text-align:right;">
@@ -106,59 +106,45 @@
       </div>
       <div class="col-8" style="padding:0em;">
         <p>
-          <input name="cliente" class="edit_contact edit_contact_cliente" value="{{appraisal.cliente|default_if_none:""}}" placeholder="Nombre" style="width:240px;" {{appraisal.clienteValidado|yesno:"readonly,"}}>
-          <input name="clienteEmail" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.clienteValidado|yesno:"readonly,"}}>
-          <input name="clienteTelefono" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.clienteValidado|yesno:"readonly,"}}>
+          <input name="cliente" class="edit_contact edit_contact_cliente" value="{{appraisal.cliente|default_if_none:""}}" placeholder="Nombre" style="width:240px;" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="clienteEmail" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="clienteTelefono" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
         </p>
       </div>
       <div class="col-2">
-        <!--
-        {% if perms.appraisal.validate_contact %}
-          {% with appraisal.clienteValidado as validated %}
-            {% with type=1 id="btn_validate_cliente"%}
-              {% include 'main/btn_validate.html' %}
-            {% endwith %}
-          {% endwith %}
-        {% endif %}
-        -->
+        {% if perms.appraisal.can_validate_contacts %}
         <div class="form-check" style="padding-top:4px">
           <input type="checkbox" class="form-check-input btn_validate" data-type="1" id="exampleCheck1" {{appraisal.clienteValidado|yesno:"checked,"}}>
           <label class="form-check-label" for="exampleCheck1">Validado</label>
         </div>
+        {% endif %}
       </div>
       <div class="col-2" style="text-align:right;">
         <span style="vertical-align:-webkit-baseline-middle"><b>Contacto</b></span>
       </div>
       <div class="col-8" style="padding:0em;">
         <p>
-          <input name="contacto" class="edit_contact edit_contact_contacto" value="{{appraisal.contacto|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{appraisal.contactoValidado|yesno:"readonly,"}}>
-          <input name="contactoEmail" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.contactoValidado|yesno:"readonly,"}}>
-          <input name="contactoTelefono" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.contactoValidado|yesno:"readonly,"}}>
+          <input name="contacto" class="edit_contact edit_contact_contacto" value="{{appraisal.contacto|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="contactoEmail" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="contactoTelefono" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
         </p>
       </div>
       <div class="col-2">
-        <!--
-        {% if perms.appraisal.validate_contact %}
-          {% with appraisal.contactoValidado as validated %}
-            {% with type=2 id="btn_validate_contacto"%}
-              {% include 'main/btn_validate.html' %}
-            {% endwith %}
-          {% endwith %}
-        {% endif %}
-        -->
+        {% if perms.appraisal.can_validate_contacts %}
         <div class="form-check" style="padding-top:4px">
           <input type="checkbox" class="form-check-input btn_validate" data-type="2" id="exampleCheck1" {{appraisal.contactoValidado|yesno:"checked,"}}>
           <label class="form-check-label" for="exampleCheck1">Validado</label>
         </div>
+        {% endif %}
       </div>
       <div class="col-2" style="text-align:right;">
         <span style="vertical-align:-webkit-baseline-middle"><b>Propietario/a</b></span>
       </div>
       <div class="col-10" style="padding:0em;">
         <p>
-          <input name="propietario" class="edit_contact" value="{{appraisal.propietario|default_if_none:""}}" placeholder="Nombre" style="width:240px">
-          <input name="propietarioEmail" class="edit_contact" value="{{appraisal.propietarioEmail|default_if_none:""}}" placeholder="Email" style="width:180px">
-          <input name="propietarioTelefono" class="edit_contact" value="{{appraisal.propietarioTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px">
+          <input name="propietario" class="edit_contact" value="{{appraisal.propietario|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="propietarioEmail" class="edit_contact" value="{{appraisal.propietarioEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+          <input name="propietarioTelefono" class="edit_contact" value="{{appraisal.propietarioTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
         </p>
       </div>
     </div>
@@ -170,27 +156,33 @@
     <div class="col-12">
 
       <form id="form_comment" data-comment-url="{% url 'ajax_comment_url' %}">
-
         {% csrf_token %}
+
         <input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
-        <div class="form-group" id="div_event">
-          {{ form_comment.event.label_tag}}
-          {{ form_comment.event }}
-        </div>
-        <div class="form-group" id="div_datetime" style="display:none;">
-          {{ form_comment.datetime.label_tag }}
-          <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-            {{ form_comment.datetime }}
-            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group" id="div_event">
+              <small>{{ form_comment.event.label_tag}}</small>
+              {{ form_comment.event }}
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group" id="div_datetime" style="display:none;">
+              <small>{{ form_comment.datetime.label_tag }}</small>
+              <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                {{ form_comment.datetime }}
+                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="alert alert-warning" id="div_warning_incidencia" style="display:none;">
-          La tasación se marcará en conflicto
+        <div class="alert alert-warning" id="div_warning_incidencia" style="display:none;padding:0.2em 1em 0.2em 1em;">
+          <small>La tasación se marcará en conflicto</small>
         </div>
-        <div class="alert alert-warning" id="div_warning_entregada" style="display:none;">
-          La tasación se marcará como finalizada
+        <div class="alert alert-warning" id="div_warning_entregada" style="display:none;padding:0.2em 1em 0.2em 1em;">
+          <small>La tasación se marcará como finalizada</small>
         </div>
         <script type="text/javascript">
           $(function () {
@@ -206,12 +198,12 @@
           });
         </script>
         <div class="form-group" id="div_comment">
-          {{ form_comment.text.label_tag }}
+          <small>{{ form_comment.text.label_tag }}</small>
           {{ form_comment.text }}
         </div>
         <div class="form-group row" id="div_comment_btn">
           <div class="col-12">
-            <button type="button" class="btn btn-dark btn-block" name="btn_comment" id="btn_comment">
+            <button type="button" class="btn btn-dark btn-sm btn-block" name="btn_comment" id="btn_comment">
               <span class="text">Registrar evento</span>
               <div class="ld ld-ring ld-spin" style="display:none;"></div>
             </button>

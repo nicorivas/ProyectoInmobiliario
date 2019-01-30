@@ -1,24 +1,26 @@
-<td style="width:30px;padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_id"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="id" placeholder=""></input>
 </td>
-<td style="width:100px;padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_solicitante"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="solicitante" placeholder=""></input>
 </td>
-<td style="width:80px;padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_solicitanteCodigo"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="solicitanteCodigo" placeholder=""></input>
 </td>
-<td style="width:20px;padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_tipo"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="propertyType" placeholder=""></input>
 </td>
-<td style="width:200px;padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_address"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="address" placeholder=""></input>
 </td>
-<td style="padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_tasador"></input>
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="tasadorUser" placeholder=""></input>
 </td>
-<td style="padding:0em 0.5em 0em 0em;">
-  <input class="form-control form-control-sm search" placeholder="" id="buscar_visador"></input>
+{% if state != 2 %}
+<td class="search">
+  <input class="form-control form-control-sm search" data-field="visadorUser" placeholder=""></input>
 </td>
+{% endif %}
 <td>
 </td>
 <td>

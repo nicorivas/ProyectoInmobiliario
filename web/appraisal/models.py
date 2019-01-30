@@ -103,9 +103,9 @@ class Appraisal(models.Model):
     real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
     property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
 
+    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
-    timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
@@ -576,9 +576,28 @@ class Comment(models.Model):
     @property
     def incidencia(self):
         return self.event == self.EVENT_INCIDENCIA
+    
     @property
     def deletable(self):
-        return self.event != self.EVENT_TASACION_INGRESADA
+        return self.event != self.EVENT_TASACION_INGRESADA and \
+               self.event != self.EVENT_CONTACTO_VALIDADO and \
+               self.event != self.EVENT_CONTACTO_INVALIDADO and \
+               self.event != self.EVENT_CLIENTE_VALIDADO and \
+               self.event != self.EVENT_CLIENTE_INVALIDADO and \
+               self.event != self.EVENT_CLIENTE_VALIDADO and \
+               self.event != self.EVENT_SOLICITUD_ACEPTADA and \
+               self.event != self.EVENT_SOLICITUD_RECHAZADA and \
+               self.event != self.EVENT_TASADOR_SOLICITADO and \
+               self.event != self.EVENT_TASADOR_DESASIGNADO and \
+               self.event != self.EVENT_VISADOR_ASIGNADO and \
+               self.event != self.EVENT_VISADOR_DESASIGNADO
+
+    @property
+    def small(self):
+        return self.event == self.EVENT_CONTACTO_VALIDADO or \
+               self.event == self.EVENT_CONTACTO_INVALIDADO or \
+               self.event == self.EVENT_CLIENTE_VALIDADO or \
+               self.event == self.EVENT_CLIENTE_INVALIDADO
     
     def hasText(self):
         if self.text == "" or self.text == None:
@@ -587,16 +606,17 @@ class Comment(models.Model):
             return True
 
 class AppraisalEvaluation(models.Model):
+    
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
-    completeness = models.BooleanField("Aceptación del informe completo (50%)", blank=True, null=False, default=True)
-    onTime = models.BooleanField("Entrega a tiempo (25%)", blank=True, null=False, default=True)
-    correctSurface = models.BooleanField("Superficies correctas -hasta un 5% de error- (15%)", blank=True,
+    completeness = models.BooleanField("Informe completo", blank=True, null=False, default=True)
+    onTime = models.BooleanField("Entrega a tiempo", blank=True, null=False, default=True)
+    correctSurface = models.BooleanField("Superficies correctas", blank=True,
                                          null=False, default=True)
-    completeNormative = models.BooleanField("Normativa Completa y correcta (5%)", blank=True, null=False, default=True)
-    homologatedReferences = models.BooleanField("Referencias Homologables si las hubieran (2,5%)", blank=True,
+    completeNormative = models.BooleanField("Normativa completa y correcta", blank=True, null=False, default=True)
+    homologatedReferences = models.BooleanField("Referencias homologables", blank=True,
                                                 null=False, default=True)
-    generalQuality = models.BooleanField("Calidad General -peso, imagenes claras configuración- (2,5%)",
+    generalQuality = models.BooleanField("Buena calidad general",
                                          blank=True,null=False, default=True)
     commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)
     commentFeedback = models.CharField("Feedback de la tasación", null=False, blank=True, max_length=500)

@@ -496,11 +496,11 @@ class FormDocuments(forms.Form):
 
 class FormComment(forms.Form):
     text = forms.CharField(label='Comentario',max_length=500,widget=forms.Textarea,required=False)
-    text.widget.attrs.update({'class':"form-control",'rows':3})
+    text.widget.attrs.update({'class':"form-control form-control-sm",'rows':3})
     event = forms.ChoiceField(choices=Comment.event_choices,label='Evento',required=True)
-    event.widget.attrs.update({'class':"form-control"})
+    event.widget.attrs.update({'class':"form-control form-control-sm"})
     datetime = forms.DateTimeField(label="Fecha y hora",required=False,
         widget=forms.DateTimeInput(
-            attrs={'class': "form-control datetimepicker-input",
+            attrs={'class': "form-control form-control-sm datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
     datetime.input_formats = ['%d/%m/%Y %H:%M']

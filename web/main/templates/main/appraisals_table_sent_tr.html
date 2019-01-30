@@ -1,13 +1,13 @@
-<td class="id">
-  <small>{{ appraisal.id }}</small>
+<td>
+  <small><span class="id">{{ appraisal.id }}</span></small>
 </td>
-<td class="solicitante">
-  {{ appraisal.solicitanteVerboseShort }}
+<td>
+  <span class="solicitante">{{ appraisal.solicitanteVerboseShort }}</span>
 </td>
-<td class="solicitanteCodigo">
-  <small>{{ appraisal.solicitanteCodigo }}</small>
+<td>
+  <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
 </td>
-<td style="text-align:center;">
+<td class="propertyType" style="text-align:center;">
   {% include 'main/td_property_type_icon.html' %}
 </td>
 <td class="address">
@@ -16,7 +16,7 @@
   </a>
 </td>
 <td>
-  <span style="vertical-align: middle;" class="tasador">
+  <span style="vertical-align: middle;" class="tasadorUser">
     {% if appraisal.tasadorUser %}
       {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
     {% else %}
@@ -34,4 +34,7 @@
   {% if perms.appraisal.assign_visador %}
     {% include 'main/btn_evaluate.html' %}
   {% endif %}
+  {% with class="btn_archive_appraisal_modal" %}
+    {% include 'main/btn_archive.html' %}
+  {% endwith %}
 </td>

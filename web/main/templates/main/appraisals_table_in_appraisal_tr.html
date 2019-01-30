@@ -1,17 +1,21 @@
 <td>
-  <small><span class="id">{{ appraisal.id }}</span></small>
+  <small>
+    <span class="id">{{ appraisal.id }}</span>
+  </small>
 </td>
 <td>
   <span class="solicitante">{{ appraisal.solicitanteVerboseShort }}</span>
 </td>
 <td>
-  <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
+  <small>
+    <span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span>
+  </small>
 </td>
-<td class="propertyType" style="text-align:center;">
-  {% include 'main/td_property_type_icon.html' %}
+<td style="text-align:center;">
+  <span class="propertyType">{% include 'main/td_property_type_icon.html' %}</span>
 </td>
 <td>
-  <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
+  <a class="address" href="{{appraisal.url}}" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
     {{ appraisal.address_no_region }}
   </a>
 </td>
@@ -27,7 +31,7 @@
       </span>
     </div>
     {% if perms.appraisal.assign_tasador %}
-    {% if appraisal.in_revision %}
+    {% if appraisal.in_appraisal %}
     <div class="col text-right">
       <button type="button" class="btn btn-sm btn-light btn_unassign_tasador_modal" data-toggle="modal" data-target="#modal_unassign_tasador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
         remove_circle_outline
@@ -51,12 +55,7 @@
     {% if perms.appraisal.assign_visador %}
     {% if appraisal.in_appraisal %}
     <div class="col text-right">
-      {% if appraisal.visadorUser %}
-      <button type="button" class="btn btn-sm btn-light btn_unassign_visador_modal" data-toggle="modal" data-target="#modal_unassign_visador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        remove_circle_outline
-      </button>
-      {% endif %}
-      {% with class="btn_assign_tasador_modal" %}
+      {% with class="btn_assign_visador_modal" %}
         {% include 'main/btn_assign_user.html' %}
       {% endwith %}
     </div>
@@ -84,7 +83,7 @@
   {% endif %}
 </td>
 <td style="text-align:right;">
-  {% with table="in_revision" %}
+  {% with table="in_appraisal" %}
     {% include 'main/btn_logbook.html' %}
   {% endwith %}
 </td>

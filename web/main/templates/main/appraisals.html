@@ -5,6 +5,13 @@
 <script src="{% static "main/js/modal_assign_visador.js" %}" type="text/javascript"></script>
 <script>
   comment_class = {{comment_class|safe}}
+  ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
+  ajax_assign_visador_modal_url = "{% url 'ajax_assign_visador_modal_url' %}";
+  ajax_assign_tasador_url = "{% url 'ajax_assign_tasador_url' %}";
+  ajax_assign_visador_url = "{% url 'ajax_assign_visador_url' %}";
+  ajax_accept_appraisal_url = "{% url 'ajax_accept_appraisal_url' %}";
+  ajax_reject_appraisal_url = "{% url 'ajax_reject_appraisal_url' %}";
+  ajax_validate_cliente_url = "{% url 'ajax_validate_cliente_url' %}"
 </script>
 
 {% load custom_tags %}
@@ -13,7 +20,7 @@
 
 <!-- NOT ASSIGNED -->
 
-{% if request.user|has_group:"asignador" or user.is_superuser %} 
+{% if "asignador" in groups or "visador" in groups or user.is_superuser %} 
 
 <div class="card mb-1" id="div_not_assigned">
   <div class="card-body">
@@ -21,8 +28,8 @@
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_assigned" style="display:none;">
       No hay tasaciones por asignar
     </div>
-    <table class="table table-sm table-borderless table-appraisals" id="table_not_assigned">
-      {% include 'main/appraisals_not_assigned.html' %}
+    <table class="table table-sm table-borderless table-appraisals" id="table_not_assigned" style="display:none;font-size:0.8em;">
+      {% include 'main/appraisals_table_not_assigned.html' %}
     </table>
   </div>
 </div>
@@ -35,10 +42,10 @@
   <div class="card-body">
     <p class="card-title">Tasaciones por aceptar</p>
     <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_accepted" style="display:none;">
-      No tiene tasaciones por aceptar
+      No hay tasaciones por aceptar
     </div>
-    <table class="table table-sm table-borderless table-appraisals" id="table_not_accepted">
-      {% include 'main/appraisals_not_accepted.html' %}      
+    <table class="table table-sm table-borderless table-appraisals" id="table_not_accepted" style="display:none;font-size:0.8em;">
+      {% include 'main/appraisals_table_not_accepted.html' %}      
     </table>
   </div>
 </div>
@@ -51,8 +58,8 @@
     <div class="alert alert-primary" role="alert" id="div_alert_table_in_appraisal" style="display: none;">
       No hay tasaciones en proceso
     </div>
-    <table class="table table-sm table-borderless table-appraisals" id="table_in_appraisal">
-      {% include 'main/appraisals_in_appraisal.html' %}
+    <table class="table table-sm table-borderless table-appraisals" id="table_in_appraisal" style="display:none;font-size:0.8em;">
+      {% include 'main/appraisals_table_in_appraisal.html' %}
     </table>
   </div>
 </div>
@@ -65,7 +72,7 @@
     <div class="alert alert-primary" role="alert" id="div_alert_table_in_revision" style="display: none;">
       No hay tasaciones en visación
     </div>
-    <table class="table table-sm table-borderless" id="table_in_revision" style="display:none;font-size:0.8em;">
+    <table class="table table-sm table-borderless table-appraisals" id="table_in_revision" style="display:none;font-size:0.8em;">
       {% include 'main/appraisals_table_in_revision.html' %}
     </table>
   </div>
@@ -101,7 +108,7 @@
     // Remove row from table. Takes into account if this is
     // the last row remaining, in that case it hides the whole
     // table and shows the no elements alert div.
-    $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name+' tr:last')).slideDown()
+    $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
     //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
     $("#div_alert_"+table_name).fadeOut()
     $("#"+table_name).fadeIn()
@@ -137,6 +144,11 @@
     })
   }
 
+  function replaceRow(table_name, appraisal_id, html) {
+    // Replace row
+    $("#tr_"+table_name+"-"+appraisal_id).html(html)
+  }
+
   function replaceTable(table_name,data) {
     // Replaces a table, usuallhy from data from AJAX. Takes
     // into account the size of the table and hides the 
@@ -150,42 +162,6 @@
       $("#"+table_name).fadeIn()
       $("#div_alert_"+table_name).fadeOut()
     }
-  }
-
-  var finish_appraisal = function(appraisal_id) {
-    var url = "{% url 'ajax_finish_appraisal_url' %}"
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: {'appraisal_id':appraisal_id},
-      error: function () {
-        alert("Error al finalizar tasación.");
-        return false;
-      },
-      success: function (ret) {
-        removeRow("table_in_appraisal",appraisal_id)
-        replaceTable("table_finished",ret)
-        assignTableActions();
-      },
-    })
-  }
-
-  var unfinish_appraisal = function(appraisal_id) {
-    var url = "{% url 'ajax_unfinish_appraisal_url' %}"
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: {'appraisal_id':appraisal_id},
-      error: function () {
-        alert("Error al desfinalizar tasación.");
-        return false;
-      },
-      success: function (ret) {
-        removeRow("table_finished",appraisal_id)
-        replaceTable("table_in_appraisal",ret)
-        assignTableActions();
-      },
-    })
   }
 
   var unvalidate_cliente = function(appraisal_id) {
@@ -215,6 +191,7 @@
       event.preventDefault();
       btn = $(this)
       table = btn.data('table')
+      tr = $(this).closest('tr')
       $("#logbook").data('table',table)
       appraisal_id = btn.val(); // button has id of appraisal
       btn_loading(btn)
@@ -231,6 +208,7 @@
         success: function (data) {
           $('#logbook').find('.modal-body').html($.trim(data));
           $("#in_appraisal_id").val(appraisal_id); // hidden input
+          tr.removeClass("notification")
           $('#logbook').modal('show');
           if (table == "not_accepted") {
             $('#logbook').find('#div_event').hide()
@@ -295,10 +273,6 @@
     // --------------------------------------------------------------------------------------------
     // Assign functions are called in the 'not_assigned' table, when
     // the corresponding buttons are clicked.
-    ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
-    ajax_assign_visador_modal_url = "{% url 'ajax_assign_visador_modal_url' %}";
-    ajax_assign_tasador_url = "{% url 'ajax_assign_tasador_url' %}";
-    ajax_assign_visador_url = "{% url 'ajax_assign_visador_url' %}";
     btn_assign_tasador_modal();
     btn_assign_visador_modal();
     btn_assign_tasador();
@@ -369,20 +343,53 @@
       // Button clicked in the modal. Call an AJAX to unassign the tasador
       // of the appraisal, and returns the 'not_assigned' table back,
       // to be replaced.
-      var appraisal_id = $('#modal_unassign_visador_appraisal_id').val();
+      var btn = $(this)
+      var table_id = $('#modal_assign_visador_source_table').val()
+      var appraisal_id = $('#modal_assign_visador_appraisal_id').val();
       var url = "{% url 'ajax_unassign_visador_url' %}";
+      btn_loading(btn)
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id,'table_id':table_id},
+        error: function () {
+            btn_idle(btn)
+            alert("Error al desasignar visador.");
+            return false;
+        },
+        success: function (data) {
+          btn_idle(btn)
+          $("#modal_assign_visador").modal('hide')
+          replaceRow(table_id,appraisal_id,data)
+          assignTableActions()
+        }
+      });
+    });
+
+    $(".btn_evaluate_modal").unbind()
+    $(".btn_evaluate_modal").off()
+    $(".btn_evaluate_modal").on("click", function (event) {
+      // Opens logbook modal, and gets the data of the comments
+      // from an AJAX request. Also changes a hidden input to
+      // the appraisal id to have at the post request.
+      event.preventDefault();
+      var btn = $(this)
+      var appraisal_id = btn.val(); // button has id of appraisal
+      var url = "{% url 'ajax_evaluate_modal_url' %}";
+      btn_loading(btn)
       $.ajax({
         url: url,
         type: 'get',
         data: {'appraisal_id':appraisal_id},
         error: function () {
-            alert("Error al desasignar visador.");
-            return false;
+          btn_idle(btn)
+          alert("Error al abrir modal de evaluación.");
+          return false;
         },
         success: function (data) {
-          replaceTable("table_in_appraisal",data)
-          assignTableActions()
-          $("#modal_unassign_visador").modal('hide')
+          $('#modal_evaluate').html($.trim(data));
+          $("#modal_evaluate").modal('show')
+          btn_idle(btn)
         }
       });
     });
@@ -438,6 +445,30 @@
 
     assignTableActions()
 
+    $('#modal_evaluate').on('hidden.bs.modal', function (e) {
+      // When the logbook modal is closed, we delete the notifications
+      // related to this appraisal. We also save the form.
+      var appraisal_id = $("#in_appraisal_id").val();
+      var url = "{% url 'ajax_evaluate_modal_close_url' %}";
+      var form = $('#evaluate_form')
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+            alert("Error al cerrar la bitacora.");
+            return false;
+        },
+        success: function (data) {
+          // everything is done in the view
+        },
+        complete: function (data) {
+          // everything is done in the view
+        }
+      });
+      return false;
+    })
+
     $('#logbook').on('hidden.bs.modal', function (e) {
       // When the logbook modal is closed, we delete the notifications
       // related to this appraisal. We also save the form.
@@ -489,6 +520,7 @@
 
     //gives appraisal and appraiser id to the input so the view knows wich appraisal and appraiser is receiving
 
+  /*
   $(document).on('click','.evaluateAppraisal',function(){
       var id = $(this).val();
       var id2 = $(this).attr('id');
@@ -525,6 +557,7 @@
           }
         });
       });
+    */
 </script>
 
 <script>

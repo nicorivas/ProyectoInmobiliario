@@ -1,0 +1,122 @@
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Evaluar trabajo de tasación</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+     <form action="" method="post" id="evaluate_form">
+      <input id="appraisal_id" name="appraisal_id" type="hidden" value="{{appraisal.id}}">
+      {% csrf_token %}
+      <table class="table table-borderless" style="display:table;width:600px;margin-left:auto; margin-right:auto;">
+        <thead>
+          <tr>
+            <th scope="col" style="width:300px;">Categoría</th>
+            <th scope="col" style="width:150px;text-align:center;">Porcentaje</th>
+            <th scope="col" style="width:150px;text-align:center;">Cumplió</th>
+          </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+              <td>
+                 {{evaluationForm.completeness.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la tasación posee la información suficiente como para justificar el precio asignado.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                50%
+              </td>
+              <td id="completeness" style="text-align:center;">
+                 {{evaluationForm.completeness}}
+              </td>
+            </tr>
+            <tr>
+             <td>
+                {{evaluationForm.onTime.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la tasación se ha entregado dentro del plazo establecido.">help_outline</i>
+             </td>
+             <td style="text-align:center;">
+                25%
+             </td>
+             <td id="onTime" style="text-align:center;">
+                {{evaluationForm.onTime}}
+             </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.correctSurface.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha ingresado las superficies de la propiedad con un error menor al 5%.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                15%
+              </td>
+              <td id="correctSurface" style="text-align:center;">
+                {{evaluationForm.correctSurface}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.completeNormative.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha incluído todas las normativas relevantes a las que debe ajustarse la propiedad.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                5%
+              </td>
+              <td id="completeNormative" style="text-align:center;">
+                {{evaluationForm.completeNormative}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.generalQuality.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si las imágenes y los textos son de buena calidad.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                2.5%
+              </td>
+              <td id="generalQuality" style="text-align:center;">
+                {{evaluationForm.generalQuality}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.homologatedReferences.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha incluído propiedades similares para determinar el precio por criterio comparativo. Si no aplica, marcar como cumplido.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                2.5%
+              </td>
+              <td id="homologatedReferences" style="text-align:center;">
+                {{evaluationForm.homologatedReferences}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.commentText.label}}
+              </td>
+              <td id="commentText" colspan="2">
+                {{evaluationForm.commentText}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 {{evaluationForm.commentFeedback.label}}
+              </td>
+              <td id="commentFeedback" colspan="2">
+                {{evaluationForm.commentFeedback}}
+              </td>
+            </tr>
+        </tbody>
+      </table>
+      <!--
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button name="btn_evaluate_appraisal" class="btn btn-primary">Evaluar</button>
+      </div>
+      -->
+     </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>

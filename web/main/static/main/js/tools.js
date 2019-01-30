@@ -10,16 +10,17 @@ function btn_loading(btn,hide_text) {
   btn.prop('disabled', true);
   if (hide_text) {
     btn.find('.text').hide()
+    btn.find('.loading_text').show()
   }
 }
 
 function btn_idle(btn) {
-  console.log('btn_idle')
   btn.removeClass('running');
   btn.find('.ld').hide();
   btn.find('.icon').show();
   btn.prop('disabled', false);
   btn.find('.text').show()
+  btn.find('.loading_text').hide()
 }
 
 function join_data(form,element) {

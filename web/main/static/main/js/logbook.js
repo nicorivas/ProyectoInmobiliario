@@ -88,7 +88,7 @@ function assignLogbookModalActions() {
       checked = this.checked
       event.preventDefault();
       var btn = $(this)
-      var url = "{% url 'ajax_validate_cliente_url' %}"
+      var url = ajax_validate_cliente_url
       var appraisal_id = $("#in_appraisal_id").val()
       var type = btn.data('type')
       var data = {'appraisal_id':appraisal_id,'type':type}
@@ -140,19 +140,23 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn)
+        console.log(event,comment_class)
+        // Reset options in list
         $('#id_event').empty()
         for (var i=0; i<data.choices.length; i++) {
           $('#id_event').append($("<option></option>")
                   .attr("value",data.choices[i][0])
                   .text(data.choices[i][1]));
         }
-        $('#comment_'+data.comment_id).slideUp()
-        $("#id_event").trigger("change")
+        // Some things particular to events
         if (event == comment_class['EVENT_ENTREGADO_AL_CLIENTE']) {
           $('#logbook').modal('hide');
           moveRow('table_sent','table_in_revision',appraisal_id)
-        }
-        if (event == comment_class['EVENT_CONTACTO_VALIDADO'] || event == comment_class['EVENT_CLIENTE_VALIDADO']) {
+          $("#id_event").trigger("change")
+        } else if (event == comment_class['EVENT_CONTACTO_VALIDADO'] || 
+                   event == comment_class['EVENT_CLIENTE_VALIDADO'] ||
+                   event == comment_class['EVENT_CONTACTO_INVALIDADO'] ||
+                   event == comment_class['EVENT_CLIENTE_INVALIDADO']) {
           if (event == comment_class['EVENT_CONTACTO_VALIDADO']) {
             btn = $("#btn_validate_contacto")
           } else {
@@ -163,7 +167,11 @@ function assignLogbookModalActions() {
           btn.removeClass('btn-outline-success')
           btn.find('.text').html("Validar")
           btn.prop('disabled', false)
+        } else {
+          $("#id_event").trigger("change")
         }
+        // Remove the comment
+        $('#comment_'+data.comment_id).slideUp()
       }
     });
   })
@@ -173,7 +181,7 @@ function assignLogbookModalActions() {
   $(".btn_accept").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
     var appraisal_id = $(this).val(); // button has id of appraisal
-    var url = "{% url 'ajax_accept_appraisal_url' %}"
+    var url = ajax_accept_appraisal_url
     var btn = $(this)
     var form = document.getElementById('form_comment');
     var formData = new FormData(form);
@@ -212,7 +220,7 @@ function assignLogbookModalActions() {
   $(".btn_reject").on("click", function (event) {
     // Button to reject an appraisals that has been requested.
     var appraisal_id = $(this).val(); // button has id of appraisal
-    var url = "{% url 'ajax_reject_appraisal_url' %}"
+    var url = ajax_reject_appraisal_url
     var btn = $(this)
     var form = document.getElementById('form_comment');
     var formData = new FormData(form);

@@ -1,20 +1,19 @@
 {% load custom_tags %}
 
 <thead>
-  <tr>
-    <th scope="col" style="width:20px">ID</th>
-    <th scope="col" style="width:100px">Cliente</th>
-    <th scope="col" style="width:80px">Código</th>
-    <th scope="col" style="width:20px;text-align:center;">T.</th>
-    <th scope="col" style="width:420px;">Dirección</th>
-    <th scope="col" style="width:120px;">Tasador</th>
-    <th scope="col" style="width:200px;">Entregada</th>
-    <th scope="col" style="width:60px;"></th>
-  </tr>
+  {% with state=4 %}
+    {% include 'main/appraisals_table_header.html' %}
+  {% endwith %}
 </thead>
 <tbody>
+  <tr>
+    {% with state=2 %}
+      {% include 'main/appraisals_table_search.html' %}
+    {% endwith %}
+  </tr>
   {% for appraisal in appraisals_sent %}
-  <tr class="sent" id="tr_table_sent-{{appraisal.id}}">
+  {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
+  <tr class="appraisal sent {{hna|yesno:"notification,"}}" id="tr_table_sent-{{appraisal.id}}">
     {% include 'main/appraisals_table_sent_tr.html' %}
   </tr>
   {% endfor %}

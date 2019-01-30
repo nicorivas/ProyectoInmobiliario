@@ -1,0 +1,17 @@
+{% load custom_tags %}
+
+<thead>
+  {% with state=0 %}
+  {% include 'main/appraisals_table_header.html' %}
+  {% endwith %}
+</thead>
+<tbody>
+  <tr>
+    {% include 'main/appraisals_table_search.html' %}
+  </tr>
+  {% for appraisal in appraisals %}
+  <tr class='appraisal' id="tr_search-{{appraisal.id}}">
+    {% include 'archive/appraisals_search_tr.html' %}
+  </tr>
+  {% endfor %}
+</tbody>
