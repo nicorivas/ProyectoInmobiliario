@@ -394,10 +394,10 @@ class Price(models.Model):
 
     #Actualizar si se cambia algo en Building
 
-    propertyType_choices =  Building.propertyType_choices
-
+    price_UF = models.DecimalField("Precio UF", max_digits=10, decimal_places=2, null=True, blank=True)
+    price_Peso = models.IntegerField("Precio Peso", default=0, blank=False, null=False)
     property_id = models.PositiveIntegerField()
-    property_type = models.PositiveIntegerField(choices=propertyType_choices, default=Building.TYPE_OTRO)
+    property_type = models.PositiveIntegerField(choices=Building.propertyType_choices, default=Building.TYPE_OTRO)
     appraisal = models.ForeignKey(Appraisal, verbose_name="Tasacion", on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateField(default=date.today, blank=True, null=True)
 
@@ -412,7 +412,7 @@ class Price(models.Model):
         (TYPE_CONSERVADOR, "Precio Conservador de Bienes Raíces"),
         (TYPE_BLANK, "----")
     ]
-    priceType = models.PositiveIntegerField(choices=pricetype_choices, default=TYPE_BLANK)
+    price_Type = models.PositiveIntegerField(choices=pricetype_choices, default=TYPE_BLANK)
 
     def get_property(self):
         if self.property_type == Building.TYPE_DEPARTAMENTO:

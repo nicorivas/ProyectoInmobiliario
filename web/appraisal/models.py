@@ -101,7 +101,7 @@ class Appraisal(models.Model):
 
     real_estates = models.ManyToManyField(RealEstate)
     real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
-    property_main = models.ForeignKey(AppProperty,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
+    property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
 
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
@@ -446,8 +446,18 @@ class Appraisal(models.Model):
         return buildings
 
     def getAppraisalPrice(self):
-        precios = Price.objects.get_related
-        return
+        prices = self.price_set.all()
+        totalPrice = 0
+        for price in prices:
+            totalPrice += price.price_UF
+        return totalPrice
+
+    def getTotalAppraisalExpenses(self):
+        expenses = self.appraiserexpenses_set.all()
+        totalexpenses = 0
+        for exp in expenses:
+            totalexpenses += exp.totalPrice
+        return totalexpenses
 
     class Meta:
         app_label = 'appraisal'
@@ -625,8 +635,9 @@ class AppraisalEvaluation(models.Model):
 
 class AppraiserExpenses(models.Model):
     description = models.CharField("Descripcion del gasto", null=False, blank=True, max_length=1000)
-    totalPrice = models.IntegerField(default=0, blank=False, null=False)
+    totalPrice = models.IntegerField("Precio", default=0, blank=False, null=False)
     appraisal = models.ForeignKey(Appraisal, on_delete=models.CASCADE, primary_key=True)
+
 
     def __str__(self):
         return self.totalPrice
