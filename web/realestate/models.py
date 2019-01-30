@@ -7,7 +7,6 @@ from building.models import Building
 from house.models import House
 from apartmentbuilding.models import ApartmentBuilding
 from apartment.models import Apartment
-from appraisal.models import Appraisal
 from datetime import date
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
@@ -398,7 +397,7 @@ class Price(models.Model):
     price_Peso = models.IntegerField("Precio Peso", default=0, blank=False, null=False)
     property_id = models.PositiveIntegerField()
     property_type = models.PositiveIntegerField(choices=Building.propertyType_choices, default=Building.TYPE_OTRO)
-    appraisal = models.ForeignKey(Appraisal, verbose_name="Tasacion", on_delete=models.CASCADE, blank=True, null=True)
+    appraisal = models.ForeignKey("appraisal.Appraisal", verbose_name="Tasacion", on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateField(default=date.today, blank=True, null=True)
 
     TYPE_BLANK = 0

@@ -147,8 +147,6 @@ class Appraisal(models.Model):
     source = models.IntegerField("Fuente de tasación",choices=source_choices,
         default=APPRAISAL,blank=True,null=True)
 
-    price = models.FloatField("Precio tasación",blank=True,null=True)
-
     NONE = ''
     SIN_VISITA = 0
     COMPLETA = 1
@@ -656,7 +654,7 @@ class AppraisalEvaluation(models.Model):
 class AppraiserExpenses(models.Model):
     description = models.CharField("Descripcion del gasto", null=False, blank=True, max_length=1000)
     totalPrice = models.IntegerField("Precio", default=0, blank=False, null=False)
-    appraisal = models.ForeignKey(Appraisal, on_delete=models.CASCADE, primary_key=True)
+    appraisal = models.ForeignKey(Appraisal, on_delete=models.CASCADE, null=True)
 
 
     def __str__(self):
