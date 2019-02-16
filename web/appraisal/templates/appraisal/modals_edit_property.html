@@ -24,10 +24,23 @@
             <div class="form-group">
               {% if terrain %}
               <label>Lote</label>
+              {% elif house %}
+              <label>Casa</label>
               {% elif apartment %}
               <label>Departamento</label>
+              {% elif apartment_building %}
+              <label>Torre</label>
               {% endif %}
               {{form_edit_property.addressNumber2}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row text-center">
+          <div class="col-md-12">
+            <div class="form-check">
+              {{form_edit_property.appraised}}
+              <label class="form-check-label">Tasar propiedad</label>
             </div>
           </div>
         </div>

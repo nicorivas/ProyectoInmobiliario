@@ -14,178 +14,260 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
 
-        <div class="row">
+      <div class="modal-body">
+        
+        <div role="tabable">
+
+        <ul class="nav">
+          <li class="nav-link"><a href="#sugeridas" data-toggle="tab">Sugeridas</a></li>
+          <li class="nav-link active"><a href="#formulario" data-toggle="tab">Formulario</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+        <div class="tab-pane" id="sugeridas">
+          <div class="row mt-4">
+            <div class="col-12">
+                      content 0
+            </div>
+          </div>
+        </div> 
+
+        <div class="tab-pane active" id="formulario">
+
+        <div class="row mt-4">
+          <div class="col-1"></div>
           <div class="col-6">
             <div class="form-group">
               <label>Calle</label>
               {{form_real_estate.addressStreet}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-2">
             <div class="form-group">
               <label>Número</label>
               {{form_real_estate.addressNumber}}
             </div>
           </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6">
+          <div class="col-2">
             <div class="form-group">
               <label>Número 2</label>
               {{form_property.addressNumber2}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-1"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               <label>Comuna</label>
               {{form_real_estate.addressCommune}}
             </div>
           </div>
+          <div class="col-5">
+            <div class="form-group">
+              <label>Región</label>
+              {{form_real_estate.addressRegion}}
+            </div>
+          </div>
+          <div class="col-1"></div>
         </div>
 
         {% if terrain %}
         <div class="row">
+          <div class="col-1"></div>
           <div class="col-4">
             <div class="form-group">
               {{form_property.area.label_tag}}
-              {{form_property.area}}
+              <div class="input-group input-group-sm">
+                {{form_property.area}}
+                <div class="input-group-append">
+                  <span class="input-group-text">{{htmlBits.unitSquaredMeter|safe}}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-4">
+          <div class="col-3">
             <div class="form-group">
               {{form_property.fondo.label_tag}}
-              {{form_property.fondo}}
+              <div class="input-group input-group-sm">
+                {{form_property.fondo}}
+                <div class="input-group-append">
+                  <span class="input-group-text">{{htmlBits.unitMeter|safe}}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-4">
+          <div class="col-3">
             <div class="form-group">
               {{form_property.frente.label_tag}}
-              {{form_property.frente}}
+              <div class="input-group input-group-sm">
+                {{form_property.frente}}
+                <div class="input-group-append">
+                  <span class="input-group-text">{{htmlBits.unitMeter|safe}}</span>
+                </div>
+              </div>
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         <div class="row">
-          <div class="col-6">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               {{form_property.shape.label_tag}}
               {{form_property.shape}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-5">
             <div class="form-group">
               {{form_property.topography.label_tag}}
               {{form_property.topography}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         {% endif %}
 
         {% if house %}
         <div class="row">
-          <div class="col-6">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               {{form_property.bedrooms.label_tag}}
               {{form_property.bedrooms}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-5">
             <div class="form-group">
               {{form_property.bathrooms.label_tag}}
               {{form_property.bathrooms}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         <div class="row">
-          <div class="col-6">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               {{form_property.builtSquareMeters.label_tag}}
               {{form_property.builtSquareMeters}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-5">
             <div class="form-group">
               {{form_property.terrainSquareMeters.label_tag}}
               {{form_property.terrainSquareMeters}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         {% endif %}
 
         {% if apartment_building %}
         <div class="row">
-          <div class="col-12">
+          <div class="col-1"></div>
+          <div class="col-10">
             <div class="form-group">
               {{form_property.builtSquareMeters.label_tag}}
               {{form_property.builtSquareMeters}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         {% endif %}
 
         {% if apartment %}
         <div class="row">
+          <div class="col-1"></div>
           <div class="col-4">
             <div class="form-group">
               <label>Piso</label>
               {{form_property.floor}}
             </div>
           </div>
-          <div class="col-4">
+          <div class="col-3">
             <div class="form-group">
               <label>Piesas</label>
               {{form_property.bedrooms}}
             </div>
           </div>
-          <div class="col-4">
+          <div class="col-3">
             <div class="form-group">
               <label>Baños</label>
               {{form_property.bathrooms}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         <div class="row">
-          <div class="col-6">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               <label>Superficie útil</label>
               {{form_property.usefulSquareMeters}}
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-5">
             <div class="form-group">
               <label>Superficie terraza</label>
               {{form_property.terraceSquareMeters}}
             </div>
           </div>
+          <div class="col-1"></div>
         </div>
         {% endif %}
 
-        <div class="form-group">
-          <label>Fuente URL</label>
-          {{form_real_estate.sourceUrl}}
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-10">
+            <div class="form-group">
+              <label>Fuente URL</label>
+              {{form_real_estate.sourceUrl}}
+            </div>
+          </div>
+          <div class="col-1"></div>
         </div>
 
         <div class="row">
-          <div class="col">
+          <div class="col-1"></div>
+          <div class="col-5">
             <div class="form-group">
               <label>Fuente</label>
               {{form_real_estate.sourceName}}
             </div>
           </div>
-          <div class="col">
+          <div class="col-5">
             <div class="form-group">
               <label>Código</label>
               {{form_real_estate.sourceId}}
             </div>
           </div>
+          <div class="col-1"></div>
+        </div>
+        
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-10">
+            <div class="form-group">
+              <label>Precio mercado</label>
+              <div class="input-group input-group-sm">
+                {{form_property.marketPrice}}
+                <div class="input-group-append">
+                  <span class="input-group-text">{{htmlBits.unitUF|safe}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-1"></div>
         </div>
 
-        <div class="form-group">
-          <label>Precio mercado</label>
-          {{form_property.marketPrice}}
         </div>
+        </div>
+      </div>
 
       </div>
 

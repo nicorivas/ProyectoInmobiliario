@@ -85,6 +85,7 @@ def createAppraisal(request,real_estate,rol="",**kwargs):
     comment.save()
     appraisal.comments.add(comment)
     appraisal.real_estates.add(real_estate)
+    appraisal.real_estate_main = real_estate
     appraisal.photos.create(category=Photo.PHOTO_CATEGORY_EMPLAZAMIENTO,fixed=True)
     appraisal.photos.create(category=Photo.PHOTO_CATEGORY_ENTORNO,fixed=True)
     appraisal.photos.create(category=Photo.PHOTO_CATEGORY_FACHADA,fixed=True)

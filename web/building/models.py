@@ -50,7 +50,8 @@ class Building(models.Model):
         TYPE_TERRENO: "fas fa-mountain",
         TYPE_CASA: "fas fa-home",
         TYPE_EDIFICIO: "fas fa-city",
-        TYPE_DEPARTAMENTO: "fas fa-building"
+        TYPE_DEPARTAMENTO: "fas fa-building",
+        TYPE_LOCAL_COMERCIAL: "fas fa-store"
     }
 
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
@@ -301,17 +302,23 @@ class Building(models.Model):
         default=0)
 
     @property
-    def is_apartment(self):
-        # Casting to int is done so that it also works when called in javascript.
-        return int(self.propertyType == Building.TYPE_DEPARTAMENTO)
-
-    @property
     def is_house(self):
         return int(self.propertyType == Building.TYPE_CASA)
 
     @property
+    def is_store(self):
+        return int(self.propertyType == Building.TYPE_LOCAL_COMERCIAL)
+
+    @property
     def is_apartmentbuilding(self):
         return int(self.propertyType == Building.TYPE_EDIFICIO)
+
+    @property
+    def property_id(self):
+        if self.is_house:
+            return self.house.id
+        elif self.is_apartmentbuilding:
+            return self.apartmentbuilding.id
 
     @property
     def generic_name(self):
@@ -325,6 +332,11 @@ class Building(models.Model):
                 return "Casa "+self.house.addressNumber2
             else:
                 return "Casa"
+        elif self.is_store:
+            if self.store.addressNumber2:
+                return "Local comercial "+self.house.addressNumber2
+            else:
+                return "Local comercial"
 
     @property
     def name_or_generic(self):

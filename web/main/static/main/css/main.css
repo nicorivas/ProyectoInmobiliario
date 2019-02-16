@@ -27,3 +27,13 @@ tr.notification
 {
   background:#ffeeba;
 }
+
+tr.conflict
+{
+  background:#fdd;
+}
+
+.inline-icon {
+   vertical-align: bottom;
+   font-size: 20px !important;
+}

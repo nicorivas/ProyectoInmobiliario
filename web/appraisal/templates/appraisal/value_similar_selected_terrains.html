@@ -4,10 +4,10 @@
       <!--<th scope="col">lat/lng</th>-->
       <th scope="col" style="width: 2em;"></th>
       <th scope="col" style="width: 2em;text-align:center;">#</th>
-      <th scope="col" style="width: 25em;text-align:left;">Dirección</th>
+      <th scope="col" style="width: 25em;text-align:left;">Nombre / Dirección</th>
       <th scope="col" style="width: 12em;text-align:left;">Fuente</th>
-      <th scope="col" style="width: 9em;text-align:right;">m<sup>2</sup></th>
-      <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
+      <th scope="col" style="width: 9em;text-align:right;">Superficie {{htmlBits.unitSquaredMeter|safe}}</th>
+      <th scope="col" style="width: 12em;text-align:right;">Precio Mercado {{htmlBits.unitUF|safe}}</th>
       <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup></th>
       <th scope="col" style="width: 18em;text-align:right;">
         <a href="#" class="btn_similar_add_terrain_modal">
@@ -69,10 +69,10 @@
 
     {% else %}
 
-    <tr class="border-bottom">
+    <tr class="border-bottom" style="background:#fff3cd;">
       <td></td>
         <td colspan="7" style="text-align:center;">
-          <span class="badge badge-info">No se han agregado propiedades similares</span>
+          <small>No se han agregado propiedades similares</small>
         </td>
       <td></td>
     </tr>

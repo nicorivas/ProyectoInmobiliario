@@ -30,9 +30,9 @@ def userAppraisals(request):
     except IndexError:
         appraisals = apps.all()
 
-    appraisals_not_assigned = appraisals.filter(state=Appraisal.STATE_NOTASSIGNED).order_by('timeCreated')
-    appraisals_active = appraisals.filter(state=Appraisal.STATE_ACTIVE).order_by('timeCreated')
-    appraisals_finished = appraisals.filter(state=Appraisal.STATE_FINISHED).order_by('timeCreated')
+    appraisals_not_assigned = appraisals.filter(state=Appraisal.STATE_NOT_ASSIGNED).order_by('timeCreated')
+    appraisals_active = appraisals.filter(state=Appraisal.STATE_IN_APPRAISAL).order_by('timeCreated')
+    appraisals_finished = appraisals.filter(state=Appraisal.STATE_SENT).order_by('timeCreated')
     return [appraisals_not_assigned, appraisals_active, appraisals_finished]
 
 def save_appraisalNF(appraisal, request, comment):

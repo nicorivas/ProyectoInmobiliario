@@ -14,8 +14,8 @@
 <div class="form-group row">
   <div class="col-10" style="padding-right:0em;">
     <select class="form-control" id="select_realestate">
-      {% for real_estate in appraisal.real_estates.all %}
-      <option value="{{real_estate.id}}">{{real_estate.address}}</option>
+      {% for id, dict in app_properties.items %}
+      <option value="{{id}}">{{dict.real_estate.address_no_region}}</option>
       {% endfor %}
     </select>
   </div>

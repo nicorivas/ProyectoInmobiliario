@@ -44,6 +44,10 @@ class Apartment(models.Model):
 
     marketPrice = models.DecimalField("Precio mercado",max_digits=10,decimal_places=2,null=True,blank=True)
 
+    @property
+    def real_estate(self):
+        return self.apartment_building.building.real_estate
+
     @property 
     def generic_name(self):
         return "Departamento "+str(self.addressNumber2)
@@ -85,13 +89,14 @@ class Apartment(models.Model):
             x = self.marketPrice/(self.usefulSquareMeters+self.terraceSquareMeters)
             return "{:10.2f}".format(x)
     
+    @property
+    def propertyType(self):
+        return Building.TYPE_DEPARTAMENTO
+
     def propertyTypeIcon(self):
         return "fas fa-building"
 
     class Meta:
         app_label = 'apartment'
         ordering = ['addressNumber2']
-
-    def __init__(self, *args, **kwargs):
-        super(Apartment, self).__init__(*args, **kwargs)
-        self.propertyType=Building.TYPE_DEPARTAMENTO
+        

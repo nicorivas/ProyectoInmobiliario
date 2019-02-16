@@ -42,7 +42,7 @@
   </div>
 </td>
 <td class="Creada">
-  {{appraisal.timeCreated | date:"d/m/Y"}}
+  {{appraisal.timeCreated | date:"d/m"}}
 </td>
 <td>
 {% if appraisal.daysLeft > 3 %}
@@ -57,4 +57,12 @@
   {% with table="not_assigned" %}
     {% include 'main/btn_logbook.html' %}
   {% endwith %}
+  {% if appraisal.state == appraisal.STATE_ARCHIVED %}
+    {% with class="btn_unarchive_appraisal_modal" %}
+      {% include 'main/btn_unarchive.html' %}
+    {% endwith %}
+    {% with class="btn_delete_appraisal_modal" %}
+      {% include 'main/btn_delete.html' %}
+    {% endwith %}
+  {% endif %}
 </td>

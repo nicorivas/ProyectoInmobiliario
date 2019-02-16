@@ -11,6 +11,7 @@ from imagekit.processors import ResizeToFill
 from building.models import Building
 from terrain.models import Terrain
 from house.models import House
+from store.models import Store
 from apartmentbuilding.models import ApartmentBuilding
 from apartment.models import Apartment
 
@@ -92,6 +93,7 @@ class Rol(models.Model):
     house = models.ForeignKey(House,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
     apartment_building = models.ForeignKey(ApartmentBuilding,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
     terrain = models.ForeignKey(Terrain,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
+    local_comercial = models.ForeignKey(Store,null=True,blank=True,related_name='roles',on_delete=models.CASCADE)
 
 @reversion.register()
 class Appraisal(models.Model):
@@ -107,9 +109,11 @@ class Appraisal(models.Model):
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
     timeDue = models.DateTimeField("Time due",blank=True,null=True)
     timeModified = models.DateTimeField("Time modified",blank=True,null=True)
+    timeVisited = models.DateTimeField("Time visited",blank=True,null=True)
     timeFinished = models.DateTimeField("Time finished",blank=True,null=True)
     timePaused = models.DateTimeField("Time paused",blank=True,null=True)
 
+    NONE = ''
     STATE_IMPORTED = 0
     STATE_PAUSED = 2
     STATE_FINISHED = 3
@@ -121,18 +125,29 @@ class Appraisal(models.Model):
     STATE_ARCHIVED = 8
     STATE_ABORTED = 9
     STATES = (
-        (STATE_IMPORTED,'imported'),
-        (STATE_NOT_ASSIGNED,'not assigned'),
-        (STATE_NOT_ACCEPTED,'not accepted'),
-        (STATE_IN_APPRAISAL,'in appraisal'),
-        (STATE_IN_REVISION,'in revision'),
-        (STATE_SENT,'sent'),
-        (STATE_ARCHIVED,'archivada'),
+        (STATE_IMPORTED,'Importada'),
+        (STATE_NOT_ASSIGNED,'No asignada'),
+        (STATE_NOT_ACCEPTED,'No aceptada'),
+        (STATE_IN_APPRAISAL,'Siendo tasada'),
+        (STATE_IN_REVISION,'En revisión'),
+        (STATE_SENT,'Enviada'),
+        (STATE_ARCHIVED,'Archivada'),
         (STATE_ABORTED,'abortada'),
         (STATE_PAUSED,'paused'),
         (STATE_FINISHED,'finished')
     )
+    STATES_ARCHIVE = (
+        (NONE,'---------'),
+        (STATE_IMPORTED,'Importada'),
+        (STATE_NOT_ASSIGNED,'No asignada'),
+        (STATE_NOT_ACCEPTED,'No aceptada'),
+        (STATE_IN_APPRAISAL,'Siendo tasada'),
+        (STATE_IN_REVISION,'En revisión'),
+        (STATE_SENT,'Enviada'),
+        (STATE_ARCHIVED,'Archivada')
+    )
     state = models.IntegerField("Estado",choices=STATES,null=True)
+    state_last = models.IntegerField("Estado",choices=STATES,null=True)
 
     in_conflict = models.BooleanField("En conflicto",default=False,null=False)
 
@@ -277,10 +292,10 @@ class Appraisal(models.Model):
 
     @cached_property
     def address(self):
-        address = self.real_estates.first().address
-        rss = self.real_estates.count()
-        if rss > 1:
-            address += " (+"+str(rss-1)+")"
+        address = self.real_estate_main.address
+        #rss = self.real_estates.count()
+        #if rss > 1:
+        #    address += " (+"+str(rss-1)+")"
         return address
 
     @cached_property
@@ -486,6 +501,8 @@ class AppProperty(models.Model):
             return Apartment.objects.get(id=self.property_id)
         elif self.property_type == Building.TYPE_CASA:
             return House.objects.get(id=self.property_id)
+        elif self.property_type == Building.TYPE_LOCAL_COMERCIAL:
+            return Store.objects.get(id=self.property_id)
         elif self.property_type == Building.TYPE_EDIFICIO:
             return ApartmentBuilding.objects.get(id=self.property_id)
         elif self.property_type == Building.TYPE_TERRENO:
@@ -496,6 +513,8 @@ class AppProperty(models.Model):
             return Apartment.objects.get(id=self.property_id).apartment_building.building
         elif self.property_type == Building.TYPE_CASA:
             return House.objects.get(id=self.property_id).building
+        elif self.property_type == Building.TYPE_LOCAL_COMERCIAL:
+            return Store.objects.get(id=self.property_id).building
         elif self.property_type == Building.TYPE_EDIFICIO:
             return ApartmentBuilding.objects.get(id=self.property_id).building
         else:
@@ -527,6 +546,8 @@ class Comment(models.Model):
     EVENT_VISADOR_DESASIGNADO = 27
     EVENT_TASACION_INGRESADA = 24
     EVENT_COMENTARIO = 28
+    EVENT_DEVUELTA_A_TASADOR = 31
+    EVENT_DEVUELTA_A_VISADOR = 32
     EVENT_OTRO = 0
     event_choices = (
         (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
@@ -543,6 +564,8 @@ class Comment(models.Model):
         (EVENT_VISITA_ACORDADA, "Visita acordada"),
         (EVENT_PROPIEDAD_VISITADA, "Propiedad visitada"),
         (EVENT_ENVIADA_A_VISADOR, "Enviado a visador"),
+        (EVENT_DEVUELTA_A_TASADOR, "Devuelta a tasador"),
+        (EVENT_DEVUELTA_A_VISADOR, "Devuelta a visador"),
         (EVENT_ENTREGADO_AL_CLIENTE, "Entregado al cliente"),
         (EVENT_CONTABILIZACION, "Contabilización"),
         (EVENT_INCIDENCIA, "Incidencia"),
@@ -565,12 +588,10 @@ class Comment(models.Model):
         Appraisal.STATE_IN_APPRAISAL:[
             EVENT_VISITA_ACORDADA,
             EVENT_PROPIEDAD_VISITADA,
-            EVENT_ENVIADA_A_VISADOR,
             EVENT_INCIDENCIA,
             EVENT_COMENTARIO
         ],
         Appraisal.STATE_IN_REVISION:[
-            EVENT_ENTREGADO_AL_CLIENTE,
             EVENT_INCIDENCIA,
             EVENT_COMENTARIO
         ],
@@ -602,7 +623,11 @@ class Comment(models.Model):
                self.event != self.EVENT_TASADOR_SOLICITADO and \
                self.event != self.EVENT_TASADOR_DESASIGNADO and \
                self.event != self.EVENT_VISADOR_ASIGNADO and \
-               self.event != self.EVENT_VISADOR_DESASIGNADO
+               self.event != self.EVENT_VISADOR_DESASIGNADO and \
+               self.event != self.EVENT_ENTREGADO_AL_CLIENTE and \
+               self.event != self.EVENT_ENVIADA_A_VISADOR and \
+               self.event != self.EVENT_DEVUELTA_A_TASADOR and \
+               self.event != self.EVENT_DEVUELTA_A_VISADOR
 
     @property
     def small(self):

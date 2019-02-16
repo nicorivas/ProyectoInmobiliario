@@ -72,7 +72,7 @@ def appraiserEvaluationView(request):
                 print(evaluation.evaluationResult)
 
 
-    tasadores = list(User.objects.filter(groups__name__in=['tasador']))
+    tasadores = list(User.objects.filter(groups__name__in=['tasador']).order_by('last_name'))
     visadores = list(User.objects.filter(groups__name__in=['visador']))
     lista = appraiserWork(tasadores)
     context = {'appraisals_active': appraisals_active,

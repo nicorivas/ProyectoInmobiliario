@@ -4,9 +4,10 @@
 
 {% block head %}
 
-  <link rel="stylesheet" href="{% static 'main/css/table_search.css' %}">
+	{% load static %}
 
-  {% load static %}
+	<link rel="stylesheet" href="{% static 'archive/css/archive.css' %}">
+	<link rel="stylesheet" href="{% static 'main/css/table_search.css' %}">
 
 {% endblock %}
 
@@ -16,17 +17,15 @@
 
 <div class="container" style="max-width:100%">
 
-	<div class="row">
-		<div class="col-md-12">
-			<h5 class="mb-4">Archivo</h5>
-		</div>
-	</div>
-
 	<form id="buscar">
         {% csrf_token %}
 		<div class="card mb-2" id="div_not_assigned">
 			<div class="card-body">
 				<div class="row">
+					<div class="col-2">
+						{{form_search.state.label_tag}}
+						{{form_search.state}}
+					</div>
 					<div class="col-1">
 						{{form_search.code.label_tag}}
 						{{form_search.code}}
@@ -100,6 +99,8 @@
 
 </div>
 
+{% include 'archive/modals.html' %}
+
 <script src="{% static 'main/js/tools.js' %}" type="text/javascript"></script>
 
 <script>
@@ -109,7 +110,6 @@
 		btn_loading(btn,hide_text=true)
 		var url = "{% url 'ajax_search_url' %}"
     	var form = $('form#buscar')
-    	console.log(form)
 		$.ajax({
 			url: url,
 			type: 'post',
@@ -120,10 +120,123 @@
 			},
 			success: function (ret) {
 				btn_idle(btn)
-				$("table#search").html(ret)
+				$("table#table_search").html(ret)
+				table_actions()
 			}
 		})
 	})
+
+	$(document).ready(function($) {
+		table_actions()
+	})
+
+	function table_actions() {
+		$(".btn_unarchive_appraisal_modal").unbind()
+		$(".btn_unarchive_appraisal_modal").off()
+		$(".btn_unarchive_appraisal_modal").on("click", function (event) {
+			// Called on click of delete button in the active table.
+			btn = $(this)
+			btn_loading(btn)
+			var appraisal_id = $(this).data('appraisal_id');
+			var url = "{% url 'ajax_unarchive_appraisal_modal_url' %}";
+			$.ajax({
+			    url: url,
+			    type: 'get',
+			    data: {'appraisal_id':appraisal_id},
+			    error: function () {
+			      btn_idle(btn)
+			      alert("Error al mostrar modal para desarchivar.");
+			      return false;
+			    },
+			    success: function (data) {
+			    	btn_idle(btn)
+			    	$('#modal_unarchive').html(data)
+	      			$('#modal_unarchive').modal('show');
+	      			modal_actions()
+			    }
+		  	});
+		});
+
+		$(".btn_delete_appraisal_modal").unbind()
+		$(".btn_delete_appraisal_modal").off()
+		$(".btn_delete_appraisal_modal").on("click", function (event) {
+			// Called on click of delete button in the active table.
+			btn = $(this)
+			btn_loading(btn)
+			var appraisal_id = $(this).data('appraisal_id');
+			var url = "{% url 'ajax_delete_appraisal_modal_url' %}";
+			$.ajax({
+			    url: url,
+			    type: 'get',
+			    data: {'appraisal_id':appraisal_id},
+			    error: function () {
+			      btn_idle(btn)
+			      alert("Error al mostrar modal para eliminar tasación.");
+			      return false;
+			    },
+			    success: function (data) {
+			    	btn_idle(btn)
+			    	$('#modal_delete').html(data)
+	      			$('#modal_delete').modal('show');
+	      			modal_actions()
+			    }
+		  	});
+		});
+	}
+
+	function modal_actions() {
+		$("#btn_unarchive_appraisal").unbind()
+		$("#btn_unarchive_appraisal").off()
+		$("#btn_unarchive_appraisal").on("click", function (event) {
+		  // Button clicked in the modal.
+		  event.preventDefault()
+		  var appraisal_id = $(this).closest('#modal_unarchive').find('#appraisal_id').val();
+		  var url = "{% url 'ajax_unarchive_appraisal_url' %}";
+		  btn = $(this);
+		  btn_loading(btn);
+		  $.ajax({
+		    url: url,
+		    type: 'get',
+		    data: {'appraisal_id':appraisal_id},
+		    error: function () {
+		      btn_idle(btn)
+		      alert("Error al desarchivar tasación.");
+		      return false;
+		    },
+		    success: function (data) {
+		      btn_idle(btn)
+		      $("#modal_unarchive").modal('hide')
+		      removeRow('table_search',appraisal_id,data)
+		    }
+		  });
+		});
+
+		$("#btn_delete_appraisal").unbind()
+		$("#btn_delete_appraisal").off()
+		$("#btn_delete_appraisal").on("click", function (event) {
+		  // Button clicked in the modal.
+		  event.preventDefault()
+		  var appraisal_id = $(this).closest('#modal_delete').find('#appraisal_id').val();
+		  var url = "{% url 'ajax_delete_appraisal_url' %}";
+		  btn = $(this);
+		  btn_loading(btn);
+		  $.ajax({
+		    url: url,
+		    type: 'get',
+		    data: {'appraisal_id':appraisal_id},
+		    error: function () {
+		      btn_idle(btn)
+		      alert("Error al eliminar tasación.");
+		      return false;
+		    },
+		    success: function (data) {
+		      btn_idle(btn)
+		      $("#modal_delete").modal('hide')
+		      removeRow('table_search',appraisal_id,data)
+		    }
+		  });
+		});
+	}
 </script>
 
 {% endblock %}

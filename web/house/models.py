@@ -71,6 +71,10 @@ class House(models.Model):
             return "{:10.2f}".format(x)
 
     @property
+    def propertyType(self):
+        return Building.TYPE_CASA
+
+    @property
     def propertyTypeIcon(self):
         return "fas fa-home"
 

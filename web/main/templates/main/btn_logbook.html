@@ -1,6 +1,6 @@
   {% load custom_tags %}
   
-  <button type="button" class="btn {{appraisal.in_conflict|yesno:"btn-danger,btn-dark"}} {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}" data-table={{table}} data-logbook-url="{% url 'ajax_logbook_url' %}"
+  <button type="button" class="btn btn-dark {{ hna | yesno:'btn-not,' }} btn_logbook" value="{{appraisal.id}}" id="logbook_{{appraisal.id}}" data-table={{table}} data-logbook-url="{% url 'ajax_logbook_url' %}"
   style="border:0px;width:25px;height:25px;padding:0em;">
     <i class="icon material-icons" style="font-size:15px;vertical-align:baseline;padding-top:5px">assignment</i>
     <div class="ld ld-ring ld-spin" style="display:none;margin-top:4px;"></div>

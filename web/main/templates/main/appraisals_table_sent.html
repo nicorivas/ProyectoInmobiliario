@@ -7,13 +7,13 @@
 </thead>
 <tbody>
   <tr>
-    {% with state=2 %}
+    {% with state=4 %}
       {% include 'main/appraisals_table_search.html' %}
     {% endwith %}
   </tr>
   {% for appraisal in appraisals_sent %}
   {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
-  <tr class="appraisal sent {{hna|yesno:"notification,"}}" id="tr_table_sent-{{appraisal.id}}">
+  <tr class='appraisal sent {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_sent-{{appraisal.id}}">
     {% include 'main/appraisals_table_sent_tr.html' %}
   </tr>
   {% endfor %}

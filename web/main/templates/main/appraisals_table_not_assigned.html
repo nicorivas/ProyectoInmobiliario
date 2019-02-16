@@ -2,16 +2,18 @@
 
 <thead>
   {% with state=0 %}
-  {% include 'main/appraisals_table_header.html' %}
+    {% include 'main/appraisals_table_header.html' %}
   {% endwith %}
 </thead>
 <tbody>
   <tr>
-    {% include 'main/appraisals_table_search.html' %}
+    {% with state=0 %}
+      {% include 'main/appraisals_table_search.html' %}
+    {% endwith %}
   </tr>
   {% for appraisal in appraisals_not_assigned %}
   {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
-  <tr class='appraisal not_assigned {{hna|yesno:"notification,"}}' id="tr_table_not_assigned-{{appraisal.id}}">
+  <tr class='appraisal not_assigned {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_not_assigned-{{appraisal.id}}">
     {% include 'main/appraisals_table_not_assigned_tr.html' %}
   </tr>
   {% endfor %}

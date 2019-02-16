@@ -9,6 +9,9 @@ class FormSearch(forms.Form):
 	
 	attrs = {'class': "form-control form-control-sm"}
 
+	state = forms.ChoiceField(label="Estado",choices=Appraisal.STATES_ARCHIVE)
+	state.widget.attrs.update(attrs)
+
 	code = forms.CharField(label="ID")
 	code.widget.attrs.update(attrs)
 

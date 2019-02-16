@@ -4,6 +4,8 @@
 
 {% block content %}
 
+{{form.media}}
+
 <div class="container" style="max-width:100%">
 
    <div class="row">
@@ -123,52 +125,16 @@
           <div class="col-md-3">
             <div class="form-group">
               {{form.appraisalTimeRequest.label_tag}}
-              <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                {{form.appraisalTimeRequest}}
-                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                </div>
-              </div>
+              {{form.appraisalTimeRequest}}
             </div>
           </div>
-          <script type="text/javascript">
-            $(function () {
-              $('#datetimepicker1').datetimepicker({
-                locale: 'es',
-                icons: {
-                  time: "far fa-clock",
-                  date: "far fa-calendar-alt",
-                  up: "fas fa-arrow-up",
-                  down: "fas fa-arrow-down"
-                }
-              });
-            });
-          </script>
 
           <div class="col-md-3">
             <div class="form-group">
               {{form.appraisalTimeDue.label_tag}}
-              <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-                {{form.appraisalTimeDue}}
-                <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                </div>
-              </div>
+              {{form.appraisalTimeDue}}
             </div>
           </div>
-          <script type="text/javascript">
-            $(function () {
-              $('#datetimepicker2').datetimepicker({
-                locale: 'es',
-                icons: {
-                  time: "far fa-clock",
-                  date: "far fa-calendar-alt",
-                  up: "fas fa-arrow-up",
-                  down: "fas fa-arrow-down"
-                }
-              });
-            });
-          </script>
         </div>
 
         <hr/>
@@ -317,6 +283,7 @@
             <div class="col-md-2">
                <div class="form-group">
                   <label>Tipo</label>
+                  <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Si se trata de una obra, elegir tipo de bien siendo construido.">help_outline</i>
                   {{form.propertyType}}
                </div>
             </div>

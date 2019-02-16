@@ -6,6 +6,7 @@ from realestate.models import RealEstate
 from appraisal.models import Appraisal
 from django.core.exceptions import ValidationError
 import datetime
+from bootstrap_datepicker_plus import DateTimePickerInput
 
 
 class AppraisalCreateForm(forms.Form):
@@ -118,16 +119,25 @@ class AppraisalCreateForm(forms.Form):
     addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
     addressNumber2.widget.attrs.update({'class':"form-control"})
 
-    appraisalTimeRequest = forms.DateTimeField(label="Fecha solicitud",
-        widget=forms.DateTimeInput(
-            attrs={'class': "form-control datetimepicker-input",
-                   'data-target':"#datetimepicker1"}))
-    appraisalTimeRequest.input_formats = ['%d/%m/%Y %H:%M']
-    appraisalTimeDue = forms.DateTimeField(label="Fin de plazo",
-        widget=forms.DateTimeInput(
-            attrs={'class': "form-control datetimepicker-input",
-                   'data-target':"#datetimepicker2"}))
-    appraisalTimeDue.input_formats = ['%d/%m/%Y %H:%M']
+    appraisalTimeRequest = forms.DateTimeField(label="Fecha solicitud")
+    appraisalTimeRequest.widget = DateTimePickerInput(options={
+                     "format": "DD/MM/YYYY HH:MM",
+                     "showClose": True,
+                     "showClear": True,
+                     "showTodayButton": True
+                 })
+    #    widget=forms.DateTimeInput(
+    #        attrs={'class': "form-control datetimepicker-input",
+    #               'data-target':"#datetimepicker1"}))
+    #appraisalTimeRequest.input_formats = ['%d/%m/%Y %H:%M']
+    
+    appraisalTimeDue = forms.DateTimeField(label="Fin de plazo")
+    appraisalTimeDue.widget = DateTimePickerInput(options={
+                     "format": "DD/MM/YYYY HH:MM",
+                     "showClose": True,
+                     "showClear": True,
+                     "showTodayButton": True
+                 })
     
     appraisalPrice = forms.FloatField(label="Precio",required=False)
     appraisalPrice.widget.attrs.update({'class': "form-control"})

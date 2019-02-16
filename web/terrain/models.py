@@ -1,4 +1,5 @@
 from django.db import models
+from building.models import Building
 
 class Terrain(models.Model):
     '''
@@ -52,6 +53,10 @@ class Terrain(models.Model):
         else:
             return self.generic_name
     
+    @property
+    def propertyType(self):
+        return Building.TYPE_TERRENO
+
     @property
     def propertyTypeIcon(self):
         return "fas fa-mountain"

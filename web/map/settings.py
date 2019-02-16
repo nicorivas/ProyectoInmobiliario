@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'create',
     'appraisal',
     'house',
+    'store',
     'building',
     'apartmentbuilding',
     'apartment',
@@ -62,14 +63,15 @@ INSTALLED_APPS = [
     'accounting',
     'mathfilters',
     'archive',
-    'bootstrap_datepicker_plus'
+    'bootstrap_datepicker_plus',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

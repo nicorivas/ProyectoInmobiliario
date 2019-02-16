@@ -73,7 +73,14 @@ def main(request):
     for k, v in comment_mp.items():
         if isinstance(v,type('')) or isinstance(v,type(1)):
             comment_dict[k] = v
-    comment = json.dumps(comment_dict)
+    comment_class = json.dumps(comment_dict)
+
+    appraisal_mp = Appraisal.__dict__
+    appraisal_dict = {}
+    for k, v in appraisal_mp.items():
+        if isinstance(v,type('')) or isinstance(v,type(1)):
+            appraisal_dict[k] = v
+    appraisal_class = json.dumps(appraisal_dict)
 
     # Get the id's of appraisals to have notifications; then we need just one query
 
@@ -91,7 +98,8 @@ def main(request):
         'appraisals_in_revision': appraisals_in_revision,
         'appraisals_sent': appraisals_sent,
         'form_comment':form_comment,
-        'comment_class':comment,
+        'comment_class':comment_class,
+        'appraisal_class':appraisal_class,
         'notifications_appraisal_ids':notifications_appraisal_ids,
         'groups':groups}
 
@@ -201,9 +209,14 @@ def ajax_assign_tasador(request):
     appraisal.state = Appraisal.STATE_NOT_ACCEPTED
     appraisal.save()
 
+    notifications = request.user.user.notifications.all()
+    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+
     appraisals_not_accepted = appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
     
-    return render(request,'main/appraisals_table_not_accepted.html',{'appraisals_not_accepted':appraisals_not_accepted})
+    return render(request,'main/appraisals_table_not_accepted.html',
+        {'appraisals_not_accepted':appraisals_not_accepted,
+         'notifications_appraisal_ids':notifications_appraisal_ids})
 
 def ajax_unassign_tasador(request):
     '''
@@ -221,8 +234,15 @@ def ajax_unassign_tasador(request):
     appraisal.addComment(Comment.EVENT_TASADOR_DESASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
         text="Tasador "+tasador.user.full_name+" fue desasignado.")
     appraisal.save()
+
+    notifications = request.user.user.notifications.all()
+    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+
     appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
-    return render(request,'main/appraisals_table_not_assigned.html',{'appraisals_not_assigned':appraisals_not_assigned})
+
+    return render(request,'main/appraisals_table_not_assigned.html',
+        {'appraisals_not_assigned':appraisals_not_assigned,
+         'notifications_appraisal_ids':notifications_appraisal_ids})
 
 def ajax_assign_visador(request):
     '''
@@ -251,6 +271,7 @@ def ajax_assign_visador(request):
 
     notifications = request.user.user.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+
     if request.POST['source_table'] == 'table_not_assigned':
         appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
         return render(request,'main/appraisals_table_not_assigned.html',
@@ -287,17 +308,22 @@ def ajax_unassign_visador(request):
 def ajax_accept_appraisal(request):
 
     appraisal_id = int(request.POST['appraisal_id'])
-    text = request.POST['text']
+    #text = request.POST['text']
 
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_IN_APPRAISAL
     
-    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
+    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc))
     appraisal.save()
+
+    notifications = request.user.user.notifications.all()
+    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     appraisals_in_appraisal = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
 
-    return render(request,'main/appraisals_table_in_appraisal.html',{'appraisals_in_appraisal':appraisals_in_appraisal})
+    return render(request,'main/appraisals_table_in_appraisal.html',
+        {'appraisals_in_appraisal':appraisals_in_appraisal,
+         'notifications_appraisal_ids':notifications_appraisal_ids})
 
 def ajax_reject_appraisal(request):
     '''
@@ -310,14 +336,14 @@ def ajax_reject_appraisal(request):
     '''
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
-    text = request.POST['text']
+    #text = request.POST['text']
 
     # 1
     appraisal.state = Appraisal.STATE_NOT_ASSIGNED
     # 2
     appraisal.tasadorUser = None
     # 3
-    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc),text=text)
+    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc))
     appraisal.save()
     # 4
     for user in User.objects.filter(groups__name='asignador'):
@@ -325,17 +351,21 @@ def ajax_reject_appraisal(request):
 
     notifications = request.user.user.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+
     appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
+
     return render(request,'main/appraisals_table_not_assigned.html',
         {'appraisals_not_assigned':appraisals_not_assigned,
          'notifications_appraisal_ids':notifications_appraisal_ids})
 
-def ajax_delete_appraisal(request):
-    # Handle the delete button, next to every appraisal
-    id = int(request.GET['appraisal_id'])
-    appraisal = Appraisal.objects.get(pk=id)
-    appraisal.delete()
-    return HttpResponse('')
+def ajax_archive_appraisal(request):
+    # Handle the archive button, next to every appraisal
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(pk=appraisal_id)
+    appraisal.state_last = appraisal.state
+    appraisal.state = Appraisal.STATE_ARCHIVED
+    appraisal.save()
+    return render(request,'main/appraisals_table_sent_tr.html',{'appraisal':appraisal})
 
 def ajax_logbook(request):
     '''
@@ -371,6 +401,11 @@ def ajax_logbook_close(request):
     request.user.user.removeNotification(ntype="comment",appraisal_id=appraisal_id)
 
     appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    if request.POST['valorUF'] in ["None",""]:
+        appraisal.valorUF = None
+    else:
+        appraisal.valorUF = request.POST['valorUF']
 
     if request.POST['solicitanteEjecutivo'] in ["None",""]:
         appraisal.solicitanteEjecutivo = None
@@ -442,13 +477,6 @@ def ajax_comment(request):
     if event == Comment.EVENT_INCIDENCIA:
         appraisal.in_conflict = True
         appraisal.save()
-    elif event == Comment.EVENT_ENVIADA_A_VISADOR:
-        appraisal.state = Appraisal.STATE_IN_REVISION
-        appraisal.save()
-    elif event == Comment.EVENT_ENTREGADO_AL_CLIENTE:
-        appraisal.state = Appraisal.STATE_SENT
-        appraisal.timeFinished = datetime.datetime.now(pytz.utc)
-        appraisal.save()
 
     comment = appraisal.addComment(int(request.POST['event']),request.user,datetime.datetime.now(datetime.timezone.utc),text)
 
@@ -492,20 +520,6 @@ def ajax_delete_comment(request):
     elif comment.event == Comment.EVENT_CONTACTO_VALIDADO:
         appraisal.contactoValidado = False
         appraisal.save()
-    elif comment.event == Comment.EVENT_ENVIADA_A_VISADOR:
-        # Appraisal must be sent back to in revision state.
-        # Therefore notify the visador.
-        appraisal.state = Appraisal.STATE_IN_APPRAISAL
-        appraisal.save()
-        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment_id)
-    elif comment.event == Comment.EVENT_ENTREGADO_AL_CLIENTE:
-        # Appraisal must be sent back to in revision state.
-        # Therefore notify the visador.
-        appraisal.state = Appraisal.STATE_IN_REVISION
-        appraisal.timeFinished = None
-        appraisal.save()
-        if appraisal.visadorUser:
-            appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment_id)
     elif comment.event == Comment.EVENT_INCIDENCIA:
         appraisal.in_conflict = False
         appraisal.save()
@@ -581,16 +595,82 @@ def ajax_evaluate_modal_close(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
     evaluationForm = EvaluationForm(request.POST,instance=appraisal.appraisalevaluation)
     evaluationForm.save()
+    appraisal.save()
 
-    print(appraisal.appraisalevaluation)
+    return render(request,'main/appraisals_table_sent_tr.html',{'appraisal':appraisal})
 
-    try:
-        evaluationForm = EvaluationForm(instance=appraisal.appraisalevaluation)
-        print('caca')
-    except:
-        appraisal_evaluation = AppraisalEvaluation(user=appraisal.tasadorUser,appraisal=appraisal)
-        appraisal_evaluation.save()
-        appraisal.save()
-        evaluationForm = EvaluationForm(instance=appraisal_evaluation)
+def ajax_enviar_a_visador(request):
+    '''
+    Appraisal must be sent back to in revision state.
+    Therefore notify the visador.
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
 
-    return render(request,'main/modals_evaluate.html',{'appraisal':appraisal,'evaluationForm':evaluationForm})
+    comment = appraisal.addComment(Comment.EVENT_ENVIADA_A_VISADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    appraisal.state = Appraisal.STATE_IN_REVISION
+    appraisal.save()
+    if appraisal.visadorUser:
+        appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
+
+    return JsonResponse({})
+
+def ajax_devolver_a_tasador(request):
+    '''
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_TASADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    appraisal.state = Appraisal.STATE_IN_APPRAISAL
+    appraisal.save()
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+
+    return JsonResponse({})
+
+def ajax_enviar_a_cliente(request):
+    '''
+    Appraisal must be sent back to in revision state.
+    Therefore notify the visador.
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    comment = appraisal.addComment(Comment.EVENT_ENTREGADO_AL_CLIENTE,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    appraisal.state = Appraisal.STATE_SENT
+    appraisal.save()
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+
+    return JsonResponse({})
+
+
+def ajax_devolver_a_visador(request):
+    '''
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_VISADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    appraisal.state = Appraisal.STATE_IN_REVISION
+    appraisal.save()
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+
+    return JsonResponse({})
+
+def ajax_solve_conflict(request):
+    
+    appraisal_id = int(request.GET['appraisal_id'])
+    table = request.GET['table']
+
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.in_conflict = False;
+    appraisal.save()
+
+    return render(request,'main/appraisals_'+table+'_tr.html',{'appraisal':appraisal})

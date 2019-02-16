@@ -16,16 +16,47 @@ def archive(request):
 	
 	form_search = FormSearch(label_suffix="")
 
-	appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
+	appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('-timeCreated')
 
 	context = {'form_search':form_search,'appraisals':appraisals}
 
 	return render(request, 'archive/archive.html', context)
 
+def ajax_unarchive_appraisal_modal(request):
+	appraisal_id = int(request.GET['appraisal_id'])
+	appraisal = Appraisal.objects.get(id=appraisal_id)
+	context = {'appraisal':appraisal}
+	return render(request, 'archive/modals_unarchive.html', context)
+
+def ajax_unarchive_appraisal(request):
+	appraisal_id = int(request.GET['appraisal_id'])
+	appraisal = Appraisal.objects.get(id=appraisal_id)
+	s = appraisal.state
+	appraisal.state = appraisal.state_last
+	appraisal.state_last = s
+	appraisal.save()
+	context = {'appraisal':appraisal}
+	return render(request, 'archive/appraisals_search_tr.html', context)
+
+def ajax_delete_appraisal_modal(request):
+	appraisal_id = int(request.GET['appraisal_id'])
+	appraisal = Appraisal.objects.get(id=appraisal_id)
+	context = {'appraisal':appraisal}
+	return render(request, 'archive/modals_delete.html', context)
+
+def ajax_delete_appraisal(request):
+	appraisal_id = int(request.GET['appraisal_id'])
+	appraisal = Appraisal.objects.get(id=appraisal_id)
+	appraisal.delete()
+	context = {'appraisal':appraisal}
+	return render(request, 'archive/appraisals_search_tr.html', context)
+
 def ajax_search(request):
 
 	appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
 
+	if request.POST['state'] != '':
+		appraisals = appraisals.filter(state=request.POST['state'])
 	if request.POST['code'] != '':
 		appraisals = appraisals.filter(id__iexact=request.POST['code'])
 	if request.POST['solicitante'] != '':

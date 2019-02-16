@@ -12,6 +12,14 @@
 			</a>
 	  	</div>
 	</div>
+	<div class="row text-center">
+		<div class="col-12">
+			<div class="form-check">
+    			<input type="checkbox" class="form-check-input" checked>
+    			<label class="form-check-label mb-2"><small>Sólo mostrar propiedades siendo tasadas</small></label>
+  			</div>
+		</div>
+	</div>
 
 	{% if buildings|length == 0 and terrains|length == 0 %}
 
@@ -42,7 +50,6 @@
       	{% endfor %}
 
 		{% for building in buildings %}
-		{% if not building.is_apartment %}
 	  	<div class="list-group-item flex-column align-items-start building_list_item" data-building_id="{{building.id}}">
 		<!--<li class="building_list_item" data-building_id="{{building.id}}">-->
 			<div class="row">
@@ -52,15 +59,15 @@
 	          			<div class="icon">edit</div>
 	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
 	    		    </button>
+	    		    {% with type=building.propertyType %}
+	    		    {% if building.property_id in app_ids.type %}
 					<a href="#" class="text-left btn_property" data-building_id="{{building.id}}" style="vertical-align:bottom;">
-						{% if building.is_apartmentbuilding %}
-							{{building.name_or_generic}}
-						{% elif building.is_house %}
-							{{building.name_or_generic}}
-						{% else %}
-							{{building.id}}
-						{% endif %}
+					{% else %}
+					<a class="text-left btn_property" data-building_id="{{building.id}}" style="vertical-align:bottom;">
+					{% endif %}
+						{{building.name_or_generic}}
 					</a>
+					{% endwith %}
 				</div>
 				<div class="col-5 text-left" style="padding-left:0.4em;">
 	      		</div>
@@ -73,7 +80,11 @@
 	          			<div class="icon">edit</div>
 	          			<div class="ld ld-ring ld-spin" style="display:none;"></div>
 	    		    </button>
+	    		    {% if apartment.id in app_ids.2 %}
 					<a href="#" class="text-left btn_property btn_apartment" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}">
+					{% else %}
+					<a class="text-left btn_property btn_apartment">
+					{% endif %}
 						<small>{{apartment.name_or_generic}}</small>
 					</a>
 				</li>
@@ -87,7 +98,6 @@
 			{% endif %}
 	 	<!--</li>-->
 	 	</div>
-		{% endif %}
  		{% endfor %}
 	</div>
 

@@ -11,7 +11,7 @@
   {% include 'main/td_property_type_icon.html' %}
 </td>
 <td>
-  <a href="{{appraisal.url}}" class="address" style="{{appraisal.in_conflict|yesno:"font-weight:800;color:red;,"}}">
+  <a href="{{appraisal.url}}" class="address">
     {{ appraisal.address_no_region }}
   </a>
 </td>
@@ -55,10 +55,8 @@
     {% endif %}
   </div>
 </td>
-<td class="Creada">
-  {{appraisal.timeCreated | date:"d/m/Y"}}
-</td>
-<td>
+{% include 'main/appraisals_table_td_date_created.html' %}
+<td class="dateDue">
 {% if appraisal.daysLeft > 3 %}
   <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
 {% elif appraisal.daysLeft > 1 %}

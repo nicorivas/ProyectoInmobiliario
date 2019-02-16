@@ -40,3 +40,63 @@ function join_data(form,element) {
   }
   return data_form
 }
+
+function addRow(table_name, appraisal_id, html) {
+  // Remove row from table. Takes into account if this is
+  // the last row remaining, in that case it hides the whole
+  // table and shows the no elements alert div.
+  $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
+  //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
+  $("#div_alert_"+table_name).fadeOut()
+  $("#"+table_name).fadeIn()
+}
+
+function removeRow(table_name, appraisal_id) {
+  // Remove row from table. Takes into account if this is
+  // the last row remaining, in that case it hides the whole
+  // table and shows the no elements alert div.
+  var nrows = $("#"+table_name+" tr").length;
+  if (nrows > 3) {
+    $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
+  } else {
+    $("#"+table_name).fadeOut()
+    $("#div_alert_"+table_name).fadeToggle()
+  }
+}
+
+function moveRow(table_from, table_to, appraisal_id) {
+  var url = "{% url 'ajax_get_appraisal_row_url' %}"
+  $.ajax({
+    url: url,
+    type: 'get',
+    data: {'appraisal_id':appraisal_id,'table':table_to},
+    error: function() {
+      alert("Error al cambiar fila.");
+    },
+    success: function (ret) {
+      removeRow(table_from,appraisal_id)
+      addRow(table_to,appraisal_id,ret)
+      assignTableActions();
+    }
+  })
+}
+
+function replaceRow(table_name, appraisal_id, html) {
+  // Replace row
+  $("#tr_"+table_name+"-"+appraisal_id).html(html)
+}
+
+function replaceTable(table_name,data) {
+  // Replaces a table, usuallhy from data from AJAX. Takes
+  // into account the size of the table and hides the 
+  // alert of no elements if the table returned has elements.
+  $("#"+table_name).html($.trim(data))
+  var nrows = $("#"+table_name+" tr").length;
+  if (nrows == 0) {
+    $("#"+table_name).fadeOut()
+    $("#div_alert_"+table_name).fadeIn()
+  } else {
+    $("#"+table_name).fadeIn()
+    $("#div_alert_"+table_name).fadeOut()
+  }
+}

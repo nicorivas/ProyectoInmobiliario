@@ -34,6 +34,7 @@ def view_create(request):
 
         request_post = request.POST.copy()
         request_post['appraisalTimeRequest'] = datetime.datetime.strptime(request_post['appraisalTimeRequest'],'%d/%m/%Y %H:%M')
+        request_post['appraisalTimeDue'] = datetime.datetime.strptime(request_post['appraisalTimeDue'],'%d/%m/%Y %H:%M')
         
         form = AppraisalCreateForm(request_post)
         if form.is_valid():
@@ -88,24 +89,35 @@ def view_create(request):
             propertyType = int(form.cleaned_data['propertyType'])
             if propertyType == Building.TYPE_TERRENO:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
+                appprop = appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
+                appraisal.property_main = appprop
                 rol.terrain = propiedad
             elif propertyType == Building.TYPE_CASA:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
                 appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id) # en general se tasa el terreno Y la casa
                 propiedad, created = real_estate.createOrGetCasa(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(Building.TYPE_CASA,propiedad.id)
+                appprop = appraisal.addAppProperty(Building.TYPE_CASA,propiedad.id)
+                appraisal.property_main = appprop
                 rol.house = propiedad
             elif propertyType == Building.TYPE_EDIFICIO:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
                 appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
                 propiedad, created = real_estate.createOrGetEdificio(addressNumber2=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(Building.TYPE_EDIFICIO,propiedad.id)
+                appprop = appraisal.addAppProperty(Building.TYPE_EDIFICIO,propiedad.id)
+                appraisal.property_main = appprop
                 rol.apartment_building = propiedad
             elif propertyType == Building.TYPE_DEPARTAMENTO:
                 propiedad, created = real_estate.createOrGetDepartamento(addressNumber2=None,addressNumber3=form.cleaned_data['addressNumber2'])
-                appraisal.addAppProperty(Building.TYPE_DEPARTAMENTO,propiedad.id)
+                appprop = appraisal.addAppProperty(Building.TYPE_DEPARTAMENTO,propiedad.id)
+                appraisal.property_main = appprop
                 rol.apartment = propiedad
+            elif propertyType == Building.TYPE_LOCAL_COMERCIAL:
+                propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
+                appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)
+                propiedad, created = real_estate.createOrGetLocalComercial(addressNumber2=form.cleaned_data['addressNumber2'])
+                appprop = appraisal.addAppProperty(Building.TYPE_LOCAL_COMERCIAL,propiedad.id)
+                appraisal.property_main = appprop
+                rol.local_comercial = propiedad
             else:
                 """
                 Otro tipo de propiedades de las que no tenemos clases.

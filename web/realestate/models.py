@@ -5,6 +5,7 @@ from neighborhood.models import Neighborhood
 from terrain.models import Terrain
 from building.models import Building
 from house.models import House
+from store.models import Store
 from apartmentbuilding.models import ApartmentBuilding
 from apartment.models import Apartment
 from datetime import date
@@ -125,6 +126,15 @@ class RealEstate(models.Model):
         self.save()
         return casa
 
+    def createLocalComercial(self,addressNumber2):
+        building = Building(real_estate=self, propertyType=Building.TYPE_LOCAL_COMERCIAL)
+        building.save()
+        store = Store(building=building, addressNumber2=addressNumber2)
+        store.save()
+        self.buildings.add(building)
+        self.save()
+        return store
+
     def createDepartamento(self, addressNumber2=None, addressNumber3=None, apartment_building=None):
         if apartment_building == None:
             if addressNumber2 == None:
@@ -193,6 +203,19 @@ class RealEstate(models.Model):
             return self.createCasa(addressNumber2), False
         except Building.DoesNotExist:
             return self.createCasa(addressNumber2), False
+
+    def createOrGetLocalComercial(self,addressNumber2=None,if_exists_false=False):
+        try:
+            buildings = self.buildings.filter(propertyType=Building.TYPE_LOCAL_COMERCIAL)
+            for building in buildings:
+                if building.store.addressNumber2 == addressNumber2:
+                    if if_exists_false:
+                        return False
+                    else:
+                        return building.store, True
+            return self.createLocalComercial(addressNumber2), False
+        except Building.DoesNotExist:
+            return self.createLocalComercial(addressNumber2), False
     
     def createOrGetHouse(self,**kwargs):
         return self.createOrGetCasa(**kwargs)

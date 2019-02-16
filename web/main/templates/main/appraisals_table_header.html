@@ -8,17 +8,15 @@
     {% if state != 4 %}
     <th scope="col" style="width:160px;">Visador</th>
     {% endif %}
-    {% if state == 2 or state == 3 %}
-    <th scope="col" style="width:40px;text-align:center;">E.</th>
-    {% endif %}
-    {% if state == 0 or state == 1 %}
-    <th scope="col" style="width:100px;">Creada</th>
-    {% elif state == 2 or state == 3 %}
-    <th scope="col" style="width:60px;">Creada</th>
+    {% if state != 4 %}
+    <th scope="col" style="width:65px;">Creada</th>
     {% endif %}
     {% if state == 4 %}
-    <th scope="col" style="width:300px;">Entregada</th>
-    <th scope="col" style="width:130px;"></th>
+    <th scope="col" style="width:140px;">Entregada</th>
+    <th scope="col" style="width:260px;"></th>
+    {% elif state == 5 %}
+    <th scope="col" style="width:100px;">Entrega</th>
+    <th scope="col" style="width:100px;"></th>
     {% else %}
     <th scope="col" style="width:100px;">Entrega</th>
     <th scope="col" style="width:70px;"></th>

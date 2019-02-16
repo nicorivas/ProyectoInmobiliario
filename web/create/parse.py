@@ -5,6 +5,7 @@ from dbase.globals import *
 from appraisal.models import Appraisal
 import datetime
 import re
+import unidecode
 
 def parse_email(string):
     if '<' in string:
@@ -21,7 +22,12 @@ def parseAddress(address,commune=None):
     address = address.lower().strip()
 
     if commune:
-        if address.endswith(commune.lower()):
+        commune = commune.lower()
+        if address.endswith(commune):
+            address = address[:address.find(commune)].strip()
+        commune = unidecode.unidecode(commune)
+        print(commune)
+        if address.endswith(commune):
             address = address[:address.find(commune)].strip()
 
     dpto_strings = ["dpto.","dpto","depto.","depto","departamento","oficina"]
@@ -51,11 +57,9 @@ def parseAddress(address,commune=None):
         addressNumber = match.group(0)
         address = address[:address.index(addressNumber)]
     address = address.strip()
-    print(address)
     address = address.replace("avenida","av.")
     address = address.replace('aven','av.')
     address = address.replace('avnda','av.')
-    print(address)
 
     addressStreet = address
 
@@ -83,8 +87,8 @@ def parseCommune(string):
     if commune in COMMUNE_NAME_ASCII__UTF.keys():
         commune = COMMUNE_NAME_ASCII__UTF[commune]
     commune = Commune.objects.get(name=commune)
-    region = commune.region.code
-    commune = commune.id
+    region = commune.region
+    commune = commune
     return [commune, region]
 
 def parseItau(ws):
@@ -225,8 +229,8 @@ def parseItau(ws):
 
     try :
         commune, region = parseCommune(ws['C45'].value)
-        data['addressCommune'] = commune
-        data['addressRegion'] = region
+        data['addressCommune'] = commune.id
+        data['addressRegion'] = region.id
     except Commune.DoesNotExist:
         pass
 
@@ -446,6 +450,8 @@ def parseSantander(text):
     '''
     
     data = {}
+    
+    address = ''
 
     for c in Appraisal.petitioner_choices:
         if c[1] == 'Santander':
@@ -484,13 +490,7 @@ def parseSantander(text):
         elif 'Telefono movil' in line.strip():
             data['contactoTelefono'] = text[i+1].split(':')[1].strip().replace(' ','')
         elif 'Direccion' in line.strip():
-            address = line.split(':')[1].strip()
-            addressStreet, addressNumber, addressNumber2 = parseAddress(address)
-            data['addressStreet'] = addressStreet
-            if addressNumber:
-                data['addressNumber'] = addressNumber
-            if addressNumber2:
-                data['addressNumber2'] = addressNumber2
+            address = line.split(':')[1].strip()            
         elif 'Rubro :' in line.strip():
             tipoTasacion = line.split(':')[1].strip()
             if tipoTasacion == "HIPOTECARIO":
@@ -509,15 +509,24 @@ def parseSantander(text):
             elif 'LOCAL COMERCIAL' in propertyType:
                 data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
                 data['tipoTasacion'] = Appraisal.COMERCIAL
+            elif 'LOCALCOMERCIAL' in propertyType:
+                data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
+                data['tipoTasacion'] = Appraisal.COMERCIAL
             elif 'AVANCE' in propertyType:
                 data['tipoTasacion'] = Appraisal.AVANCE_DE_OBRA
         elif 'Rol :' in line.strip():
             data['rol'] = line.split(':')[1].strip()
         elif 'Comuna' in line.strip():
-            commune = line.split(':')[1].strip().title()
-            commune, region = parseCommune(commune)
-            data['addressCommune'] = commune
-            data['addressRegion'] = region
+            communes = line.split(':')[1].strip().title()
+            commune, region = parseCommune(communes)
+            data['addressCommune'] = commune.id
+            data['addressRegion'] = region.code
+            addressStreet, addressNumber, addressNumber2 = parseAddress(address,commune=commune.name)
+            data['addressStreet'] = addressStreet
+            if addressNumber:
+                data['addressNumber'] = addressNumber
+            if addressNumber2:
+                data['addressNumber2'] = addressNumber2
         elif 'Nombre Ejecutivo' in line.strip():
             data['solicitanteEjecutivo'] = line.split(':')[1].strip().title()
             c = 1

@@ -11,9 +11,9 @@
     </div>
     <div class="col-5">
       {% if not comment.small %}
-        <span style="font-weight:800;color:#000;">{{comment.get_event_display}}</span>
+        <span style="font-size:0.9em;font-style:italic;color:#000;">{{comment.get_event_display}}</span>
       {% else %}
-        <span style="color:#666;"><small>{{comment.get_event_display}}</small></span>
+        <span style="font-size:0.9em;font-style:italic;color:#666;"><small>{{comment.get_event_display}}</small></span>
       {% endif %}
     </div>
     <div class="col-4 text-right">

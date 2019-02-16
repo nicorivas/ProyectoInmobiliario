@@ -22,6 +22,10 @@ class ApartmentBuilding(models.Model):
 	builtSquareMeters = models.DecimalField("Superficie construida",max_digits=7,decimal_places=2,null=True,blank=True)
 
 	@property
+	def propertyType(self):
+		return Building.TYPE_EDIFICIO
+
+	@property
 	def propertyTypeIcon(self):
 		return "fas fa-city"
 	

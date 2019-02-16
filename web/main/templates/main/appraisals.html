@@ -12,6 +12,11 @@
   ajax_accept_appraisal_url = "{% url 'ajax_accept_appraisal_url' %}";
   ajax_reject_appraisal_url = "{% url 'ajax_reject_appraisal_url' %}";
   ajax_validate_cliente_url = "{% url 'ajax_validate_cliente_url' %}"
+  ajax_enviar_a_visador_url = "{% url 'ajax_enviar_a_visador_url' %}"
+  ajax_devolver_a_tasador_url = "{% url 'ajax_devolver_a_tasador_url' %}"
+  ajax_enviar_a_cliente_url = "{% url 'ajax_enviar_a_cliente_url' %}"
+  ajax_devolver_a_visador_url = "{% url 'ajax_devolver_a_visador_url' %}"
+  ajax_solve_conflict_url = "{% url 'ajax_solve_conflict_url' %}"
 </script>
 
 {% load custom_tags %}
@@ -104,66 +109,6 @@
 
 <script>
 
-  function addRow(table_name, appraisal_id, html) {
-    // Remove row from table. Takes into account if this is
-    // the last row remaining, in that case it hides the whole
-    // table and shows the no elements alert div.
-    $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
-    //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
-    $("#div_alert_"+table_name).fadeOut()
-    $("#"+table_name).fadeIn()
-  }
-
-  function removeRow(table_name, appraisal_id) {
-    // Remove row from table. Takes into account if this is
-    // the last row remaining, in that case it hides the whole
-    // table and shows the no elements alert div.
-    var nrows = $("#"+table_name+" tr").length;
-    if (nrows > 3) {
-      $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
-    } else {
-      $("#"+table_name).fadeOut()
-      $("#div_alert_"+table_name).fadeToggle()
-    }
-  }
-
-  function moveRow(table_from, table_to, appraisal_id) {
-    var url = "{% url 'ajax_get_appraisal_row_url' %}"
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: {'appraisal_id':appraisal_id,'table':table_to},
-      error: function() {
-        alert("Error al cambiar fila.");
-      },
-      success: function (ret) {
-        removeRow(table_from,appraisal_id)
-        addRow(table_to,appraisal_id,ret)
-        assignTableActions();
-      }
-    })
-  }
-
-  function replaceRow(table_name, appraisal_id, html) {
-    // Replace row
-    $("#tr_"+table_name+"-"+appraisal_id).html(html)
-  }
-
-  function replaceTable(table_name,data) {
-    // Replaces a table, usuallhy from data from AJAX. Takes
-    // into account the size of the table and hides the 
-    // alert of no elements if the table returned has elements.
-    $("#"+table_name).html($.trim(data))
-    var nrows = $("#"+table_name+" tr").length;
-    if (nrows == 0) {
-      $("#"+table_name).fadeOut()
-      $("#div_alert_"+table_name).fadeIn()
-    } else {
-      $("#"+table_name).fadeIn()
-      $("#div_alert_"+table_name).fadeOut()
-    }
-  }
-
   var unvalidate_cliente = function(appraisal_id) {
     var url = "{% url 'ajax_unvalidate_cliente_url' %}"
     $.ajax({
@@ -227,45 +172,41 @@
       });
     });
 
-    $(".btn_delete_appraisal_modal").unbind()
-    $(".btn_delete_appraisal_modal").off()
-    $(".btn_delete_appraisal_modal").on("click", function (event) {
+    $(".btn_archive_appraisal_modal").unbind()
+    $(".btn_archive_appraisal_modal").off()
+    $(".btn_archive_appraisal_modal").on("click", function (event) {
       // Called on click of delete button in the active table.
       var appraisal_id = $(this).data('appraisal_id');
       var source_table = $(this).closest('table').attr('id');
-      $('#modal_delete').find('#appraisal_id').val(appraisal_id);
-      $('#modal_delete').find('#source_table').val(source_table);
-      $('#modal_delete').modal('show');
+      $('#modal_archive').find('#appraisal_id').val(appraisal_id);
+      $('#modal_archive').find('#source_table').val(source_table);
+      $('#modal_archive').modal('show');
     });
 
-    $("#btn_delete_appraisal").unbind()
-    $("#btn_delete_appraisal").off()
-    $("#btn_delete_appraisal").on("click", function (event) {
+    $("#btn_archive_appraisal").unbind()
+    $("#btn_archive_appraisal").off()
+    $("#btn_archive_appraisal").on("click", function (event) {
       // Button clicked in the modal. Call an AJAX to unassign the tasador
       // of the appraisal, and returns the 'not_assigned' table back,
       // to be replaced.
-      var appraisal_id = $(this).closest('#modal_delete').find('#appraisal_id').val();
-      var source_table = $(this).closest('#modal_delete').find('#source_table').val();
-      var url = "{% url 'ajax_delete_appraisal_url' %}";
+      var appraisal_id = $(this).closest('#modal_archive').find('#appraisal_id').val();
+      var source_table = $(this).closest('#modal_archive').find('#source_table').val();
+      var url = "{% url 'ajax_archive_appraisal_url' %}";
       btn = $(this);
-      btn.addClass('running');
-      btn.prop('disabled', true);
+      btn_loading(btn);
       $.ajax({
         url: url,
         type: 'get',
         data: {'appraisal_id':appraisal_id},
         error: function () {
-            alert("Error al borrar tasación.");
-            btn.removeClass('running');
-            btn.prop('disabled', false);
-            return false;
+          btn_idle(btn)
+          alert("Error al archivar tasación.");
+          return false;
         },
         success: function (data) {
-          btn.removeClass('running');
-          btn.prop('disabled', false);
-          removeRow(source_table,appraisal_id)
-          assignTableActions()
-          $("#modal_delete").modal('hide')
+          btn_idle(btn)
+          $("#modal_archive").modal('hide')
+          removeRow(source_table,appraisal_id,data)
         }
       });
     });
@@ -456,14 +397,11 @@
         type: 'post',
         data: form.serialize(),
         error: function () {
-            alert("Error al cerrar la bitacora.");
-            return false;
+          alert("Error al cerrar la bitacora.");
+          return false;
         },
         success: function (data) {
-          // everything is done in the view
-        },
-        complete: function (data) {
-          // everything is done in the view
+          replaceRow('table_sent',appraisal_id,data)
         }
       });
       return false;

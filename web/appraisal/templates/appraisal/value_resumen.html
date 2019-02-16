@@ -10,7 +10,7 @@
     </div>
   </div>
   <div id="recommendedValue" class="collapse show mt-4 mr-4 ml-4" aria-labelledby="heading">
-    <table class="table mb-0 border-left border-right">
+    <table id="table_resumen" class="table table-sm mb-0 border-left border-right">
       <thead class="thead" style="background: #eee;">
         <tr>
           <th scope="col"></th>
@@ -27,27 +27,27 @@
           <td scope="col" style="vertical-align: middle;">Valor comercial</td>
           <td scope="col"></td>
           <td scope="col">{{forms.appraisal.valorUF}}</td>
-          <td scope="col"><input id="in_value_market" class="form-control text-right" disabled></td>
+          <td scope="col"><input id="in_value_market" class="form-control form-control-sm text-right" disabled></td>
           <td scope="col"></td>
         </tr>
         <tr>
           <td scope="col"></td>
           <td scope="col" style="vertical-align: middle;">Valor liquidez</td>
           {% if not appraisal.finished %}
-          <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75"></td>
+          <td scope="col"><input id="liquidity" class="form-control form-control-sm text-right" type="text" value="0.75"></td>
           {% else %}
-          <td scope="col"><input id="liquidity" class="form-control text-right" type="text" value="0.75" disabled></td>
+          <td scope="col"><input id="liquidity" class="form-control form-control-sm text-right" type="text" value="0.75" disabled></td>
           {% endif %}
-          <td scope="col"><input id="in_value_liquid_UF" class="form-control text-right" disabled></td>
-          <td scope="col"><input id="in_value_liquid" class="form-control text-right" disabled></td>
+          <td scope="col"><input id="in_value_liquid_UF" class="form-control form-control-sm text-right" disabled></td>
+          <td scope="col"><input id="in_value_liquid" class="form-control form-control-sm text-right" disabled></td>
           <td scope="col"></td>
         </tr>
         <tr class="border-bottom">
           <td scope="col"></td>
           <td scope="col" style="vertical-align: middle;">Monto seguro</td>
           <td scope="col"></td>
-          <td scope="col"><input id="in_value_safe_UF" class="form-control text-right" disabled></td>
-          <td scope="col"><input id="in_value_safe" class="form-control text-right" disabled></td>
+          <td scope="col"><input id="in_value_safe_UF" class="form-control form-control-sm text-right" disabled></td>
+          <td scope="col"><input id="in_value_safe" class="form-control form-control-sm text-right" disabled></td>
           <td scope="col"></td>
         </tr>
       </tbody>

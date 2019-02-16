@@ -16,14 +16,22 @@
 <td class="search">
   <input class="form-control form-control-sm search" data-field="tasadorUser" placeholder=""></input>
 </td>
-{% if state != 2 %}
+{% if state != 4 %}
 <td class="search">
   <input class="form-control form-control-sm search" data-field="visadorUser" placeholder=""></input>
 </td>
 {% endif %}
-<td>
+{% if state != 4 %}
+<td class="search">	
+	<input class="form-control form-control-sm search" data-field="dateCreated" placeholder=""></input>
 </td>
-<td>
+{% endif %}
+<td class="search">
+	{% if state != 4 %}
+	<input class="form-control form-control-sm search" data-field="dateDue" placeholder=""></input>
+	{% else %}
+	<input class="form-control form-control-sm search" data-field="dateFinished" placeholder=""></input>
+	{% endif %}
 </td>
 <td>
 </td>

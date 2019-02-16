@@ -451,6 +451,8 @@ class FormEditProperty(forms.Form):
 
     addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
     addressNumber2.widget.attrs.update({'class':"form-control"})
+    appraised = forms.BooleanField(required=False)
+    appraised.widget.attrs.update({'class':'form-check-input'})
 
 class FormAddApartment(forms.Form):
 

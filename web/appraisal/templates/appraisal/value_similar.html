@@ -17,7 +17,9 @@
 
     {% for re in appraisal.real_estates.all %}
       <div class="real_estate mt-3" data-id="{{re.id}}">
-        <p> {{re.address}} </p>
+        {% if appraisal.real_estates.all.count > 1 %}
+          <p> {{re.address}} </p>
+        {% endif %}
         {% if re.terrains.all or re.buildings.all %}
           
           <!-- TERRENOS -->
