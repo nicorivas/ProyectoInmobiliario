@@ -651,8 +651,7 @@ class AppraisalEvaluation(models.Model):
     correctSurface = models.BooleanField("Superficies correctas", blank=True,
                                          null=False, default=True)
     completeNormative = models.BooleanField("Normativa completa y correcta", blank=True, null=False, default=True)
-    homologatedReferences = models.BooleanField("Referencias homologables", blank=True,
-                                                null=False, default=True)
+    homologatedReferences = models.BooleanField("Referencias homologables", blank=True, null=False, default=True)
     generalQuality = models.BooleanField("Buena calidad general",
                                          blank=True,null=False, default=True)
     commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)

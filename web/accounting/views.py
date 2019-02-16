@@ -39,6 +39,7 @@ def exportAccounting(appraisals):
     worksheet.write(0, 5, "Valor Tasado")
     worksheet.write(0, 6, "Valor UF tasación")
     worksheet.write(0, 7, "Evaluación de la tasación")
+    worksheet.write(0, 8, "Gastos tasador")
     row = 1
     col = 0
     for appraisal in appraisals:
@@ -57,9 +58,10 @@ def exportAccounting(appraisals):
         worksheet.write(row, col + 2, appraisal.solicitanteCodigo)
         worksheet.write(row, col + 3, appraisal.get_tipoTasacion_display())
         worksheet.write(row, col + 4, tasador)
-        worksheet.write(row, col + 5, appraisal.price)
+        worksheet.write(row, col + 5, appraisal.getAppraisalPrice())
         worksheet.write(row, col + 6, appraisal.valorUF)
         worksheet.write(row, col + 7, evaluation)
+        worksheet.write(row, col + 8, appraisal.getTotalAppraisalExpenses())
         row += 1
     workbook.close()
     output.seek(0)
