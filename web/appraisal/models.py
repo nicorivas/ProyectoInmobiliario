@@ -643,17 +643,20 @@ class Comment(models.Model):
             return True
 
 class AppraisalEvaluation(models.Model):
+
+    #Cambiar los nombres de los campos completeness (coordinateOnTime), generalQuality (visitOnTime)y homologated references (content)
     
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
-    completeness = models.BooleanField("Informe completo", blank=True, null=False, default=True)
-    onTime = models.BooleanField("Entrega a tiempo", blank=True, null=False, default=True)
+    completeness = models.BooleanField("Coordinacion en tiempo exigido", blank=True, null=False, default=True)
+    generalQuality = models.BooleanField("Visita en tiempo exigido",
+                                         blank=True, null=False, default=True)
+    onTime = models.BooleanField("Despacho en tiempo exigido", blank=True, null=False, default=True)
     correctSurface = models.BooleanField("Superficies correctas", blank=True,
                                          null=False, default=True)
     completeNormative = models.BooleanField("Normativa completa y correcta", blank=True, null=False, default=True)
-    homologatedReferences = models.BooleanField("Referencias homologables", blank=True, null=False, default=True)
-    generalQuality = models.BooleanField("Buena calidad general",
-                                         blank=True,null=False, default=True)
+    homologatedReferences = models.BooleanField("Contenidos resumidos adecuado", blank=True, null=False, default=True)
+
     commentText = models.CharField("Comentarios de la tasación", null=False, blank=True, max_length=500)
     commentFeedback = models.CharField("Feedback de la tasación", null=False, blank=True, max_length=500)
 
@@ -661,17 +664,18 @@ class AppraisalEvaluation(models.Model):
     def evaluationResult(self):
         grade = 0.0
         if self.completeness:
-            grade += 0.5
+            grade += 0.1
         if self.onTime:
-            grade += 0.25
+            grade += 0.3
         if self.correctSurface:
-            grade += 0.15
+            grade += 0.2
         if self.completeNormative:
-            grade += 0.05
+            grade += 0.2
         if self.homologatedReferences:
-            grade += 0.025
+            grade += 0.1
         if self.generalQuality:
-            grade += 0.025
+            grade += 0.1
+        grade = round(grade, 3)
         return grade
 
 
@@ -679,7 +683,6 @@ class AppraiserExpenses(models.Model):
     description = models.CharField("Descripcion del gasto", null=False, blank=True, max_length=1000)
     totalPrice = models.IntegerField("Precio", default=0, blank=False, null=False)
     appraisal = models.ForeignKey(Appraisal, on_delete=models.CASCADE, null=True)
-
 
     def __str__(self):
         return self.totalPrice

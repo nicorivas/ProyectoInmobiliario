@@ -22,21 +22,32 @@
 
             <tr>
               <td>
-                 {{evaluationForm.completeness.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la tasación posee la información suficiente como para justificar el precio asignado.">help_outline</i>
+                 {{evaluationForm.completeness.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la coordinación se hizo en el tiempo exigido.">help_outline</i>
               </td>
               <td style="text-align:center;">
-                50%
+                10%
               </td>
               <td id="completeness" style="text-align:center;">
                  {{evaluationForm.completeness}}
               </td>
             </tr>
             <tr>
+              <td>
+                 {{evaluationForm.generalQuality.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la visita se hizo en el tiempo exigido.">help_outline</i>
+              </td>
+              <td style="text-align:center;">
+                10%
+              </td>
+              <td id="generalQuality" style="text-align:center;">
+                {{evaluationForm.generalQuality}}
+              </td>
+            </tr>
+            <tr>
              <td>
-                {{evaluationForm.onTime.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la tasación se ha entregado dentro del plazo establecido.">help_outline</i>
+                {{evaluationForm.onTime.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si la tasación se ha despachado dentro del plazo establecido.">help_outline</i>
              </td>
              <td style="text-align:center;">
-                25%
+                30%
              </td>
              <td id="onTime" style="text-align:center;">
                 {{evaluationForm.onTime}}
@@ -44,10 +55,10 @@
             </tr>
             <tr>
               <td>
-                 {{evaluationForm.correctSurface.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha ingresado las superficies de la propiedad con un error menor al 5%.">help_outline</i>
+                 {{evaluationForm.correctSurface.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha ingresado todas las superficies de la propiedad reales asociadas (verificadas por todos los medios posibles). Por errores mayores al 10% de lo real, este campo no se marcará.">help_outline</i>
               </td>
               <td style="text-align:center;">
-                15%
+                20%
               </td>
               <td id="correctSurface" style="text-align:center;">
                 {{evaluationForm.correctSurface}}
@@ -58,7 +69,7 @@
                  {{evaluationForm.completeNormative.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha incluído todas las normativas relevantes a las que debe ajustarse la propiedad.">help_outline</i>
               </td>
               <td style="text-align:center;">
-                5%
+                20%
               </td>
               <td id="completeNormative" style="text-align:center;">
                 {{evaluationForm.completeNormative}}
@@ -66,21 +77,10 @@
             </tr>
             <tr>
               <td>
-                 {{evaluationForm.generalQuality.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si las imágenes y los textos son de buena calidad.">help_outline</i>
+                 {{evaluationForm.homologatedReferences.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha incluido todos los contendios resumidos adecuados (descripción técnica del bien, programa interior, descripción del bien, referencias y compaginación.).">help_outline</i>
               </td>
               <td style="text-align:center;">
-                2.5%
-              </td>
-              <td id="generalQuality" style="text-align:center;">
-                {{evaluationForm.generalQuality}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                 {{evaluationForm.homologatedReferences.label}} <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Marcar si el tasador ha incluído propiedades similares para determinar el precio por criterio comparativo. Si no aplica, marcar como cumplido.">help_outline</i>
-              </td>
-              <td style="text-align:center;">
-                2.5%
+                10%
               </td>
               <td id="homologatedReferences" style="text-align:center;">
                 {{evaluationForm.homologatedReferences}}
