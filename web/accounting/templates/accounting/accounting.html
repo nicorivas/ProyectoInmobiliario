@@ -105,16 +105,8 @@
 <div class="card container mb-4" id="div_accounting">
   <div class="card-body">
     <p class="card-title">Previsualización</p>
-    <table class="table table-sm  table-accounting"  style="font-size:0.8em;">
-      <thead>
-        {% include 'accounting/accounting_table_header.html' %}
-      </thead>
-      <tbody>
-        <table class="table table-sm  table-accounting"  id="table_accounting" style="font-size:0.8em;">
+    <table class="table table-sm  table-accounting"  style="font-size:0.8em;"  id="table_accounting">
           {% include 'accounting/accounting_table.html' %}
-        </table>
-
-      </tbody>
     </table>
   </div>
 </div>

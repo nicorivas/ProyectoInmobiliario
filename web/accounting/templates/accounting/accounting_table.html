@@ -1,6 +1,12 @@
+{% load custom_tags %}
+<thead>
+  {% include 'accounting/accounting_table_header.html' %}
+</thead>
 
+<tbody>
   {% for appraisal in appraisals %}
   <tr class='appraisal in_appraisal {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_in_accounting-{{appraisal.id}}">
     {% include 'accounting/accounting_table_tr.html' %}
   </tr>
   {% endfor %}
+</tbody>
