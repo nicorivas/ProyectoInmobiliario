@@ -71,13 +71,34 @@ def exportAccounting(appraisals):
     return response
 
 @login_required(login_url='/user/login')
+def ajax_accountingView(request):
+    print(request.GET)
+    tasador = request.GET['tasador']
+    try:
+        initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
+        end = datetime.strptime(request.GET['end'] + ":00", '%d/%m/%Y %H:%M:%S')
+    except ValueError:
+        return render(request, 'accounting/accounting.html')
+    appraisals = getTimeFramedAppraisals(tasador, initial, end)
+    context = {'appraisals': appraisals}
+    return render(request, 'accounting/accounting_table.html', context)
+
+
+
+@login_required(login_url='/user/login')
 def accountingView(request):
+
+    tasadores = list(User.objects.filter(groups__name__in=['tasador']))
+    context = {'tasadores': tasadores}
 
     if request.method == "POST":
         print(request.POST)
         tasador = request.POST['tasador']
-        initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
-        end = datetime.strptime(request.POST['appraisalTimeRequest2']+":00",'%d/%m/%Y %H:%M:%S')
+        try:
+            initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
+            end = datetime.strptime(request.POST['appraisalTimeRequest2']+":00",'%d/%m/%Y %H:%M:%S')
+        except ValueError:
+            return render(request, 'accounting/accounting.html', context )
         localtz = timezone('Chile/Continental')
         initial = localtz.localize(datetime.strptime(str(initial), '%Y-%m-%d %H:%M:%S'))
         end = localtz.localize((datetime.strptime(str(end), '%Y-%m-%d %H:%M:%S')))
@@ -85,6 +106,4 @@ def accountingView(request):
         return exportAccounting(appraisals)
 
 
-    tasadores = list(User.objects.filter(groups__name__in=['tasador']))
-    context = {'tasadores': tasadores}
     return render(request, 'accounting/accounting.html', context )

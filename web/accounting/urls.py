@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     path('', views.accountingView, name='accounting'),
+    path('ajax_accountingView_url/', views.ajax_accountingView, name='ajax_accountingView_url'),
 ]

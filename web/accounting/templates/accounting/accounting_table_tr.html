@@ -1,0 +1,56 @@
+
+
+<td>
+  <small>
+    <span class="id">{{ appraisal.id }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="solicitante">{{ appraisal.get_solicitante_display }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="tipoTasacion">{{ appraisal.get_tipoTasacion_display }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="tasador">{{ appraisal.tasadorUser.first_name.0}}. {{appraisal.tasadorUser.last_name.strip }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="precio">{{ appraisal.getAppraisalPrice }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="valorUF">{{ appraisal.valorUF }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="evaluacion">{{ appraisal.appraisalevaluation.evaluationResult }}</span>
+  </small>
+</td>
+
+<td>
+  <small>
+    <span class="expenses">{{ appraisal.getTotalAppraisalExpenses }}</span>
+  </small>
+</td>
+

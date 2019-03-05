@@ -88,7 +88,7 @@ function replaceRow(table_name, appraisal_id, html) {
 
 function replaceTable(table_name,data) {
   // Replaces a table, usually from data from AJAX. Takes
-  // into account the size of the table and hides the 
+  // into account the size of the table and hides the
   // alert of no elements if the table returned has elements.
   $("#"+table_name).html($.trim(data))
   var nrows = $("#"+table_name+" tr").length;
