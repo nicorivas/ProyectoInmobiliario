@@ -8,7 +8,7 @@
   <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
 </td>
 <td class="propertyType" style="text-align:center;">
-  {% include 'main/td_property_type_icon.html' %}
+  {% include 'list/td_property_type_icon.html' %}
 </td>
 <td class="address">
   <a href="{{appraisal.url}}">
@@ -29,12 +29,12 @@
 </td>
 <td style="text-align:right;">
   {% with table="active" %}
-    {% include 'main/btn_logbook.html' %}
+    {% include 'list/btn_logbook.html' %}
   {% endwith %}
   {% if perms.appraisal.assign_visador %}
-    {% include 'main/btn_evaluate.html' %}
+    {% include 'list/btn_evaluate.html' %}
   {% endif %}
   {% with class="btn_archive_appraisal_modal" %}
-    {% include 'main/btn_archive.html' %}
+    {% include 'list/btn_archive.html' %}
   {% endwith %}
 </td>

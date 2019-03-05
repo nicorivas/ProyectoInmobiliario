@@ -24,7 +24,7 @@ SECRET_KEY = 'k769$s4x%g32gq++w+yq-z9ac+!aeydo$t0(nazzit=8r=tlkw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'realestate',
     'reversion',
     'home',
-    'main',
+    'list',
     'create',
     'appraisal',
     'house',
@@ -97,7 +97,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'map.wsgi.application'
-
 
 # Database
 if os.getenv('GAE_APPLICATION', None):
@@ -164,8 +163,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
+STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
+# Google App Engine: set static root for local static files
+# https://cloud.google.com/appengine/docs/flexible/python/serving-static-files
+STATIC_ROOT = 'static/'
 
 GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
 

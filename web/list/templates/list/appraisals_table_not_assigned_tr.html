@@ -8,7 +8,7 @@
   <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
 </td>
 <td class="propertyType" style="text-align:center;">
-  {% include 'main/td_property_type_icon.html' %}
+  {% include 'list/td_property_type_icon.html' %}
 </td>
 <td>
   <a href="{{appraisal.url}}" class="address">
@@ -29,7 +29,7 @@
     {% if perms.appraisal.assign_tasador %}
     <div class="col text-right">
       {% with class="btn_assign_tasador_modal" %}
-        {% include 'main/btn_assign_user.html' %}
+        {% include 'list/btn_assign_user.html' %}
       {% endwith %}
     </div>
     {% endif %}
@@ -49,13 +49,13 @@
     {% if perms.appraisal.assign_visador %}
     <div class="col text-right">
       {% with class="btn_assign_visador_modal" %}
-        {% include 'main/btn_assign_user.html' %}
+        {% include 'list/btn_assign_user.html' %}
       {% endwith %}
     </div>
     {% endif %}
   </div>
 </td>
-{% include 'main/appraisals_table_td_date_created.html' %}
+{% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">
 {% if appraisal.daysLeft > 3 %}
   <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
@@ -67,11 +67,11 @@
 </td>
 <td style="text-align:right;">
   {% with table="not_assigned" %}
-    {% include 'main/btn_logbook.html' %}
+    {% include 'list/btn_logbook.html' %}
   {% endwith %}
   {% if "asignador" in groups or user.is_superuser %}
   {% with class="btn_archive_appraisal_modal" %}
-    {% include 'main/btn_archive.html' %}
+    {% include 'list/btn_archive.html' %}
   {% endwith %}
   {% endif %}
 </td>

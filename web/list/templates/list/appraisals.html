@@ -1,8 +1,8 @@
 
 {% load static %}
 
-<script src="{% static "main/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
-<script src="{% static "main/js/modal_assign_visador.js" %}" type="text/javascript"></script>
+<script src="{% static "list/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
+<script src="{% static "list/js/modal_assign_visador.js" %}" type="text/javascript"></script>
 <script>
   comment_class = {{comment_class|safe}}
   ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
@@ -34,7 +34,7 @@
       No hay tasaciones por asignar
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_not_assigned" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_table_not_assigned.html' %}
+      {% include 'list/appraisals_table_not_assigned.html' %}
     </table>
   </div>
 </div>
@@ -50,7 +50,7 @@
       No hay tasaciones por aceptar
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_not_accepted" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_table_not_accepted.html' %}      
+      {% include 'list/appraisals_table_not_accepted.html' %}      
     </table>
   </div>
 </div>
@@ -64,7 +64,7 @@
       No hay tasaciones en proceso
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_in_appraisal" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_table_in_appraisal.html' %}
+      {% include 'list/appraisals_table_in_appraisal.html' %}
     </table>
   </div>
 </div>
@@ -78,7 +78,7 @@
       No hay tasaciones en visación
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_in_revision" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_table_in_revision.html' %}
+      {% include 'list/appraisals_table_in_revision.html' %}
     </table>
   </div>
 </div>
@@ -92,20 +92,20 @@
       No hay tasaciones enviadas
     </div>
     <table class="table table-sm table-borderless" id="table_sent" style="display:none;font-size:0.8em;">
-      {% include 'main/appraisals_table_sent.html' %}
+      {% include 'list/appraisals_table_sent.html' %}
     </table>
   </div>
 </div>
 
-{% include "main/modals.html" %}
+{% include "list/modals.html" %}
 
 </div>
 
-<script src="{% static 'main/js/tools.js' %}" type="text/javascript"></script>
+<script src="{% static 'list/js/tools.js' %}" type="text/javascript"></script>
 
-<script src="{% static 'main/js/search.js' %}" type="text/javascript"></script>
+<script src="{% static 'list/js/search.js' %}" type="text/javascript"></script>
 
-<script src="{% static 'main/js/logbook.js' %}" type="text/javascript"></script>
+<script src="{% static 'list/js/logbook.js' %}" type="text/javascript"></script>
 
 <script>
 

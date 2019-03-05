@@ -2,19 +2,19 @@
 
 <thead>
   {% with state=1 %}
-    {% include 'main/appraisals_table_header.html' %}
+    {% include 'list/appraisals_table_header.html' %}
   {% endwith %}
 </thead>
 <tbody>
   <tr>
     {% with state=1 %}
-      {% include 'main/appraisals_table_search.html' %}
+      {% include 'list/appraisals_table_search.html' %}
     {% endwith %}
   </tr>
   {% for appraisal in appraisals_not_accepted %}
   {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
   <tr class='appraisal not_accepted {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_not_accepted-{{appraisal.id}}">
-    {% include 'main/appraisals_table_not_accepted_tr.html' %}
+    {% include 'list/appraisals_table_not_accepted_tr.html' %}
   </tr>
   {% endfor %}
 </tbody>

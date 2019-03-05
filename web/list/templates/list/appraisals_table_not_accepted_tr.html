@@ -8,7 +8,7 @@
   <small><span class="solicitanteCodigo">{{ appraisal.solicitanteCodigo }}</span></small>
 </td>
 <td class="propertyType" style="text-align:center;">
-    {% include 'main/td_property_type_icon.html' %}
+    {% include 'list/td_property_type_icon.html' %}
 </td>
 <td>
   <a href="{{appraisal.url}}" class="address">
@@ -41,7 +41,7 @@
     </div>
   </div>
 </td>
-{% include 'main/appraisals_table_td_date_created.html' %}
+{% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">
 {% if appraisal.daysLeft > 3 %}
   <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
@@ -53,6 +53,6 @@
 </td>
 <td style="text-align:right;">
   {% with table="not_accepted" %}
-    {% include 'main/btn_logbook.html' %}
+    {% include 'list/btn_logbook.html' %}
   {% endwith %}
 </td>

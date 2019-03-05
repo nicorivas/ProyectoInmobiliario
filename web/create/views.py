@@ -130,7 +130,7 @@ def view_create(request):
             # Go to appraisal url
             #return HttpResponseRedirect(appraisal.url)
             # Go to appraisal main
-            return HttpResponseRedirect('/main/')
+            return HttpResponseRedirect('/list/')
 
         else:
             errordata = form.errors.as_data()

@@ -1,4 +1,4 @@
-{% extends "main/base.html" %}
+{% extends "list/base.html" %}
 {% load static %}
 {% load custom_tags %}
 
@@ -41,7 +41,7 @@
               <small>{{ appraisal.solicitanteCodigo }}</small>
             </td>
             <td style="text-align:center;">
-              {% include 'main/td_property_type_icon.html' %}
+              {% include 'list/td_property_type_icon.html' %}
             </td>
             <td>
               <a href={{appraisal.url}}>
@@ -100,7 +100,7 @@
     </table>
   </div>
 </div>
-{% include "main/modals.html" %}
+{% include "list/modals.html" %}
 {% endblock %}
 
 <script>

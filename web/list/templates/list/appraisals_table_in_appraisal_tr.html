@@ -12,7 +12,7 @@
   </small>
 </td>
 <td style="text-align:center;">
-  <span class="propertyType">{% include 'main/td_property_type_icon.html' %}</span>
+  <span class="propertyType">{% include 'list/td_property_type_icon.html' %}</span>
 </td>
 <td>
   <a class="address" href="{{appraisal.url}}">
@@ -56,14 +56,14 @@
     {% if appraisal.in_appraisal %}
     <div class="col text-right">
       {% with class="btn_assign_visador_modal" %}
-        {% include 'main/btn_assign_user.html' %}
+        {% include 'list/btn_assign_user.html' %}
       {% endwith %}
     </div>
     {% endif %}
     {% endif %}
   </div>
 </td>
-{% include 'main/appraisals_table_td_date_created.html' %}
+{% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">
   {% if appraisal.daysLeft > 3 %}
     <p style="margin-bottom:0em;" class="font-weight-bold">{{appraisal.timeDue|date:"d/m G:i"}}</p>
@@ -75,6 +75,6 @@
 </td>
 <td style="text-align:right;">
   {% with table="in_appraisal" %}
-    {% include 'main/btn_logbook.html' %}
+    {% include 'list/btn_logbook.html' %}
   {% endwith %}
 </td>

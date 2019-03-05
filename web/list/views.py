@@ -103,7 +103,7 @@ def main(request):
         'notifications_appraisal_ids':notifications_appraisal_ids,
         'groups':groups}
 
-    return render(request, 'main/index.html', context)
+    return render(request, 'list/index.html', context)
 
 @login_required(login_url='/user/login')
 def imported_appraisals(request):
@@ -148,7 +148,7 @@ def imported_appraisals(request):
         'evaluationForm': evaluationForm,
         'appraisals_imported': appraisals_imported}
 
-    return render(request, 'main/appraisals_imported.html', context)
+    return render(request, 'list/appraisals_imported.html', context)
 
 def appraisals_get_state(state):
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser").filter(state=state).order_by('timeCreated')
@@ -159,10 +159,11 @@ def ajax_assign_tasador_modal(request):
     Assign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding modal, which has a form where you can select the user.
     '''
+    #regions = Regions.objects.all()
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     tasadores = User.objects.filter(groups__name__in=['tasador']).order_by('last_name')
     tasadores_info = appraiserWork(tasadores)
-    return render(request,'main/modals_assign_tasador.html',
+    return render(request,'list/modals_assign_tasador.html',
         {'appraisal':appraisal,
          'tasadores':tasadores_info})
 
@@ -174,7 +175,7 @@ def ajax_assign_visador_modal(request):
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     visadores = User.objects.filter(groups__name__in=['visador'])
     visadores_info = visadorWork(visadores)
-    return render(request,'main/modals_assign_visador.html',
+    return render(request,'list/modals_assign_visador.html',
         {'appraisal':appraisal,
          'visadores':visadores_info})
 
@@ -214,7 +215,7 @@ def ajax_assign_tasador(request):
 
     appraisals_not_accepted = appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
     
-    return render(request,'main/appraisals_table_not_accepted.html',
+    return render(request,'list/appraisals_table_not_accepted.html',
         {'appraisals_not_accepted':appraisals_not_accepted,
          'notifications_appraisal_ids':notifications_appraisal_ids})
 
@@ -240,7 +241,7 @@ def ajax_unassign_tasador(request):
 
     appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
 
-    return render(request,'main/appraisals_table_not_assigned.html',
+    return render(request,'list/appraisals_table_not_assigned.html',
         {'appraisals_not_assigned':appraisals_not_assigned,
          'notifications_appraisal_ids':notifications_appraisal_ids})
 
@@ -274,13 +275,13 @@ def ajax_assign_visador(request):
 
     if request.POST['source_table'] == 'table_not_assigned':
         appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
-        return render(request,'main/appraisals_table_not_assigned.html',
+        return render(request,'list/appraisals_table_not_assigned.html',
             {'appraisals_not_assigned':appraisals_not_assigned,
              'notifications_appraisal_ids':notifications_appraisal_ids,
              'status':status})
     elif request.POST['source_table'] == 'table_in_appraisal':
         appraisals_active = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
-        return render(request,'main/appraisals_table_in_appraisal.html',
+        return render(request,'list/appraisals_table_in_appraisal.html',
             {'appraisals_active':appraisals_active,
              'notifications_appraisal_ids':notifications_appraisal_ids,
              'status':status})
@@ -303,7 +304,7 @@ def ajax_unassign_visador(request):
     appraisals_active = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
 
 
-    return render(request,'main/appraisals_'+table_id+'_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_'+table_id+'_tr.html',{'appraisal':appraisal})
 
 def ajax_accept_appraisal(request):
 
@@ -321,7 +322,7 @@ def ajax_accept_appraisal(request):
 
     appraisals_in_appraisal = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
 
-    return render(request,'main/appraisals_table_in_appraisal.html',
+    return render(request,'list/appraisals_table_in_appraisal.html',
         {'appraisals_in_appraisal':appraisals_in_appraisal,
          'notifications_appraisal_ids':notifications_appraisal_ids})
 
@@ -354,7 +355,7 @@ def ajax_reject_appraisal(request):
 
     appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
 
-    return render(request,'main/appraisals_table_not_assigned.html',
+    return render(request,'list/appraisals_table_not_assigned.html',
         {'appraisals_not_assigned':appraisals_not_assigned,
          'notifications_appraisal_ids':notifications_appraisal_ids})
 
@@ -365,7 +366,7 @@ def ajax_archive_appraisal(request):
     appraisal.state_last = appraisal.state
     appraisal.state = Appraisal.STATE_ARCHIVED
     appraisal.save()
-    return render(request,'main/appraisals_table_sent_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal})
 
 def ajax_logbook(request):
     '''
@@ -384,7 +385,7 @@ def ajax_logbook(request):
 
     groups = request.user.groups.values_list('name',flat=True)
 
-    return render(request,'main/logbook.html',
+    return render(request,'list/logbook.html',
         {'appraisal':appraisal,
         'comments':comments,
         'form_comment':form_comment,
@@ -501,7 +502,7 @@ def ajax_comment(request):
     notifications = request.user.user.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
 
-    return render(request,'main/comment.html',{'comment':comment,'notifications_comment_ids':notifications_comment_ids})
+    return render(request,'list/comment.html',{'comment':comment,'notifications_comment_ids':notifications_comment_ids})
 
 def ajax_delete_comment(request):
     '''
@@ -549,7 +550,7 @@ def ajax_validate_cliente(request):
             appraisal.contactoValidado = True
             comment = appraisal.addComment(Comment.EVENT_CONTACTO_VALIDADO,request.user,datetime.datetime.now(datetime.timezone.utc))
     appraisal.save()
-    return render(request,'main/comment.html',{'comment':comment})
+    return render(request,'list/comment.html',{'comment':comment})
 
 def ajax_unvalidate_cliente(request):
     appraisal_id = int(request.GET['appraisal_id'])
@@ -568,7 +569,7 @@ def ajax_get_appraisal_row(request):
 
     table = request.GET['table']
     
-    return render(request,'main/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
 
 def ajax_evaluate_modal(request):
     '''
@@ -585,7 +586,7 @@ def ajax_evaluate_modal(request):
         appraisal.save()
         evaluationForm = EvaluationForm(instance=appraisal_evaluation)
 
-    return render(request,'main/modals_evaluate.html',{'appraisal':appraisal,'evaluationForm':evaluationForm})
+    return render(request,'list/modals_evaluate.html',{'appraisal':appraisal,'evaluationForm':evaluationForm})
 
 def ajax_evaluate_modal_close(request):
     '''
@@ -597,7 +598,7 @@ def ajax_evaluate_modal_close(request):
     evaluationForm.save()
     appraisal.save()
 
-    return render(request,'main/appraisals_table_sent_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal})
 
 def ajax_enviar_a_visador(request):
     '''
@@ -673,4 +674,4 @@ def ajax_solve_conflict(request):
     appraisal.in_conflict = False;
     appraisal.save()
 
-    return render(request,'main/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})

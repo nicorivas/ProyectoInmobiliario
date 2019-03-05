@@ -27,7 +27,7 @@ urlpatterns = [
     path('viz/', include('viz.urls')),
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
-    path('main/', include('main.urls')),
+    path('list/', include('list.urls')),
     path('realestate/', include('realestate.urls')),
     path('create/', include('create.urls')),
     path('appraisal/', include('appraisal.urls')),
