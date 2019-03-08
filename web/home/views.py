@@ -10,7 +10,7 @@ def home(request):
 
 	# If user is logged in, the main page is the list of appraisals.
 	if request.user.is_authenticated:
-		return redirect('main/')
+		return redirect('list/')
 
 	# Otherwise show the nice intro page
 
@@ -26,7 +26,7 @@ def home(request):
 				password=form_login.cleaned_data['password'])
 			if user is not None:
 				login(request, user)
-				return redirect('main/')
+				return redirect('list/')
 		else:
 			context = {'form_login':form_login}
 			return render(request, 'home/index.html', context)

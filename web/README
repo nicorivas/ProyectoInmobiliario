@@ -1,0 +1,7 @@
+docker build -t gcr.io/proyectoinmobiliario-212003/tasador .
+docker push gcr.io/proyectoinmobiliario-212003/tasador
+kubectl delete -f tasador.yaml
+kubectl create -f tasador.yaml
+kubectl logs tasador-65cbbfb89f-gn49w tasador-app
+kubectl get pods
+kubectl get services tasador

@@ -2,12 +2,12 @@
 
 <thead>
   {% with state=5 %}
-  {% include 'main/appraisals_table_header.html' %}
+  {% include 'list/appraisals_table_header.html' %}
   {% endwith %}
 </thead>
 <tbody>
   <tr>
-    {% include 'main/appraisals_table_search.html' %}
+    {% include 'list/appraisals_table_search.html' %}
   </tr>
   {% for appraisal in appraisals %}
   <tr class='appraisal' id="tr_table_search-{{appraisal.id}}">

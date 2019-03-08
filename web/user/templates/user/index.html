@@ -1,7 +1,7 @@
-{% extends "main/base.html" %}
+{% extends "list/base.html" %}
 {% load static %}
 {% block head %}
-        <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+        <link rel="stylesheet" href="{% static 'list/css/main.css' %}">
         {% load static %}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
@@ -10,6 +10,6 @@
 
 {% block content %}
 
-{% include "main/appraisals.html" %}
+{% include "list/appraisals.html" %}
 
 {% endblock %}

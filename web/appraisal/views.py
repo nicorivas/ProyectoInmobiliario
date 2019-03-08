@@ -52,7 +52,7 @@ import viz.maps as maps
 import appraisal.related as related
 from appraisal.export import *
 from dbase.globals import *
-from main.html_bits import *
+from list.html_bits import *
 
 from django.db.models import Avg, StdDev
 
