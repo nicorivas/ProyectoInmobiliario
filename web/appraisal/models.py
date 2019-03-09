@@ -648,6 +648,7 @@ class AppraisalEvaluation(models.Model):
     
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     appraisal = models.OneToOneField(Appraisal, on_delete=models.CASCADE, primary_key=True)
+
     completeness = models.BooleanField("Coordinacion en tiempo exigido", blank=True, null=False, default=True)
     generalQuality = models.BooleanField("Visita en tiempo exigido",
                                          blank=True, null=False, default=True)
@@ -664,13 +665,13 @@ class AppraisalEvaluation(models.Model):
     def evaluationResult(self):
         grade = 0.0
         if self.completeness:
-            grade += 0.1
+            grade += 0.4
         if self.onTime:
-            grade += 0.3
+            grade += 0.2
         if self.correctSurface:
-            grade += 0.2
+            grade += 0.1
         if self.completeNormative:
-            grade += 0.2
+            grade += 0.1
         if self.homologatedReferences:
             grade += 0.1
         if self.generalQuality:
