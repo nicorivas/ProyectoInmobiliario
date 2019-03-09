@@ -23,7 +23,7 @@
       {% if appraisal.orderFile %}
       <div class="btn btn-light">
         <a href="{{appraisal.orderFile.url}}">
-          <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Informe</div>
+          <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Plantilla</div>
           <div style="vertical-align:middle;display:inline-block;font-size:1.2em;" class="material-icons" style="font-size: 1em;">save_alt</div>
         </a>
       </div>
@@ -31,14 +31,31 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-9">
-      <p style="font-size:0.9em;margin-bottom:0em;">
+    <div class="col-6">
+      <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
         {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
-         | <span style='font-weight: 800; color:#000;'>{{appraisal.get_tipoTasacion_display}}</span>
+         | <span style='font-weight: 100; color:#000;'>{{appraisal.get_tipoTasacion_display}}</span>
       </p> 
     </div>
-    <div class="col-3" style="text-align:right;">
-
+    <div class="col-6" style="text-align:right;">
+      <form id="form_report" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="table_id" value="" style="width:240px;" hidden>
+        <input name="appraisal_id" value="{{appraisal.id}}" style="width:240px;" hidden>
+        <div style="font-size:0.8em;display:inline-block;padding-right:1em;">
+          {% if reports %}
+          <a href="{{reports.last}}" id="informe">Informe <small>({{reports.last.time_uploaded|date:"m/d h:i:s"}})</small></a>
+          {% else %}
+          <i>Adjuntar informe</i>
+          {% endif %}
+        </div>
+        <label for="report">
+          <div class="btn btn-light">
+          <div style="vertical-align:middle;display:inline-block;font-size:1.0em;" class="material-icons">attach_file</div>
+          <input type="file" name="report" id="report" style="display:none;">
+          </div>
+        </label>
+      </form>
     </div>
   </div>
 
@@ -98,7 +115,7 @@
     </div>
     <div class="row" style="font-size:0.8em;">
       <div class="col-2" style="text-align:right;">
-        <span style="vertical-align:-webkit-baseline-middle">Precio:</span>
+        <span class="text-right">Precio:</span>
       </div>
       <div class="col-10" style="padding:0em;">
         <p>
@@ -108,7 +125,7 @@
     </div>
     <div class="row" style="font-size:0.8em;">
       <div class="col-2" style="text-align:right;">
-        <span style="vertical-align:-webkit-baseline-middle">Ejecutivo/a:</span>
+        <span class="text-right">Ejecutivo/a:</span>
       </div>
       <div class="col-10" style="padding:0em;">
         <p>
@@ -118,7 +135,7 @@
         </p>
       </div>
       <div class="col-2" style="text-align:right;">
-        <span style="vertical-align:-webkit-baseline-middle">Cliente:</span>
+        <span class="text-right">Cliente:</span>
       </div>
       <div class="col-8" style="padding:0em;">
         <p>
@@ -136,7 +153,7 @@
         {% endif %}
       </div>
       <div class="col-2" style="text-align:right;">
-        <span style="vertical-align:-webkit-baseline-middle">Contacto:</span>
+        <span class="text-right">Contacto:</span>
       </div>
       <div class="col-8" style="padding:0em;">
         <p>
@@ -154,7 +171,7 @@
         {% endif %}
       </div>
       <div class="col-2" style="text-align:right;">
-        <span style="vertical-align:-webkit-baseline-middle">Propietario/a:</span>
+        <span class="text-right">Propietario/a:</span>
       </div>
       <div class="col-10" style="padding:0em;">
         <p>
@@ -182,7 +199,7 @@
     </button>
   </div>
 
-  {% if appraisal.state == appraisal.STATE_NOT_ACCEPTED or appraisal.state == appraisal.STATE_IN_APPRAISAL or appraisal.state == appraisal.STATE_IN_REVISION or appraisal.state == appraisal.STATE_SENT %}
+  {% if appraisal.state == appraisal.STATE_NOT_ACCEPTED or appraisal.state == appraisal.STATE_IN_APPRAISAL or appraisal.state == appraisal.STATE_IN_REVISION or appraisal.state == appraisal.STATE_SENT or appraisal.state == appraisal.STATE_RETURNED %}
   <div class="line">
     <span class="line">
       Flujo
@@ -227,9 +244,9 @@
   <div class="form-group row" id="div_previous_next">
     <div class="col-3"></div>
     <div class="col-6">
-      <button type="button" class="btn btn-sm btn-dark btn-block btn_devolver_a_visador" value="{{appraisal.id}}">
-        <i class="inline-icon material-icons">arrow_back</i>
-        Devolver a visación
+      <button type="button" class="btn btn-sm btn-dark btn-block btn_mark_as_returned" value="{{appraisal.id}}">
+        <i class="inline-icon material-icons">arrow_upward</i>
+        Tasación devuelta por cliente
         <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
     </div>
@@ -243,6 +260,18 @@
         Enviar a visador
         <div class="ld ld-ring ld-spin" style="display:none;"></div>
         <i class="inline-icon material-icons">arrow_forward</i>
+      </button>
+    </div>
+    <div class="col-3"></div>
+  </div>
+  {% elif appraisal.state == appraisal.STATE_RETURNED %}
+  <div class="form-group row" id="div_previous_next">
+    <div class="col-3"></div>
+    <div class="col-6">
+      <button type="button" class="btn btn-sm btn-dark btn-block btn_enviar_a_cliente_again" value="{{appraisal.id}}">
+        Fue enviada al cliente
+        <i class="inline-icon material-icons">arrow_downward</i>
+        <div class="ld ld-ring ld-spin" style="display:none;"></div>
       </button>
     </div>
     <div class="col-3"></div>

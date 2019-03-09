@@ -27,5 +27,7 @@ urlpatterns = [
     path('ajax/devolver_a_tasador/', views.ajax_devolver_a_tasador, name='ajax_devolver_a_tasador_url'),
     path('ajax/enviar_a_cliente/', views.ajax_enviar_a_cliente, name='ajax_enviar_a_cliente_url'),
     path('ajax/devolver_a_visador/', views.ajax_devolver_a_visador, name='ajax_devolver_a_visador_url'),
+    path('ajax/mark_as_returned/', views.ajax_mark_as_returned, name='ajax_mark_as_returned_url'),
     path('ajax/solve_conflict/', views.ajax_solve_conflict, name='ajax_solve_conflict_url'),
+    path('ajax/upload_report/', views.ajax_upload_report, name='ajax_upload_report_url'),
 ]

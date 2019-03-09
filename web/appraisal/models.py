@@ -124,6 +124,7 @@ class Appraisal(models.Model):
     STATE_SENT = 7
     STATE_ARCHIVED = 8
     STATE_ABORTED = 9
+    STATE_RETURNED = 10
     STATES = (
         (STATE_IMPORTED,'Importada'),
         (STATE_NOT_ASSIGNED,'No asignada'),
@@ -134,7 +135,8 @@ class Appraisal(models.Model):
         (STATE_ARCHIVED,'Archivada'),
         (STATE_ABORTED,'abortada'),
         (STATE_PAUSED,'paused'),
-        (STATE_FINISHED,'finished')
+        (STATE_FINISHED,'finished'),
+        (STATE_RETURNED,'Devuelta')
     )
     STATES_ARCHIVE = (
         (NONE,'---------'),
@@ -484,6 +486,12 @@ class Appraisal(models.Model):
             value = getattr(self, field_name.name)
             yield (field_name.name, value)
 
+class Report(models.Model):
+    
+    report = models.FileField(upload_to='test/',null=True)
+    appraisal = models.ForeignKey(Appraisal,on_delete=models.CASCADE)
+    time_uploaded = models.DateTimeField("Time uploaded",blank=True,null=True)
+
 class AppProperty(models.Model):
     
     property_type = models.PositiveIntegerField(choices=Building.propertyType_choices,default=Building.TYPE_OTRO)
@@ -545,9 +553,11 @@ class Comment(models.Model):
     EVENT_VISADOR_ASIGNADO = 26
     EVENT_VISADOR_DESASIGNADO = 27
     EVENT_TASACION_INGRESADA = 24
+    EVENT_RETURNED = 34
     EVENT_COMENTARIO = 28
     EVENT_DEVUELTA_A_TASADOR = 31
     EVENT_DEVUELTA_A_VISADOR = 32
+    EVENT_REPORTE_ADJUNTO = 33
     EVENT_OTRO = 0
     event_choices = (
         (EVENT_CONTACTO_VALIDADO, "Contacto validado"),
@@ -571,7 +581,9 @@ class Comment(models.Model):
         (EVENT_INCIDENCIA, "Incidencia"),
         (EVENT_CORRECCION_INFORME, "Corrección informe"),
         (EVENT_OBSERVACION_VISADOR, "Observación visador"),
+        (EVENT_REPORTE_ADJUNTO, "Reporte adjunto"),
         (EVENT_COMENTARIO, "Comentario"),
+        (EVENT_RETURNED, "Tasación devuelta por cliente"),
         (EVENT_OTRO, "Otro")
     )
     event_choices_state = {
@@ -596,6 +608,9 @@ class Comment(models.Model):
             EVENT_COMENTARIO
         ],
         Appraisal.STATE_SENT:[
+            EVENT_COMENTARIO
+        ],
+        Appraisal.STATE_RETURNED:[
             EVENT_COMENTARIO
         ]
     }
@@ -627,7 +642,8 @@ class Comment(models.Model):
                self.event != self.EVENT_ENTREGADO_AL_CLIENTE and \
                self.event != self.EVENT_ENVIADA_A_VISADOR and \
                self.event != self.EVENT_DEVUELTA_A_TASADOR and \
-               self.event != self.EVENT_DEVUELTA_A_VISADOR
+               self.event != self.EVENT_DEVUELTA_A_VISADOR and \
+               self.event != self.EVENT_REPORTE_ADJUNTO
 
     @property
     def small(self):

@@ -1,5 +1,6 @@
 from django import template
 from django.contrib.auth.models import Group 
+import os
 
 register = template.Library()
 
@@ -20,3 +21,7 @@ def has_group(user, group_name):
 def has_group_or_super(user, group_name):
     group =  Group.objects.get(name=group_name) 
     return group in user.groups.all() 
+
+@register.filter
+def filename(value):
+    return os.path.basename(value.file.name)

@@ -1,5 +1,7 @@
 {% extends "list/base.html" %}
 
+{% block title %}Tasador • Ingresar{% endblock %}
+
 {% load static %}
 
 {% block content %}
@@ -9,18 +11,21 @@
 <div class="container" style="max-width:100%">
 
    <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-1">
       </div>
-      <div class="col-md-10">
+      <div class="col-md-11">
          <h5 class="mb-4">Ingresar tasación</h5>
       </div>
    </div>
+
+  <div class="card">
+  <div class="card-body">
 
     <form class="needs-validation" action="/create/" method="post" id="form" enctype="multipart/form-data"
       data-commune-url="{% url 'ajax_load_communes' %}" data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
         {% csrf_token %}
 
-        <div class="row">
+        <div class="row mt-4">
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Solicitud</p>
           </div>
@@ -28,7 +33,7 @@
             <div class="form-group">
               <div class="custom-file">
                 {{form.archivo}}
-                <label class="custom-file-label" for="validatedCustomFile">Seleccionar archivo</label>
+                <label class="custom-file-label" for="validatedCustomFile"><i>Seleccione archivo de solicitud</i></label>
               </div>
             </div>
           </div>
@@ -378,14 +383,18 @@
          <div class="col-md-2">
          </div>
          <div class="col-md-6">
-            <button class="btn btn-dark btn-block align-bottom ld-ext-right" id="btn_create">
-              Crear
-              <div class="ld ld-ring ld-spin"></div>
+            <button class="btn btn-dark btn-block align-bottom" id="btn_create">
+              <div class="text">Ingresar tasación</div>
+              <div class="ld ld-ring ld-spin" style="display:none;"></div>
             </button>
          </div>
       </div>
 
    </form>
+
+  </div>
+  </div>
+
 </div>
 
 <script src="{% static 'list/js/tools.js' %}" type="text/javascript"></script>
@@ -397,8 +406,9 @@
     if (type.val() == 2) {
       $("#div_addressNumber2").find('label span').html('Dpto.');
     } else if (type.val() == 6) {
-    } else {
       $("#div_addressNumber2").find('label span').html('Oficina');
+    } else {
+      $("#div_addressNumber2").find('label span').html('No. 2');
     }
   }
 
@@ -611,7 +621,7 @@
 
     $("#btn_create").on("click", function (e) {
       if ($("#form").valid()) {
-        $(this).addClass('running');
+        btn_loading($(this),hide_text=true,disable=false)
         setTimeout(function () { disableButton(); }, 0);
         //$(this).prop('disabled', true);
       };

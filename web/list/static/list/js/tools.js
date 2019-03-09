@@ -1,4 +1,4 @@
-function btn_loading(btn,hide_text) {
+function btn_loading(btn,hide_text,disable=true) {
   // Remove notifications
   btn.removeClass('btn-not');
   btn.find('.notification').fadeOut();
@@ -7,7 +7,9 @@ function btn_loading(btn,hide_text) {
   btn.find('.ld').show();
   btn.find('.icon').hide();
   // Disable
-  btn.prop('disabled', true);
+  if (disable) {
+    btn.prop('disabled', true);
+  }
   if (hide_text) {
     btn.find('.text').hide()
     btn.find('.loading_text').show()
@@ -49,23 +51,31 @@ function addRow(table_name, appraisal_id, html) {
   //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
   $("#div_alert_"+table_name).fadeOut()
   $("#"+table_name).fadeIn()
+  if (table_name == "table_returned") {
+    $("#div_returned").slideDown()
+  }
 }
 
 function removeRow(table_name, appraisal_id) {
   // Remove row from table. Takes into account if this is
   // the last row remaining, in that case it hides the whole
   // table and shows the no elements alert div.
-  var nrows = $("#"+table_name+" tr").length;
-  if (nrows > 3) {
-    $("#tr_"+table_name+"-"+appraisal_id).fadeOut()
-  } else {
-    $("#"+table_name).fadeOut()
-    $("#div_alert_"+table_name).fadeToggle()
+  $("#tr_"+table_name+"-"+appraisal_id).fadeOut("normal", function() { $(this).remove(); })
+  var nrows = $("#"+table_name+" tr.appraisal").length;
+  console.log('nrows',nrows)
+  if (nrows == 0) {
+    if (table_name == "table_returned") {
+      // Returned table is hidden when there are now appraisals left
+      $("#div_returned").slideUp()
+    } else {
+      $("#"+table_name).fadeOut()
+      $("#div_alert_"+table_name).fadeToggle()
+    }
   }
 }
 
 function moveRow(table_from, table_to, appraisal_id) {
-  var url = "{% url 'ajax_get_appraisal_row_url' %}"
+  var url = ajax_get_appraisal_row_url
   $.ajax({
     url: url,
     type: 'get',

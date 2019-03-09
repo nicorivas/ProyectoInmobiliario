@@ -1,3 +1,18 @@
+## Development
+
+
+
+## Production
+
+Followed this:
+
+https://cloud.google.com/python/django/kubernetes-engine
+
+kubectl create secret generic cloudsql --from-literal=username=[PROXY_USERNAME] --from-literal=password=[PASSWORD]
+kubectl create secret generic googlemaps --from-literal=apikey=$GOOGLE_MAPS_API_KEY
+kubectl create secret generic emailhost --from-literal=password=$EMAIL_HOST_PASSWORD
+kubectl create secret generic django --from-literal=key=$DJANGO_SECRET_KEY
+
 docker build -t gcr.io/proyectoinmobiliario-212003/tasador .
 docker push gcr.io/proyectoinmobiliario-212003/tasador
 kubectl delete -f tasador.yaml
@@ -5,3 +20,5 @@ kubectl create -f tasador.yaml
 kubectl logs tasador-65cbbfb89f-gn49w tasador-app
 kubectl get pods
 kubectl get services tasador
+
+Mayor difference is the inclusion of GDAL in Dockerfile.

@@ -56,6 +56,21 @@ spec:
                 secretKeyRef:
                   name: cloudsql
                   key: password
+            - name: GOOGLE_MAPS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: googlemaps
+                  key: apikey
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: emailhost
+                  key: password
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: django
+                  key: key
             # [END cloudsql_secrets]
         ports:
         - containerPort: 8080

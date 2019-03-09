@@ -17,11 +17,22 @@
 
 <div class="container" style="max-width:100%">
 
+  <div class="row">
+    	<div class="col-md-1">
+    	</div>
+    	<div class="col-md-11">
+    		<h5 class="mb-4">Archivo</h5>
+		</div>
+	</div>
+
 	<form id="buscar">
         {% csrf_token %}
-		<div class="card mb-2" id="div_not_assigned">
+		<div class="card mb-2">
 			<div class="card-body">
+				<p class="card-title">Búsqueda</p>
 				<div class="row">
+					<div class="col-2">
+					</div>
 					<div class="col-2">
 						{{form_search.state.label_tag}}
 						{{form_search.state}}
@@ -38,10 +49,12 @@
 						{{form_search.solicitanteCodigo.label_tag}}
 						{{form_search.solicitanteCodigo}}
 					</div>
-					<div class="col-4">
+					<div class="col-2">
 					</div>
 				</div>
 				<div class="row mt-3">
+					<div class="col-2">
+					</div>
 					<div class="col-2">
 						{{form_search.addressRegion.label_tag}}
 						{{form_search.addressRegion}}
@@ -61,6 +74,8 @@
 				</div>
 				<div class="row mt-3">
 					<div class="col-2">
+					</div>
+					<div class="col-2">
 						{{form_search.tasador.label_tag}}
 						{{form_search.tasador}}
 					</div>
@@ -70,28 +85,36 @@
 					</div>
 				</div>
 				<div class="row mt-3">
-					<div class="col-3">
+					<div class="col-2">
+					</div>
+					<div class="col-2">
 						{{form_search.timeCreatedFrom.label_tag}}
 						{{form_search.timeCreatedFrom}}
 					</div>
-					<div class="col-3">
+					<div class="col-2">
 						{{form_search.timeCreatedUntil.label_tag}}
 						{{form_search.timeCreatedUntil}}
 					</div>
-					<div class="col-3">
+					<div class="col-2">
 						{{form_search.timeFinishedFrom.label_tag}}
 						{{form_search.timeFinishedFrom}}
 					</div>
-					<div class="col-3">
+					<div class="col-2">
 						{{form_search.timeFinishedUntil.label_tag}}
 						{{form_search.timeFinishedUntil}}
 					</div>
 				</div>
 			</div>
-			<button class="btn btn-dark btn-sm" id="btn_search">
-				<div class="text">Buscar</div>
-				<div class="loading_text" style="display:none;">...</div>
-			</button>
+			<div class="row mb-4">
+				<div class="col-2"></div>
+				<div class="col-8">
+					<button class="btn btn-dark btn-block btn-sm" id="btn_search">
+						<div class="text">Buscar</div>
+						<div class="loading_text" style="display:none;">...</div>
+					</button>
+				</div>
+				<div class="col-2"></div>
+			</div>
 		</div>
 	</form>
 

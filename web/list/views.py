@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from user.views import userAppraisals
-from appraisal.models import Appraisal, Comment
+from appraisal.models import Appraisal, Comment, Report
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 
@@ -29,6 +29,7 @@ def main(request):
     appraisals_in_appraisal = []
     appraisals_in_revision = []
     appraisals_sent = []
+    appraisals_returned = []
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
     for app in appraisals:
         if app.state == Appraisal.STATE_NOT_ASSIGNED:
@@ -61,6 +62,14 @@ def main(request):
                request.user.is_superuser or \
                request.user.groups.filter(name='asignador').exists():
                 appraisals_sent.append(app)
+        elif app.state == Appraisal.STATE_RETURNED:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_returned.append(app)
+
+    print(appraisals_returned)
 
     # Form to create a comment.
 
@@ -97,6 +106,7 @@ def main(request):
         'appraisals_in_appraisal': appraisals_in_appraisal,
         'appraisals_in_revision': appraisals_in_revision,
         'appraisals_sent': appraisals_sent,
+        'appraisals_returned': appraisals_returned,
         'form_comment':form_comment,
         'comment_class':comment_class,
         'appraisal_class':appraisal_class,
@@ -377,7 +387,6 @@ def ajax_logbook(request):
     comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
     form_comment = FormComment(label_suffix='')
     
-    table = request.GET['table']
     form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
 
     notifications = request.user.user.notifications.all()
@@ -385,11 +394,14 @@ def ajax_logbook(request):
 
     groups = request.user.groups.values_list('name',flat=True)
 
+    reports = appraisal.report_set.order_by('time_uploaded')
+
     return render(request,'list/logbook.html',
         {'appraisal':appraisal,
         'comments':comments,
         'form_comment':form_comment,
         'groups':groups,
+        'reports':reports,
         'notifications_comment_ids':notifications_comment_ids})
 
 def ajax_logbook_close(request):
@@ -665,6 +677,21 @@ def ajax_devolver_a_visador(request):
 
     return JsonResponse({})
 
+def ajax_mark_as_returned(request):
+    '''
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    comment = appraisal.addComment(Comment.EVENT_RETURNED,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    appraisal.state = Appraisal.STATE_RETURNED
+    appraisal.save()
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+
+    return JsonResponse({})
+
 def ajax_solve_conflict(request):
     
     appraisal_id = int(request.GET['appraisal_id'])
@@ -675,3 +702,40 @@ def ajax_solve_conflict(request):
     appraisal.save()
 
     return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
+
+def ajax_upload_report(request):
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    for report_file in request.FILES.getlist('report'):
+        report = Report(report=report_file,appraisal=appraisal,time_uploaded=datetime.datetime.now(datetime.timezone.utc))
+        report.save()
+        appraisal.save()
+
+    comment = appraisal.addComment(Comment.EVENT_REPORTE_ADJUNTO,request.user,datetime.datetime.now(datetime.timezone.utc))
+
+    #notifications = request.user.user.notifications.all()
+    #notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
+
+    ##return render(request,'list/comment.html',{'comment':comment,'notifications_comment_ids':notifications_comment_ids})
+
+    comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
+    form_comment = FormComment(label_suffix='')
+    
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
+
+    notifications = request.user.user.notifications.all()
+    notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
+
+    groups = request.user.groups.values_list('name',flat=True)
+
+    reports = appraisal.report_set.order_by('time_uploaded')
+
+    return render(request,'list/logbook.html',
+        {'appraisal':appraisal,
+        'comments':comments,
+        'form_comment':form_comment,
+        'groups':groups,
+        'reports': reports,
+        'notifications_comment_ids':notifications_comment_ids})

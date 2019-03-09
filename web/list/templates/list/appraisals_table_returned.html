@@ -1,0 +1,20 @@
+{% load custom_tags %}
+
+<thead>
+  {% with state=6 %}
+    {% include 'list/appraisals_table_header.html' %}
+  {% endwith %}
+</thead>
+<tbody>
+  <tr>
+    {% with state=5 %}
+      {% include 'list/appraisals_table_search.html' %}
+    {% endwith %}
+  </tr>
+  {% for appraisal in appraisals_returned %}
+  {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
+  <tr class='appraisal sent {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_sent-{{appraisal.id}}">
+    {% include 'list/appraisals_table_returned_tr.html' %}
+  </tr>
+  {% endfor %}
+</tbody>

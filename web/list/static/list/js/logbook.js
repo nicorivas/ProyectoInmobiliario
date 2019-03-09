@@ -3,6 +3,7 @@ function assignLogbookModalActions() {
   $("#id_event").unbind()
   $("#id_event").off()
   $("#id_event").on("change", function (event) {
+    console.log("1")
     $("#div_datetime").slideUp()
     $("#div_warning_entregada").slideUp()
     $("#div_warning_incidencia").slideUp()
@@ -347,6 +348,35 @@ function assignLogbookModalActions() {
     })
   });
 
+  $(".btn_enviar_a_cliente_again").unbind()
+  $(".btn_enviar_a_cliente_again").off()
+  $(".btn_enviar_a_cliente_again").on("click", function (event) {
+    // Button to accept an appraisals that has been requested.
+    var appraisal_id = $(this).val(); // button has id of appraisal
+    var url = ajax_enviar_a_cliente_url
+    var btn = $(this)
+    var form = document.getElementById('form_comment');
+    var formData = new FormData(form);
+    btn_loading(btn)
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: formData,
+      processData: false,
+      contentType: false,
+      error: function() {
+        btn_idle(btn);
+        alert("Error al enviar la tasación al cliente.");
+        return false;
+      },
+      success: function (data) {
+        btn_idle(btn);
+        $('#logbook').modal('hide');
+        moveRow("table_returned","table_sent",appraisal_id)
+      }
+    })
+  });
+
   $(".btn_devolver_a_visador").unbind()
   $(".btn_devolver_a_visador").off()
   $(".btn_devolver_a_visador").on("click", function (event) {
@@ -376,6 +406,36 @@ function assignLogbookModalActions() {
     })
   });
 
+  $(".btn_mark_as_returned").unbind()
+  $(".btn_mark_as_returned").off()
+  $(".btn_mark_as_returned").on("click", function (event) {
+    // Button to accept an appraisals that has been requested.
+    console.log('a')
+    var appraisal_id = $(this).val(); // button has id of appraisal
+    var url = ajax_mark_as_returned_url
+    var btn = $(this)
+    var form = document.getElementById('form_comment');
+    var formData = new FormData(form);
+    btn_loading(btn)
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: formData,
+      processData: false,
+      contentType: false,
+      error: function() {
+        btn_idle(btn);
+        alert("Error al marcar tasación como devuelta.");
+        return false;
+      },
+      success: function (data) {
+        btn_idle(btn);
+        $('#logbook').modal('hide');
+        moveRow("table_sent","table_returned",appraisal_id)
+      }
+    })
+  });
+
   $("#btn_solve_conflict").unbind()
   $("#btn_solve_conflict").off()
   $("#btn_solve_conflict").on("click", function (event) {
@@ -398,6 +458,43 @@ function assignLogbookModalActions() {
         $("#tr_"+table+'-'+appraisal_id).removeClass('conflict')
         $('div#conflict').slideUp();
         //moveRow("table_sent","table_in_revision",appraisal_id)
+      }
+    })
+  });
+
+  $("input#report").change(function () {
+    var url = ajax_upload_report_url;
+    //var btn = $(this);
+    //btn_loading(btn,hide_text=true);
+    var form = $("#form_report")
+    var form_data = new FormData(form[0]);
+    var table = $("#table_id").val()
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: form_data,
+      processData: false,
+      contentType: false,
+      error: function() {
+        //btn_idle(btn);
+        alert("Error al adjuntar reporte.");
+      },
+      success: function (data) {
+        //btn_idle(btn);
+        $('#logbook').find('.modal-body').html($.trim(data));
+        assignLogbookModalActions();
+        $("#in_appraisal_id").val(appraisal_id); // hidden input
+        $("#table_id").attr("value",table);
+        console.log(table)
+        if (table == "not_accepted") {
+          $('#logbook').find('#div_event').hide()
+          $('#logbook').find('#div_comment_btn').hide()
+          $('#logbook').find('#div_datetime').hide()
+          $('#logbook').find('#div_accept_reject').show()
+        } else {
+          console.log("lll")
+          $("#id_event").trigger("change")
+        }
       }
     })
   });
