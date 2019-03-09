@@ -1,4 +1,5 @@
 {% extends "list/base.html" %}
+{% block title %}Tasador • Contabilidad{% endblock %}
 {% load static %}
 {% block head %}
         <link rel="stylesheet" href="{% static 'list/css/main.css' %}">
@@ -10,12 +11,20 @@
 
 {% block content %}
 <div class="container mb-4" style="max-width:100%">
+
+  <div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-11">
+      <h5 class="mb-4">Contabilidad</h5>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Contabilidad</h5>
         <form class="needs-validation" action="/accounting/" method="post" id="form" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        <div class="row">
+        <div class="row mt-4">
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Búsqueda</p>
           </div>
@@ -85,7 +94,7 @@
           <div class="col-md-1">
             <label for="id_ajax_list">&nbsp</label>
             <button class="btn btn-dark btn-block align-bottom ld-ext-left" id="btn_see" type="button">
-              Ver
+              Buscar
               <div class="ld ld-ring ld-spin"></div>
             </button>
           </div>

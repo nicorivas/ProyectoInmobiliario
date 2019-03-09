@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from home.forms import AuthenticationFormB
 from django.conf.urls import url
 from django.views.generic import RedirectView
+from .forms import PasswordResetForm
 app_name = 'user'
 
 urlpatterns = [

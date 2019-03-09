@@ -1022,8 +1022,6 @@ def ajax_photo_modal(request):
         return render(request,'appraisal/modals_photo.html', data)
 
 def ajax_photo_save(request):
-    print(request.POST)
-
     appraisal = Appraisal.objects.get(id=request.POST['appraisal_id'])
     if 'photo_id' in request.POST and request.POST['photo_id'] != '':
         photo = appraisal.photos.get(id=request.POST['photo_id'])

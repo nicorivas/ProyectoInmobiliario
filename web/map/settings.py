@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k769$s4x%g32gq++w+yq-z9ac+!aeydo$t0(nazzit=8r=tlkw'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -106,8 +106,8 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': '/cloudsql/proyectoinmobiliario-212003:southamerica-east1:protasa',
             'PORT': '5432',
             'NAME': 'data',
-            'USER': 'postgres',
-            'PASSWORD': 'iCga1kmX',
+            'USER': os.environ.get('DATABASE_USER'),
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD')
         }
     }
 else:
@@ -117,8 +117,8 @@ else:
             'HOST': '127.0.0.1',
             'PORT': '5432',
             'NAME': 'data',
-            'USER': 'postgres',
-            'PASSWORD': 'iCga1kmX',
+            'USER': os.environ.get('DATABASE_USER'),
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD')
         }
     }
 
@@ -163,12 +163,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
+#STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
+STATIC_URL = '/static/'
 # Google App Engine: set static root for local static files
 # https://cloud.google.com/appengine/docs/flexible/python/serving-static-files
 STATIC_ROOT = 'static/'
 
-GOOGLE_MAPS_API_KEY = 'AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E'
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 LOGIN_REDIRECT_URL = '/login/'
 
@@ -176,9 +177,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 INTERNAL_IPS = ['127.0.0.1']
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #cambiar cuando exista sistema para enviar correos
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "soporte@dataurbana.io"
-EMAIL_HOST_PASSWORD = "iCga1kmX"
+EMAIL_HOST_USER = "nicolasrivas@dataurbana.io"
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
