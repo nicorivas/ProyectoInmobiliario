@@ -15,6 +15,16 @@
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
         </div>
         <input class="form-control mb-2" placeholder="Buscar tasador" id="tasador_buscar" style="display:none;"></input>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="">Región</label>
+              {{form_profile.addressRegion}}
+            </div>
+            <div class="form-group col-6">
+              <label for="">Comuna</label>
+              {{form_profile.addressCommune}}
+            </div>
+          </div>
         <div class="alert alert-secondary">
           Al momento de asignar un tasador, éste será notificado por correo electrónico. El tasador luego deberá aceptar la solicitud.
         </div>
@@ -29,7 +39,7 @@
           </thead>
           <tbody>
             {% for tasador in tasadores %}
-            <tr class="tasador">
+            <tr class="tasador" id_region="{{tasador.user.user.addressRegion}}" id_commune="{{tasador.user.user.addressCommune}}">
               <td></td>
               <td>
                 <div class="form-check">
@@ -88,4 +98,30 @@
     val = $(this).val()
     search(val)
   })
+</script>
+
+<script>
+  $("#id_addressRegion").change(function () {
+    // get the url of the `load_cities` view
+    var url = $("#form_profile").attr("data-commune-url");
+    // get the selected country ID from the HTML input
+    var regionId = $(this).val();
+    console.log(regionId);
+
+    // initialize an AJAX request
+    $.ajax({
+      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+      url: url,
+      // add the country id to the GET parameters
+      data: {
+        'region': regionId
+      },
+      success: function (data) {
+        // `data` is the return of the `load_cities` view function
+        // replace the contents of the city input with the data that came from the server
+        console.log(data)
+        $("#id_addressCommune").html($.trim(data));
+      }
+    });
+  });
 </script>
