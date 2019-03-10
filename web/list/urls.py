@@ -30,4 +30,5 @@ urlpatterns = [
     path('ajax/mark_as_returned/', views.ajax_mark_as_returned, name='ajax_mark_as_returned_url'),
     path('ajax/solve_conflict/', views.ajax_solve_conflict, name='ajax_solve_conflict_url'),
     path('ajax/upload_report/', views.ajax_upload_report, name='ajax_upload_report_url'),
+    path('ajax/load-communes/', views.load_communes, name='ajax_load_communes'),
 ]
