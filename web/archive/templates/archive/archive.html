@@ -1,5 +1,7 @@
 {% extends "list/base.html" %}
 
+{% block title %}Tasador • Archivo{% endblock %}
+
 {% load static %}
 
 {% block head %}
@@ -29,9 +31,9 @@
         {% csrf_token %}
 		<div class="card mb-2">
 			<div class="card-body">
-				<p class="card-title">Búsqueda</p>
 				<div class="row">
-					<div class="col-2">
+					<div class="col-2 text-right">
+						<p class="font-weight-bold">Búsqueda</p>
 					</div>
 					<div class="col-2">
 						{{form_search.state.label_tag}}

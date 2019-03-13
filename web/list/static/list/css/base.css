@@ -52,6 +52,11 @@ input.error
     border: 1px solid #dc3545 !important; 
 }
 
+select.error
+{
+    border: 1px solid #dc3545 !important; 
+}
+
 input.edit_contact
 {
   margin: 0.0;

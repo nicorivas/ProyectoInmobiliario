@@ -52,10 +52,12 @@
           <input id="modal_assign_visador_appraisal_visador_id" name="appraisal_visador_id" type="hidden" value="{{appraisal.visadorUser.id}}">
           <input id="modal_assign_visador_source_table" name="source_table" type="hidden" value="">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          {% if appraisal.visadorUser %}
           <button type="button" id="btn_unassign_visador" name="btn_unassign_visador" class="btn btn-danger ld-ext-right">
             Desasignar
             <div class="ld ld-ring ld-spin"></div>
           </button>
+          {% endif %}
           <button type="button" id="btn_assign_visador" name="btn_assign_visador" class="btn btn-primary ld-ext-right">
             Asignar
             <div class="ld ld-ring ld-spin"></div>

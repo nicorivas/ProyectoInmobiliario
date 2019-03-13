@@ -170,7 +170,6 @@
         success: function (data) {
           $('#logbook').find('.modal-body').html($.trim(data));
           $("#in_appraisal_id").val(appraisal_id); // hidden input
-          console.log(table)
           $("input#table_id").attr("value",table);
           tr.removeClass("notification")
           $('#logbook').modal('show');
@@ -413,8 +412,7 @@
     assignTableActions()
 
     $('#modal_evaluate').on('hidden.bs.modal', function (e) {
-      // When the logbook modal is closed, we delete the notifications
-      // related to this appraisal. We also save the form.
+      // When the evaluation modal is closed, we replace the button to be colored.
       var appraisal_id = $("#in_appraisal_id").val();
       var url = "{% url 'ajax_evaluate_modal_close_url' %}";
       var form = $('#evaluate_form')
@@ -428,6 +426,7 @@
         },
         success: function (data) {
           replaceRow('table_sent',appraisal_id,data)
+          assignTableActions()
         }
       });
       return false;

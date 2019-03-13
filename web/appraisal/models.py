@@ -180,22 +180,43 @@ class Appraisal(models.Model):
     NONE = ''
     OTRA = 0
     HIPOTECARIA = 1
+    GARANTIA = 8
+    PREINFORME = 9
     COMERCIAL = 7
     REVISION = 2
     ESCRITORIO = 3
     PILOTO = 4
     TERRENO = 5
-    AVANCE_DE_OBRA = 6
+    EVALUACION_PROYECTO_INMOBILIARIO = 11
+    EVALUACION_PROYECTO_AUTOCONSTRUCCION = 12
+    AVANCE_DE_OBRA_INMOBILIARIO = 6
+    AVANCE_DE_OBRA_AUTOCONSTRUCCION = 10
+    FINAL_INMOBILIARIA = 13
+    FINAL_AUTOCONSTRUCCION = 14
+    REMATE = 15
+    AGRICOLA = 16
+    VEHICULO = 17
+    MAQUINAS_Y_EQUIPOS = 18
+    LEASING = 19
+
     tipoTasacion_choices = [
         (NONE,'---------'),
         (HIPOTECARIA, 'Hipotecaria'),
-        (COMERCIAL, 'Comercial'),
-        (TERRENO, 'Terreno'),
-        (AVANCE_DE_OBRA,'Avance de obra'),
+        (GARANTIA, 'Garantía general'),
+        (PREINFORME, 'Pre-informe'),
+        (EVALUACION_PROYECTO_INMOBILIARIO,'Evaluación proyecto inmobiliario'),
+        (EVALUACION_PROYECTO_AUTOCONSTRUCCION,'Evaluación proyecto autoconstrucción'),
+        (AVANCE_DE_OBRA_INMOBILIARIO,'Avance de obra inmobiliario'),
+        (AVANCE_DE_OBRA_AUTOCONSTRUCCION,'Avance de obra autoconstrucción'),
+        (FINAL_INMOBILIARIA,'Final inmobiliaria'),
+        (FINAL_AUTOCONSTRUCCION,'Final autoconstrucción'),
+        (REMATE,'Remate'),
+        (AGRICOLA,'Agrícola'),
+        (VEHICULO,'Vehículo'),
+        (MAQUINAS_Y_EQUIPOS,'Máquinas y equipos'),
         (REVISION, 'Revisión'),
-        (ESCRITORIO, 'Escritorio'),
-        (PILOTO, 'Piloto'),
-        (OTRA, 'Otra')
+        (LEASING, 'Leasing'),
+        (OTRA, 'Otro')
     ]
     tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
 
