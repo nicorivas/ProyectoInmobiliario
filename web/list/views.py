@@ -18,6 +18,9 @@ from appraisal.forms import FormComment
 
 from evaluation.forms import EvaluationForm
 from appraisal.models import AppraisalEvaluation
+from create.forms import AppraisalCreateForm
+from commune.models import Commune
+from region.models import Region
 
 @login_required(login_url='/user/login')
 def main(request):
@@ -75,6 +78,12 @@ def main(request):
 
     form_comment = FormComment(label_suffix='')
 
+    form = AppraisalCreateForm(label_suffix='')
+    communes = Commune.objects.only('name').order_by('name')
+    regions = Region.objects.only('name').order_by('code')
+    form.fields['addressRegion'].queryset = regions
+    form.fields['addressCommune'].queryset = communes
+
     # Comment class dictionary, to get in javascript the name of the events (big hack alert)
 
     comment_mp = Comment.__dict__
@@ -111,7 +120,8 @@ def main(request):
         'comment_class':comment_class,
         'appraisal_class':appraisal_class,
         'notifications_appraisal_ids':notifications_appraisal_ids,
-        'groups':groups}
+        'groups':groups,
+        'form':form}
 
     return render(request, 'list/index.html', context)
 
@@ -173,9 +183,15 @@ def ajax_assign_tasador_modal(request):
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     tasadores = User.objects.filter(groups__name__in=['tasador']).order_by('last_name')
     tasadores_info = appraiserWork(tasadores)
+    form = AppraisalCreateForm(label_suffix='')
+    communes = Commune.objects.only('name').order_by('name')
+    regions = Region.objects.only('name').order_by('code')
+    form.fields['addressRegion'].queryset = regions
+    form.fields['addressCommune'].queryset = communes
     return render(request,'list/modals_assign_tasador.html',
         {'appraisal':appraisal,
-         'tasadores':tasadores_info})
+         'tasadores':tasadores_info,
+         'form':form})
 
 def ajax_assign_visador_modal(request):
     '''
@@ -739,3 +755,11 @@ def ajax_upload_report(request):
         'groups':groups,
         'reports': reports,
         'notifications_comment_ids':notifications_comment_ids})
+
+def load_communes(request):
+    region_id = int(request.GET.get('region'))
+    region = Region.objects.get(pk=region_id)
+    communes = list(Commune.objects.filter(region=region.code).order_by('name'))
+    return render(request,
+        'hr/commune_dropdown_list_options.html',
+        {'communes': communes})

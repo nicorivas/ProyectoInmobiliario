@@ -7,7 +7,7 @@
       </button>
     </div>
     <div class="modal-body">
-      <form action="" method="post" id="form_assign_tasador">
+      <form action="" method="post" id="form_assign_tasador" data-commune-url="{% url 'ajax_load_communes' %}">
         {% csrf_token %}
         <div class="alert alert-primary text-center" id="ld-alert">
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
@@ -15,19 +15,22 @@
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
         </div>
         <input class="form-control mb-2" placeholder="Buscar tasador" id="tasador_buscar" style="display:none;"></input>
-          <div class="form-row">
-            <div class="form-group col-6">
+        <div class="form-row">
+            <div class="form-group col-6" id="region_select">
               <label for="">Región</label>
-              {{form_profile.addressRegion}}
+              {{form.addressRegion.label_tag}}
+              {{form.addressRegion}}
             </div>
-            <div class="form-group col-6">
+            <div class="form-group col-6" id="commune_select">
               <label for="">Comuna</label>
-              {{form_profile.addressCommune}}
+              {{form.addressCommune.label_tag}}
+              {{form.addressCommune}}
             </div>
           </div>
         <div class="alert alert-secondary">
           Al momento de asignar un tasador, éste será notificado por correo electrónico. El tasador luego deberá aceptar la solicitud.
         </div>
+
         <table class="table table-sm table-borderless" id="table" style="display:none;">
           <thead>
             <tr>
@@ -39,9 +42,9 @@
           </thead>
           <tbody>
             {% for tasador in tasadores %}
-            <tr class="tasador" id_region="{{tasador.user.user.addressRegion}}" id_commune="{{tasador.user.user.addressCommune}}">
+            <tr id="tasador_id" class="tasador" id_region="{{tasador.user.user.addressRegion.id}}" id_commune="{{tasador.user.user.addressCommune.id}}">
               <td></td>
-              <td>
+              <td id="tasador">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{tasador.user.id}}">
                   <label class="form-check-label" for="tasador_radio" id="nombre">
@@ -103,10 +106,9 @@
 <script>
   $("#id_addressRegion").change(function () {
     // get the url of the `load_cities` view
-    var url = $("#form_profile").attr("data-commune-url");
+    var url = $("#form_assign_tasador").attr("data-commune-url");
     // get the selected country ID from the HTML input
     var regionId = $(this).val();
-    console.log(regionId);
 
     // initialize an AJAX request
     $.ajax({
@@ -119,9 +121,59 @@
       success: function (data) {
         // `data` is the return of the `load_cities` view function
         // replace the contents of the city input with the data that came from the server
-        console.log(data)
         $("#id_addressCommune").html($.trim(data));
       }
     });
   });
+</script>
+
+<script>
+  $("#id_addressRegion").change(function() {
+  var region = $(this).val();
+
+  function validateRow(table) {
+        table.find('tr[class="tasador"]').each(function(i, el) {
+            if (el.getAttribute('id_region') != region){
+                $(el).hide();
+                }
+            else {
+                $(el).show();
+                }
+        });
+    }
+  jQuery('tbody').each(function(i, el) {
+        validateRow(jQuery(this));
+    }).find('tr[id_region="tasador"]').change(function() {
+        validateRow(jQuery(this).closest('tr'));
+    });
+
+  })
+</script>
+
+<script>
+  $("#id_addressCommune").change(function() {
+  var commune = $(this).val();
+  console.log(commune);
+
+  function validateRow(table) {
+        var valid = true;
+
+        table.find('tr[class="tasador"]').each(function(i, el) {
+            if (el.getAttribute('id_commune') != commune){
+                $(el).hide();
+                }
+            else {
+                $(el).show();
+                }
+
+        });
+    }
+
+  jQuery('tbody').each(function(i, el) {
+        validateRow(jQuery(this));
+    }).find('tr[id_region="tasador"]').change(function() {
+        validateRow(jQuery(this).closest('tr'));
+    });
+
+  })
 </script>
