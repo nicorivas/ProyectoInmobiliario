@@ -19,8 +19,9 @@
       <h5 class="mb-4">Contabilidad</h5>
     </div>
   </div>
+</div>
 
-  <div class="card">
+  <div class="card mb-1">
     <div class="card-body">
         <form class="needs-validation" action="/accounting/" method="post" id="form" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
@@ -109,12 +110,12 @@
       </form>
     </div>
   </div>
-</div>
 
-<div class="card container mb-4" id="div_accounting">
+
+<div class="card mb-1" id="div_accounting">
   <div class="card-body">
     <p class="card-title">Previsualización</p>
-    <table class="table table-sm  table-accounting"  style="font-size:0.8em;"  id="table_accounting">
+    <table class="table table-sm table-borderless table-appraisals"  style="font-size:0.8em;"  id="table_accounting">
           {% include 'accounting/accounting_table.html' %}
     </table>
   </div>

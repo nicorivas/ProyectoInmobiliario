@@ -9,7 +9,6 @@
     <div class="modal-body">
       <form action="" method="post" id="form_assign_tasador" data-commune-url="{% url 'ajax_load_communes' %}">
         {% csrf_token %}
-
         <div class="alert alert-primary text-center" id="ld-alert">
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
           Cargando tasadores
@@ -22,7 +21,7 @@
               {{form.addressRegion.label_tag}}
               {{form.addressRegion}}
             </div>
-            <div class="form-group col-6">
+            <div class="form-group col-6" id="commune_select">
               <label for="">Comuna</label>
               {{form.addressCommune.label_tag}}
               {{form.addressCommune}}
@@ -43,7 +42,7 @@
           </thead>
           <tbody>
             {% for tasador in tasadores %}
-            <tr id="tasador_id" class="tasador" id_region="{{tasador.user.user.addressRegion}}" id_commune="{{tasador.user.user.addressCommune}}">
+            <tr id="tasador_id" class="tasador" id_region="{{tasador.user.user.addressRegion.id}}" id_commune="{{tasador.user.user.addressCommune.id}}">
               <td></td>
               <td id="tasador">
                 <div class="form-check">
@@ -110,7 +109,6 @@
     var url = $("#form_assign_tasador").attr("data-commune-url");
     // get the selected country ID from the HTML input
     var regionId = $(this).val();
-    console.log(regionId);
 
     // initialize an AJAX request
     $.ajax({
@@ -130,17 +128,52 @@
 </script>
 
 <script>
-  $("#region_selector").click(function() {
+  $("#id_addressRegion").change(function() {
   var region = $(this).val();
-  console.log(region);
+
+  function validateRow(table) {
+        table.find('tr[class="tasador"]').each(function(i, el) {
+            if (el.getAttribute('id_region') != region){
+                $(el).hide();
+                }
+            else {
+                $(el).show();
+                }
+        });
+    }
+  jQuery('tbody').each(function(i, el) {
+        validateRow(jQuery(this));
+    }).find('tr[id_region="tasador"]').change(function() {
+        validateRow(jQuery(this).closest('tr'));
+    });
+
+  })
+</script>
+
+<script>
+  $("#id_addressCommune").change(function() {
+  var commune = $(this).val();
+  console.log(commune);
 
   function validateRow(table) {
         var valid = true;
-        table.find('tr[id_region="tasador"]').each(function(i, el) {
-            if (el.id_region == region) return valid = false;
+
+        table.find('tr[class="tasador"]').each(function(i, el) {
+            if (el.getAttribute('id_commune') != commune){
+                $(el).hide();
+                }
+            else {
+                $(el).show();
+                }
+
         });
-        tr.find('td[id_region=region]').attr('disabled', valid? null : 'disabled');
     }
+
+  jQuery('tbody').each(function(i, el) {
+        validateRow(jQuery(this));
+    }).find('tr[id_region="tasador"]').change(function() {
+        validateRow(jQuery(this).closest('tr'));
+    });
 
   })
 </script>
