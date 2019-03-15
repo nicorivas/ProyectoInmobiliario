@@ -71,6 +71,7 @@ spec:
                 secretKeyRef:
                   name: django
                   key: key
+            command: ["echo"]
             # [END cloudsql_secrets]
         ports:
         - containerPort: 8080
