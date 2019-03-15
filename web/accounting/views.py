@@ -7,6 +7,7 @@ import xlsxwriter
 from pytz import timezone
 from _datetime import datetime
 import io
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 # Create your views here.
@@ -73,7 +74,7 @@ def ajax_accountingView(request):
         initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
         end = datetime.strptime(request.GET['end'] + ":00", '%d/%m/%Y %H:%M:%S')
     except ValueError:
-        return render(request, 'accounting/accounting.html')
+        return render(request)
     appraisals = getTimeFramedAppraisals(tasador, initial, end)
     context = {'appraisals': appraisals}
     return render(request, 'accounting/accounting_table.html', context)
@@ -83,7 +84,7 @@ def ajax_accountingView(request):
 @login_required(login_url='/user/login')
 def accountingView(request):
 
-    tasadores = list(User.objects.filter(groups__name__in=['tasador']))
+    tasadores = list(User.objects.filter(groups__name__in=['tasador']).order_by('last_name'))
     context = {'tasadores': tasadores}
 
     if request.method == "POST":
@@ -92,7 +93,13 @@ def accountingView(request):
             initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
             end = datetime.strptime(request.POST['appraisalTimeRequest2']+":00",'%d/%m/%Y %H:%M:%S')
         except ValueError:
-            return render(request, 'accounting/accounting.html', context )
+            try:
+                if request.POST['marcador']=="True":
+                    return render(request)
+                else:
+                    return render(request, 'accounting/accounting.html', context)
+            except MultiValueDictKeyError:
+                return render(request, 'accounting/accounting.html', context)
         localtz = timezone('Chile/Continental')
         initial = localtz.localize(datetime.strptime(str(initial), '%Y-%m-%d %H:%M:%S'))
         end = localtz.localize((datetime.strptime(str(end), '%Y-%m-%d %H:%M:%S')))
