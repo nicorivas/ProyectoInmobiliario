@@ -31,4 +31,5 @@ urlpatterns = [
     path('ajax/solve_conflict/', views.ajax_solve_conflict, name='ajax_solve_conflict_url'),
     path('ajax/upload_report/', views.ajax_upload_report, name='ajax_upload_report_url'),
     path('ajax/load-communes/', views.load_communes, name='ajax_load_communes'),
+    path('ajax/save_time_due/', views.ajax_save_time_due, name='ajax_save_time_due'),
 ]

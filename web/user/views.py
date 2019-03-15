@@ -46,7 +46,6 @@ def userAppraisals(request):
     return [appraisals_not_assigned, appraisals_active, appraisals_finished]
 
 def save_appraisalNF(appraisal, request, comment):
-    print('save_appraisal')
     with reversion.create_revision():
         appraisal.save()
         reversion.set_user(request.user)
@@ -102,10 +101,8 @@ def view_profile(request, pk=None):
             appraisal = Appraisal.objects.get(pk=id)
             appraisal.delete()
         if 'btn_assign_tasador' in request.POST.keys():
-            print(request.POST.dict())
             ret = assign_tasadorNF(request)
         if 'btn_assign_visador' in request.POST.keys():
-            print(request.POST.dict())
             ret = assign_visadorNF(request)
 
     if pk:
@@ -153,7 +150,8 @@ def edit_profile(request):
             return redirect('user:profile')
         else:
             #messages.error(request, _('Please correct the error below.'))
-            print(form_profile.errors)
+            '''
+            '''
     else:
         form_profile = EditProfileForm(instance=user)
         form_profile.fields['addressRegion'].initial = 13

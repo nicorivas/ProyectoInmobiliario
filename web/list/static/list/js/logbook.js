@@ -123,8 +123,6 @@ function assignLogbookModalActions() {
       });
     //}
   });
-
-  console.log('3')
   
   $(".btn_delete_comment").unbind()
   $(".btn_delete_comment").off()
@@ -410,7 +408,6 @@ function assignLogbookModalActions() {
   $(".btn_mark_as_returned").off()
   $(".btn_mark_as_returned").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
-    console.log('a')
     var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_mark_as_returned_url
     var btn = $(this)

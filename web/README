@@ -8,6 +8,17 @@ Followed this:
 
 https://cloud.google.com/python/django/kubernetes-engine
 
+add these to requirements:
+
+mysqlclient==1.4.1
+wheel==0.32.3
+gunicorn==19.9.0
+psycopg2==2.7.7
+
+python manage.py collectstatic
+
+gsutil rsync -R static/ gs://<your-gcs-bucket>/static
+
 kubectl create secret generic cloudsql --from-literal=username=[PROXY_USERNAME] --from-literal=password=[PASSWORD]
 kubectl create secret generic googlemaps --from-literal=apikey=$GOOGLE_MAPS_API_KEY
 kubectl create secret generic emailhost --from-literal=password=$EMAIL_HOST_PASSWORD

@@ -7,6 +7,7 @@ from user.views import userAppraisals
 from appraisal.models import Appraisal, Comment, Report
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
+import datetime
 
 import pytz
 import json
@@ -15,6 +16,7 @@ import reversion, datetime
 from copy import deepcopy
 from reversion.models import Version
 from appraisal.forms import FormComment
+from .forms import TasadorSearch
 
 from evaluation.forms import EvaluationForm
 from appraisal.models import AppraisalEvaluation
@@ -71,8 +73,6 @@ def main(request):
                request.user.is_superuser or \
                request.user.groups.filter(name='asignador').exists():
                 appraisals_returned.append(app)
-
-    print(appraisals_returned)
 
     # Form to create a comment.
 
@@ -157,7 +157,6 @@ def imported_appraisals(request):
                                             'commentText':_commentText,
                                             'commentFeedback':_commentFeedback})
                 #evaluationForm.save()
-                print(evaluation.evaluationResult)
 
     # Get appraisals that this user can see
     #appraisals_not_assigned, appraisals_active, appraisals_finished = userAppraisals(request)
@@ -183,11 +182,13 @@ def ajax_assign_tasador_modal(request):
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     tasadores = User.objects.filter(groups__name__in=['tasador']).order_by('last_name')
     tasadores_info = appraiserWork(tasadores)
-    form = AppraisalCreateForm(label_suffix='')
+
+    form = TasadorSearch(label_suffix='')
     communes = Commune.objects.only('name').order_by('name')
     regions = Region.objects.only('name').order_by('code')
     form.fields['addressRegion'].queryset = regions
     form.fields['addressCommune'].queryset = communes
+
     return render(request,'list/modals_assign_tasador.html',
         {'appraisal':appraisal,
          'tasadores':tasadores_info,
@@ -755,6 +756,13 @@ def ajax_upload_report(request):
         'groups':groups,
         'reports': reports,
         'notifications_comment_ids':notifications_comment_ids})
+
+def ajax_save_time_due(request):
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    appraisal.timeDue = datetime.datetime.strptime(request.GET['datetime'],'%d/%m/%Y %H:%M')
+    appraisal.save()
+    return JsonResponse({'datetime':request.GET['datetime']})
 
 def load_communes(request):
     region_id = int(request.GET.get('region'))

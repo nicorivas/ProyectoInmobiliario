@@ -248,7 +248,7 @@
       processData: false,
       contentType: false,
       error: function(){
-        console.log('error')
+        //
       },
       success: function(data) {
         btn.removeClass('running');
@@ -269,13 +269,12 @@
               'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
           },
           success:function(data){
-              console.log(id)
               $('#document').attr("src",url);
               $('#document_id').val(id);
               $('#modalDocument').modal('show');
           },
           error:function(){
-              console.log('error')
+              //
           },
       });
   });

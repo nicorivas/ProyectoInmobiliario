@@ -93,12 +93,12 @@
       {% endif %}
     </div>
   </div>
-  <div class="row" style="font-size:0.8em;">
+  <div class="row mb-2" style="font-size:0.8em;">
     <div class="col-2" style="text-align:right;">
       <span class="text-right" style="vertical-align:text-top">Entrega:</span>
     </div>
     <div class="col-3" style="padding:0em;">
-      <span class="text-left" id="timeDue">{{appraisal.timeDue|date:"d/m/Y G:i"}}</span>
+      <span class="text-left" id="timeDue" style="vertical-align:text-top">{{appraisal.timeDue|date:"d/m/Y G:i"}}</span>
       <div class="input-group date" id="datetimepicker2" data-target-input="nearest" style="display:none;">
         <input type="text" name="datetime" class="form-control form-control-sm datetimepicker-input edit_contact" data-target="#datetimepicker2" id="id_datetime">
         <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker" style="height: 2.4em;">
@@ -114,10 +114,13 @@
       </script>
     </div>
     <div class="col-1" style="padding:0em 0em 0em 1em;">
-      <span style="vertical-align:text-top">
-        {% with class="edit" %}
-        {% include "list/btn_edit.html" %}
-        {% endwith %}
+      <span style="vertical-align:text-top;display:inline;" id="span_btn_edit">
+        <button type="button" class="btn edit" style="border:0px;width:20px;height:20px;padding:0em;">
+	        <i class="icon material-icons" style="font-size:16px;">edit</i>
+	        <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+      </span>
+      <span style="vertical-align:text-top;display:none;" id="span_btn_save">
         {% with class="save" %}
         {% include "list/btn_save.html" %}
         {% endwith %}
@@ -127,30 +130,43 @@
       $(".edit").on("click",function() {
         $("#datetimepicker2").show()
         $("#timeDue").hide()
-        $(".save").show()
-        $(this).hide()
+        $("#span_btn_save").show()
+        $("#span_btn_edit").hide()
       })
       $(".save").on("click",function() {
-        $("#datetimepicker2").hide()
-        $("#timeDue").show()
-        $(".edit").show()
-        $(this).hide()
+        var form = $('#logbook_form')
+        $.ajax({
+          url: "{% url 'ajax_save_time_due' %}",
+          type: 'get',
+          data: form.serialize(),
+          error: function () {
+            alert("Error al guardar fecha.");
+            return false;
+          },
+          success: function (data) {
+            $("#datetimepicker2").hide()
+            $("#timeDue").show()
+            $("#span_btn_edit").show()
+            $("#span_btn_save").hide()
+            $("span#timeDue").html(data['datetime'])
+          }
+        });
       })
     </script>
 
       <!--<p class="text-left"></p>-->
     <div class="col-1" style="padding-left:0em;">
-      <p class="text-right">Visador:</p>
+      <span class="text-right">Visador:</span>
     </div>
     <div class="col-4" style="padding:0em;">
       {% if appraisal.visadorUser %}
-      <p>
+      <span style="vertical-align: -webkit-baseline-middle;">
       {{ appraisal.visadorUser.first_name }} {{ appraisal.visadorUser.last_name.strip }}
-      </p>
+      </span>
       {% else %}
-      <p>
+      <span style="vertical-align: -webkit-baseline-middle;">
       <em>No asignado</em>
-      </p>
+      </span>
       {% endif %}
     </div>
   </div>

@@ -16,12 +16,8 @@ def getTimeFramedAppraisals(tasador, initial, end):
     tasador = int(tasador)
     if tasador==0:
         appraisals = Appraisal.objects.filter(timeFinished__range=[initial, end])
-        print(appraisals)
-        print('todos')
     else:
         appraisals = Appraisal.objects.filter(tasadorUser=tasador, timeFinished__range=[initial, end])
-        print(appraisals)
-        print(tasador)
     return appraisals
 
 
@@ -72,7 +68,6 @@ def exportAccounting(appraisals):
 
 @login_required(login_url='/user/login')
 def ajax_accountingView(request):
-    print(request.GET)
     tasador = request.GET['tasador']
     try:
         initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
@@ -92,7 +87,6 @@ def accountingView(request):
     context = {'tasadores': tasadores}
 
     if request.method == "POST":
-        print(request.POST)
         tasador = request.POST['tasador']
         try:
             initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')

@@ -3,7 +3,6 @@ function btn_assign_tasador_modal() {
   $(".btn_assign_tasador_modal").unbind()
   $(".btn_assign_tasador_modal").off()
   $(".btn_assign_tasador_modal").on("click", function (event) {
-    console.log('holi')
     // Assigns to a hidden input in the tasador modal the value of the
     // appraisal, to have in the post request.
     var url = ajax_assign_tasador_modal_url

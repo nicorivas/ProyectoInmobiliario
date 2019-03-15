@@ -26,7 +26,6 @@ def parseAddress(address,commune=None):
         if address.endswith(commune):
             address = address[:address.find(commune)].strip()
         commune = unidecode.unidecode(commune)
-        print(commune)
         if address.endswith(commune):
             address = address[:address.find(commune)].strip()
 

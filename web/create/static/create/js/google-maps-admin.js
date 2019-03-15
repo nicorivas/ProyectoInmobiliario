@@ -47,7 +47,6 @@ function googleMapAdmin() {
             map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
             var urlParms = self.parseURLParams(window.location.search);
-            console.log(urlParms)
             if (urlParms != undefined) {
               self.centerWithAddress(urlParms["address"][0],marker=1);
             } else {

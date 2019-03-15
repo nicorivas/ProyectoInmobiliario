@@ -335,7 +335,7 @@ class Appraisal(models.Model):
 
     @cached_property
     def hasTasador(self):
-        print(self.tasadorUser)
+        return self.tasadorUser != None
 
     @cached_property
     def not_assigned(self):
@@ -377,7 +377,8 @@ class Appraisal(models.Model):
 
     @cached_property
     def url(self):
-        return "/appraisal/{}/".format(self.id)
+        return ""
+        #return "/appraisal/{}/".format(self.id)
 
     @cached_property
     def daySinceCreated(self):
@@ -463,14 +464,12 @@ class Appraisal(models.Model):
             comments = self.comments.all()
 
         event_choices = Comment.event_choices_state[state]
-        print(event_choices)
 
         # already commented
         comment_ids = comments.values_list('event',flat=True)
 
         event_choices = [x for x in event_choices if x not in comment_ids or (x in comment_ids and x not in once_ids)]
         event_choices = [x for x in Comment.event_choices if x[0] in event_choices]
-        print(event_choices)
         return event_choices
 
     def buildings(self):

@@ -6,7 +6,6 @@
 <script>
   $(document).ready(function() {
     $('li.active').removeClass('active');
-    console.log(location.pathname)
     $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
   });
 </script>

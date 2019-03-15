@@ -11,7 +11,6 @@ df2 = pd.read_excel(file2, sheet_name='TASACION')
 pd.read_
 
 df.to_excel('G:/Mi unidad/ProyectoInmobiliario/Informes/test.xlsx', encoding='utf8')
-print(df)
 
 def santander_app1(file):
 
