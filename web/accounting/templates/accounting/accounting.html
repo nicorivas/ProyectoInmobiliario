@@ -7,6 +7,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://maps.google.com/maps/api/js?key=AIzaSyDgwKrK7tfcd9kCtS9RKSBsM5wYkTuuc7E&libraries=places"></script>
         <script src="{% static 'home/js/google-maps-autocomplete.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -142,7 +143,7 @@
        data: {'initial':initial, 'end':end, 'tasador':tasador},
 
        error: function () {
-           alert("Error al seleccionar vairables.");
+           alert("Recuerde seleccionar una fecha de inicio y/o término.");
            btn.removeClass('running');
            btn.prop('disabled', false);
            return false;
@@ -158,9 +159,41 @@
 </script>
 
 
-
-
 {% endblock %}
+
+
+
+<script>
+
+
+
+  $("#btn_generate").on("click", function (event) {
+    //button for loading in export
+    var initial = $('#id_appraisalTimeRequest').val();
+    var end =  $('#id_appraisalTimeRequest2').val();
+    var tasador =  $('#id_tasador').val();
+    var url2 = "{% url 'ajax_accountingView_url2' %}";
+    btn = $(this);
+    btn.addClass('running');
+    btn.prop('disabled', true);
+
+   $.fileDownload('/contabilidad.xlsx')
+      .done(function () {
+        btn.removeClass('running');
+        btn.prop('disabled', false);})
+
+      .fail(function () {
+        alert("Error al seleccionar vairables.");
+        btn.removeClass('running');
+        btn.prop('disabled', false);
+        });
+
+
+
+  });
+
+</script>
+
 
 <script>
   var token = '{{csrf_token}}';
@@ -179,7 +212,7 @@
     $.ajax({
        headers: { "X-CSRFToken": token },
        url: url2,
-       type: 'post',
+       type: 'get',
        data: {'appraisalTimeRequest':initial, 'appraisalTimeRequest2':end, 'tasador':tasador, marcador:"True"},
 
        error: function () {
@@ -192,8 +225,6 @@
        success: function (data) {
          btn.removeClass('running');
          btn.prop('disabled', false);
-         //replaceTable("table_accounting",data)
-         // assignTableActions()
        }
      });
   });

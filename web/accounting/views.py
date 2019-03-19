@@ -8,7 +8,7 @@ from pytz import timezone
 from _datetime import datetime
 import io
 from django.utils.datastructures import MultiValueDictKeyError
-
+from django.http import HttpResponseBadRequest
 
 # Create your views here.
 
@@ -74,7 +74,7 @@ def ajax_accountingView(request):
         initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
         end = datetime.strptime(request.GET['end'] + ":00", '%d/%m/%Y %H:%M:%S')
     except ValueError:
-        return render(request)
+        return HttpResponseBadRequest()
     appraisals = getTimeFramedAppraisals(tasador, initial, end)
     context = {'appraisals': appraisals}
     return render(request, 'accounting/accounting_table.html', context)
@@ -95,7 +95,7 @@ def accountingView(request):
         except ValueError:
             try:
                 if request.POST['marcador']=="True":
-                    return render(request)
+                    return HttpResponseBadRequest()
                 else:
                     return render(request, 'accounting/accounting.html', context)
             except MultiValueDictKeyError:
