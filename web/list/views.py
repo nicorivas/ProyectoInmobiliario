@@ -200,7 +200,7 @@ def ajax_assign_visador_modal(request):
     on the corresponding modal, which has a form where you can select the user.
     '''
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
-    visadores = User.objects.filter(groups__name__in=['visador'])
+    visadores = User.objects.filter(groups__name__in=['visador']).order_by('last_name')
     visadores_info = visadorWork(visadores)
     return render(request,'list/modals_assign_visador.html',
         {'appraisal':appraisal,

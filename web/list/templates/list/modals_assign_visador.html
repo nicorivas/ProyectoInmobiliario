@@ -32,7 +32,7 @@
                 <div class="form-check">
                   <input class="form-check-input visador_radio" type="radio" name="visador" id="visador_radio_{{visador.user.id}}" value="{{visador.user.id}}" {% if visador.user.id == appraisal.visadorUser.id %} checked {% endif %}>
                   <label class="form-check-label" for="visador_radio" id="nombre" {% if visador.user.id == appraisal.visadorUser.id %} style="color:#0069d9;" {% endif %}>
-                    {{visador.user.first_name}} {{visador.user.last_name}}
+                    {{visador.user.last_name}}, {{visador.user.first_name}}
                   </label>
                 </div>
               </td>

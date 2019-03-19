@@ -7,7 +7,7 @@ html, body {
 
 #content {
   font-family: Lucida Grande, Helvetica, sans-serif;
-  background: #fff;
+  background: #efefef;;
   margin: 0;
   min-height: 100vh;
   padding: 0px;
@@ -123,8 +123,4 @@ button:focus {outline:0;}
 
 .navbar-brand {
   font-family: 'Open Sans'
-}
-
-#content {
-  background-color: #efefef;
 }

@@ -104,6 +104,7 @@ class Appraisal(models.Model):
     real_estates = models.ManyToManyField(RealEstate)
     real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
     property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
+    property_main_type = models.IntegerField("Estado",choices=Building.propertyType_choices,null=True)
 
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
@@ -434,6 +435,13 @@ class Appraisal(models.Model):
             return diff.days
         else:
             return None
+
+    @cached_property
+    def property_main_icon(self):
+        if self.property_main_type != None:
+            return Building.property_type_icon[self.property_main_type]
+        else:
+            return Building.property_type_icon[Building.TYPE_OTRO]
 
     def addComment(self,event_id,user,timeCreated,text=None):
         comment = Comment(event=event_id,user=user,timeCreated=timeCreated)

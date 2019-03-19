@@ -87,6 +87,7 @@ def view_create(request):
 
             # crear propiedad y asignar rol
             propertyType = int(form.cleaned_data['propertyType'])
+            appraisal.property_main_type = propertyType
             if propertyType == Building.TYPE_TERRENO:
                 propiedad, created = real_estate.createOrGetTerreno(addressNumber2=form.cleaned_data['addressNumber2'])
                 appprop = appraisal.addAppProperty(Building.TYPE_TERRENO,propiedad.id)

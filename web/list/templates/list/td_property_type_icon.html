@@ -1,1 +1,5 @@
+{% if appraisal.property_main %}
 <i class="{{appraisal.property_main.propertyTypeIcon}}" data-toggle="tooltip" data-placement="top" title="{{appraisal.property_main.get_property_type_display}}"></i>
+{% else %}
+<i class="{{appraisal.property_main_icon}}" data-toggle="tooltip" data-placement="top" title="{{appraisal.get_property_main_type_display}}"></i>
+{% endif %}

@@ -61,11 +61,30 @@ class Building(models.Model):
         default=TYPE_OTRO)
 
     property_type_icon = {
-        TYPE_TERRENO: "fas fa-mountain",
         TYPE_CASA: "fas fa-home",
         TYPE_EDIFICIO: "fas fa-city",
         TYPE_DEPARTAMENTO: "fas fa-building",
-        TYPE_LOCAL_COMERCIAL: "fas fa-store"
+        TYPE_TERRENO: "fas fa-mountain",
+        TYPE_PARCELA_EDIFICADA: "fas fa-mountain",
+        TYPE_PARCELA_ERIAZA: "fas fa-mountain",
+        TYPE_OFICINA: "fas fa-briefcase",
+        TYPE_CASA_OFICINA: "fas fa-briefcase",
+        TYPE_LOCAL_COMERCIAL: "fas fa-store",
+        TYPE_PROPIEDAD_COMERCIAL: "fas fa-store",
+        TYPE_INDUSTRIA: "fas fa-industry",
+        TYPE_BODEGA: "fas fa-warehouse",
+        TYPE_GALPON: "fas fa-warehouse",
+        TYPE_CENTRO_EDUCACIONAL: "fas fa-school",
+        TYPE_ESTACIONAMIENTO: "fas fa-parking",
+        TYPE_BARCO: "fas fa-ship",
+        TYPE_VEHICULO: "fas fa-car",
+        TYPE_MAQUINARIA: "fas fa-truck-monster",
+        TYPE_ESTACION_DE_SERVICIO: "fas fa-gas-pump",
+        TYPE_CONDOMINIO: "fas fa-vihara",
+        TYPE_HOTEL: "fas fa-hotel",
+        TYPE_MOTEL: "fas fa-hotel",
+        TYPE_SEGUNDA_VIVIENDA: "fas fa-umbrella-beach",
+        TYPE_OTRO: "fas fa-question-circle"
     }
 
     name = models.CharField("Nombre",max_length=300,default="",blank=True)
