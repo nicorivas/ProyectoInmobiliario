@@ -157,11 +157,6 @@
    });
 </script>
 
-
-
-
-{% endblock %}
-
 <script>
   var token = '{{csrf_token}}';
 
@@ -179,7 +174,7 @@
     $.ajax({
        headers: { "X-CSRFToken": token },
        url: url2,
-       type: 'post',
+       type: 'get',
        data: {'appraisalTimeRequest':initial, 'appraisalTimeRequest2':end, 'tasador':tasador, marcador:"True"},
 
        error: function () {
@@ -199,3 +194,8 @@
   });
 
 </script>
+
+
+{% endblock %}
+
+
