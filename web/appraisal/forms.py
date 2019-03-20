@@ -461,8 +461,6 @@ class FormAddApartment(forms.Form):
 
 class FormAddRol(forms.ModelForm):
 
-    
-
     code = forms.CharField(max_length=20,label="Rol",required=True)
     code.widget.attrs.update({'class':"form-control"})
 

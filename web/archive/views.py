@@ -69,6 +69,9 @@ def ajax_search(request):
 		appraisals = appraisals.filter(real_estates__addressNumber__icontains=request.POST['addressNumber'])
 	if request.POST['addressCommune'] != '':
 		appraisals = appraisals.filter(real_estates__addressCommune__id=int(request.POST['addressCommune']))
+	print(request.POST)
+	if request.POST['addressRegion'] != '':
+		appraisals = appraisals.filter(real_estates__addressRegion__id=int(request.POST['addressRegion']))
 	if request.POST['tasador'] != '':
 		appraisals = appraisals.filter(Q(tasadorUser__first_name__icontains=request.POST['tasador'])|\
 							   		   Q(tasadorUser__last_name__icontains=request.POST['tasador']))

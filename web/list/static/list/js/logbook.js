@@ -3,7 +3,6 @@ function assignLogbookModalActions() {
   $("#id_event").unbind()
   $("#id_event").off()
   $("#id_event").on("change", function (event) {
-    console.log("1")
     $("#div_datetime").slideUp()
     $("#div_warning_entregada").slideUp()
     $("#div_warning_incidencia").slideUp()
@@ -77,7 +76,6 @@ function assignLogbookModalActions() {
         }
         if (event == comment_class['EVENT_INCIDENCIA']) {
           $('div#conflict').slideDown();
-          console.log($("#tr_"+table+"-"+appraisal_id))
           $("#tr_"+table+"-"+appraisal_id).addClass('conflict')
         }
       },
@@ -410,7 +408,6 @@ function assignLogbookModalActions() {
   $(".btn_mark_as_returned").off()
   $(".btn_mark_as_returned").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
-    console.log('a')
     var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_mark_as_returned_url
     var btn = $(this)
@@ -485,14 +482,12 @@ function assignLogbookModalActions() {
         assignLogbookModalActions();
         $("#in_appraisal_id").val(appraisal_id); // hidden input
         $("#table_id").attr("value",table);
-        console.log(table)
         if (table == "not_accepted") {
           $('#logbook').find('#div_event').hide()
           $('#logbook').find('#div_comment_btn').hide()
           $('#logbook').find('#div_datetime').hide()
           $('#logbook').find('#div_accept_reject').show()
         } else {
-          console.log("lll")
           $("#id_event").trigger("change")
         }
       }

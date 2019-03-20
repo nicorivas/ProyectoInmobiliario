@@ -8,17 +8,45 @@ Followed this:
 
 https://cloud.google.com/python/django/kubernetes-engine
 
+1. Instalar docker
+
+2. pip freeze > requirements.txt
+
+3. Add these to requirements:
+
+    mysqlclient==1.4.1
+    wheel==0.32.3
+    gunicorn==19.9.0
+    psycopg2==2.7.7
+
+4. python manage.py collectstatic
+
+5. gsutil rsync -R static/ gs://<your-gcs-bucket>/static
+
+6. 
+
+kubectl create secret generic cloudsql-oauth-credentials --from-file=credentials.json=[PATH_TO_CREDENTIAL_FILE]
 kubectl create secret generic cloudsql --from-literal=username=[PROXY_USERNAME] --from-literal=password=[PASSWORD]
 kubectl create secret generic googlemaps --from-literal=apikey=$GOOGLE_MAPS_API_KEY
 kubectl create secret generic emailhost --from-literal=password=$EMAIL_HOST_PASSWORD
 kubectl create secret generic django --from-literal=key=$DJANGO_SECRET_KEY
 
+7. gcloud auth configure-docker
+
+8.
 docker build -t gcr.io/proyectoinmobiliario-212003/tasador .
+
+9.
 docker push gcr.io/proyectoinmobiliario-212003/tasador
+
+[10].
 kubectl delete -f tasador.yaml
+
+11.
 kubectl create -f tasador.yaml
-kubectl logs tasador-65cbbfb89f-gn49w tasador-app
+
 kubectl get pods
+kubectl logs tasador-65cbbfb89f-gn49w tasador-app
 kubectl get services tasador
 
 Mayor difference is the inclusion of GDAL in Dockerfile.

@@ -8,7 +8,8 @@ from pytz import timezone
 from _datetime import datetime
 import io
 from django.utils.datastructures import MultiValueDictKeyError
-
+from django.http import HttpResponseBadRequest
+from .forms import AccountingForm
 
 # Create your views here.
 
@@ -17,12 +18,8 @@ def getTimeFramedAppraisals(tasador, initial, end):
     tasador = int(tasador)
     if tasador==0:
         appraisals = Appraisal.objects.filter(timeFinished__range=[initial, end])
-        print(appraisals)
-        print('todos')
     else:
         appraisals = Appraisal.objects.filter(tasadorUser=tasador, timeFinished__range=[initial, end])
-        print(appraisals)
-        print(tasador)
     return appraisals
 
 
@@ -73,13 +70,12 @@ def exportAccounting(appraisals):
 
 @login_required(login_url='/user/login')
 def ajax_accountingView(request):
-    print(request.GET)
     tasador = request.GET['tasador']
     try:
         initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
         end = datetime.strptime(request.GET['end'] + ":00", '%d/%m/%Y %H:%M:%S')
     except ValueError:
-        return render(request)
+        return HttpResponseBadRequest()
     appraisals = getTimeFramedAppraisals(tasador, initial, end)
     context = {'appraisals': appraisals}
     return render(request, 'accounting/accounting_table.html', context)
@@ -90,10 +86,10 @@ def ajax_accountingView(request):
 def accountingView(request):
 
     tasadores = list(User.objects.filter(groups__name__in=['tasador']).order_by('last_name'))
-    context = {'tasadores': tasadores}
+    form = AccountingForm()
+    context = {'tasadores': tasadores, 'form':form}
 
     if request.method == "POST":
-        print(request.POST)
         tasador = request.POST['tasador']
         try:
             initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
@@ -101,7 +97,7 @@ def accountingView(request):
         except ValueError:
             try:
                 if request.POST['marcador']=="True":
-                    return render(request)
+                    return HttpResponseBadRequest()
                 else:
                     return render(request, 'accounting/accounting.html', context)
             except MultiValueDictKeyError:

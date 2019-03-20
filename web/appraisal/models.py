@@ -104,6 +104,7 @@ class Appraisal(models.Model):
     real_estates = models.ManyToManyField(RealEstate)
     real_estate_main = models.ForeignKey(RealEstate,null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
     property_main = models.ForeignKey('AppProperty',null=True,on_delete=models.CASCADE, related_name='appraisals_main') # To speed up lookups
+    property_main_type = models.IntegerField("Estado",choices=Building.propertyType_choices,null=True)
 
     timeCreated = models.DateTimeField("Time created",blank=True,null=True)
     timeRequest = models.DateTimeField("Time created",blank=True,null=True)
@@ -180,22 +181,43 @@ class Appraisal(models.Model):
     NONE = ''
     OTRA = 0
     HIPOTECARIA = 1
+    GARANTIA = 8
+    PREINFORME = 9
     COMERCIAL = 7
     REVISION = 2
     ESCRITORIO = 3
     PILOTO = 4
     TERRENO = 5
-    AVANCE_DE_OBRA = 6
+    EVALUACION_PROYECTO_INMOBILIARIO = 11
+    EVALUACION_PROYECTO_AUTOCONSTRUCCION = 12
+    AVANCE_DE_OBRA_INMOBILIARIO = 6
+    AVANCE_DE_OBRA_AUTOCONSTRUCCION = 10
+    FINAL_INMOBILIARIA = 13
+    FINAL_AUTOCONSTRUCCION = 14
+    REMATE = 15
+    AGRICOLA = 16
+    VEHICULO = 17
+    MAQUINAS_Y_EQUIPOS = 18
+    LEASING = 19
+
     tipoTasacion_choices = [
         (NONE,'---------'),
         (HIPOTECARIA, 'Hipotecaria'),
-        (COMERCIAL, 'Comercial'),
-        (TERRENO, 'Terreno'),
-        (AVANCE_DE_OBRA,'Avance de obra'),
+        (GARANTIA, 'Garantía general'),
+        (PREINFORME, 'Pre-informe'),
+        (EVALUACION_PROYECTO_INMOBILIARIO,'Evaluación proyecto inmobiliario'),
+        (EVALUACION_PROYECTO_AUTOCONSTRUCCION,'Evaluación proyecto autoconstrucción'),
+        (AVANCE_DE_OBRA_INMOBILIARIO,'Avance de obra inmobiliario'),
+        (AVANCE_DE_OBRA_AUTOCONSTRUCCION,'Avance de obra autoconstrucción'),
+        (FINAL_INMOBILIARIA,'Final inmobiliaria'),
+        (FINAL_AUTOCONSTRUCCION,'Final autoconstrucción'),
+        (REMATE,'Remate'),
+        (AGRICOLA,'Agrícola'),
+        (VEHICULO,'Vehículo'),
+        (MAQUINAS_Y_EQUIPOS,'Máquinas y equipos'),
         (REVISION, 'Revisión'),
-        (ESCRITORIO, 'Escritorio'),
-        (PILOTO, 'Piloto'),
-        (OTRA, 'Otra')
+        (LEASING, 'Leasing'),
+        (OTRA, 'Otro')
     ]
     tipoTasacion = models.IntegerField("Tipo Pedido", choices=tipoTasacion_choices, blank=True, null=True)
 
@@ -314,7 +336,7 @@ class Appraisal(models.Model):
 
     @cached_property
     def hasTasador(self):
-        print(self.tasadorUser)
+        return self.tasadorUser != None
 
     @cached_property
     def not_assigned(self):
@@ -356,7 +378,8 @@ class Appraisal(models.Model):
 
     @cached_property
     def url(self):
-        return "/appraisal/{}/".format(self.id)
+        return ""
+        #return "/appraisal/{}/".format(self.id)
 
     @cached_property
     def daySinceCreated(self):
@@ -413,6 +436,13 @@ class Appraisal(models.Model):
         else:
             return None
 
+    @cached_property
+    def property_main_icon(self):
+        if self.property_main_type != None:
+            return Building.property_type_icon[self.property_main_type]
+        else:
+            return Building.property_type_icon[Building.TYPE_OTRO]
+
     def addComment(self,event_id,user,timeCreated,text=None):
         comment = Comment(event=event_id,user=user,timeCreated=timeCreated)
         if text and len(text) > 0:
@@ -442,14 +472,12 @@ class Appraisal(models.Model):
             comments = self.comments.all()
 
         event_choices = Comment.event_choices_state[state]
-        print(event_choices)
 
         # already commented
         comment_ids = comments.values_list('event',flat=True)
 
         event_choices = [x for x in event_choices if x not in comment_ids or (x in comment_ids and x not in once_ids)]
         event_choices = [x for x in Comment.event_choices if x[0] in event_choices]
-        print(event_choices)
         return event_choices
 
     def buildings(self):

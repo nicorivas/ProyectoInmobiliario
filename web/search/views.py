@@ -30,7 +30,6 @@ def appraisal_create(apartment):
     Create appraisal, given a ...?
     '''
     timeDue = datetime.datetime.now()# + timedelta(_appraisalTimeFrame)
-    print(timeDue)
     appraisal = Appraisal(
         apartment=apartment,
         timeCreated=datetime.datetime.now(),
@@ -112,8 +111,6 @@ def search(request):
             _addressNumberFlat = form_create.cleaned_data['addressNumberFlat_create']
             _appraisalTimeFrame = form_create.cleaned_data['appraisalTimeFrame_create']
 
-            print(_propertyType,RealEstate.TYPE_APARTMENT)
-
             if _propertyType == RealEstate.TYPE_HOUSE:
                 context = {'error_message': 'Cannot create houses yet'}
                 return render(request, 'search/error.html',context)
@@ -162,7 +159,8 @@ def search(request):
                 # go to appraisal url
                 return HttpResponseRedirect(appraisal.url)
         else:
-            print(form_create.errors)
+            '''
+            '''
 
         context = {'form_create':form_create}
 

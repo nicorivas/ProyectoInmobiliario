@@ -53,7 +53,6 @@ def map(request):
 
     # create our callback function
     def updatePoint(trace, points, selector):
-        print('a')
         c = list(scatter.marker.color)
         s = list(scatter.marker.size)
         for i in points.point_inds:

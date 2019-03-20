@@ -62,7 +62,6 @@ function removeRow(table_name, appraisal_id) {
   // table and shows the no elements alert div.
   $("#tr_"+table_name+"-"+appraisal_id).fadeOut("normal", function() { $(this).remove(); })
   var nrows = $("#"+table_name+" tr.appraisal").length;
-  console.log('nrows',nrows)
   if (nrows == 0) {
     if (table_name == "table_returned") {
       // Returned table is hidden when there are now appraisals left

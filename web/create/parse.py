@@ -26,7 +26,6 @@ def parseAddress(address,commune=None):
         if address.endswith(commune):
             address = address[:address.find(commune)].strip()
         commune = unidecode.unidecode(commune)
-        print(commune)
         if address.endswith(commune):
             address = address[:address.find(commune)].strip()
 
@@ -115,11 +114,21 @@ def parseItau(ws):
     if isinstance(solicitanteEjecutivoEmail,type('')):
         if solicitanteEjecutivoEmail != '':
             data['solicitanteEjecutivoEmail'] = parse_email(solicitanteEjecutivoEmail)
+    if data['solicitanteEjecutivoEmail'] == 'email:':
+        solicitanteEjecutivoEmail = ws['K7'].value
+        if solicitanteEjecutivoEmail != '':
+            data['solicitanteEjecutivoEmail'] = parse_email(solicitanteEjecutivoEmail)
 
     solicitanteEjecutivoTelefono = ws['O7'].value
     if isinstance(solicitanteEjecutivoTelefono,type('')):
         if solicitanteEjecutivoTelefono != '':
             data['solicitanteEjecutivoTelefono'] = ws['O7'].value.strip().replace(' ','')
+    if data['solicitanteEjecutivoTelefono'] == "Teléfono:":
+        solicitanteEjecutivoTelefono = ws['P7'].value
+        if isinstance(solicitanteEjecutivoTelefono,type('')):
+            if solicitanteEjecutivoTelefono != '':
+                data['solicitanteEjecutivoTelefono'] = ws['P7'].value.strip().replace(' ','')
+
 
     tipoTasacion = ws['G9'].value
     if tipoTasacion:
@@ -158,11 +167,11 @@ def parseItau(ws):
                 pass
             try:
                 a = datetime.datetime.strptime(data['appraisalTimeRequest'],'%d/%m/%Y %H:%M')
-            except ValueError:
+            except (ValueError, KeyError):
                 try:
                     a = datetime.datetime.strptime(data['appraisalTimeRequest'],'%d/%m/%y %H:%M')
                     data['appraisalTimeRequest'] = data['appraisalTimeRequest'][0:6]+'20'+data['appraisalTimeRequest'][6:]
-                except ValueError:
+                except (ValueError, KeyError):
                     data['appraisalTimeRequest'] = ''
 
     cliente = ws['C14'].value

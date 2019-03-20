@@ -9,14 +9,21 @@ class Building(models.Model):
     TYPE_CASA = 1
     TYPE_DEPARTAMENTO = 2
     TYPE_OFICINA = 6
+    TYPE_CASA_OFICINA = 19
     TYPE_LOCAL_COMERCIAL = 7
+    TYPE_PROPIEDAD_COMERCIAL = 20
+    TYPE_CENTRO_EDUCACIONAL = 21
+    TYPE_HOTEL= 22
+    TYPE_MOTEL= 23
+    TYPE_SEGUNDA_VIVIENDA = 24
     TYPE_TERRENO = 8
+    TYPE_PARCELA_ERIAZA = 25
+    TYPE_PARCELA_EDIFICADA = 26
     TYPE_INDUSTRIA = 9
     TYPE_GALPON = 10
     TYPE_BODEGA = 11
     TYPE_ESTACIONAMIENTO = 12
     TYPE_EDIFICIO = 3
-    TYPE_PARCELA = 13
     TYPE_BARCO = 14
     TYPE_VEHICULO = 15
     TYPE_MAQUINARIA = 16
@@ -24,22 +31,29 @@ class Building(models.Model):
     TYPE_CONDOMINIO = 18
     propertyType_choices = [
         (TYPE_NONE,'---------'),
-        (TYPE_TERRENO, "Terreno"),
         (TYPE_CASA, "Casa"),
         (TYPE_EDIFICIO, "Edificio"),
         (TYPE_DEPARTAMENTO, "Departamento"),
+        (TYPE_TERRENO, "Terreno"),
+        (TYPE_PARCELA_EDIFICADA, "Parcela eriaza"),
+        (TYPE_PARCELA_ERIAZA, "Parcela edificada"),
         (TYPE_OFICINA, "Oficina"),
-        (TYPE_LOCAL_COMERCIAL, "Local Comercial"),
+        (TYPE_CASA_OFICINA, "Casa-Oficina"),
+        (TYPE_LOCAL_COMERCIAL, "Local comercial"),
+        (TYPE_PROPIEDAD_COMERCIAL, "Propiedad comercial"),
         (TYPE_INDUSTRIA, "Industria"),
-        (TYPE_GALPON, "Galpon"),
         (TYPE_BODEGA, "Bodega"),
+        (TYPE_GALPON, "Galpon"),
+        (TYPE_CENTRO_EDUCACIONAL, "Centro educacional"),
         (TYPE_ESTACIONAMIENTO, "Estacionamiento"),
-        (TYPE_PARCELA, "Parcela"),
         (TYPE_BARCO, "Barco"),
-        (TYPE_VEHICULO, "Vehiculo"),
+        (TYPE_VEHICULO, "Vehículo"),
         (TYPE_MAQUINARIA, "Maquinaria"),
-        (TYPE_ESTACION_DE_SERVICIO, "Estación de Servicio"),
+        (TYPE_ESTACION_DE_SERVICIO, "Estación de servicio"),
         (TYPE_CONDOMINIO, "Condominio"),
+        (TYPE_HOTEL, "Hotel"),
+        (TYPE_MOTEL, "Motel"),
+        (TYPE_SEGUNDA_VIVIENDA, "Segunda vivienda"),
         (TYPE_OTRO, "Otro"),]
     propertyType_dict = {b:a for a,b in propertyType_choices}
     propertyType = models.PositiveIntegerField(
@@ -47,11 +61,30 @@ class Building(models.Model):
         default=TYPE_OTRO)
 
     property_type_icon = {
-        TYPE_TERRENO: "fas fa-mountain",
         TYPE_CASA: "fas fa-home",
         TYPE_EDIFICIO: "fas fa-city",
         TYPE_DEPARTAMENTO: "fas fa-building",
-        TYPE_LOCAL_COMERCIAL: "fas fa-store"
+        TYPE_TERRENO: "fas fa-mountain",
+        TYPE_PARCELA_EDIFICADA: "fas fa-mountain",
+        TYPE_PARCELA_ERIAZA: "fas fa-mountain",
+        TYPE_OFICINA: "fas fa-briefcase",
+        TYPE_CASA_OFICINA: "fas fa-briefcase",
+        TYPE_LOCAL_COMERCIAL: "fas fa-store",
+        TYPE_PROPIEDAD_COMERCIAL: "fas fa-store",
+        TYPE_INDUSTRIA: "fas fa-industry",
+        TYPE_BODEGA: "fas fa-warehouse",
+        TYPE_GALPON: "fas fa-warehouse",
+        TYPE_CENTRO_EDUCACIONAL: "fas fa-school",
+        TYPE_ESTACIONAMIENTO: "fas fa-parking",
+        TYPE_BARCO: "fas fa-ship",
+        TYPE_VEHICULO: "fas fa-car",
+        TYPE_MAQUINARIA: "fas fa-truck-monster",
+        TYPE_ESTACION_DE_SERVICIO: "fas fa-gas-pump",
+        TYPE_CONDOMINIO: "fas fa-vihara",
+        TYPE_HOTEL: "fas fa-hotel",
+        TYPE_MOTEL: "fas fa-hotel",
+        TYPE_SEGUNDA_VIVIENDA: "fas fa-umbrella-beach",
+        TYPE_OTRO: "fas fa-question-circle"
     }
 
     name = models.CharField("Nombre",max_length=300,default="",blank=True)

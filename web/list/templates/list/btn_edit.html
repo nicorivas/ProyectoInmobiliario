@@ -1,0 +1,11 @@
+<button type="button" class="btn {{class}}"
+	data-photo_id="{{photo.id}}"
+	data-photo_fixed="{{photo.fixed}}"
+	data-appraisal_id="{{appraisal.id}}"
+	data-delete-comment-url="{% url 'ajax_delete_comment_url' %}"
+	data-comment_id="{{comment.id}}" 
+	data-event="{{comment.event}}" 
+	style="border:0px;width:25px;height:25px;padding:0em;">
+	<i class="icon material-icons" style="vertical-align:sub;font-size:20px;">edit</i>
+	<div class="ld ld-ring ld-spin" style="display:none;"></div>
+</button>
