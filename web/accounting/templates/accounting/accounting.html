@@ -109,7 +109,7 @@
      $.ajax({
        url: url,
        type: 'get',
-       data: {'initial':initial, 'end':end, 'tasador':tasador},
+       data: {'accountingTimeRequest':initial, 'accountingTimeDue':end, 'tasador':tasador},
 
        error: function () {
            alert("Recuerde seleccionar una fecha de inicio y/o término.");
@@ -121,53 +121,40 @@
          btn.removeClass('running');
          btn.prop('disabled', false);
          replaceTable("table_accounting",data)
-         // assignTableActions()
        }
      });
    });
 </script>
 
 
-
 <script>
 
-  $("#btn_generate").on("click", function (event) {
-    //button for loading in export
-    var initial = $('#id_accountinglTimeRequest').val();
-    var end =  $('#id_accountingTimeDue').val();
-    var tasador =  $('#id_tasador').val();
-    var url = "{% url 'ajax_accountingView_url2' %}";
-    btn = $(this);
+  $('#form').on('submit', function(evt) {
+    btn = $("#btn_generate");
     btn.addClass('running');
     btn.prop('disabled', true);
+    var initial = $('#id_accountingTimeRequest').val();
+    var end =  $('#id_accountingTimeDue').val();
+    var tasador =  $('#id_tasador').val();
 
-     $.ajax({
-        url: url,
-        type: 'get',
-        data: {'initial':initial, 'end':end, 'tasador':tasador},
-        success: function() {
-            window.location = url;
-        }
-    });
+    window.setTimeout(function (){
+    if(initial=='' || end ==''){
 
-  });
-
+      alert("Recuerde seleccionar una fecha de inicio y/o término.");
+           btn.removeClass('running');
+           btn.prop('disabled', false);
+    }
+    else{
+      btn.removeClass('running');
+         btn.prop('disabled', false);
+         btn.removeClass('running');
+       }
+  },1000);
+});
 </script>
 
 
 
+
 {% endblock %}
-
-
-
-  $.fileDownload('/contabilidad.xlsx')
-      .done(function () {
-        btn.removeClass('running');
-        btn.prop('disabled', false);})
-
-      .fail(function () {
-        alert("Error al seleccionar vairables.");
-        btn.removeClass('running');
-        btn.prop('disabled', false);
-        });
 

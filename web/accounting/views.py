@@ -2,7 +2,7 @@ from django.shortcuts import render
 from appraisal.models import Appraisal, AppraisalEvaluation
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotModified
 import xlsxwriter
 from pytz import timezone
 from _datetime import datetime
@@ -10,6 +10,7 @@ import io
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http import HttpResponseBadRequest
 from .forms import AccountingForm
+from django.shortcuts import redirect
 
 # Create your views here.
 
@@ -72,8 +73,8 @@ def exportAccounting(appraisals):
 def ajax_accountingView(request):
     tasador = request.GET['tasador']
     try:
-        initial = datetime.strptime(request.GET['initial'] + ":00", '%d/%m/%Y %H:%M:%S')
-        end = datetime.strptime(request.GET['end'] + ":00", '%d/%m/%Y %H:%M:%S')
+        initial = datetime.strptime(request.GET['accountingTimeRequest'] + ":00", '%d/%m/%Y %H:%M:%S')
+        end = datetime.strptime(request.GET['accountingTimeDue'] + ":00", '%d/%m/%Y %H:%M:%S')
     except ValueError:
         return HttpResponseBadRequest()
     appraisals = getTimeFramedAppraisals(tasador, initial, end)
@@ -90,18 +91,13 @@ def accountingView(request):
     context = {'tasadores': tasadores, 'form':form}
 
     if request.method == "POST":
+        print(request.POST)
         tasador = request.POST['tasador']
         try:
-            initial = datetime.strptime(request.POST['appraisalTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
-            end = datetime.strptime(request.POST['appraisalTimeRequest2']+":00",'%d/%m/%Y %H:%M:%S')
+            initial = datetime.strptime(request.POST['accountingTimeRequest']+":00", '%d/%m/%Y %H:%M:%S')
+            end = datetime.strptime(request.POST['accountingTimeDue']+":00",'%d/%m/%Y %H:%M:%S')
         except ValueError:
-            try:
-                if request.POST['marcador']=="True":
-                    return HttpResponseBadRequest()
-                else:
-                    return render(request, 'accounting/accounting.html', context)
-            except MultiValueDictKeyError:
-                return render(request, 'accounting/accounting.html', context)
+            return HttpResponseNotModified()
         localtz = timezone('Chile/Continental')
         initial = localtz.localize(datetime.strptime(str(initial), '%Y-%m-%d %H:%M:%S'))
         end = localtz.localize((datetime.strptime(str(end), '%Y-%m-%d %H:%M:%S')))
