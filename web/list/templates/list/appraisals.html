@@ -26,19 +26,6 @@
 <div class="container" style="max-width:100%">
 
 
-<!-- RETURNED -->
-
-<div class="card mb-1 border border-danger" id="div_returned" style="display:none;">
-  <div class="card-body">
-    <p class="card-title" style="color:#dc3545">Tasaciones devueltas</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_returned" style="display: none;">
-      No hay tasaciones devueltas
-    </div>
-    <table class="table table-sm table-borderless" id="table_returned" style="display:none;font-size:0.8em;">
-      {% include 'list/appraisals_table_returned.html' %}
-    </table>
-  </div>
-</div>
 
 <!-- NOT ASSIGNED -->
 
@@ -86,19 +73,22 @@
   </div>
 </div>
 
-<!-- IN REVISION -->
 
-<div class="card mb-1" id="div_in_revision">
+<!-- RETURNED -->
+
+<div class="card mb-1 border border-danger" id="div_returned" >
   <div class="card-body">
-    <p class="card-title">Tasaciones en visación</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_in_revision" style="display: none;">
-      No hay tasaciones en visación
+    <p class="card-title" style="color:#dc3545">Tasaciones devueltas</p>
+    <div class="alert alert-primary" role="alert" id="div_alert_table_returned" style="display: none;">
+      No hay tasaciones devueltas
     </div>
-    <table class="table table-sm table-borderless table-appraisals" id="table_in_revision" style="width:100%;display:none;font-size:0.8em;">
-      {% include 'list/appraisals_table_in_revision.html' %}
+    <table class="table table-sm table-borderless" id="table_returned" style="display:none;font-size:0.8em;">
+      {% include 'list/appraisals_table_returned.html' %}
     </table>
   </div>
 </div>
+
+
 
 <!-- SENT -->
 
@@ -401,10 +391,12 @@
     }
 
     appraisals_returned_n = {{appraisals_returned|length}}
+
     if (appraisals_returned_n > 0) {
       $("#table_returned").toggle()
     } else {
       $("#div_returned").hide()
+
     }
 
     // Actions.

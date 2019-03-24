@@ -7,7 +7,6 @@ from user.views import userAppraisals
 from appraisal.models import Appraisal, Comment, Report
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
-import datetime
 
 import pytz
 import json
@@ -701,6 +700,12 @@ def ajax_mark_as_returned(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
     comment = appraisal.addComment(Comment.EVENT_RETURNED,request.user,datetime.datetime.now(datetime.timezone.utc))
+    if datetime.datetime.now(datetime.timezone.utc).hour >= 12:
+        tomorrow = datetime.datetime.now(datetime.timezone.utc).replace(minute=00, hour=12, second=00) + datetime.timedelta(days=1)
+        appraisal.timeDue = tomorrow
+    else:
+        today = datetime.datetime.now(datetime.timezone.utc).replace(minute=59, hour=23, second=59)
+        appraisal.timeDue = today
 
     appraisal.state = Appraisal.STATE_RETURNED
     appraisal.save()
