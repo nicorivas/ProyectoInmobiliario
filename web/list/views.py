@@ -7,6 +7,7 @@ from user.views import userAppraisals
 from appraisal.models import Appraisal, Comment, Report
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
+from django.utils import timezone
 
 import pytz
 import json
@@ -22,6 +23,14 @@ from appraisal.models import AppraisalEvaluation
 from create.forms import AppraisalCreateForm
 from commune.models import Commune
 from region.models import Region
+
+'''To avoid database problems with time zone, timezone has to be set when date is submitted to the database, postrgres 
+server will translate the date to UTC (example: date sent=2019-12-1 12:00 -03:00, in server=2019-12-1 15:00 +00)
+then at the frontend Django will translate to timezone set in settings.py. 
+So to sent date to database use: datime.datetime.now(pytz.timezone('timezone")). 
+Caution: don't use timezone when comparing dates with datetime.datetime.now()
+'''
+timezone_cl = pytz.timezone('Chile/Continental')
 
 @login_required(login_url='/user/login')
 def main(request):
@@ -226,7 +235,7 @@ def ajax_assign_tasador(request):
     # 1
     appraisal.tasadorUser = tasador
     # 2
-    comment = appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(datetime.timezone.utc),
+    comment = appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(timezone_cl),
         text="Tasación solicitada a "+tasador.first_name +' '+ tasador.last_name)
     # 3
     appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
@@ -258,7 +267,7 @@ def ajax_unassign_tasador(request):
     appraisal.tasadorUser = None
     appraisal.state = Appraisal.STATE_NOT_ASSIGNED
     user = User.objects.get(id=user_id)
-    appraisal.addComment(Comment.EVENT_TASADOR_DESASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+    appraisal.addComment(Comment.EVENT_TASADOR_DESASIGNADO,user,datetime.datetime.now(timezone_cl),
         text="Tasador "+tasador.user.full_name+" fue desasignado.")
     appraisal.save()
 
@@ -291,7 +300,7 @@ def ajax_assign_visador(request):
         status = "Visador ya seleccionado"
     else:
         appraisal.visadorUser = visador
-        comment = appraisal.addComment(Comment.EVENT_VISADOR_ASIGNADO,user,datetime.datetime.now(datetime.timezone.utc),
+        comment = appraisal.addComment(Comment.EVENT_VISADOR_ASIGNADO,user,datetime.datetime.now(timezone_cl),
             text="Visación asignada a "+visador.user.first_name + ' ' + visador.user.last_name)
         appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
         appraisal.save()
@@ -321,7 +330,7 @@ def ajax_unassign_visador(request):
     table_id = request.GET['table_id']
     appraisal = Appraisal.objects.get(id=appraisal_id)
     visador = appraisal.visadorUser
-    comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(datetime.timezone.utc),
+    comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(timezone_cl),
         text="Visador "+visador.user.full_name+" fue desasignado.")
     appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
     appraisal.visadorUser = None
@@ -340,7 +349,7 @@ def ajax_accept_appraisal(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
     appraisal.state = Appraisal.STATE_IN_APPRAISAL
     
-    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(datetime.timezone.utc))
+    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(timezone_cl))
     appraisal.save()
 
     notifications = request.user.user.notifications.all()
@@ -370,7 +379,7 @@ def ajax_reject_appraisal(request):
     # 2
     appraisal.tasadorUser = None
     # 3
-    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(timezone_cl))
     appraisal.save()
     # 4
     for user in User.objects.filter(groups__name='asignador'):
@@ -507,7 +516,7 @@ def ajax_comment(request):
         appraisal.in_conflict = True
         appraisal.save()
 
-    comment = appraisal.addComment(int(request.POST['event']),request.user,datetime.datetime.now(datetime.timezone.utc),text)
+    comment = appraisal.addComment(int(request.POST['event']),request.user,datetime.datetime.now(timezone_cl),text)
 
     comments = appraisal.comments.all().order_by('-timeCreated')
 
@@ -566,17 +575,17 @@ def ajax_validate_cliente(request):
     if t == 1:
         if appraisal.clienteValidado:
             appraisal.clienteValidado = False
-            comment = appraisal.addComment(Comment.EVENT_CLIENTE_INVALIDADO,request.user,datetime.datetime.now(datetime.timezone.utc))
+            comment = appraisal.addComment(Comment.EVENT_CLIENTE_INVALIDADO,request.user,datetime.datetime.now(timezone_cl))
         else:
             appraisal.clienteValidado = True
-            comment = appraisal.addComment(Comment.EVENT_CLIENTE_VALIDADO,request.user,datetime.datetime.now(datetime.timezone.utc))
+            comment = appraisal.addComment(Comment.EVENT_CLIENTE_VALIDADO,request.user,datetime.datetime.now(timezone_cl))
     elif t == 2:
         if appraisal.contactoValidado:
             appraisal.contactoValidado = False
-            comment = appraisal.addComment(Comment.EVENT_CONTACTO_INVALIDADO,request.user,datetime.datetime.now(datetime.timezone.utc))
+            comment = appraisal.addComment(Comment.EVENT_CONTACTO_INVALIDADO,request.user,datetime.datetime.now(timezone_cl))
         else:
             appraisal.contactoValidado = True
-            comment = appraisal.addComment(Comment.EVENT_CONTACTO_VALIDADO,request.user,datetime.datetime.now(datetime.timezone.utc))
+            comment = appraisal.addComment(Comment.EVENT_CONTACTO_VALIDADO,request.user,datetime.datetime.now(timezone_cl))
     appraisal.save()
     return render(request,'list/comment.html',{'comment':comment})
 
@@ -636,7 +645,7 @@ def ajax_enviar_a_visador(request):
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
-    comment = appraisal.addComment(Comment.EVENT_ENVIADA_A_VISADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_ENVIADA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
 
     appraisal.state = Appraisal.STATE_IN_REVISION
     appraisal.save()
@@ -651,7 +660,7 @@ def ajax_devolver_a_tasador(request):
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
-    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_TASADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_TASADOR,request.user,datetime.datetime.now(timezone_cl))
 
     appraisal.state = Appraisal.STATE_IN_APPRAISAL
     appraisal.save()
@@ -668,7 +677,7 @@ def ajax_enviar_a_cliente(request):
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
-    comment = appraisal.addComment(Comment.EVENT_ENTREGADO_AL_CLIENTE,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_ENTREGADO_AL_CLIENTE,request.user,datetime.datetime.now(timezone_cl))
 
     appraisal.state = Appraisal.STATE_SENT
     appraisal.save()
@@ -684,7 +693,7 @@ def ajax_devolver_a_visador(request):
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
-    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_VISADOR,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
 
     appraisal.state = Appraisal.STATE_IN_REVISION
     appraisal.save()
@@ -698,13 +707,11 @@ def ajax_mark_as_returned(request):
     '''
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    comment = appraisal.addComment(Comment.EVENT_RETURNED,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_RETURNED,request.user,datetime.datetime.now(timezone_cl))
     if datetime.datetime.now(datetime.timezone.utc).hour >= 12:
-        tomorrow = datetime.datetime.now(datetime.timezone.utc).replace(minute=00, hour=12, second=00) + datetime.timedelta(days=1)
-        appraisal.timeDue = tomorrow
+        tomorrow = datetime.datetime.now(tz=timezone_cl).replace(minute=00, hour=12, second=00, microsecond=0) + datetime.timedelta(days=1)
     else:
-        today = datetime.datetime.now(datetime.timezone.utc).replace(minute=59, hour=23, second=59)
+        today = datetime.datetime.now(timezone_cl).replace(minute=59, hour=23, second=59,microsecond=0)
         appraisal.timeDue = today
 
     appraisal.state = Appraisal.STATE_RETURNED
@@ -731,11 +738,11 @@ def ajax_upload_report(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
     for report_file in request.FILES.getlist('report'):
-        report = Report(report=report_file,appraisal=appraisal,time_uploaded=datetime.datetime.now(datetime.timezone.utc))
+        report = Report(report=report_file,appraisal=appraisal,time_uploaded=datetime.datetime.now(timezone_cl))
         report.save()
         appraisal.save()
 
-    comment = appraisal.addComment(Comment.EVENT_REPORTE_ADJUNTO,request.user,datetime.datetime.now(datetime.timezone.utc))
+    comment = appraisal.addComment(Comment.EVENT_REPORTE_ADJUNTO,request.user,datetime.datetime.now(timezone_cl))
 
     #notifications = request.user.user.notifications.all()
     #notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
