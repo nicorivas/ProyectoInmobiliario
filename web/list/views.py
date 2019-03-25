@@ -708,8 +708,9 @@ def ajax_mark_as_returned(request):
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
     comment = appraisal.addComment(Comment.EVENT_RETURNED,request.user,datetime.datetime.now(timezone_cl))
-    if datetime.datetime.now(datetime.timezone.utc).hour >= 12:
+    if datetime.datetime.now(timezone_cl).hour >= 12:
         tomorrow = datetime.datetime.now(tz=timezone_cl).replace(minute=00, hour=12, second=00, microsecond=0) + datetime.timedelta(days=1)
+        appraisal.timeDue = tomorrow
     else:
         today = datetime.datetime.now(timezone_cl).replace(minute=59, hour=23, second=59,microsecond=0)
         appraisal.timeDue = today
