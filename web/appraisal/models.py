@@ -315,6 +315,20 @@ class Appraisal(models.Model):
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
     @cached_property
+    def tasador_short_name(self):
+        if self.tasadorUser:
+            return self.tasadorUser.first_name[0] + '. ' + self.tasadorUser.last_name.split(' ')[0]
+        else:
+            return "-"
+
+    @cached_property
+    def visador_short_name(self):
+        if self.visadorUser:
+            return self.visadorUser.first_name[0] + '. ' + self.visadorUser.last_name.split(' ')[0]
+        else:
+            return "-"
+
+    @cached_property
     def address(self):
         address = self.real_estate_main.address
         #rss = self.real_estates.count()

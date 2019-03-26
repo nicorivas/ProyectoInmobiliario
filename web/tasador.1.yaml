@@ -46,6 +46,8 @@ spec:
         imagePullPolicy: Always
         env:
             # [START cloudsql_secrets]
+            - name: PRODUCTION_SETTING
+              value: Google
             - name: DATABASE_USER
               valueFrom:
                 secretKeyRef:

@@ -39,6 +39,9 @@ docker build -t gcr.io/proyectoinmobiliario-212003/tasador .
 9.
 docker push gcr.io/proyectoinmobiliario-212003/tasador
 
+[10]. UPDATE
+kubectl --record tasador set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1
+
 [10].
 kubectl delete -f tasador.yaml
 

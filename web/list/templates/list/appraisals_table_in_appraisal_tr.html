@@ -20,48 +20,14 @@
   </a>
 </td>
 <td>
-  <div class="row">
-    <div class="col-auto">
-      <span style="vertical-align: middle;" class="tasadorUser">
-      {% if appraisal.tasadorUser %}
-        {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
-      {% else %}
-      -
-      {% endif %}
-      </span>
-    </div>
-    {% if perms.appraisal.assign_tasador %}
-    {% if appraisal.in_appraisal %}
-    <div class="col text-right">
-      <button type="button" class="btn btn-sm btn-light btn_unassign_tasador_modal" data-toggle="modal" data-target="#modal_unassign_tasador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
-        remove_circle_outline
-      </button>
-    </div>
-    {% endif %}
-    {% endif %}
-  </div>
+  {% with button="remove" %}
+    {% include 'list/td_tasador_name.html' %}
+  {% endwith %}
 </td>
 <td>
-  <div class="row">
-    <div class="col-auto">
-      <span style="vertical-align: middle;" class="visadorUser">
-      {% if appraisal.visadorUser %}
-        {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
-      {% else %}
-      -
-      {% endif %}
-      </span>
-    </div>
-    {% if perms.appraisal.assign_visador %}
-    {% if appraisal.in_appraisal %}
-    <div class="col text-right">
-      {% with class="btn_assign_visador_modal" %}
-        {% include 'list/btn_assign_user.html' %}
-      {% endwith %}
-    </div>
-    {% endif %}
-    {% endif %}
-  </div>
+  {% with button="add" %}
+    {% include 'list/td_visador_name.html' %}
+  {% endwith %}
 </td>
 {% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">

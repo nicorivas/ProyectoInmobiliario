@@ -23,12 +23,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "k769%g32gq++w+yq-z9ac+!aeydo(nazzit=8r=tlkw"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('GAE_APPLICATION', None):
+if os.getenv('PRODUCTION_SETTING', None):
     DEBUG = False
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+if os.getenv('PRODUCTION_SETTING', None):
+    ALLOWED_HOSTS = ['*','tasador.dataurbana.io']
+else:
+    ALLOWED_HOSTS = ['127.0.0.1','localhost','tasador.dataurbana.io']
 
 # Application definition
 
@@ -168,10 +171,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 # Google App Engine: set static root for local static files
-#if os.getenv('GAE_APPLICATION', None):
-#STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
-#else:
-STATIC_URL = '/static/'
+if os.getenv('PRODUCTION_SETTING', None):
+    STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
+else:
+    STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
 
 # https://cloud.google.com/appengine/docs/flexible/python/serving-static-files
 STATIC_ROOT = 'static/'

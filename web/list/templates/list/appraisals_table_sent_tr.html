@@ -16,13 +16,7 @@
   </a>
 </td>
 <td>
-  <span style="vertical-align: middle;" class="tasadorUser">
-    {% if appraisal.tasadorUser %}
-      {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
-    {% else %}
-    -
-    {% endif %}
-  </span>
+  {% include 'list/td_tasador_name.html' %}
 </td>
 <td class="dateFinished">
   {{appraisal.timeFinished | date:"d/m/Y G:i" }}
