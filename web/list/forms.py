@@ -1,7 +1,7 @@
 from django import forms
 from region.models import Region
 from commune.models import Commune
-import datetime
+
 
 
 class TasadorSearch(forms.Form):
