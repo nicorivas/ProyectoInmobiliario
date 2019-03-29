@@ -784,3 +784,89 @@ def load_communes(request):
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
+
+
+def ajax_expenses(request):
+    '''
+    Called when opening the logbook modal, through AJAX. Returns the comments of the relevant appraisal.
+    '''
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
+    form_comment = FormComment(label_suffix='')
+
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments, state=appraisal.state)
+
+    notifications = request.user.user.notifications.all()
+    notifications_comment_ids = notifications.values_list('comment_id', flat=True)
+
+    groups = request.user.groups.values_list('name', flat=True)
+
+    reports = appraisal.report_set.order_by('time_uploaded')
+
+    return render(request, 'list/modals_expenses.html',
+                  {'appraisal': appraisal,
+                   'comments': comments,
+                   'form_comment': form_comment,
+                   'groups': groups,
+                   'reports': reports,
+                   'notifications_comment_ids': notifications_comment_ids})
+
+
+def ajax_expenses_close(request):
+    '''
+    Called when closing the logbook modal, through AJAX.
+    1. Deletes notifications.
+    2. Saves modified variables
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    request.user.user.removeNotification(ntype="comment", appraisal_id=appraisal_id)
+
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    if request.POST['valorUF'] in ["None", ""]:
+        appraisal.valorUF = None
+    else:
+        appraisal.valorUF = request.POST['valorUF']
+
+    if request.POST['solicitanteEjecutivo'] in ["None", ""]:
+        appraisal.solicitanteEjecutivo = None
+    else:
+        appraisal.solicitanteEjecutivo = request.POST['solicitanteEjecutivo']
+    if request.POST['solicitanteEjecutivoEmail'] in ["None", ""]:
+        appraisal.solicitanteEjecutivoEmail = None
+    else:
+        appraisal.solicitanteEjecutivoEmail = request.POST['solicitanteEjecutivoEmail']
+    if request.POST['solicitanteEjecutivoTelefono'] in ["None", ""]:
+        appraisal.solicitanteEjecutivoTelefono = None
+    else:
+        appraisal.solicitanteEjecutivoTelefono = request.POST['solicitanteEjecutivoTelefono']
+
+    if request.POST['contacto'] in ["None", ""]:
+        appraisal.contacto = None
+    else:
+        appraisal.contacto = request.POST['contacto']
+    if request.POST['contactoEmail'] in ["None", ""]:
+        appraisal.contactoEmail = None
+    else:
+        appraisal.contactoEmail = request.POST['contactoEmail']
+    if request.POST['contactoTelefono'] in ["None", ""]:
+        appraisal.contactoTelefono = None
+    else:
+        appraisal.contactoTelefono = request.POST['contactoTelefono']
+
+    if request.POST['cliente'] in ["None", ""]:
+        appraisal.cliente = None
+    else:
+        appraisal.cliente = request.POST['cliente']
+    if request.POST['clienteEmail'] in ["None", ""]:
+        appraisal.clienteEmail = None
+    else:
+        appraisal.clienteEmail = request.POST['clienteEmail']
+    if request.POST['clienteTelefono'] in ["None", ""]:
+        appraisal.clienteTelefono = None
+    else:
+        appraisal.clienteTelefono = request.POST['clienteTelefono']
+    appraisal.save()
+
+    return HttpResponse('')
