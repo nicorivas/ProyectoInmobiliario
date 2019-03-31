@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from user.views import userAppraisals
-from appraisal.models import Appraisal, Comment, Report
+from appraisal.models import Appraisal, Comment, Report, AppraiserExpenses
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 from django.utils import timezone
@@ -15,7 +15,7 @@ import json
 import reversion, datetime
 from copy import deepcopy
 from reversion.models import Version
-from appraisal.forms import FormComment
+from appraisal.forms import FormComment, FormExpenses
 from .forms import TasadorSearch
 
 from evaluation.forms import EvaluationForm
@@ -788,85 +788,49 @@ def load_communes(request):
 
 def ajax_expenses(request):
     '''
-    Called when opening the logbook modal, through AJAX. Returns the comments of the relevant appraisal.
+    Called when opening the expenses modal, through AJAX. Returns the comments of the relevant appraisal.
     '''
     appraisal_id = int(request.GET['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
-    comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
-    form_comment = FormComment(label_suffix='')
-
-    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments, state=appraisal.state)
-
-    notifications = request.user.user.notifications.all()
-    notifications_comment_ids = notifications.values_list('comment_id', flat=True)
-
+    expenses = AppraiserExpenses.objects.filter(appraisal=appraisal)
+    form_expenses = FormExpenses(label_suffix='')
     groups = request.user.groups.values_list('name', flat=True)
 
-    reports = appraisal.report_set.order_by('time_uploaded')
+
 
     return render(request, 'list/modals_expenses.html',
                   {'appraisal': appraisal,
-                   'comments': comments,
-                   'form_comment': form_comment,
-                   'groups': groups,
-                   'reports': reports,
-                   'notifications_comment_ids': notifications_comment_ids})
+                   'expenses': expenses,
+                   'form_expenses': form_expenses,
+                   'groups': groups})
 
 
-def ajax_expenses_close(request):
+def ajax_save_expenses(request):
     '''
-    Called when closing the logbook modal, through AJAX.
-    1. Deletes notifications.
-    2. Saves modified variables
+    save expenses from modal
     '''
     appraisal_id = int(request.POST['appraisal_id'])
-    request.user.user.removeNotification(ntype="comment", appraisal_id=appraisal_id)
-
+    description = request.POST['description']
+    totalPrice = int(request.POST['totalPrice'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
+    expense = AppraiserExpenses(appraisal=appraisal, description=description, totalPrice=totalPrice)
+    expense.save()
 
-    if request.POST['valorUF'] in ["None", ""]:
-        appraisal.valorUF = None
-    else:
-        appraisal.valorUF = request.POST['valorUF']
+    return render(request, 'list/expenses.html',
+                  {'appraisal': appraisal,
+                   'expense': expense})
 
-    if request.POST['solicitanteEjecutivo'] in ["None", ""]:
-        appraisal.solicitanteEjecutivo = None
-    else:
-        appraisal.solicitanteEjecutivo = request.POST['solicitanteEjecutivo']
-    if request.POST['solicitanteEjecutivoEmail'] in ["None", ""]:
-        appraisal.solicitanteEjecutivoEmail = None
-    else:
-        appraisal.solicitanteEjecutivoEmail = request.POST['solicitanteEjecutivoEmail']
-    if request.POST['solicitanteEjecutivoTelefono'] in ["None", ""]:
-        appraisal.solicitanteEjecutivoTelefono = None
-    else:
-        appraisal.solicitanteEjecutivoTelefono = request.POST['solicitanteEjecutivoTelefono']
+def ajax_delete_expenses(request):
+    '''
+    deletes expenses from modal
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    expense_id = int(request.POST['expense_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    expense = AppraiserExpenses(appraisal=appraisal, id=expense_id)
+    expense.delete()
+    print(request.POST)
 
-    if request.POST['contacto'] in ["None", ""]:
-        appraisal.contacto = None
-    else:
-        appraisal.contacto = request.POST['contacto']
-    if request.POST['contactoEmail'] in ["None", ""]:
-        appraisal.contactoEmail = None
-    else:
-        appraisal.contactoEmail = request.POST['contactoEmail']
-    if request.POST['contactoTelefono'] in ["None", ""]:
-        appraisal.contactoTelefono = None
-    else:
-        appraisal.contactoTelefono = request.POST['contactoTelefono']
-
-    if request.POST['cliente'] in ["None", ""]:
-        appraisal.cliente = None
-    else:
-        appraisal.cliente = request.POST['cliente']
-    if request.POST['clienteEmail'] in ["None", ""]:
-        appraisal.clienteEmail = None
-    else:
-        appraisal.clienteEmail = request.POST['clienteEmail']
-    if request.POST['clienteTelefono'] in ["None", ""]:
-        appraisal.clienteTelefono = None
-    else:
-        appraisal.clienteTelefono = request.POST['clienteTelefono']
-    appraisal.save()
-
-    return HttpResponse('')
+    return render(request, 'list/expenses.html',
+                  {'appraisal': appraisal,
+                   'expense': expense})

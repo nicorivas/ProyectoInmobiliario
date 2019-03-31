@@ -20,6 +20,7 @@
   ajax_mark_as_returned_url = "{% url 'ajax_mark_as_returned_url' %}"
   ajax_get_appraisal_row_url = "{% url 'ajax_get_appraisal_row_url' %}"
   ajax_appraisal_expenses = "{% url 'ajax_appraisal_expenses_url' %}"
+  ajax_save_expenses = "{% url 'ajax_save_expenses_url' %}"
 </script>
 
 {% load custom_tags %}
@@ -197,7 +198,6 @@
       // the appraisal id to have at the post request.
       event.preventDefault();
       btn = $(this)
-      table = btn.data('table')
       tr = $(this).closest('tr')
       $("#modal_expenses").data('table',table)
       appraisal_id = btn.val(); // button has id of appraisal
@@ -207,7 +207,7 @@
       $.ajax({
         url: url,
         type: 'get',
-        data: {'appraisal_id':appraisal_id,'table':table},
+        data: {'appraisal_id':appraisal_id},
         error: function () {
             alert("Error al abrir la bitacora.");
             return false;
@@ -216,20 +216,19 @@
           $('#modal_expenses').modal('show');
           $('#modal_expenses').find('.modal-expenses-body').html($.trim(data));
           $("#in_appraisal_id").val(appraisal_id); // hidden input
-          $("input#table_id").attr("value",table);
-          tr.removeClass("notification")
 
 
         },
         complete: function (data) {
           btn_idle(btn)
           assignLogbookModalActions();
-          if (table != "not_accepted") {
-            $("#id_event").trigger("change")
-          }
+
         }
       });
     });
+
+
+
 
 
 
