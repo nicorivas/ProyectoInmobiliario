@@ -1,6 +1,16 @@
 {% load custom_tags %}
 {% load mathfilters %}
 {{form_comment.media}}
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bitácora</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="logbook_body">
   
 <div class="row mb-2">
   <div class="col-8">
@@ -258,173 +268,15 @@
   </button>
 </div>
 
-{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED or appraisal.state == appraisal.STATE_IN_APPRAISAL or appraisal.state == appraisal.STATE_IN_REVISION or appraisal.state == appraisal.STATE_SENT or appraisal.state == appraisal.STATE_RETURNED %}
-
-{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED %}
-<div class="line">
-  <span class="line">
-    Flujo
-  </span>
-</div>
-<div class="form-group row" id="div_previous_next">
-  <div class="col-6">
-    <button type="button" class="btn btn-sm btn-dark btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}">
-      <i class="inline-icon material-icons">arrow_back</i>
-      Declinar tasación
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-  </div>
-  <div class="col-6">
-    <button type="button" class="btn btn-dark btn-sm btn-block btn_accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}">
-      Aceptar tasación
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      <i class="inline-icon material-icons">arrow_forward</i>
-    </button>
-  </div>
-</div>
-{% elif appraisal.state == appraisal.STATE_IN_APPRAISAL %}
-<div class="line">
-  <span class="line">
-    Flujo
-  </span>
-</div>
-<div class="form-group row" id="div_previous_next">
-  <div class="col-3"></div>
-  <div class="col-6">
-    <button type="button" class="btn btn-dark btn-sm btn-block btn_enviar_a_visador" value="{{appraisal.id}}" id="enviar_a_visador_{{appraisal.id}}">
-      Enviar a visador
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      <i class="inline-icon material-icons">arrow_forward</i>
-    </button>
-  </div>
-  <div class="col-3"></div>
-</div>
-{% elif appraisal.state == appraisal.STATE_IN_REVISION %}
-{% if "visador" in groups or user.is_superuser %}
-<div class="line">
-  <span class="line">
-    Flujo
-  </span>
-</div>
-<div class="form-group row" id="div_previous_next">
-  <div class="col-6">
-    <button type="button" class="btn btn-sm btn-dark btn-block btn_devolver_a_tasador" value="{{appraisal.id}}">
-      <i class="inline-icon material-icons">arrow_back</i>
-      Devolver al tasador
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-  </div>
-  <div class="col-6">
-    <button type="button" class="btn btn-sm btn-dark btn-block btn_enviar_a_cliente" value="{{appraisal.id}}">
-      Fue enviada al cliente
-      <i class="inline-icon material-icons">arrow_forward</i>
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-  </div>
-</div>
-{% endif %}
-{% elif appraisal.state == appraisal.STATE_SENT %}
-{% if "visador" in groups or "asignador" in groups or user.is_superuser %}
-<div class="line">
-  <span class="line">
-    Flujo
-  </span>
-</div>
-<div class="form-group row" id="div_previous_next">
-  <div class="col-3"></div>
-  <div class="col-6">
-    <button type="button" class="btn btn-sm btn-dark btn-block btn_mark_as_returned" value="{{appraisal.id}}">
-      <i class="inline-icon material-icons">arrow_upward</i>
-      Tasación devuelta por cliente
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-  </div>
-  <div class="col-3"></div>
-</div>
-{% endif %}
-{% elif appraisal.state == appraisal.STATE_RETURNED %}
-{% if "visador" in groups or "asignador" in groups or user.is_superuser  %}
-<div class="line">
-  <span class="line">
-    Flujo
-  </span>
-</div>
-<div class="form-group row" id="div_previous_next">
-  <div class="col-3"></div>
-  <div class="col-6">
-    <button type="button" class="btn btn-sm btn-dark btn-block btn_enviar_a_cliente_again" value="{{appraisal.id}}">
-      Fue enviada al cliente
-      <i class="inline-icon material-icons">arrow_downward</i>
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-    </button>
-  </div>
-  <div class="col-3"></div>
-</div>
-{% endif %}
-{% endif %}
-
-{% endif %}
-
-{% if appraisal.state != appraisal.STATE_NOT_ACCEPTED %}
-
-<div class="line">
-  <span class="line">
-    Ingresar evento
-  </span>
+<div id="logbook_flow">
+{% include "logbook/modals_logbook_flow.html" %}
 </div>
 
-<div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
-  <div class="col-12">
-
-      <div class="row">
-        <div class="col-6">
-          <div class="form-group" id="div_event">
-            <small>{{ form_comment.event.label_tag}}</small>
-            {{ form_comment.event }}
-          </div>
-        </div>
-        <div class="col-6">
-          <!--
-          <div class="form-group" id="div_datetime">
-            {{form_comment.datetime.label_tag}}
-            {{form_comment.lalala}}
-          </div>
-          -->
-          <div class="form-group" id="div_datetime" style="display:none;">
-            <small>{{ form_comment.datetime.label_tag }}</small>
-            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-              {{ form_comment.datetime }}
-              <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="alert alert-warning" id="div_warning_incidencia" style="display:none;padding:0.2em 1em 0.2em 1em;">
-        <small>La tasación se marcará en conflicto</small>
-      </div>
-      <div class="alert alert-warning" id="div_warning_entregada" style="display:none;padding:0.2em 1em 0.2em 1em;">
-        <small>La tasación se marcará como finalizada</small>
-      </div>
-      <div class="form-group" id="div_comment">
-        <small>{{ form_comment.text.label_tag }}</small>
-        {{ form_comment.text }}
-      </div>
-      <div class="form-group row" id="div_comment_btn">
-        <div class="col-12">
-          <button type="button" class="btn btn-dark btn-sm btn-block" name="btn_comment" id="btn_comment">
-            <span class="text">Registrar evento</span>
-            <div class="ld ld-ring ld-spin" style="display:none;"></div>
-          </button>
-        </div>
-      </div>
-  </div>
+<div id="logbook_event">
+{% include "logbook/modals_logbook_event.html" %}
 </div>
 
 </form>
-
-{% endif %}
 
 <div class="line">
   <span class="line">
@@ -443,3 +295,8 @@
     </div>
   </div>
 </div>
+
+
+      </div>
+    </div>
+  </div>

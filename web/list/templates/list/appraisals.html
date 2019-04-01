@@ -4,6 +4,7 @@
 <script src="{% static "list/js/modal_assign_visador.js" %}" type="text/javascript"></script>
 <script>
   comment_class = {{comment_class|safe}}
+  ajax_logbook_url = "{% url 'ajax_logbook_url' %}"
   ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
   ajax_assign_visador_modal_url = "{% url 'ajax_assign_visador_modal_url' %}";
   ajax_assign_tasador_url = "{% url 'ajax_assign_tasador_url' %}";
@@ -19,13 +20,12 @@
   ajax_upload_report_url = "{% url 'ajax_upload_report_url' %}"
   ajax_mark_as_returned_url = "{% url 'ajax_mark_as_returned_url' %}"
   ajax_get_appraisal_row_url = "{% url 'ajax_get_appraisal_row_url' %}"
+  ajax_logbook_close_url = "{% url 'ajax_logbook_close_url' %}"
 </script>
 
 {% load custom_tags %}
 
 <div class="container" style="max-width:100%">
-
-
 
 <!-- NOT ASSIGNED -->
 
@@ -34,8 +34,8 @@
 <div class="card mb-1" id="div_not_assigned">
   <div class="card-body">
     <p class="card-title">Tasaciones por asignar</p>
-    <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_assigned" style="display:none;">
-      No hay tasaciones por asignar
+    <div id="div_alert_table_not_assigned" style="display:none;">
+      {% include "list/info_no_appraisals.html" %}
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_not_assigned" style="width:100%;display:none;font-size:0.8em;">
       {% include 'list/appraisals_table_not_assigned.html' %}
@@ -50,8 +50,8 @@
 <div class="card mb-1" id="div_not_accepted">
   <div class="card-body">
     <p class="card-title">Tasaciones por aceptar</p>
-    <div class="alert alert-primary mb-0" role="alert" id="div_alert_table_not_accepted" style="display:none;">
-      No hay tasaciones por aceptar
+    <div id="div_alert_table_not_accepted" style="display:none;">
+      {% include "list/info_no_appraisals.html" %}
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_not_accepted" style="width:100%;display:none;font-size:0.8em;">
       {% include 'list/appraisals_table_not_accepted.html' %}      
@@ -64,8 +64,8 @@
 <div class="card mb-1" id="div_in_appraisal">
   <div class="card-body">
     <p class="card-title">Tasaciones en proceso</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_in_appraisal" style="display: none;">
-      No hay tasaciones en proceso
+    <div id="div_alert_table_in_appraisal" style="display: none;">
+      {% include "list/info_no_appraisals.html" %}
     </div>
     <table class="table table-sm table-borderless table-appraisals" id="table_in_appraisal" style="width:100%;display:none;font-size:0.8em;">
       {% include 'list/appraisals_table_in_appraisal.html' %}
@@ -73,14 +73,13 @@
   </div>
 </div>
 
-
 <!-- RETURNED -->
 
 <div class="card mb-1 border border-danger" id="div_returned" >
   <div class="card-body">
-    <p class="card-title" style="color:#dc3545">Tasaciones devueltas</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_returned" style="display: none;">
-      No hay tasaciones devueltas
+    <p class="card-title" style="color:#dc3545">Tasaciones en reconsideración</p>
+    <div id="div_alert_table_returned" style="display: none;">
+      {% include "list/info_no_appraisals.html" %}
     </div>
     <table class="table table-sm table-borderless" id="table_returned" style="display:none;font-size:0.8em;">
       {% include 'list/appraisals_table_returned.html' %}
@@ -88,15 +87,13 @@
   </div>
 </div>
 
-
-
 <!-- SENT -->
 
 <div class="card mb-4" id="div_sent">
   <div class="card-body">
     <p class="card-title">Tasaciones enviadas</p>
-    <div class="alert alert-primary" role="alert" id="div_alert_table_sent" style="display: none;">
-      No hay tasaciones enviadas
+    <div id="div_alert_table_sent" style="display: none;">
+      {% include "list/info_no_appraisals.html" %}
     </div>
     <table class="table table-sm table-borderless table-sent" id="table_sent" style="width:100%;display:none;font-size:0.8em;">
       {% include 'list/appraisals_table_sent.html' %}
@@ -112,73 +109,15 @@
 
 <script src="{% static 'list/js/search.js' %}" type="text/javascript"></script>
 
-<script src="{% static 'list/js/logbook.js' %}" type="text/javascript"></script>
+<script src="{% static 'logbook/js/logbook.js' %}" type="text/javascript"></script>
 
 <script>
-
-  var unvalidate_cliente = function(appraisal_id) {
-    var url = "{% url 'ajax_unvalidate_cliente_url' %}"
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: {'appraisal_id':appraisal_id},
-      error: function () {
-        alert("Error al desvalidar cliente/contacto.");
-        return false;
-      },
-      success: function (ret) {
-        return true;
-      },
-    })
-  }
 
   var assignTableActions = function() {
 
     $(".btn_logbook").unbind()
     $(".btn_logbook").off()
-    $(".btn_logbook").on("click", function (event) {
-      // Opens logbook modal, and gets the data of the comments
-      // from an AJAX request. Also changes a hidden input to
-      // the appraisal id to have at the post request.
-      event.preventDefault();
-      btn = $(this)
-      table = btn.data('table')
-      tr = $(this).closest('tr')
-      $("#logbook").data('table',table)
-      appraisal_id = btn.val(); // button has id of appraisal
-      btn_loading(btn)
-      // ajax
-      var url = $(this).attr("data-logbook-url");
-      $.ajax({
-        url: url,
-        type: 'get',
-        data: {'appraisal_id':appraisal_id,'table':table},
-        error: function () {
-            alert("Error al abrir la bitacora.");
-            return false;
-        },
-        success: function (data) {
-          $('#logbook').find('.modal-body').html($.trim(data));
-          $("#in_appraisal_id").val(appraisal_id); // hidden input
-          $("input#table_id").attr("value",table);
-          tr.removeClass("notification")
-          $('#logbook').modal('show');
-          if (table == "not_accepted") {
-            $('#logbook').find('#div_event').hide()
-            $('#logbook').find('#div_comment_btn').hide()
-            $('#logbook').find('#div_datetime').hide()
-            $('#logbook').find('#div_accept_reject').show()
-          }
-        },
-        complete: function (data) {
-          btn_idle(btn)
-          assignLogbookModalActions();
-          if (table != "not_accepted") {
-            $("#id_event").trigger("change")
-          }
-        }
-      });
-    });
+    $(".btn_logbook").on("click", buttonLogbookClick)
 
     $(".btn_archive_appraisal_modal").unbind()
     $(".btn_archive_appraisal_modal").off()
@@ -224,6 +163,7 @@
     // the corresponding buttons are clicked.
     btn_assign_tasador_modal();
     btn_assign_visador_modal();
+    
     btn_assign_tasador();
     btn_assign_visador();
 
@@ -344,6 +284,22 @@
     });
   }
 
+  var unvalidate_cliente = function(appraisal_id) {
+    var url = "{% url 'ajax_unvalidate_cliente_url' %}"
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id},
+      error: function () {
+        alert("Error al desvalidar cliente/contacto.");
+        return false;
+      },
+      success: function (ret) {
+        return true;
+      },
+    })
+  }
+
   $(document).ready(function($) {
 
     // Show or hide tables or empty warnings
@@ -395,8 +351,7 @@
     if (appraisals_returned_n > 0) {
       $("#table_returned").toggle()
     } else {
-      $("#div_returned").hide()
-
+      $("#div_alert_table_returned").toggle()
     }
 
     // Actions.
@@ -419,30 +374,6 @@
         success: function (data) {
           replaceRow('table_sent',appraisal_id,data)
           assignTableActions()
-        }
-      });
-      return false;
-    })
-
-    $('#logbook').on('hidden.bs.modal', function (e) {
-      // When the logbook modal is closed, we delete the notifications
-      // related to this appraisal. We also save the form.
-      var appraisal_id = $("#in_appraisal_id").val();
-      var url = "{% url 'ajax_logbook_close_url' %}";
-      var form = $('#logbook_form')
-      $.ajax({
-        url: url,
-        type: 'post',
-        data: form.serialize(),
-        error: function () {
-            alert("Error al cerrar la bitacora.");
-            return false;
-        },
-        success: function (data) {
-          // everything is done in the view
-        },
-        complete: function (data) {
-          // everything is done in the view
         }
       });
       return false;

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <p>Estimado {{ user.first_name }} {{ user.last_name }},</p>
+        <p>Se le notifica que una tasación ha sido devuelta por el cliente. Los datos de esta tasación son:</p>
+        <div style="padding-left:4em;">
+        	<p>Solicitante: {{appraisal.get_solicitante_display}}</p>
+        	<p>Tipo de tasación: {{appraisal.get_tipoTasacion_display}}</p>
+      		<p>Dirección: {{appraisal.real_estates.first.address}}</p>
+      	</div>
+        <p>La nueva fecha de entrega es: {{appraisal.timeDue|date:"d/m G:i"}}</p>
+        <p>Para ver más detalles puede dirigirse a la lista de tasaciones <a href="http://127.0.0.1:8000/list/">click aquí</a>.</p>
+    </body>
+</html>

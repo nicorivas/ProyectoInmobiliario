@@ -21,7 +21,7 @@ https://cloud.google.com/python/django/kubernetes-engine
 
 4. python manage.py collectstatic
 
-5. gsutil rsync -R static/ gs://<your-gcs-bucket>/static
+5. gsutil rsync -R static/ gs://tasador/static
 
 6. 
 
@@ -33,16 +33,27 @@ kubectl create secret generic django --from-literal=key=$DJANGO_SECRET_KEY
 
 7. gcloud auth configure-docker
 
-8.
-docker build -t gcr.io/proyectoinmobiliario-212003/tasador .
+7. Check the latest version
+docker images
 
-9.
-docker push gcr.io/proyectoinmobiliario-212003/tasador
+8. Create a new version (increase the number!)
+docker build -t gcr.io/proyectoinmobiliario-212003/tasador:v0.x .
 
-[10]. UPDATE
-kubectl --record tasador set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1
+9. Upload the new version
+docker push gcr.io/proyectoinmobiliario-212003/tasador:v0.x
 
-[10].
+--- IF YOU WANT TO UPDATE (DO THIS!) ---
+(don't forget to upload static, see 4 and 5)
+Go to https://console.cloud.google.com
+Kubernetes engine
+Workloads
+Edit
+Look for:
+    image: gcr.io/proyectoinmobiliario-212003/tasador:v0.x
+Change to corresponding version
+Save
+
+--- IF YOU WANT TO DELETE ---
 kubectl delete -f tasador.yaml
 
 11.

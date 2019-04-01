@@ -1,12 +1,16 @@
 function btn_assign_visador_modal() {
+  console.log("btn_assign_visador_modal")
   $(".btn_assign_visador_modal").unbind()
   $(".btn_assign_visador_modal").off()
   $(".btn_assign_visador_modal").on("click", function (event) {
     // Assigns to a hidden input in the tasador modal the value of the
     // appraisal, to have in the post request.
     var url = ajax_assign_visador_modal_url;
+    console.log("url",url)
     var appraisal_id = $(this).val();
+    console.log("appraisal_id",appraisal_id)
     var source_table = $(this).closest('table').attr('id');
+    console.log("source_table",source_table)
     $("#modal_assign_visador").find("#ld-alert").show();
     $("#modal_assign_visador").find("#table").hide();
     $("#modal_assign_visador").find("#visador_buscar").hide();
@@ -17,11 +21,14 @@ function btn_assign_visador_modal() {
       type: 'get',
       data: {'appraisal_id':appraisal_id},
       error: function () {
+        console.log("error")
         alert("Error al desplegar modal de visador.");
         $("#modal_assign_visador").modal('hide');
         return false;
       },
       success: function (data) {
+        console.log("success")
+        console.log(data)
         $("#modal_assign_visador").html(data)
         $("#modal_assign_visador").find("#ld-alert").hide();
         $("#modal_assign_visador").find("#table").show();

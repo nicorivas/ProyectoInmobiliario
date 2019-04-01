@@ -78,8 +78,8 @@
 .ld-square,
 .ld-pie,
 .ld-spinner {
-  width: 1em;
-  height: 1em;
+  width: 1.0em;
+  height: 1.0em;
   position: relative;
   color: inherit;
   display: inline-block;
@@ -125,7 +125,7 @@
   border-color: currentColor currentColor currentColor transparent;
 }
 .ld-ring:after {
-  border-radius: 50%;
+  border-radius: 10%;
   border-style: solid;
   border-width: 0.15em;
   -webkit-background-clip: padding-box;

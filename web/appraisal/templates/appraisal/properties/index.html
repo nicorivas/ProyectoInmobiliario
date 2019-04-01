@@ -24,34 +24,22 @@
     data-ajax_edit_rol_modal_url="{% url 'ajax_edit_rol_modal_url' %}"
     data-ajax_edit_rol_url="{% url 'ajax_edit_rol_url' %}"
     data-ajax_remove_rol_url="{% url 'ajax_remove_rol_url' %}"></div>
+    
   <div class="row mt-4" style="padding-left:2em;">
-    <div class="col-3 border-right"">
-      <div id="address_list" style="padding-right:1em;">
-        {% include 'appraisal/address_list.html' %}
-      </div>
-      <!--<div class="card rounded-0" style="min-height: 10em;">-->
-      <div id="property_list" class="mb-4" style="min-height:40em;padding-right:1em;">
-        <!--{% include 'appraisal/property_list.html' %}-->
-      </div>
-        <!--</div>-->
-    </div>
+
+    <!-- Sidebar -->
+    {% include "appraisal/properties/sidebar/index.html" %}
+
+    <!-- Main -->
     <div class="col-9">
-    <!--<div class="card rounded-0 mb-4 mt-2" style="min-height: 10em; padding-top:1.5em;">-->
       <form class="needs-validation" action="" method="post" id="form_property" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         <div id="property_info" class="mt-3" style="padding-left:2em;">
         </div>
       </form>
-      <!--</div>-->
     </div>
+
   </div>
 </div>
 
 <script src="{% static 'appraisal/js/properties.js' %}" type="text/javascript"></script>
-
-<script>
-  $(document).ready(function($) {
-    set_address_list_actions();
-    $('#select_realestate').trigger('change');
-  })
-</script>

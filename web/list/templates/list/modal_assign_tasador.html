@@ -14,21 +14,15 @@
           Cargando tasadores
           <div class="ld ld-ring ld-spin" style="font-size:1.0em;"></div>
         </div>
+
         <div style="display:none;" id="tasador_buscar">
           <div class="form-row">
             <div class="form-group col-6">
               <input class="form-control mb-2" placeholder="Buscar tasador" id="input_tasador_buscar">
             </div>
             <div class="form-group col-6" id="region_select">
-              <!--{{form.addressRegion.label_tag}}-->
               {{form.addressRegion}}
             </div>
-            <!--
-            <div class="form-group col-6" id="commune_select">
-              {{form.addressCommune.label_tag}}
-              {{form.addressCommune}}
-            </div>
-            -->
           </div>
         </div>
 
@@ -109,32 +103,6 @@
   })
 </script>
 
-<!--
-<script>
-  $("#id_addressRegion").change(function () {
-    // get the url of the `load_cities` view
-    var url = $("#form_assign_tasador").attr("data-commune-url");
-    // get the selected country ID from the HTML input
-    var regionId = $(this).val();
-
-    // initialize an AJAX request
-    $.ajax({
-      // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
-      url: url,
-      // add the country id to the GET parameters
-      data: {
-        'region': regionId
-      },
-      success: function (data) {
-        // `data` is the return of the `load_cities` view function
-        // replace the contents of the city input with the data that came from the server
-        $("#id_addressCommune").html($.trim(data));
-      }
-    });
-  });
-</script>
--->
-
 <script>
   function validateRow(table,region) {
     table.find('tr[class="tasador"]').each(function(i, el) {
@@ -148,12 +116,5 @@
   $("#id_addressRegion").change(function() {
     var region = $(this).val();
     validateRow($("#table"),region)
-    /*
-    $('tbody').each(function(i, el) {
-      validateRow($(this));
-    }).find('tr[id_region="tasador"]').change(function() {
-      validateRow($(this).closest('tr'));
-    });
-    */
   })
 </script>

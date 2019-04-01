@@ -44,16 +44,11 @@ function join_data(form,element) {
 }
 
 function addRow(table_name, appraisal_id, html) {
-  // Remove row from table. Takes into account if this is
-  // the last row remaining, in that case it hides the whole
-  // table and shows the no elements alert div.
-  $("<tr class='"+table_name+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
+  // Add row to a table.
+  $("<tr class='appraisal "+table_name.split('_')[1]+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
   //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
   $("#div_alert_"+table_name).fadeOut()
   $("#"+table_name).fadeIn()
-  if (table_name == "table_returned") {
-    $("#div_returned").slideDown()
-  }
 }
 
 function removeRow(table_name, appraisal_id) {
@@ -62,14 +57,9 @@ function removeRow(table_name, appraisal_id) {
   // table and shows the no elements alert div.
   $("#tr_"+table_name+"-"+appraisal_id).fadeOut("normal", function() { $(this).remove(); })
   var nrows = $("#"+table_name+" tr.appraisal").length;
-  if (nrows == 0) {
-    if (table_name == "table_returned") {
-      // Returned table is hidden when there are now appraisals left
-      $("#div_returned").slideUp()
-    } else {
-      $("#"+table_name).fadeOut()
-      $("#div_alert_"+table_name).fadeToggle()
-    }
+  if (nrows == 1) {
+    $("#"+table_name).fadeOut()
+    $("#div_alert_"+table_name).fadeToggle()
   }
 }
 

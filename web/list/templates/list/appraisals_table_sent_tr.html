@@ -25,10 +25,12 @@
   {% with table="active" %}
     {% include 'list/btn_logbook.html' %}
   {% endwith %}
-  {% if perms.appraisal.assign_visador %}
+  {% if perms.user.evaluate %}
     {% include 'list/btn_evaluate.html' %}
   {% endif %}
-  {% with class="btn_archive_appraisal_modal" %}
-    {% include 'list/btn_archive.html' %}
-  {% endwith %}
+  {% if user.is_superuser or "asignador" in groups %}
+    {% with class="btn_archive_appraisal_modal" %}
+      {% include 'list/btn_archive.html' %}
+    {% endwith %}
+  {% endif %}
 </td>

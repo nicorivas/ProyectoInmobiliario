@@ -5,6 +5,7 @@
 {% block head %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'appraisal/css/app.css' %}">
+<link rel="stylesheet" href="{% static 'appraisal/css/sidebar.css' %}">
 <link rel="stylesheet" href="{% static 'list/css/logbook.css' %}">
 <script src="{% static "list/js/modal_assign_tasador.js" %}" type="text/javascript"></script>
 <script src="{% static "list/js/tools.js" %}" type="text/javascript"></script>
@@ -122,7 +123,7 @@
           {% include "appraisal/general.html" %}
         </div>
         <div class="{{request.GET.tab|tab_pane_class:"property"}}" id="property" role="tabpanel" aria-labelledby="property-tab">
-          {% include "appraisal/properties.html" %}
+          {% include "appraisal/properties/index.html" %}
         </div>
         <div class="{{request.GET.tab|tab_pane_class:"surroundings"}}" id="surroundings" role="tabpanel" aria-labelledby="surroundings-tab">
           {% include "appraisal/surroundings.html" %}

@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-7 text-left" style="padding-left:0.4em;padding-right:0.0em;">
+        <button type="button" class="btn btn-sm btn-outline-secondary btn_edit_property_modal" style="font-family:Material Icons;font-size:0.8em;margin-bottom:1px;padding-top:0em;padding-bottom:0em;padding-left:0.2em;padding-right:0.2em;" data-terrain_id="{{class.id}}" >
+            <div class="icon">edit</div>
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+        </button>
+        <a href="#" class="text-left btn_property" data-terrain_id="{{class_object.id}}" style="vertical-align:bottom;">
+            {{class.name_or_generic}}
+        </a>
+    </div>
+    <div class="col-5 text-left" style="padding-left:0.4em;">
+    </div>
+    {% for apartment in properties.apartments %}
+		{% if class.is_apartmentbuilding %}
+            <ul style="list-style-type: none;padding-left:1.0em;" class="mb-0">
+                {% for apartment in properties.apartments %}
+                    <li class="apartment_list_item">
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn_edit_property_modal" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}" style="font-family:Material Icons;font-size:0.7em;margin-bottom:1px;padding-top:0em;padding-bottom:0em;padding-left:0.2em;padding-right:0.2em;">
+                            <div class="icon">edit</div>
+                            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+                        </button>
+                        <a href="#" class="text-left btn_property btn_apartment" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}">
+                            <small>{{apartment.name_or_generic}}</small>
+                        </a>
+                    </li>
+                {% endfor %}
+                <li>
+                    <a href="#" class="text-left btn_add_apartment_modal" value="{{apartment.id}}">
+                        <small>Agregar departamento</small>
+                    </a>
+                </li>
+            </ul>
+		{% endif %}
+    {% endfor %}
+</div>

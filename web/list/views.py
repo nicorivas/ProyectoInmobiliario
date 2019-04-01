@@ -37,50 +37,13 @@ def main(request):
 
     # Get appraisals that this user can see
 
-    appraisals_not_assigned = []
-    appraisals_not_accepted = []
-    appraisals_in_appraisal = []
-    appraisals_in_revision = []
-    appraisals_sent = []
-    appraisals_returned = []
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
-    for app in appraisals:
-        if app.state == Appraisal.STATE_NOT_ASSIGNED:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_not_assigned.append(app)
-        elif app.state == Appraisal.STATE_NOT_ACCEPTED:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_not_accepted.append(app)
-        elif app.state == Appraisal.STATE_IN_APPRAISAL:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_in_appraisal.append(app)
-        elif app.state == Appraisal.STATE_IN_REVISION:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_in_revision.append(app)
-        elif app.state == Appraisal.STATE_SENT:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_sent.append(app)
-        elif app.state == Appraisal.STATE_RETURNED:
-            if app.tasadorUser == request.user or \
-               app.visadorUser == request.user or \
-               request.user.is_superuser or \
-               request.user.groups.filter(name='asignador').exists():
-                appraisals_returned.append(app)
+    appraisals_not_assigned = get_appraisals_not_assigned(request,appraisals)
+    appraisals_not_accepted = get_appraisals_not_accepted(request,appraisals)
+    appraisals_in_appraisal = get_appraisals_in_appraisal(request,appraisals)
+    appraisals_in_revision = get_appraisals_in_revision(request,appraisals)
+    appraisals_sent = get_appraisals_sent(request,appraisals)
+    appraisals_returned = get_appraisals_returned(request,appraisals)
 
     # Form to create a comment.
 
@@ -132,6 +95,72 @@ def main(request):
         'form':form}
 
     return render(request, 'list/index.html', context)
+
+def get_appraisals_not_assigned(request,appraisals):
+    appraisals_not_assigned = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_NOT_ASSIGNED:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_not_assigned.append(app)
+    return appraisals_not_assigned
+
+def get_appraisals_not_accepted(request,appraisals):
+    appraisals_not_accepted = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_NOT_ACCEPTED:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_not_accepted.append(app)
+    return appraisals_not_accepted
+
+def get_appraisals_in_appraisal(request,appraisals):
+    appraisals_in_appraisal = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_IN_APPRAISAL:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_in_appraisal.append(app)
+    return appraisals_in_appraisal
+
+def get_appraisals_in_revision(request,appraisals):
+    appraisals_in_revision = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_IN_REVISION:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_in_revision.append(app)
+    return appraisals_in_revision
+
+def get_appraisals_sent(request,appraisals):
+    appraisals_sent = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_SENT:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_sent.append(app)
+    return appraisals_sent
+
+def get_appraisals_returned(request,appraisals):
+    appraisals_returned = []
+    for app in appraisals:
+        if app.state == Appraisal.STATE_RETURNED:
+            if app.tasadorUser == request.user or \
+               app.visadorUser == request.user or \
+               request.user.is_superuser or \
+               request.user.groups.filter(name='asignador').exists():
+                appraisals_returned.append(app)
+    return appraisals_returned
 
 @login_required(login_url='/user/login')
 def imported_appraisals(request):
@@ -197,7 +226,7 @@ def ajax_assign_tasador_modal(request):
     form.fields['addressRegion'].queryset = regions
     form.fields['addressCommune'].queryset = communes
 
-    return render(request,'list/modals_assign_tasador.html',
+    return render(request,'list/modal_assign_tasador.html',
         {'appraisal':appraisal,
          'tasadores':tasadores_info,
          'form':form})
@@ -210,10 +239,9 @@ def ajax_assign_visador_modal(request):
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
     visadores = User.objects.filter(groups__name__in=['visador']).order_by('last_name')
     visadores_info = visadorWork(visadores)
-    return render(request,'list/modals_assign_visador.html',
+    return render(request,'list/modal_assign_visador.html',
         {'appraisal':appraisal,
          'visadores':visadores_info})
-
 
 def ajax_assign_tasador(request):
     '''
@@ -268,7 +296,7 @@ def ajax_unassign_tasador(request):
     appraisal.state = Appraisal.STATE_NOT_ASSIGNED
     user = User.objects.get(id=user_id)
     appraisal.addComment(Comment.EVENT_TASADOR_DESASIGNADO,user,datetime.datetime.now(timezone_cl),
-        text="Tasador "+tasador.user.full_name+" fue desasignado.")
+        text="Tasador "+tasador.first_name+" "+tasador.last_name+" fue desasignado.")
     appraisal.save()
 
     notifications = request.user.user.notifications.all()
@@ -301,7 +329,7 @@ def ajax_assign_visador(request):
     else:
         appraisal.visadorUser = visador
         comment = appraisal.addComment(Comment.EVENT_VISADOR_ASIGNADO,user,datetime.datetime.now(timezone_cl),
-            text="Visación asignada a "+visador.user.first_name + ' ' + visador.user.last_name)
+            text="Visación asignada a "+visador.first_name+' '+visador.last_name)
         appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
         appraisal.save()
 
@@ -331,13 +359,10 @@ def ajax_unassign_visador(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
     visador = appraisal.visadorUser
     comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(timezone_cl),
-        text="Visador "+visador.user.full_name+" fue desasignado.")
+        text="Visador "+visador.first_name+' '+visador.last_name+" fue desasignado.")
     appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
     appraisal.visadorUser = None
     appraisal.save()
-
-    appraisals_active = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
-
 
     return render(request,'list/appraisals_'+table_id+'_tr.html',{'appraisal':appraisal})
 
@@ -355,7 +380,8 @@ def ajax_accept_appraisal(request):
     notifications = request.user.user.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
-    appraisals_in_appraisal = appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
+    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
+    appraisals_in_appraisal = get_appraisals_in_appraisal(request,appraisals)
 
     return render(request,'list/appraisals_table_in_appraisal.html',
         {'appraisals_in_appraisal':appraisals_in_appraisal,
@@ -388,7 +414,8 @@ def ajax_reject_appraisal(request):
     notifications = request.user.user.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
-    appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
+    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
+    appraisals_not_assigned = get_appraisals_not_assigned(request,appraisals)
 
     return render(request,'list/appraisals_table_not_assigned.html',
         {'appraisals_not_assigned':appraisals_not_assigned,
@@ -402,98 +429,6 @@ def ajax_archive_appraisal(request):
     appraisal.state = Appraisal.STATE_ARCHIVED
     appraisal.save()
     return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal})
-
-def ajax_logbook(request):
-    '''
-    Called when opening the logbook modal, through AJAX. Returns the comments of the relevant appraisal.
-    '''
-    appraisal_id = int(request.GET['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-    comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
-    form_comment = FormComment(label_suffix='')
-    
-    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
-
-    notifications = request.user.user.notifications.all()
-    notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
-
-    groups = request.user.groups.values_list('name',flat=True)
-
-    reports = appraisal.report_set.order_by('time_uploaded')
-
-    return render(request,'list/logbook.html',
-        {'appraisal':appraisal,
-        'comments':comments,
-        'form_comment':form_comment,
-        'groups':groups,
-        'reports':reports,
-        'notifications_comment_ids':notifications_comment_ids})
-
-def ajax_logbook_close(request):
-    '''
-    Called when closing the logbook modal, through AJAX.
-    1. Deletes notifications.
-    2. Saves modified variables
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    request.user.user.removeNotification(ntype="comment",appraisal_id=appraisal_id)
-
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    if request.POST['valorUF'] in ["None",""]:
-        appraisal.valorUF = None
-    else:
-        appraisal.valorUF = request.POST['valorUF']
-
-    if request.POST['solicitanteEjecutivo'] in ["None",""]:
-        appraisal.solicitanteEjecutivo = None
-    else:
-        appraisal.solicitanteEjecutivo = request.POST['solicitanteEjecutivo']
-    if request.POST['solicitanteEjecutivoEmail'] in ["None",""]:
-        appraisal.solicitanteEjecutivoEmail = None
-    else:
-        appraisal.solicitanteEjecutivoEmail = request.POST['solicitanteEjecutivoEmail']
-    if request.POST['solicitanteEjecutivoTelefono'] in ["None",""]:
-        appraisal.solicitanteEjecutivoTelefono = None
-    else:
-        appraisal.solicitanteEjecutivoTelefono = request.POST['solicitanteEjecutivoTelefono']
-
-    if request.POST['contacto'] in ["None",""]:
-        appraisal.contacto = None
-    else:
-        appraisal.contacto = request.POST['contacto']
-    if request.POST['contactoEmail'] in ["None",""]:
-        appraisal.contactoEmail = None
-    else:
-        appraisal.contactoEmail = request.POST['contactoEmail']
-    if request.POST['contactoTelefono'] in ["None",""]:
-        appraisal.contactoTelefono = None
-    else:
-        appraisal.contactoTelefono = request.POST['contactoTelefono']
-
-    if request.POST['cliente'] in ["None",""]:
-        appraisal.cliente = None
-    else:
-        appraisal.cliente = request.POST['cliente']
-    if request.POST['clienteEmail'] in ["None",""]:
-        appraisal.clienteEmail = None
-    else:
-        appraisal.clienteEmail = request.POST['clienteEmail']
-    if request.POST['clienteTelefono'] in ["None",""]:
-        appraisal.clienteTelefono = None
-    else:
-        appraisal.clienteTelefono = request.POST['clienteTelefono']
-    appraisal.save()
-
-    return HttpResponse('')
-
-def ajax_logbook_change_event(request):
-    '''
-    '''
-
-    #if request['event'] == 
-
-    return JsonResponse({'comment_id':comment_id})
 
 def ajax_comment(request):
     '''
@@ -605,8 +540,10 @@ def ajax_get_appraisal_row(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
     table = request.GET['table']
+
+    groups = request.user.groups.values_list('name',flat=True)
     
-    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
+    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal,'groups':groups})
 
 def ajax_evaluate_modal(request):
     '''
@@ -635,7 +572,9 @@ def ajax_evaluate_modal_close(request):
     evaluationForm.save()
     appraisal.save()
 
-    return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal})
+    groups = request.user.groups.values_list('name',flat=True)
+
+    return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal,'groups':groups})
 
 def ajax_enviar_a_visador(request):
     '''
@@ -717,8 +656,8 @@ def ajax_mark_as_returned(request):
 
     appraisal.state = Appraisal.STATE_RETURNED
     appraisal.save()
-    if appraisal.tasadorUser:
-        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+    if appraisal.visadorUser:
+        appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -731,7 +670,9 @@ def ajax_solve_conflict(request):
     appraisal.in_conflict = False;
     appraisal.save()
 
-    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
+    groups = request.user.groups.values_list('name',flat=True)
+
+    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal,'groups':groups})
 
 def ajax_upload_report(request):
 
@@ -762,7 +703,7 @@ def ajax_upload_report(request):
 
     reports = appraisal.report_set.order_by('time_uploaded')
 
-    return render(request,'list/logbook.html',
+    return render(request,'logbook/modals_logbook.html',
         {'appraisal':appraisal,
         'comments':comments,
         'form_comment':form_comment,

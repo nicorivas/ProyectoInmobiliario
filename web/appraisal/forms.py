@@ -441,6 +441,18 @@ class FormAddAddress(forms.Form):
 
 class FormAddProperty(forms.Form):
 
+    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
+    addressRegion.widget.attrs.update({'class':"form-control"})
+
+    addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
+    addressCommune.widget.attrs.update({'class':"form-control"})
+
+    addressStreet = forms.CharField(max_length=200,label="Calle")
+    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+    addressNumber = forms.CharField(max_length=30,label="Número")
+    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
     propertyType = forms.ChoiceField(label="Tipo propiedad",choices=Building.propertyType_choices,required=True)
     propertyType.widget.attrs.update({'class':"form-control"})
 

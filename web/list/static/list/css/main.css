@@ -37,3 +37,10 @@ tr.conflict
    vertical-align: bottom;
    font-size: 20px !important;
 }
+
+p.info {
+  font-size: 0.8em;
+  font-style: italic;
+  padding-left: 1em;
+  color: #666;
+}

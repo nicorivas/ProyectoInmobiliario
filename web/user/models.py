@@ -95,9 +95,20 @@ class UserProfile(models.Model):
         # Send email
         if comment.event == Comment.EVENT_TASADOR_SOLICITADO:
             appraisal = Appraisal.objects.get(id=appraisal_id)
-            html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal': appraisal})
+            html_message = loader.render_to_string('user/email_solicitud.html',{'user':self.user,'appraisal':appraisal})
             send_mail(
                 subject='Asignación de tasación',
+                message='',
+                from_email='soporte@dataurbana.io',
+                recipient_list=[self.user.email],
+                fail_silently=False,
+                html_message=html_message)
+        
+        if comment.event == Comment.EVENT_RETURNED:
+            appraisal = Appraisal.objects.get(id=appraisal_id)
+            html_message = loader.render_to_string('user/email_reconsideracion.html',{'user':self.user,'appraisal':appraisal})
+            send_mail(
+                subject='Tasación a ser reconsiderada',
                 message='',
                 from_email='soporte@dataurbana.io',
                 recipient_list=[self.user.email],
@@ -128,6 +139,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    class Meta:
+        """
+        """
+        permissions = (
+            ("view_accounting", "Can view accounting"),
+            ("evaluate_tasador", "Can evaluate appraisers"),)
 
 
 @receiver(post_save, sender=User)

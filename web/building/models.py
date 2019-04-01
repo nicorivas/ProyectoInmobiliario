@@ -4,6 +4,10 @@ class Building(models.Model):
 
     real_estate = models.ForeignKey('realestate.RealEstate', on_delete=models.CASCADE,verbose_name="Real estate",blank=False,null=False)
 
+    PROPERTY_CLASS_TERRAIN = 0
+    PROPERTY_CLASS_BUILDING = 1
+    PROPERTY_CLASS_ASSET = 2
+
     TYPE_NONE = ''
     TYPE_OTRO = 0
     TYPE_CASA = 1

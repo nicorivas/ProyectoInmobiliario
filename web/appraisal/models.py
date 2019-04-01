@@ -392,8 +392,8 @@ class Appraisal(models.Model):
 
     @cached_property
     def url(self):
-        return ""
-        #return "/appraisal/{}/".format(self.id)
+        #return ""
+        return "/appraisal/{}/".format(self.id)
 
     @cached_property
     def daySinceCreated(self):
@@ -485,7 +485,10 @@ class Appraisal(models.Model):
         if comments == None:
             comments = self.comments.all()
 
-        event_choices = Comment.event_choices_state[state]
+        if state in Comment.event_choices_state.keys():
+            event_choices = Comment.event_choices_state[state]
+        else:
+            event_choices = []
 
         # already commented
         comment_ids = comments.values_list('event',flat=True)
@@ -521,7 +524,8 @@ class Appraisal(models.Model):
         permissions = (
             ("assign_tasador", "Can assign tasadores"),
             ("assign_visador", "Can assign visadores"),
-            ("validate_contact", "Can validate contacts"))
+            ("validate_contact", "Can validate contacts"),
+            ("change_time_due", "Can change time due"))
 
     def __iter__(self):
         for field_name in self._meta.get_fields():
@@ -545,6 +549,25 @@ class AppProperty(models.Model):
             return True
         else:
             return False
+
+    @property
+    def property_class_object(self):
+        bldg = self.get_building()
+        if (bldg):
+            return bldg
+        else:
+            return Terrain.objects.get(id=self.property_id)
+
+    @property
+    def property_class(self):
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_EDIFICIO:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_CASA:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_TERRENO:
+            return Building.PROPERTY_CLASS_TERRAIN
 
     def get_property(self):
         if self.property_type == Building.TYPE_DEPARTAMENTO:
@@ -654,7 +677,8 @@ class Comment(models.Model):
         ],
         Appraisal.STATE_RETURNED:[
             EVENT_COMENTARIO
-        ]
+        ],
+        Appraisal.STATE_ARCHIVED:[]
     }
     event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
