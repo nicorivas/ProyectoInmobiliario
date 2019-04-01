@@ -519,6 +519,6 @@ class FormComment(forms.Form):
 
 class FormExpenses(forms.Form):
     description = forms.CharField(label='Descripción', max_length=500, widget=forms.Textarea, required=False)
-    description.widget.attrs.update({'class': "form-control form-control-sm", 'rows': 3})
-    totalPrice = forms.IntegerField(label='Precio (sin puntos ni comas)', widget=forms.NumberInput, required=False)
+    description.widget.attrs.update({'class': "form-control form-control-sm", 'rows': 1})
+    totalPrice = forms.IntegerField(label='Precio', widget=forms.NumberInput, required=False)
     totalPrice.widget.attrs.update({'class': "form-control form-control-sm", 'rows': 1})

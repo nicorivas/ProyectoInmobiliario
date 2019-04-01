@@ -727,7 +727,7 @@ def load_communes(request):
         {'communes': communes})
 
 
-def ajax_expenses(request):
+def ajax_expenses_modal(request):
     '''
     Called when opening the expenses modal, through AJAX. Returns the comments of the relevant appraisal.
     '''
@@ -737,14 +737,11 @@ def ajax_expenses(request):
     form_expenses = FormExpenses(label_suffix='')
     groups = request.user.groups.values_list('name', flat=True)
 
-
-
     return render(request, 'list/modals_expenses.html',
                   {'appraisal': appraisal,
                    'expenses': expenses,
                    'form_expenses': form_expenses,
                    'groups': groups})
-
 
 def ajax_save_expenses(request):
     '''
