@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from user.views import userAppraisals
-from appraisal.models import Appraisal, Comment, Report
+from appraisal.models import Appraisal, Comment, Report, AppraiserExpenses
 from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 from django.utils import timezone
@@ -15,7 +15,7 @@ import json
 import reversion, datetime
 from copy import deepcopy
 from reversion.models import Version
-from appraisal.forms import FormComment
+from appraisal.forms import FormComment, FormExpenses
 from .forms import TasadorSearch
 
 from evaluation.forms import EvaluationForm
@@ -725,3 +725,54 @@ def load_communes(request):
     return render(request,
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
+
+
+def ajax_expenses(request):
+    '''
+    Called when opening the expenses modal, through AJAX. Returns the comments of the relevant appraisal.
+    '''
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    expenses = AppraiserExpenses.objects.filter(appraisal=appraisal)
+    form_expenses = FormExpenses(label_suffix='')
+    groups = request.user.groups.values_list('name', flat=True)
+
+
+
+    return render(request, 'list/modals_expenses.html',
+                  {'appraisal': appraisal,
+                   'expenses': expenses,
+                   'form_expenses': form_expenses,
+                   'groups': groups})
+
+
+def ajax_save_expenses(request):
+    '''
+    save expenses from modal
+    '''
+
+    appraisal_id = int(request.POST['appraisal_id'])
+    description = request.POST['description']
+    totalPrice = int(request.POST['totalPrice'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    expense = AppraiserExpenses(appraisal=appraisal, description=description, totalPrice=totalPrice)
+    expense.save()
+
+    return render(request, 'list/expenses.html',
+                  {'appraisal': appraisal,
+                   'expense': expense})
+
+def ajax_delete_expenses(request):
+    '''
+    deletes expenses from modal
+    '''
+    appraisal_id = int(request.POST['appraisal_id'])
+    expense_id = int(request.POST['expense_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    expense = AppraiserExpenses(appraisal=appraisal, id=expense_id)
+    expense.delete()
+    print(request.POST)
+
+    return render(request, 'list/expenses.html',
+                  {'appraisal': appraisal,
+                   'expense': expense})

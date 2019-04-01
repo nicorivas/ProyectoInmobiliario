@@ -1,0 +1,163 @@
+{% load custom_tags %}
+{% load mathfilters %}
+{{form_comment.media}}
+
+
+
+<div class="row mb-2 col-12">
+  <div class="col-8">
+    <a href="{{appraisal.url}}">
+      <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+        {{appraisal.real_estates.first.address}}
+        (+{{appraisal.real_estates.all|length|sub:1}})
+      </p>
+    </a>
+  </div>
+</div>
+<div class="row col-12">
+  <div class="col-6">
+    <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+      {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
+        | <span style='font-weight: 100; color:#000;'>{{appraisal.get_tipoTasacion_display}}</span>
+    </p>
+  </div>
+
+</div>
+
+<div class="line">
+  <span class="line">
+    Ingresar Gastos
+  </span>
+</div>
+
+<form id="form_expenses" data-expenses2-url="{% url 'ajax_save_expenses_url' %}">
+<input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
+{% csrf_token %}
+<div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
+  <div class="col-12">
+      <div class="row">
+
+          <div class="form-group col-6" id="div_description">
+            <small>{{ form_expenses.description.label_tag}}</small>
+            {{ form_expenses.description }}
+          </div>
+
+          <div class="form-group col-6" id="div_totalPrice">
+            <small>{{ form_expenses.totalPrice.label_tag }}</small>
+              {{ form_expenses.totalPrice }}
+          </div>
+
+      </div>
+
+      <div class="form-group row" id="div_expenses_btn">
+        <div class="col-12">
+          <button type="button" class="btn btn-dark btn-sm btn-block" name="btn_expenses2" id="btn_expenses2">
+            <span class="text">Registrar gasto</span>
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+          </button>
+        </div>
+      </div>
+  </div>
+</div>
+
+</form>
+
+
+<div class="line">
+  <span class="line">
+    Lista de gastos
+  </span>
+</div>
+
+<div class="row mb-4" style="width:90%;margin-left:auto;margin-right:auto;">
+  <div class="col-12">
+    <div id="expense">
+      <ul id="expenses_list" class="list-group">
+        {% for expense in expenses %}
+          {% include 'list/expenses.html' %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  var assignExpensesModalActions = function() {
+
+      $("#expenses_delete").unbind()
+      $("#expenses_delete").off()
+      $("#expenses_delete").on("click", function (event) {
+        // Click of borrar gasto button in expenses form.
+        event.preventDefault();
+        btn = $(this)
+        btn_loading(btn,hide_text=true)
+        var url = $("#expenses_delete").attr("data-expenses-delete-url");
+        var appraisal_id = $("#in_appraisal_id").val()
+        var expense_id = $("#expenses_delete").attr("id2")
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+          url: url,
+          type: 'post',
+          data: {"expense_id":expense_id, "appraisal_id":appraisal_id},
+          headers:{"X-CSRFToken": csrftoken},
+          error: function () {
+            btn_idle(btn)
+            alert("Error al borrar gasto.");
+            return false;
+          },
+          success: function (data) {
+            $("li[id='"+expense_id +"']").remove();
+            btn_idle(btn)
+
+          },
+          complete: function (data) {
+                assignExpensesModalActions();
+          }
+        });
+      });
+
+      $("#btn_expenses2").unbind()
+      $("#btn_expenses2").off()
+      $("#btn_expenses2").on("click", function (event) {
+        // Click of registrar gasto button in expenses form.
+        event.preventDefault();
+        btn = $(this)
+        btn_loading(btn,hide_text=true)
+        var form = document.getElementById('form_expenses');
+        var formData = new FormData(form);
+        var url = $("#form_expenses").attr("data-expenses2-url");
+        var appraisal_id = $("#in_appraisal_id").val()
+
+        $.ajax({
+          url: url,
+          type: 'post',
+          data: formData,
+          processData: false,
+          contentType: false,
+          error: function () {
+            btn_idle(btn)
+            alert("Error al ingresar gasto.");
+            return false;
+          },
+          success: function (data) {
+            var element = $($.parseHTML(data))
+            element.hide()
+            $("#expenses_list").prepend(element);
+            element.slideDown()
+            btn_idle(btn)
+
+          },
+
+          complete: function (data) {
+                assignExpensesModalActions();
+                 $('#form_expenses')[0].reset();
+            }
+        });
+      });
+}
+
+$(document).ready(function($) {
+    assignExpensesModalActions();
+    })
+</script>

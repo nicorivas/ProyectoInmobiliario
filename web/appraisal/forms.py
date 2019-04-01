@@ -516,3 +516,9 @@ class FormComment(forms.Form):
             attrs={'class': "form-control form-control-sm datetimepicker-input",
                    'data-target':"#datetimepicker1"}))
     datetime.input_formats = ['%d/%m/%Y %H:%M']
+
+class FormExpenses(forms.Form):
+    description = forms.CharField(label='Descripción', max_length=500, widget=forms.Textarea, required=False)
+    description.widget.attrs.update({'class': "form-control form-control-sm", 'rows': 3})
+    totalPrice = forms.IntegerField(label='Precio (sin puntos ni comas)', widget=forms.NumberInput, required=False)
+    totalPrice.widget.attrs.update({'class': "form-control form-control-sm", 'rows': 1})

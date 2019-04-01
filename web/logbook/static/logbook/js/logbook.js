@@ -157,6 +157,12 @@ function assignLogbookModalActions() {
     });
   });
 
+
+
+
+
+
+
   $(".btn_validate").unbind()
   $(".btn_validate").off()
   $(".btn_validate").on("change", function (event) {

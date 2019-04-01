@@ -21,6 +21,8 @@
   ajax_mark_as_returned_url = "{% url 'ajax_mark_as_returned_url' %}"
   ajax_get_appraisal_row_url = "{% url 'ajax_get_appraisal_row_url' %}"
   ajax_logbook_close_url = "{% url 'ajax_logbook_close_url' %}"
+  ajax_appraisal_expenses = "{% url 'ajax_appraisal_expenses_url' %}"
+  ajax_save_expenses = "{% url 'ajax_save_expenses_url' %}"
 </script>
 
 {% load custom_tags %}
@@ -111,6 +113,8 @@
 
 <script src="{% static 'logbook/js/logbook.js' %}" type="text/javascript"></script>
 
+
+
 <script>
 
   var assignTableActions = function() {
@@ -118,6 +122,56 @@
     $(".btn_logbook").unbind()
     $(".btn_logbook").off()
     $(".btn_logbook").on("click", buttonLogbookClick)
+
+
+
+
+
+
+
+
+
+    $(".btn_expenses").unbind()
+    $(".btn_expenses").off()
+    $(".btn_expenses").on("click", function (event) {
+      // Opens logbook modal, and gets the data of the comments
+      // from an AJAX request. Also changes a hidden input to
+      // the appraisal id to have at the post request.
+      event.preventDefault();
+      btn = $(this)
+      tr = $(this).closest('tr')
+      $("#modal_expenses").data('table',table)
+      appraisal_id = btn.val(); // button has id of appraisal
+      btn_loading(btn)
+      // ajax
+      var url = $(this).attr("data-expenses-url");
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: {'appraisal_id':appraisal_id},
+        error: function () {
+            alert("Error al abrir la bitacora.");
+            return false;
+        },
+        success: function (data) {
+          $('#modal_expenses').modal('show');
+          $('#modal_expenses').find('.modal-expenses-body').html($.trim(data));
+          $("#in_appraisal_id").val(appraisal_id); // hidden input
+
+
+        },
+        complete: function (data) {
+          btn_idle(btn)
+
+          assignLogbookModalActions();
+
+        }
+      });
+    });
+
+
+
+
 
     $(".btn_archive_appraisal_modal").unbind()
     $(".btn_archive_appraisal_modal").off()
