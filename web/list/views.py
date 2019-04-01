@@ -809,6 +809,7 @@ def ajax_save_expenses(request):
     '''
     save expenses from modal
     '''
+
     appraisal_id = int(request.POST['appraisal_id'])
     description = request.POST['description']
     totalPrice = int(request.POST['totalPrice'])

@@ -116,6 +116,8 @@
 
 <script src="{% static 'list/js/logbook.js' %}" type="text/javascript"></script>
 
+
+
 <script>
 
   var unvalidate_cliente = function(appraisal_id) {
@@ -221,13 +223,12 @@
         },
         complete: function (data) {
           btn_idle(btn)
+
           assignLogbookModalActions();
 
         }
       });
     });
-
-
 
 
 
