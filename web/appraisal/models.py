@@ -192,6 +192,7 @@ class Appraisal(models.Model):
     EVALUACION_PROYECTO_AUTOCONSTRUCCION = 12
     AVANCE_DE_OBRA_INMOBILIARIO = 6
     AVANCE_DE_OBRA_AUTOCONSTRUCCION = 10
+    RETASACION_GARANTIA_GENERAL = 20
     FINAL_INMOBILIARIA = 13
     FINAL_AUTOCONSTRUCCION = 14
     REMATE = 15
@@ -209,6 +210,7 @@ class Appraisal(models.Model):
         (EVALUACION_PROYECTO_AUTOCONSTRUCCION,'Evaluación proyecto autoconstrucción'),
         (AVANCE_DE_OBRA_INMOBILIARIO,'Avance de obra inmobiliario'),
         (AVANCE_DE_OBRA_AUTOCONSTRUCCION,'Avance de obra autoconstrucción'),
+        (RETASACION_GARANTIA_GENERAL,'Retasación garantía general'),
         (FINAL_INMOBILIARIA,'Final inmobiliaria'),
         (FINAL_AUTOCONSTRUCCION,'Final autoconstrucción'),
         (REMATE,'Remate'),

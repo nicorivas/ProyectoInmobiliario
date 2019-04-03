@@ -75,6 +75,20 @@
   </div>
 </div>
 
+<!-- IN REVISION -->
+
+<div class="card mb-1" id="div_in_revision">
+  <div class="card-body">
+    <p class="card-title">Tasaciones en revisión</p>
+    <div id="div_alert_table_in_revision" style="display: none;">
+      {% include "list/info_no_appraisals.html" %}
+    </div>
+    <table class="table table-sm table-borderless table-appraisals" id="table_in_revision" style="width:100%;display:none;font-size:0.8em;">
+      {% include 'list/appraisals_table_in_revision.html' %}
+    </table>
+  </div>
+</div>
+
 <!-- RETURNED -->
 
 <div class="card mb-1 border border-danger" id="div_returned" >
