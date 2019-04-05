@@ -25,6 +25,6 @@ class EvaluationForm(forms.ModelForm):
             'correctSurface': forms.CheckboxInput(attrs=class_bs),
             'completeNormative': forms.CheckboxInput(attrs=class_bs),
             'homologatedReferences': forms.CheckboxInput(attrs=class_bs),
-            'commentText': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':3}),
-            'commentFeedback': forms.Textarea(attrs={'class':"form-control form-control-sm",'rows':3})
+            'commentText': forms.Textarea(attrs={'class':"form-control",'rows':2,'cols':80}),
+            'commentFeedback': forms.Textarea(attrs={'class':"form-control",'rows':2,'cols':80})
         }

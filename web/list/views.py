@@ -560,7 +560,7 @@ def ajax_evaluate_modal(request):
         appraisal.save()
         evaluationForm = EvaluationForm(instance=appraisal_evaluation)
 
-    return render(request,'list/modals_evaluate.html',{'appraisal':appraisal,'evaluationForm':evaluationForm})
+    return render(request,'list/modal_evaluate.html',{'appraisal':appraisal,'evaluationForm':evaluationForm})
 
 def ajax_evaluate_modal_close(request):
     '''
@@ -737,7 +737,7 @@ def ajax_expenses_modal(request):
     form_expenses = FormExpenses(label_suffix='')
     groups = request.user.groups.values_list('name', flat=True)
 
-    return render(request, 'list/modals_expenses.html',
+    return render(request, 'list/modal_expenses.html',
                   {'appraisal': appraisal,
                    'expenses': expenses,
                    'form_expenses': form_expenses,

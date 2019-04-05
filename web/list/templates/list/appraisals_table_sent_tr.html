@@ -22,7 +22,7 @@
   {{appraisal.timeFinished | date:"d/m/Y G:i" }}
 </td>
 <td style="text-align:right;">
-  {% with table="active" %}
+  {% with table="sent" %}
     {% include 'list/btn_logbook.html' %}
   {% endwith %}
   {% if perms.user.evaluate %}
