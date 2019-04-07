@@ -1,12 +1,13 @@
 from django.urls import path
 from . import views
+from logbook import views as logbookviews
 
 urlpatterns = [
     path('', views.main, name='main'),
     path('imported', views.imported_appraisals, name='appraisals_imported'),
-    path('ajax/logbook/', views.ajax_logbook, name='ajax_logbook_url'),
-    path('ajax/logbook_close/', views.ajax_logbook_close, name='ajax_logbook_close_url'),
-    path('ajax/logbook_change_event/', views.ajax_logbook_change_event, name='ajax_logbook_change_event_url'),
+    path('ajax/logbook/', logbookviews.ajax_logbook, name='ajax_logbook_url'),
+    path('ajax/logbook_close/', logbookviews.ajax_logbook_close, name='ajax_logbook_close_url'),
+    path('ajax/logbook_change_event/', logbookviews.ajax_logbook_change_event, name='ajax_logbook_change_event_url'),
     path('ajax/accept_appraisal/', views.ajax_accept_appraisal, name='ajax_accept_appraisal_url'),
     path('ajax/reject_appraisal/', views.ajax_reject_appraisal, name='ajax_reject_appraisal_url'),
     path('ajax/archive_appraisal/', views.ajax_archive_appraisal, name='ajax_archive_appraisal_url'),
@@ -32,7 +33,7 @@ urlpatterns = [
     path('ajax/upload_report/', views.ajax_upload_report, name='ajax_upload_report_url'),
     path('ajax/load-communes/', views.load_communes, name='ajax_load_communes'),
     path('ajax/save_time_due/', views.ajax_save_time_due, name='ajax_save_time_due'),
-    path('ajax/expenses/', views.ajax_expenses, name='ajax_appraisal_expenses_url'),
+    path('ajax/expenses_modal/', views.ajax_expenses_modal, name='ajax_appraisal_expenses_modal_url'),
     path('ajax/expenses/save', views.ajax_save_expenses, name='ajax_save_expenses_url'),
     path('ajax/expenses/delete', views.ajax_delete_expenses, name='ajax_delete_expenses_url'),
 ]

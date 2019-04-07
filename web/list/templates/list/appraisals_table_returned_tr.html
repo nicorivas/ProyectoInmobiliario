@@ -16,26 +16,10 @@
   </a>
 </td>
 <td>
-  <span style="vertical-align: middle;" class="tasadorUser">
-    {% if appraisal.tasadorUser %}
-      {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name }}
-    {% else %}
-    -
-    {% endif %}
-  </span>
+  {% include 'list/td_visador_name.html' %}
 </td>
 <td>
-  <div class="row">
-    <div class="col-auto">
-      <span style="vertical-align: middle;" class="visadorUser">
-      {% if appraisal.visadorUser %}
-        {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
-      {% else %}
-        -
-      {% endif %}
-      </span>
-    </div>
-  </div>
+  {% include 'list/td_tasador_name.html' %}
 </td>
 {% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">
@@ -48,7 +32,7 @@
 {% endif %}
 </td>
 <td style="text-align:right;">
-  {% with table="active" %}
+  {% with table="returned" %}
     {% include 'list/btn_logbook.html' %}
   {% endwith %}
 </td>

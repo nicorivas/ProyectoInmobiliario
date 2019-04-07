@@ -1,6 +1,6 @@
   {% load custom_tags %}
 
-  <button type="button" class="btn btn-dark {{ hna | yesno:'btn-not,' }} btn_expenses" value="{{appraisal.id}}" id="expenses_{{appraisal.id}}" data-table={{table}} data-expenses-url="{% url 'ajax_appraisal_expenses_url' %}"
+  <button type="button" class="btn btn-dark {{ hna | yesno:'btn-not,' }} btn_expenses" value="{{appraisal.id}}" id="expenses_{{appraisal.id}}" data-table={{table}} data-expenses-url="{% url 'ajax_appraisal_expenses_modal_url' %}"
   style="border:0px;width:25px;height:25px;padding:0em;">
     <i class="icon material-icons" style="font-size:15px;vertical-align:baseline;padding-top:5px">attach_money</i>
     <div class="ld ld-ring ld-spin" style="display:none;margin-top:4px;"></div>

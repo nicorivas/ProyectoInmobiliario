@@ -93,38 +93,44 @@
       {% endif %}
     </div>
   </div>
-  <div class="row mb-2" style="font-size:0.8em;">
+  <div class="row mb-2" style="font-size:0.8em;height:2.4em;">
     <div class="col-2" style="text-align:right;">
       <span class="text-right" style="vertical-align:text-top">Entrega:</span>
     </div>
     <div class="col-3" style="padding:0em;">
-      <span class="text-left" id="timeDue" style="vertical-align:text-top">{{appraisal.timeDue|date:"d/m/Y G:i"}}</span>
+      <!-- Time -->
+      <input class="edit_contact" id="timeDue" value="{{appraisal.timeDue|date:"d/m/Y G:i"}}" readonly>
+      <!-- Edit -->
       <div class="input-group date" id="datetimepicker2" data-target-input="nearest" style="display:none;">
         <input type="text" name="datetime" class="form-control form-control-sm datetimepicker-input edit_contact" data-target="#datetimepicker2" id="id_datetime">
-        <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker" style="height: 2.4em;">
-          <div class="input-group-text" style="font-size: 0.9em;height: 2.4em;border: 1px solid #444;"><i class="fa fa-calendar"></i></div>
+        <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+          <div class="input-group-text" style="font-size: 0.9em;border: 1px solid #444;"><i class="fa fa-calendar"></i></div>
         </div>
       </div>
       <script type="text/javascript">
         $(function () {
           $('#datetimepicker2').datetimepicker({
-            defaultDate: "{{appraisal.timeDue|date:"d/M/Y G:i"}}"
+            format: "DD/MM/YYYY HH:mm",
+            date: "{{appraisal.timeDue|date:"d/M/Y G:i"}}",
+            minDate: "{{appraisal.timeCreated|date:"M/d/Y G:i"}}"
           });
         });
       </script>
     </div>
     <div class="col-1" style="padding:0em 0em 0em 1em;">
-      <span style="vertical-align:text-top;display:inline;" id="span_btn_edit">
-        <button type="button" class="btn edit" style="border:0px;width:20px;height:20px;padding:0em;">
-	        <i class="icon material-icons" style="font-size:16px;">edit</i>
-	        <div class="ld ld-ring ld-spin" style="display:none;"></div>
-        </button>
-      </span>
-      <span style="vertical-align:text-top;display:none;" id="span_btn_save">
-        {% with class="save" %}
-        {% include "list/btn_save.html" %}
-        {% endwith %}
-      </span>
+      {% if perms.appraisal.change_time_due %}
+        <span style="vertical-align:text-top;display:inline;" id="span_btn_edit">
+          <button type="button" class="btn edit" style="border:0px;width:20px;height:20px;padding:0em;">
+            <i class="icon material-icons" style="font-size:16px;">edit</i>
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+          </button>
+        </span>
+        <span style="vertical-align:text-top;display:none;" id="span_btn_save">
+          {% with class="save" %}
+          {% include "list/btn_save.html" %}
+          {% endwith %}
+        </span>
+      {% endif %}
     </div>
     <script type="text/javascript">
       $(".edit").on("click",function() {
@@ -148,7 +154,7 @@
             $("#timeDue").show()
             $("#span_btn_edit").show()
             $("#span_btn_save").hide()
-            $("span#timeDue").html(data['datetime'])
+            $("#timeDue").val(data['datetime'])
           }
         });
       })
@@ -253,13 +259,13 @@
 </div>
 
 {% if appraisal.state == appraisal.STATE_NOT_ACCEPTED or appraisal.state == appraisal.STATE_IN_APPRAISAL or appraisal.state == appraisal.STATE_IN_REVISION or appraisal.state == appraisal.STATE_SENT or appraisal.state == appraisal.STATE_RETURNED %}
+
+{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED %}
 <div class="line">
   <span class="line">
     Flujo
   </span>
 </div>
-
-{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED %}
 <div class="form-group row" id="div_previous_next">
   <div class="col-6">
     <button type="button" class="btn btn-sm btn-dark btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}">
@@ -276,7 +282,30 @@
     </button>
   </div>
 </div>
+{% elif appraisal.state == appraisal.STATE_IN_APPRAISAL %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-3"></div>
+  <div class="col-6">
+    <button type="button" class="btn btn-dark btn-sm btn-block btn_enviar_a_visador" value="{{appraisal.id}}" id="enviar_a_visador_{{appraisal.id}}">
+      Enviar a visador
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+      <i class="inline-icon material-icons">arrow_forward</i>
+    </button>
+  </div>
+  <div class="col-3"></div>
+</div>
 {% elif appraisal.state == appraisal.STATE_IN_REVISION %}
+{% if "visador" in groups or user.is_superuser %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
 <div class="form-group row" id="div_previous_next">
   <div class="col-6">
     <button type="button" class="btn btn-sm btn-dark btn-block btn_devolver_a_tasador" value="{{appraisal.id}}">
@@ -293,7 +322,14 @@
     </button>
   </div>
 </div>
+{% endif %}
 {% elif appraisal.state == appraisal.STATE_SENT %}
+{% if "visador" in groups or "asignador" in groups or user.is_superuser %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
 <div class="form-group row" id="div_previous_next">
   <div class="col-3"></div>
   <div class="col-6">
@@ -305,19 +341,14 @@
   </div>
   <div class="col-3"></div>
 </div>
-{% elif appraisal.state == appraisal.STATE_IN_APPRAISAL %}
-<div class="form-group row" id="div_previous_next">
-  <div class="col-3"></div>
-  <div class="col-6">
-    <button type="button" class="btn btn-dark btn-sm btn-block btn_enviar_a_visador" value="{{appraisal.id}}" id="enviar_a_visador_{{appraisal.id}}">
-      Enviar a visador
-      <div class="ld ld-ring ld-spin" style="display:none;"></div>
-      <i class="inline-icon material-icons">arrow_forward</i>
-    </button>
-  </div>
-  <div class="col-3"></div>
-</div>
+{% endif %}
 {% elif appraisal.state == appraisal.STATE_RETURNED %}
+{% if "visador" in groups or "asignador" in groups or user.is_superuser  %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
 <div class="form-group row" id="div_previous_next">
   <div class="col-3"></div>
   <div class="col-6">
@@ -329,6 +360,7 @@
   </div>
   <div class="col-3"></div>
 </div>
+{% endif %}
 {% endif %}
 
 {% endif %}

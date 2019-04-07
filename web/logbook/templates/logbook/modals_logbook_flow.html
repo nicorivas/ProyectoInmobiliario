@@ -1,0 +1,105 @@
+{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED or appraisal.state == appraisal.STATE_IN_APPRAISAL or appraisal.state == appraisal.STATE_IN_REVISION or appraisal.state == appraisal.STATE_SENT or appraisal.state == appraisal.STATE_RETURNED %}
+{% if appraisal.state == appraisal.STATE_NOT_ACCEPTED %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-6">
+    <button type="button" class="btn btn-sm btn-dark btn-block btn_reject" value="{{appraisal.id}}" id="reject_{{appraisal.id}}">
+      <i class="inline-icon material-icons">arrow_back</i>
+      Declinar tasación
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+  <div class="col-6">
+    <button type="button" class="btn btn-dark btn-sm btn-block btn_accept" value="{{appraisal.id}}" id="accept_{{appraisal.id}}">
+      Aceptar tasación
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+      <i class="inline-icon material-icons">arrow_forward</i>
+    </button>
+  </div>
+</div>
+{% elif appraisal.state == appraisal.STATE_IN_APPRAISAL %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-3"></div>
+  <div class="col-6">
+    <button type="button" class="btn btn-dark btn-sm btn-block btn_enviar_a_visador" value="{{appraisal.id}}" id="enviar_a_visador_{{appraisal.id}}">
+      Enviar a visador
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+      <i class="inline-icon material-icons">arrow_forward</i>
+    </button>
+  </div>
+  <div class="col-3"></div>
+</div>
+{% elif appraisal.state == appraisal.STATE_IN_REVISION %}
+{% if "visador" in groups or user.is_superuser %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-6">
+    <button type="button" class="btn btn-sm btn-dark btn-block btn_devolver_a_tasador" value="{{appraisal.id}}">
+      <i class="inline-icon material-icons">arrow_back</i>
+      Devolver al tasador
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+  <div class="col-6">
+    <button type="button" class="btn btn-sm btn-dark btn-block btn_enviar_a_cliente" value="{{appraisal.id}}">
+      Fue enviada al cliente
+      <i class="inline-icon material-icons">arrow_forward</i>
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+</div>
+{% endif %}
+{% elif appraisal.state == appraisal.STATE_SENT %}
+{% if "visador" in groups or "asignador" in groups or user.is_superuser %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-3"></div>
+  <div class="col-6">
+    <button type="button" class="btn btn-sm btn-dark btn-block btn_mark_as_returned" value="{{appraisal.id}}">
+      <i class="inline-icon material-icons">arrow_upward</i>
+      Tasación devuelta por cliente
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+  <div class="col-3"></div>
+</div>
+{% endif %}
+{% elif appraisal.state == appraisal.STATE_RETURNED %}
+{% if "visador" in groups or "asignador" in groups or user.is_superuser  %}
+<div class="line">
+  <span class="line">
+    Flujo
+  </span>
+</div>
+<div class="form-group row" id="div_previous_next">
+  <div class="col-3"></div>
+  <div class="col-6">
+    <button type="button" class="btn btn-sm btn-dark btn-block btn_enviar_a_cliente_again" value="{{appraisal.id}}">
+      Fue enviada al cliente
+      <i class="inline-icon material-icons">arrow_downward</i>
+      <div class="ld ld-ring ld-spin" style="display:none;"></div>
+    </button>
+  </div>
+  <div class="col-3"></div>
+</div>
+{% endif %}
+{% endif %}
+
+{% endif %}

@@ -2,7 +2,7 @@
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title">Agregar propiedad</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <button type="button" class="close" data-dismiss="modal">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -11,6 +11,38 @@
           {% csrf_token %}
           <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
           <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                {{form_add_property.addressRegion.label_tag}}
+                {{form_add_property.addressRegion}}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                {{form_add_property.addressCommune.label_tag}}
+                {{form_add_property.addressCommune}}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{form_add_property.addressStreet.label_tag}}
+                {{form_add_property.addressStreet}}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{form_add_property.addressNumber.label_tag}}
+                {{form_add_property.addressNumber}}
+              </div>
+            </div>
+          </div>
+
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">

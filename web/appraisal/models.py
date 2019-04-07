@@ -192,6 +192,7 @@ class Appraisal(models.Model):
     EVALUACION_PROYECTO_AUTOCONSTRUCCION = 12
     AVANCE_DE_OBRA_INMOBILIARIO = 6
     AVANCE_DE_OBRA_AUTOCONSTRUCCION = 10
+    RETASACION_GARANTIA_GENERAL = 20
     FINAL_INMOBILIARIA = 13
     FINAL_AUTOCONSTRUCCION = 14
     REMATE = 15
@@ -209,6 +210,7 @@ class Appraisal(models.Model):
         (EVALUACION_PROYECTO_AUTOCONSTRUCCION,'Evaluación proyecto autoconstrucción'),
         (AVANCE_DE_OBRA_INMOBILIARIO,'Avance de obra inmobiliario'),
         (AVANCE_DE_OBRA_AUTOCONSTRUCCION,'Avance de obra autoconstrucción'),
+        (RETASACION_GARANTIA_GENERAL,'Retasación garantía general'),
         (FINAL_INMOBILIARIA,'Final inmobiliaria'),
         (FINAL_AUTOCONSTRUCCION,'Final autoconstrucción'),
         (REMATE,'Remate'),
@@ -315,6 +317,20 @@ class Appraisal(models.Model):
     valorUF = models.FloatField("Valor UF", blank=True,null=True)
 
     @cached_property
+    def tasador_short_name(self):
+        if self.tasadorUser:
+            return self.tasadorUser.first_name[0] + '. ' + self.tasadorUser.last_name.split(' ')[0]
+        else:
+            return "-"
+
+    @cached_property
+    def visador_short_name(self):
+        if self.visadorUser:
+            return self.visadorUser.first_name[0] + '. ' + self.visadorUser.last_name.split(' ')[0]
+        else:
+            return "-"
+
+    @cached_property
     def address(self):
         address = self.real_estate_main.address
         #rss = self.real_estates.count()
@@ -378,8 +394,8 @@ class Appraisal(models.Model):
 
     @cached_property
     def url(self):
-        return ""
-        #return "/appraisal/{}/".format(self.id)
+        #return ""
+        return "/appraisal/{}/".format(self.id)
 
     @cached_property
     def daySinceCreated(self):
@@ -471,7 +487,10 @@ class Appraisal(models.Model):
         if comments == None:
             comments = self.comments.all()
 
-        event_choices = Comment.event_choices_state[state]
+        if state in Comment.event_choices_state.keys():
+            event_choices = Comment.event_choices_state[state]
+        else:
+            event_choices = []
 
         # already commented
         comment_ids = comments.values_list('event',flat=True)
@@ -507,7 +526,8 @@ class Appraisal(models.Model):
         permissions = (
             ("assign_tasador", "Can assign tasadores"),
             ("assign_visador", "Can assign visadores"),
-            ("validate_contact", "Can validate contacts"))
+            ("validate_contact", "Can validate contacts"),
+            ("change_time_due", "Can change time due"))
 
     def __iter__(self):
         for field_name in self._meta.get_fields():
@@ -531,6 +551,25 @@ class AppProperty(models.Model):
             return True
         else:
             return False
+
+    @property
+    def property_class_object(self):
+        bldg = self.get_building()
+        if (bldg):
+            return bldg
+        else:
+            return Terrain.objects.get(id=self.property_id)
+
+    @property
+    def property_class(self):
+        if self.property_type == Building.TYPE_DEPARTAMENTO:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_EDIFICIO:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_CASA:
+            return Building.PROPERTY_CLASS_BUILDING
+        if self.property_type == Building.TYPE_TERRENO:
+            return Building.PROPERTY_CLASS_TERRAIN
 
     def get_property(self):
         if self.property_type == Building.TYPE_DEPARTAMENTO:
@@ -640,7 +679,8 @@ class Comment(models.Model):
         ],
         Appraisal.STATE_RETURNED:[
             EVENT_COMENTARIO
-        ]
+        ],
+        Appraisal.STATE_ARCHIVED:[]
     }
     event = models.IntegerField(choices=event_choices,default=0,blank=False,null=False)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

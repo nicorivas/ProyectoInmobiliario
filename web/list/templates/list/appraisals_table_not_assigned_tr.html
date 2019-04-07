@@ -16,44 +16,14 @@
   </a>
 </td>
 <td>
-  <div class="row">
-    <div class="col-auto">
-      <span style="vertical-align: middle;" class="tasadorUser">
-      {% if appraisal.tasadorUser %}
-        {{ appraisal.tasadorUser.first_name.0 }}. {{ appraisal.tasadorUser.last_name.strip }}
-      {% else %}
-      -
-      {% endif %}
-      </span>
-    </div>
-    {% if perms.appraisal.assign_tasador %}
-    <div class="col text-right">
-      {% with class="btn_assign_tasador_modal" %}
-        {% include 'list/btn_assign_user.html' %}
-      {% endwith %}
-    </div>
-    {% endif %}
-  </div>
+  {% with button="add"%}
+    {% include 'list/td_tasador_name.html' %}
+  {% endwith %}
 </td>
 <td>
-  <div class="row">
-    <div class="col-auto">
-      <span style="vertical-align: middle;" class="visadorUser">
-      {% if appraisal.visadorUser %}
-        {{ appraisal.visadorUser.first_name.0 }}. {{ appraisal.visadorUser.last_name.strip }}
-      {% else %}
-      -
-      {% endif %}
-      </span>
-    </div>
-    {% if perms.appraisal.assign_visador %}
-    <div class="col text-right">
-      {% with class="btn_assign_visador_modal" %}
-        {% include 'list/btn_assign_user.html' %}
-      {% endwith %}
-    </div>
-    {% endif %}
-  </div>
+  {% with button="add" %}
+    {% include 'list/td_visador_name.html' %}
+  {% endwith %}
 </td>
 {% include 'list/appraisals_table_td_date_created.html' %}
 <td class="dateDue">

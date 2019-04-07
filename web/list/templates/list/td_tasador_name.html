@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-auto">
+        <span style="vertical-align: middle;" class="tasadorUser">
+            {% if appraisal.tasadorUser %}
+                {{ appraisal.tasador_short_name }}
+            {% else %}
+                -
+            {% endif %}
+        </span>
+    </div>
+    {% if button == "remove" %}
+        {% if perms.appraisal.assign_tasador %}
+            <div class="col text-right">
+                <button type="button" class="btn btn-sm btn-light btn_unassign_tasador_modal" data-toggle="modal" data-target="#modal_unassign_tasador" value="{{appraisal.id}}" style="font-family:Material Icons;font-size:1.0em;margin-bottom:1px;border:0px;">
+                    remove_circle_outline
+                </button>
+            </div>
+        {% endif %}
+    {% elif button == "add" %}
+        {% if perms.appraisal.assign_tasador %}
+            <div class="col text-right">
+                {% with class="btn_assign_tasador_modal" %}
+                    {% include 'list/btn_assign_user.html' %}
+                {% endwith %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

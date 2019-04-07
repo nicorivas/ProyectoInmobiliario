@@ -13,7 +13,7 @@
   </tr>
   {% for appraisal in appraisals_returned %}
   {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
-  <tr class='appraisal sent {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_sent-{{appraisal.id}}">
+  <tr class='appraisal returned {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_returned-{{appraisal.id}}">
     {% include 'list/appraisals_table_returned_tr.html' %}
   </tr>
   {% endfor %}

@@ -1,0 +1,58 @@
+{% if appraisal.state != appraisal.STATE_NOT_ACCEPTED %}
+
+<div class="line">
+  <span class="line">
+    Ingresar evento
+  </span>
+</div>
+
+<div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
+  <div class="col-12">
+
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group" id="div_event">
+            <small>{{ form_comment.event.label_tag}}</small>
+            {{ form_comment.event }}
+          </div>
+        </div>
+        <div class="col-6">
+          <!--
+          <div class="form-group" id="div_datetime">
+            {{form_comment.datetime.label_tag}}
+            {{form_comment.lalala}}
+          </div>
+          -->
+          <div class="form-group" id="div_datetime" style="display:none;">
+            <small>{{ form_comment.datetime.label_tag }}</small>
+            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+              {{ form_comment.datetime }}
+              <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-warning" id="div_warning_incidencia" style="display:none;padding:0.2em 1em 0.2em 1em;">
+        <small>La tasación se marcará en conflicto</small>
+      </div>
+      <div class="alert alert-warning" id="div_warning_entregada" style="display:none;padding:0.2em 1em 0.2em 1em;">
+        <small>La tasación se marcará como finalizada</small>
+      </div>
+      <div class="form-group" id="div_comment">
+        <small>{{ form_comment.text.label_tag }}</small>
+        {{ form_comment.text }}
+      </div>
+      <div class="form-group row" id="div_comment_btn">
+        <div class="col-12">
+          <button type="button" class="btn btn-dark btn-sm btn-block" name="btn_comment" id="btn_comment">
+            <span class="text">Registrar evento</span>
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+          </button>
+        </div>
+      </div>
+  </div>
+</div>
+
+{% endif %}

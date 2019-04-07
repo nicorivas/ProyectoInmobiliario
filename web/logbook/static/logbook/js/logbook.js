@@ -1,3 +1,76 @@
+$('#modal_logbook').on('hidden.bs.modal', logbookClose)
+
+function buttonLogbookClick(event) {
+  event.preventDefault();
+  btn = $(this)
+  table = btn.data('table')
+  tr = $(this).closest('tr')
+  $("#modal_logbook").data('table',table)
+  appraisal_id = btn.val(); // button has id of appraisal
+  btn_loading(btn)
+  // ajax
+  var url = ajax_logbook_url
+  $.ajax({
+    url: url,
+    type: 'get',
+    data: {'appraisal_id':appraisal_id,'table':table},
+    error: function () {
+        alert("Error al abrir la bitacora.");
+        return false;
+    },
+    success: function (data) {
+      //$('#modal_logbook').find('.modal-body').html($.trim(data));
+      console.log($.trim(data))
+      $('#modal_logbook').html($.trim(data));
+      $("#in_appraisal_id").val(appraisal_id); // hidden input
+      $("input#table_id").attr("value",table);
+      tr.removeClass("notification")
+      $('#modal_logbook').modal('show');
+      if (table == "not_accepted") {
+        $('#modal_logbook').find('#div_event').hide()
+        $('#modal_logbook').find('#div_comment_btn').hide()
+        $('#modal_logbook').find('#div_datetime').hide()
+        $('#modal_logbook').find('#div_accept_reject').show()
+      }
+      if (table == "archive") {
+        $('#modal_logbook').find('#logbook_flow').hide()
+        $('#modal_logbook').find('#logbook_event').hide()
+      }
+    },
+    complete: function (data) {
+      btn_idle(btn)
+      assignLogbookModalActions();
+      if (table != "not_accepted") {
+        $("#id_event").trigger("change")
+      }
+    }
+  });
+}
+
+function logbookClose(event) {
+  // When the logbook modal is closed, we delete the notifications
+  // related to this appraisal. We also save the form.
+  var appraisal_id = $("#in_appraisal_id").val();
+  var url = ajax_logbook_close_url
+  var form = $('#logbook_form')
+  $.ajax({
+    url: url,
+    type: 'post',
+    data: form.serialize(),
+    error: function () {
+        alert("Error al cerrar la bitacora.");
+        return false;
+    },
+    success: function (data) {
+      // everything is done in the view
+    },
+    complete: function (data) {
+      // everything is done in the view
+    }
+  });
+  return false;
+}
+
 function assignLogbookModalActions() {
 
   $("#id_event").unbind()
@@ -39,8 +112,7 @@ function assignLogbookModalActions() {
     var url = $("#form_comment").attr("data-comment-url");
     var appraisal_id = $("#in_appraisal_id").val()
     var event = $("#id_event").val()
-    var table = 'table_'+$("#logbook").data('table')
-    //$('#logbook').find('#loading').show()
+    var table = 'table_'+$("#modal_logbook").data('table')
     $.ajax({
       url: url,
       type: 'post',
@@ -65,12 +137,12 @@ function assignLogbookModalActions() {
         $("#id_text").val("")
         $("#id_event").trigger('change')
         if (event == comment_class['EVENT_ENVIADA_A_VISADOR']) {
-          $('#logbook').modal('hide');
+          $('#modal_logbook').modal('hide');
           moveRow('table_in_appraisal','table_in_revision',appraisal_id)
           assignTableActions();
         }
         if (event == comment_class['EVENT_ENTREGADO_AL_CLIENTE']) {
-          $('#logbook').modal('hide');
+          $('#modal_logbook').modal('hide');
           moveRow('table_in_revision','table_sent',appraisal_id)
           assignTableActions();
         }
@@ -139,7 +211,7 @@ function assignLogbookModalActions() {
     var event = $(this).data('event');
     var appraisal_id = $("#in_appraisal_id").val();
     var url = $(this).data('delete-comment-url');
-    var table = $("#logbook").data('table')
+    var table = $("#modal_logbook").data('table')
     $.ajax({
       url: url,
       type: 'get',
@@ -160,7 +232,7 @@ function assignLogbookModalActions() {
         }
         // Some things particular to events
         if (event == comment_class['EVENT_ENTREGADO_AL_CLIENTE']) {
-          $('#logbook').modal('hide');
+          $('#modal_logbook').modal('hide');
           moveRow('table_sent','table_in_revision',appraisal_id)
           $("#id_event").trigger("change")
         } else if (event == comment_class['EVENT_CONTACTO_VALIDADO'] || 
@@ -220,7 +292,7 @@ function assignLogbookModalActions() {
         btn.find('.ld').toggle();
         btn.find('#icon').toggle();
         btn.prop('disabled', false);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
       }
     })
   });
@@ -260,7 +332,7 @@ function assignLogbookModalActions() {
         btn.find('.ld').toggle();
         btn.find('#icon').toggle();
         btn.prop('disabled', false);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
       }
     })
   });
@@ -288,7 +360,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_in_appraisal","table_in_revision",appraisal_id)
       }
     })
@@ -317,7 +389,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_in_revision","table_in_appraisal",appraisal_id)
       }
     })
@@ -346,7 +418,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_in_revision","table_sent",appraisal_id)
       }
     })
@@ -375,7 +447,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_returned","table_sent",appraisal_id)
       }
     })
@@ -404,7 +476,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_sent","table_in_revision",appraisal_id)
       }
     })
@@ -433,7 +505,7 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         btn_idle(btn);
-        $('#logbook').modal('hide');
+        $('#modal_logbook').modal('hide');
         moveRow("table_sent","table_returned",appraisal_id)
       }
     })
@@ -445,7 +517,7 @@ function assignLogbookModalActions() {
     var url = ajax_solve_conflict_url;
     var btn = $(this);
     var appraisal_id = btn.val(); // button has id of appraisal
-    var table = 'table_'+$("#logbook").data('table')
+    var table = 'table_'+$("#modal_logbook").data('table')
     btn_loading(btn,hide_text=true);
     $.ajax({
       url: url,
@@ -484,15 +556,15 @@ function assignLogbookModalActions() {
       },
       success: function (data) {
         //btn_idle(btn);
-        $('#logbook').find('.modal-body').html($.trim(data));
+        $('#modal_logbook').find('.modal-body').html($.trim(data));
         assignLogbookModalActions();
         $("#in_appraisal_id").val(appraisal_id); // hidden input
         $("#table_id").attr("value",table);
         if (table == "not_accepted") {
-          $('#logbook').find('#div_event').hide()
-          $('#logbook').find('#div_comment_btn').hide()
-          $('#logbook').find('#div_datetime').hide()
-          $('#logbook').find('#div_accept_reject').show()
+          $('#modal_logbook').find('#div_event').hide()
+          $('#modal_logbook').find('#div_comment_btn').hide()
+          $('#modal_logbook').find('#div_datetime').hide()
+          $('#modal_logbook').find('#div_accept_reject').show()
         } else {
           $("#id_event").trigger("change")
         }

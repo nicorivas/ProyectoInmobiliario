@@ -8,100 +8,6 @@ function properties_data() {
   return data
 }
 
-function set_address_list_actions() {
-
-  $('#btn_add_address_modal').unbind()
-  $('#btn_add_address_modal').off()
-  $('#btn_add_address_modal').on('click', function() {
-    /*
-    Button (as link) to open the modal to add an address to the list.
-    Loads corresponding data. The AJAX view returns the modal with the
-    corresponding data.
-    */
-    var btn = $(this)
-    var data = properties_data()
-    var url = $("#properties_data").data("ajax_add_address_modal_url")
-    btn_loading(btn)
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: data,
-      error: function () {
-          alert("Error al cargar modal para agregar una dirección.");
-          btn.find('.ld').toggle();
-          btn.prop('disabled', false);
-          return false;
-      },
-      success: function (ret) {
-        btn_idle(btn);
-        $("#modal_add_address").html($.trim(ret));
-        $("#modal_add_address").modal('show')
-        set_modal_actions_properties()
-        set_address_list_actions()
-      }
-    });
-  })
-
-  $('#btn_edit_address_modal').unbind()
-  $('#btn_edit_address_modal').off()
-  $('#btn_edit_address_modal').on('click', function() {
-    /*
-    Button to open the modal to edit the currently selected address.
-    Loads corresponding data. The AJAX view returns the modal with the
-    corresponding data.
-    */
-    var btn = $(this)
-    btn_loading(btn)
-    var data = properties_data()
-    data['real_estate_id'] = $('#select_realestate').find(":selected").val();
-    var url = $("#properties_data").data("ajax_edit_address_modal_url")
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: data,
-      error: function () {
-          alert("Error al cargar modal para editar dirección.");
-          btn_idle(btn)
-          return false;
-      },
-      success: function (ret) {
-        btn_idle(btn)
-        $("#properties_data").data(data)
-        $('#modal_edit_address').html($.trim(ret));
-        $("#modal_edit_address").modal('show')
-        set_modal_actions_properties()
-        set_address_list_actions()
-      }
-    });
-  })
-
-  $('#select_realestate').unbind()
-  $('#select_realestate').off()
-  $('#select_realestate').on('change', function() {
-    /*
-    Triggered when an element from the list of address is selected.
-    */
-    var data = properties_data()
-    data["real_estate_id"] = $(this).val()
-    var url = $("#properties_data").data("ajax_load_realestate_url")
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: data,
-      error: function () {
-          alert("Error al cargar dirección.");
-          return false;
-      },
-      success: function (ret) {
-        $("#properties_data").data(data)
-        $("#property_info").fadeOut();
-        $("#property_list").html($.trim(ret));
-        set_property_list_actions();
-      }
-    });
-  })
-}
-
 function set_property_list_actions() {
 
   $(".btn_property").unbind()
@@ -113,6 +19,8 @@ function set_property_list_actions() {
     if (!$('#no_form').length) {
       save_property()
     }
+
+    console.log("a")
 
     var btn = $(this)
     var data = properties_data()

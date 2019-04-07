@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-auto">
+        <span style="vertical-align: middle;" class="visadorUser">
+            {{ appraisal.visador_short_name }}
+        </span>
+    </div>
+    {% if button == "add" %}
+        {% if perms.appraisal.assign_visador %}
+            <div class="col text-right">
+                {% with class="btn_assign_visador_modal" %}
+                    {% include 'list/btn_assign_user.html' %}
+                {% endwith %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

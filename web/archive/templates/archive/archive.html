@@ -10,12 +10,18 @@
 
 	<link rel="stylesheet" href="{% static 'archive/css/archive.css' %}">
 	<link rel="stylesheet" href="{% static 'list/css/table_search.css' %}">
+	<link rel="stylesheet" href="{% static 'list/css/logbook.css' %}">
 
 {% endblock %}
 
 {% block content %}
 
 {{form_search.media}}
+
+<script>
+	comment_class = {{comment_class|safe}}
+	ajax_logbook_url = "{% url 'ajax_logbook_url' %}"
+</script>
 
 <div class="container" style="max-width:100%">
 
@@ -128,7 +134,10 @@
 
 <script src="{% static 'list/js/tools.js' %}" type="text/javascript"></script>
 
+<script src="{% static 'logbook/js/logbook.js' %}" type="text/javascript"></script>
+
 <script>
+
 	$("#btn_search").on('click',function(e) {
 		e.preventDefault()
 		var btn = $(this)
@@ -156,6 +165,11 @@
 	})
 
 	function table_actions() {
+
+		$(".btn_logbook").unbind()
+    $(".btn_logbook").off()
+    $(".btn_logbook").on("click", buttonLogbookClick)
+
 		$(".btn_unarchive_appraisal_modal").unbind()
 		$(".btn_unarchive_appraisal_modal").off()
 		$(".btn_unarchive_appraisal_modal").on("click", function (event) {

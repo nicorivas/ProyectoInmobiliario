@@ -1,0 +1,302 @@
+{% load custom_tags %}
+{% load mathfilters %}
+{{form_comment.media}}
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bitácora</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="logbook_body">
+  
+<div class="row mb-2">
+  <div class="col-8">
+    <a href="{{appraisal.url}}">
+      <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+        {{appraisal.real_estates.first.address}}
+        {% if appraisal.real_estates.all|length > 1 %}
+        (+{{appraisal.real_estates.all|length|sub:1}})
+        {% endif %}
+      </p>
+    </a>
+  </div>
+  <div class="col-4" style="text-align:right;">
+    {% if appraisal.orderFile %}
+    <div class="btn btn-light">
+      <a href="{{appraisal.orderFile.url}}">
+        <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Solicitud</div>
+        <div style="vertical-align:middle;display:inline-block;font-size:1.2em;" class="material-icons" style="font-size: 1em;">save_alt</div>
+      </a>
+    </div>
+    {% endif %}
+    {% if appraisal.orderFile %}
+    <div class="btn btn-light">
+      <a href="{{appraisal.orderFile.url}}">
+        <div style="vertical-align:middle;display:inline-block;font-size:0.8em;">Plantilla</div>
+        <div style="vertical-align:middle;display:inline-block;font-size:1.2em;" class="material-icons" style="font-size: 1em;">save_alt</div>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-6">
+    <p style="display:inline-block;vertical-align:-webkit-baseline-middle;margin-bottom:0em;">
+      {{appraisal.solicitanteVerbose}} ({{appraisal.solicitanteCodigo}})
+        | <span style='font-weight: 100; color:#000;'>{{appraisal.get_tipoTasacion_display}}</span>
+    </p> 
+  </div>
+  <div class="col-6" style="text-align:right;">
+    <form id="form_report" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input id="table_id" value="" style="width:240px;" hidden>
+      <input name="appraisal_id" value="{{appraisal.id}}" style="width:240px;" hidden>
+      <div style="font-size:0.8em;display:inline-block;padding-right:1em;">
+        {% if reports %}
+        <a href="{{reports.last}}" id="informe">Informe <small>({{reports.last.time_uploaded|date:"m/d h:i:s"}})</small></a>
+        {% else %}
+        <i>Adjuntar informe</i>
+        {% endif %}
+      </div>
+      <label for="report">
+        <div class="btn btn-light">
+        <div style="vertical-align:middle;display:inline-block;font-size:1.0em;" class="material-icons">attach_file</div>
+        <input type="file" name="report" id="report" style="display:none;">
+        </div>
+      </label>
+    </form>
+  </div>
+</div>
+
+<div class="line">
+  <span class="line">
+    Información general
+  </span>
+</div>
+
+<!--<h6> Contactos </h6>-->
+<form id="logbook_form">
+  {% csrf_token %}
+  <input name="appraisal_id" value="{{appraisal.id}}" style="width:240px;" hidden>
+  <div class="row mt-2 mb-2" style="font-size:0.8em;height:2.0em">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right" style="vertical-align:top;">Pedido:</span>
+    </div>
+    <div class="col-3" style="padding:0em;">
+      <span class="text-left">{{appraisal.timeCreated|date:"d/m/Y G:i"}}</span>
+    </div>
+    <div class="col-2" style="text-align:right;vertical-align:top;">
+      <span class="text-right" style="vertical-align:top;">Tasador:</span>
+    </div>
+    <div class="col-4" style="padding:0em;">
+      {% if appraisal.tasadorUser %}
+      <span>
+      {{ appraisal.tasadorUser.first_name }} {{ appraisal.tasadorUser.last_name.strip }}
+      </span>
+      {% else %}
+      <span>
+      <em>No asignado</em>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;height:2.4em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right" style="vertical-align:text-top">Entrega:</span>
+    </div>
+    <div class="col-3" style="padding:0em;">
+      <!-- Time -->
+      <input class="edit_contact" id="timeDue" value="{{appraisal.timeDue|date:"d/m/Y G:i"}}" readonly>
+      <!-- Edit -->
+      <div class="input-group date" id="datetimepicker2" data-target-input="nearest" style="display:none;">
+        <input type="text" name="datetime" class="form-control form-control-sm datetimepicker-input edit_contact" data-target="#datetimepicker2" id="id_datetime">
+        <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+          <div class="input-group-text" style="font-size: 0.9em;border: 1px solid #444;"><i class="fa fa-calendar"></i></div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        $(function () {
+          $('#datetimepicker2').datetimepicker({
+            format: "DD/MM/YYYY HH:mm",
+            date: "{{appraisal.timeDue|date:"d/M/Y G:i"}}",
+            minDate: "{{appraisal.timeCreated|date:"M/d/Y G:i"}}"
+          });
+        });
+      </script>
+    </div>
+    <div class="col-1" style="padding:0em 0em 0em 1em;">
+      {% if perms.appraisal.change_time_due %}
+        <span style="vertical-align:text-top;display:inline;" id="span_btn_edit">
+          <button type="button" class="btn edit" style="border:0px;width:20px;height:20px;padding:0em;">
+            <i class="icon material-icons" style="font-size:16px;">edit</i>
+            <div class="ld ld-ring ld-spin" style="display:none;"></div>
+          </button>
+        </span>
+        <span style="vertical-align:text-top;display:none;" id="span_btn_save">
+          {% with class="save" %}
+          {% include "list/btn_save.html" %}
+          {% endwith %}
+        </span>
+      {% endif %}
+    </div>
+    <script type="text/javascript">
+      $(".edit").on("click",function() {
+        $("#datetimepicker2").show()
+        $("#timeDue").hide()
+        $("#span_btn_save").show()
+        $("#span_btn_edit").hide()
+      })
+      $(".save").on("click",function() {
+        var form = $('#logbook_form')
+        $.ajax({
+          url: "{% url 'ajax_save_time_due' %}",
+          type: 'get',
+          data: form.serialize(),
+          error: function () {
+            alert("Error al guardar fecha.");
+            return false;
+          },
+          success: function (data) {
+            $("#datetimepicker2").hide()
+            $("#timeDue").show()
+            $("#span_btn_edit").show()
+            $("#span_btn_save").hide()
+            $("#timeDue").val(data['datetime'])
+          }
+        });
+      })
+    </script>
+
+      <!--<p class="text-left"></p>-->
+    <div class="col-1" style="padding-left:0em;">
+      <span class="text-right">Visador:</span>
+    </div>
+    <div class="col-4" style="padding:0em;">
+      {% if appraisal.visadorUser %}
+      <span style="vertical-align: -webkit-baseline-middle;">
+      {{ appraisal.visadorUser.first_name }} {{ appraisal.visadorUser.last_name.strip }}
+      </span>
+      {% else %}
+      <span style="vertical-align: -webkit-baseline-middle;">
+      <em>No asignado</em>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right">Precio:</span>
+    </div>
+    <div class="col-10" style="padding:0em;">
+      <input name="valorUF" class="edit_contact" value="{{appraisal.valorUF|default_if_none:""}}" placeholder="" style="width:100px; text-align:right;" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}> U.F.
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right">Ejecutivo/a:</span>
+    </div>
+    <div class="col-10" style="padding:0em;">
+      <input name="solicitanteEjecutivo" class="edit_contact" value="{{appraisal.solicitanteEjecutivo|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="solicitanteEjecutivoEmail" class="edit_contact" value="{{appraisal.solicitanteEjecutivoEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="solicitanteEjecutivoTelefono" class="edit_contact" value="{{appraisal.solicitanteEjecutivoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right">Cliente:</span>
+    </div>
+    <div class="col-8" style="padding:0em;">
+      <input name="cliente" class="edit_contact edit_contact_cliente" value="{{appraisal.cliente|default_if_none:""}}" placeholder="Nombre" style="width:240px;" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="clienteEmail" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="clienteTelefono" class="edit_contact edit_contact_cliente" value="{{appraisal.clienteTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.clienteValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+    </div>
+    <div class="col-2">
+      {% if perms.appraisal.can_validate_contacts %}
+      <div class="form-check" style="padding-top:4px">
+        <input type="checkbox" class="form-check-input btn_validate" data-type="1" id="exampleCheck1" {{appraisal.clienteValidado|yesno:"checked,"}}>
+        <label class="form-check-label" for="exampleCheck1">Validado</label>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right">Contacto:</span>
+    </div>
+    <div class="col-8" style="padding:0em;">
+      <input name="contacto" class="edit_contact edit_contact_contacto" value="{{appraisal.contacto|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="contactoEmail" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="contactoTelefono" class="edit_contact edit_contact_contacto" value="{{appraisal.contactoTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{appraisal.contactoValidado|yesno:"readonly,"}} {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+    </div>
+    <div class="col-2">
+      {% if perms.appraisal.can_validate_contacts %}
+      <div class="form-check" style="padding-top:4px">
+        <input type="checkbox" class="form-check-input btn_validate" data-type="2" id="exampleCheck1" {{appraisal.contactoValidado|yesno:"checked,"}}>
+        <label class="form-check-label" for="exampleCheck1">Validado</label>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-2" style="font-size:0.8em;">
+    <div class="col-2" style="text-align:right;">
+      <span class="text-right">Propietario/a:</span>
+    </div>
+    <div class="col-10" style="padding:0em;">
+      <input name="propietario" class="edit_contact" value="{{appraisal.propietario|default_if_none:""}}" placeholder="Nombre" style="width:240px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="propietarioEmail" class="edit_contact" value="{{appraisal.propietarioEmail|default_if_none:""}}" placeholder="Email" style="width:180px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+      <input name="propietarioTelefono" class="edit_contact" value="{{appraisal.propietarioTelefono|default_if_none:""}}" placeholder="Teléfono" style="width:100px" {{perms.appraisal.can_validate_contacts|yesno:",readonly"}}>
+    </div>
+  </div>
+</form>
+
+<form id="form_comment" data-comment-url="{% url 'ajax_comment_url' %}">
+<input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
+{% csrf_token %}
+
+<div id="conflict" style="{{appraisal.in_conflict|yesno:",display:none"}}">
+  <div class="line conflict">
+    <span class="line" style="color:#f44;">
+      Tasación en conflicto
+    </span>
+  </div>
+  <button type="button" class="btn btn-danger btn-sm btn-block" id="btn_solve_conflict" value="{{appraisal.id}}">
+    <div class="text">Resolver</div>
+    <div class="ld ld-ring ld-spin" style="display:none;"></div>
+  </button>
+</div>
+
+<div id="logbook_flow">
+{% include "logbook/modals_logbook_flow.html" %}
+</div>
+
+<div id="logbook_event">
+{% include "logbook/modals_logbook_event.html" %}
+</div>
+
+</form>
+
+<div class="line">
+  <span class="line">
+    Historial
+  </span>
+</div>
+
+<div class="row mb-4" style="width:90%;margin-left:auto;margin-right:auto;">
+  <div class="col-12">
+    <div id="historial">
+      <ul id="comment_list" class="list-group">
+        {% for comment in comments %}
+          {% include 'list/comment.html' %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+    </div>
+  </div>
