@@ -481,8 +481,7 @@ class Appraisal(models.Model):
             Comment.EVENT_VISITA_ACORDADA,
             Comment.EVENT_PROPIEDAD_VISITADA,
             Comment.EVENT_ENVIADA_A_VISADOR,
-            Comment.EVENT_ENTREGADO_AL_CLIENTE,
-            Comment.EVENT_ABORTADO]
+            Comment.EVENT_ENTREGADO_AL_CLIENTE]
 
         if comments == None:
             comments = self.comments.all()
@@ -631,6 +630,7 @@ class Comment(models.Model):
         (EVENT_CONTACTO_INVALIDADO, "Contacto invalidado"),
         (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
         (EVENT_CLIENTE_INVALIDADO, "Cliente invalido"),
+        (EVENT_ABORTADO, "Tasación anulada"),
         (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
         (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
         (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
@@ -657,28 +657,34 @@ class Comment(models.Model):
         Appraisal.STATE_NOT_ASSIGNED:[
             EVENT_VISITA_ACORDADA,
             EVENT_INCIDENCIA,
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_NOT_ACCEPTED:[
             EVENT_VISITA_ACORDADA,
             EVENT_INCIDENCIA,
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_IN_APPRAISAL:[
             EVENT_VISITA_ACORDADA,
             EVENT_PROPIEDAD_VISITADA,
             EVENT_INCIDENCIA,
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_IN_REVISION:[
             EVENT_INCIDENCIA,
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_SENT:[
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_RETURNED:[
-            EVENT_COMENTARIO
+            EVENT_COMENTARIO,
+            EVENT_ABORTADO
         ],
         Appraisal.STATE_ARCHIVED:[]
     }
