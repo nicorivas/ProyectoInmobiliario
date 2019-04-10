@@ -453,9 +453,9 @@ def ajax_comment(request):
     if event == Comment.EVENT_ABORTADO:
         appraisal.state_last = appraisal.state
         appraisal.state = Appraisal.STATE_ARCHIVED
-        appraisal.in_conflict = True
+        #appraisal.in_conflict = True
         appraisal.save()
-
+        
 
     comment = appraisal.addComment(int(request.POST['event']),request.user,datetime.datetime.now(timezone_cl),text)
 
