@@ -51,6 +51,10 @@ function addRow(table_name, appraisal_id, html) {
   $("#"+table_name).fadeIn()
 }
 
+function getTableName(appraisal_id) {
+
+}
+
 function removeRow(table_name, appraisal_id) {
   // Remove row from table. Takes into account if this is
   // the last row remaining, in that case it hides the whole

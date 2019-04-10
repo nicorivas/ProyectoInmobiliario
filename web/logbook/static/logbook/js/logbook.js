@@ -150,6 +150,10 @@ function assignLogbookModalActions() {
           $('div#conflict').slideDown();
           $("#tr_"+table+"-"+appraisal_id).addClass('conflict')
         }
+        if (event == comment_class['EVENT_ABORTADO']) {
+          $("tr[id$=-"+appraisal_id+"]").remove();
+
+        }
       },
       complete: function (data) {
         assignLogbookModalActions();

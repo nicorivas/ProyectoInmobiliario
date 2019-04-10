@@ -30,7 +30,7 @@
   </span>
 </div>
 
-<form id="form_expenses" data-expenses2-url="{% url 'ajax_save_expenses_url' %}">
+<form id="form_expenses" data-expenses2-url="{% url 'ajax_save_expenses_url' %}" class="needs-validation" novalidate>
 <input id="in_appraisal_id" name="appraisal_id" type="hidden" value=-1>
 {% csrf_token %}
 <div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
@@ -38,14 +38,14 @@
 
       <div class="row">
 
-          <div class="form-group col-9" id="div_description">
-            {{ form_expenses.description.label_tag}}
+          <div class="form-group col-6" id="div_description" name="description">
+            <small>{{ form_expenses.description.label_tag}}</small>
             {{ form_expenses.description }}
           </div>
 
-          <div class="form-group col-3" id="div_totalPrice">
-            {{ form_expenses.totalPrice.label_tag }}
-            {{ form_expenses.totalPrice }}
+          <div class="form-group col-6" id="div_totalPrice" name="totalPrice">
+            <small>{{ form_expenses.totalPrice.label_tag }}</small>
+              {{ form_expenses.totalPrice }}
           </div>
 
       </div>
@@ -83,6 +83,32 @@
 </div>
 
 <script>
+
+$(document).ready(function () {
+
+    $('#form_expenses').validate();
+	$('input[name="totalPrice"]').rules('add', {
+        required: true,
+        min: 1,
+        integer: true,
+        messages: {
+            required: jQuery.validator.format("Campo requerido"),
+            min: jQuery.validator.format("El número debe ser positivo"),
+            integer: jQuery.validator.format("El número debe ser entero (ej. 1, 20000, 2355)")
+        }
+    });
+    $('textarea[name="description"]').rules('add', {
+        required: true,
+        messages: {
+            required: jQuery.validator.format("Campo Requerido"),
+        }
+    });
+
+});
+
+
+
+
   var assignExpensesModalActions = function() {
 
       $("#expenses_delete").unbind()
@@ -118,6 +144,20 @@
         });
       });
 
+
+      $("#btn_expenses2").on("click", function (e) {
+        console.log("shift")
+        if ($("#form_expenses").valid()) {
+          btn_loading($(this),hide_text=true,disable=false)
+          setTimeout(function () { disableButton(); }, 0);
+          //$(this).prop('disabled', true);
+        };
+      });
+      function disableButton() {
+        $("#btn_expenses2").prop('disabled', true);
+      }
+
+
       $("#btn_expenses2").unbind()
       $("#btn_expenses2").off()
       $("#btn_expenses2").on("click", function (event) {
@@ -129,36 +169,77 @@
         var formData = new FormData(form);
         var url = $("#form_expenses").attr("data-expenses2-url");
         var appraisal_id = $("#in_appraisal_id").val()
+        function disableButton() {
+                $("#btn_expenses2").prop('disabled', true);
+              }
+        if ($("#form_expenses").valid()) {
+          btn_loading($(this),hide_text=true,disable=false)
+          setTimeout(function () { disableButton(); }, 0);
+           $.ajax({
+                    url: url,
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    error: function () {
+                      btn_idle(btn)
+                      alert("Error al ingresar gasto.");
+                      return false;
+                    },
+                    success: function (data) {
+                      var element = $($.parseHTML(data))
+                      element.hide()
+                      $("#expenses_list").prepend(element);
+                      element.slideDown()
+                      btn_idle(btn)
 
-        $.ajax({
-          url: url,
-          type: 'post',
-          data: formData,
-          processData: false,
-          contentType: false,
-          error: function () {
-            btn_idle(btn)
-            alert("Error al ingresar gasto.");
-            return false;
-          },
-          success: function (data) {
-            var element = $($.parseHTML(data))
-            element.hide()
-            $("#expenses_list").prepend(element);
-            element.slideDown()
-            btn_idle(btn)
+                    },
 
-          },
+                    complete: function (data) {
+                          assignExpensesModalActions();
+                           $('#form_expenses')[0].reset();
+                      }
+            });
+        }
+        else {
+          btn_idle(btn)
+        }
 
-          complete: function (data) {
-                assignExpensesModalActions();
-                 $('#form_expenses')[0].reset();
-            }
-        });
       });
 }
 
 $(document).ready(function($) {
+
+
     assignExpensesModalActions();
+
+
     })
+
+
+
 </script>
+
+
+
+
+
+<!--$(document).ready(function () {
+    expenses_v = {
+        rules: {
+          "div_description": "required",
+          "div_totalPrice": "required",
+        },
+        messages: {
+          "div_description": "Campo requerido",
+          "div_totalPrice": "Requerido",
+          "div_description": {
+            maxlength: "Máximo 150 caracteres",
+            },
+          },
+        errorPlacement: function(error, element) {
+          error.insertAfter(element);
+          }
+        }
+        $("#form_expenses").validate(expenses_v);
+}); -->
