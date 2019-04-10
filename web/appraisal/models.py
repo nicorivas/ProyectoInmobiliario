@@ -473,6 +473,10 @@ class Appraisal(models.Model):
         app_property.save()
         return app_property
 
+    def removeAppProperty(self,property_type,property_id):
+        app_property = AppProperty.objects.get(property_type=property_type,property_id=property_id,appraisal=self)
+        app_property.delete()
+
     def getCommentChoices(self,comments=None,state=None):
         # List of comment types that can only happen once:
         once_ids = [

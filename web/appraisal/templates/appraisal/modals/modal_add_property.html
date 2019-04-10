@@ -12,6 +12,12 @@
           <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
           <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
 
+          Dirección
+
+          <p><small>{{addressStreet}} {{addressNumber}}<br/> {{addressCommune}}, {{addressRegion}}</small></p>
+
+          <div class="addressForm" style="display:none;">
+
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
@@ -43,21 +49,22 @@
             </div>
           </div>
 
+          </div>
+
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="form-group">
                 {{form_add_property.propertyType.label_tag}}
                 {{form_add_property.propertyType}}
               </div>
             </div>
-          </div>
-
-          <div class="row" id="addressNumber2_div" style="display:none;">
-            <div class="col-md-12">
-              <div class="form-group">
-                <div id="addressNumber2_label">{{form_add_property.addressNumber2.label_tag}}</div>
-                <div id="addressNumber2">{{form_add_property.addressNumber2}}</div>
-                <small id="addressNumber2_help" class="form-text text-muted" style="display:none;"></small>
+            <div class="col-md-6">
+              <div id="addressNumber2_div" style="display:none;">
+                <div class="form-group">
+                  <div id="addressNumber2_label">{{form_add_property.addressNumber2.label_tag}}</div>
+                  <div id="addressNumber2">{{form_add_property.addressNumber2}}</div>
+                  <small id="addressNumber2_help" class="form-text text-muted" style="display:none;"></small>
+                </div>
               </div>
             </div>
           </div>

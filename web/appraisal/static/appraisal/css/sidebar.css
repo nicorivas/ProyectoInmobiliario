@@ -1,4 +1,20 @@
-#property_list {
+#properties_list {
     min-height:40em;
     padding-right:1em;
+}
+
+#btn_add_property_modal {
+    font-size:0.9em;
+}
+
+a:not([href]):not([tabindex]) {
+    cursor: pointer;
+    color: blue;
+}
+a:hover,a.hover {
+    text-decoration: underline;
+}
+
+.list-group-item.loading a {
+    color: rgb(201, 201, 201);
 }

@@ -3,17 +3,12 @@
 <div>
   <div id="properties_data" 
     data-appraisal_id="{{appraisal.id}}"
+    data-ajax_load_sidebar_url="{% url 'ajax_load_sidebar_url' %}"
     data-ajax_load_realestate_url="{% url 'ajax_load_realestate_url' %}"
-    data-ajax_add_address_modal_url="{% url 'ajax_add_address_modal_url' %}"
     data-ajax_edit_property_modal_url="{% url 'ajax_edit_property_modal_url' %}"
-    data-ajax_edit_address_modal_url="{% url 'ajax_edit_address_modal_url' %}"
-    data-ajax_remove_address_modal_url="{% url 'ajax_remove_address_modal_url' %}"
     data-ajax_show_property_url="{% url 'ajax_show_property_url' %}"
     data-ajax_add_property_modal_url="{% url 'ajax_add_property_modal_url' %}"
     data-ajax_add_apartment_modal_url="{% url 'ajax_add_apartment_modal_url' %}"
-    data-ajax_edit_address_url="{% url 'ajax_edit_address_url' %}",
-    data-ajax_add_address_url="{% url 'ajax_add_address_url' %}",
-    data-ajax_remove_address_url="{% url 'ajax_remove_address_url' %}",
     data-ajax_add_property_url="{% url 'ajax_add_property_url' %}",
     data-ajax_edit_property_url="{% url 'ajax_edit_property_url' %}",
     data-ajax_remove_property_url="{% url 'ajax_remove_property_url' %}",
@@ -28,7 +23,9 @@
   <div class="row mt-4" style="padding-left:2em;">
 
     <!-- Sidebar -->
-    {% include "appraisal/properties/sidebar/index.html" %}
+    <div class="col-3 border-right">
+      {% include "appraisal/properties/sidebar/sidebar.html" %}
+    </div>
 
     <!-- Main -->
     <div class="col-9">
@@ -43,3 +40,9 @@
 </div>
 
 <script src="{% static 'appraisal/js/properties.js' %}" type="text/javascript"></script>
+
+<script>
+  $(document).ready(function(){
+    load_sidebar()
+  })
+</script>

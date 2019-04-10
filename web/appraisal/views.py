@@ -16,14 +16,13 @@ from user.models import UserProfile
 import reversion
 from copy import deepcopy
 from reversion.models import Version
-from appraisal.data import propertyData
+from appraisal.data import getAppraisalFromRequest, getPropertyFromRequest
 
 import pytz
 import os
 import csv
 
 from .forms import FormRealEstate
-from .forms import FormTerrain
 from .forms import FormBuilding
 from .forms import FormApartment
 from .forms import FormHouse
@@ -392,10 +391,10 @@ def ajax_save_appraisal(request):
     if request.POST['appraisal_id'] == '':
         return JsonResponse({})
 
-    pd = propertyData(request.POST)
+    appraisal = getAppraisalFromRequest(request)
 
-    if pd['appraisal']:
-        form_appraisal = FormAppraisal(request.POST,instance=pd['appraisal'])
+    if appraisal:
+        form_appraisal = FormAppraisal(request.POST,instance=appraisal)
         form_appraisal.save()
 
     return JsonResponse({})
@@ -410,18 +409,6 @@ def ajax_upload_photo(request):
     #    photo.save()
     #    appraisal.photos.add(photo)
     return HttpResponse('')
-
-def propertyListHTML(request,appraisal,real_estate):
-
-    app_ids = getAppraisedPropertyIds(appraisal)
-
-    buildings = real_estate.buildings.all()
-    terrains = real_estate.terrains.all()
-    return render(request,'appraisal/properties/property_list.html',
-        {'real_estate':real_estate,
-         'app_ids':app_ids,
-         'terrains':terrains,
-         'buildings':buildings})
 
 def ajax_load_tab_value(request):
     pd = propertyData(request.GET)
@@ -491,31 +478,6 @@ def ajax_remove_rol(request):
     json_dict['roles'] = pd['current'].roles
 
     return render(request,'building/roles.html',json_dict)
-
-def ajax_save_property(request):
-
-    if request.POST['appraisal_id'] == '':
-        return JsonResponse({})
-
-    pd = propertyData(request.POST)
-
-    if pd['terrain']:
-        form_terrain = FormTerrain(request.POST,instance=pd['terrain'])
-        form_terrain.save()
-
-    if pd['house']:
-        form_house = FormHouse(request.POST,instance=pd['house'])
-        form_house.save()
-
-    if pd['building']:
-        form_building = FormBuilding(request.POST,instance=pd['building'])
-        form_building.save()
-
-    if pd['apartment']:
-        form_apartment = FormApartment(request.POST,instance=pd['apartment'])
-        form_apartment.save()
-
-    return JsonResponse({})
 
 def ajax_add_property_similar_modal(request):
     pd = propertyData(request.GET)
