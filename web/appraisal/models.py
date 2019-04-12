@@ -717,7 +717,9 @@ class Comment(models.Model):
                self.event != self.EVENT_ENVIADA_A_VISADOR and \
                self.event != self.EVENT_DEVUELTA_A_TASADOR and \
                self.event != self.EVENT_DEVUELTA_A_VISADOR and \
-               self.event != self.EVENT_REPORTE_ADJUNTO
+               self.event != self.EVENT_REPORTE_ADJUNTO and \
+               self.event != self.EVENT_ABORTADO
+
 
     @property
     def small(self):
