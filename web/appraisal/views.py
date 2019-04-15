@@ -580,7 +580,7 @@ def ajax_add_property_similar(request):
         if not pd['terrain_selected']:
             pd['terrain'].terrain_set.add(propiedad) 
             pd['terrain'].save()
-        return render(request,'appraisal/realestate_value_similar_selected_terrains.html', pd)
+        return render(request,'appraisal/value_similar_selected_terrains.html', pd)
     if pd['house']:
         if not pd['house_selected']:
             propiedad, existed = real_estate_new.createOrGetHouse(addressNumber2=request.POST['addressNumber2'])
@@ -595,7 +595,7 @@ def ajax_add_property_similar(request):
         #if not existed:
         pd['house'].house_set.add(propiedad)
         pd['house'].save()
-        return render(request,'appraisal/realestate_value_similar_selected_buildings.html', pd)
+        return render(request,'appraisal/value_similar_selected_buildings.html', pd)
     if pd['apartment']:
         if not pd['apartment_selected']:
             propiedad, existed = real_estate_new.createOrGetApartment(
@@ -613,7 +613,7 @@ def ajax_add_property_similar(request):
         pd['apartment'].apartment_set.add(propiedad)
         pd['apartment'].save()
         print(pd['apartment'].apartment_set.all())
-        return render(request,'appraisal/realestate_value_similar_selected_buildings.html', pd)
+        return render(request,'appraisal/value_similar_selected_buildings.html', pd)
     if pd['apartment_building']:
         if not pd['apartment_building']:
             propiedad, existed = real_estate_new.createOrGetApartmentBuilding(addressNumber2=request.POST['addressNumber2'])
@@ -624,7 +624,7 @@ def ajax_add_property_similar(request):
         propiedad.save()
         pd['apartment_building'].apartmentbuilding_set.add(propiedad)
         pd['apartment_building'].save()
-        return render(request,'appraisal/realestate_value_similar_selected_buildings.html', pd)
+        return render(request,'appraisal/value_similar_selected_buildings.html', pd)
 
 def ajax_edit_property_similar_modal(request):
     
