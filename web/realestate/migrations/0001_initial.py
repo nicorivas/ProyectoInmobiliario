@@ -9,9 +9,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('neighborhood', '0001_initial'),
-        ('commune', '0006_auto_20181102_1240'),
-        ('region', '0007_auto_20181102_1240'),
         ('terrain', '0001_initial'),
         ('building', '0001_initial'),
     ]
@@ -45,7 +42,6 @@ class Migration(migrations.Migration):
                 ('addressRegion', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='region.Region', to_field='code', verbose_name='Región')),
                 ('assets', models.ManyToManyField(to='realestate.Asset')),
                 ('buildings', models.ManyToManyField(to='building.Building')),
-                ('neighborhood', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='neighborhood.Neighborhood', verbose_name='Barrio')),
                 ('terrains', models.ManyToManyField(to='terrain.Terrain')),
             ],
         ),

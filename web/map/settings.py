@@ -15,6 +15,8 @@ import os, locale
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal204.dll'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
+    #'django.contrib.gis',
     'django_extensions',
     'imagekit',
     'user',
@@ -110,7 +112,7 @@ WSGI_APPLICATION = 'map.wsgi.application'
 if os.getenv('GAE_APPLICATION', None):
     DATABASES = {
         'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': '/cloudsql/proyectoinmobiliario-212003:southamerica-east1:protasa',
             'PORT': '5432',
             'NAME': 'data',
@@ -121,12 +123,12 @@ if os.getenv('GAE_APPLICATION', None):
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': '127.0.0.1',
             'PORT': '5432',
             'NAME': 'data',
-            'USER': os.environ.get('DATABASE_USER'),
-            'PASSWORD': os.environ.get('DATABASE_PASSWORD')
+            'USER': 'postgres',
+            'PASSWORD': 'iCga1kmX'
         }
     }
 

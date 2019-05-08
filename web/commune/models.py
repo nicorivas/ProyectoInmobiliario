@@ -1,4 +1,4 @@
-from django.contrib.gis.db import models
+from django.db import models
 from region.models import Region, RegionFull
 from province.models import Province, ProvinceFull
 from dbase.globals import *
@@ -21,7 +21,7 @@ class CommuneFull(models.Model):
         blank=False,
         null=False,
         to_field='code')
-    mpoly = models.MultiPolygonField(null=True)
+    #mpoly = models.MultiPolygonField(null=True)
 
     # Number of apartments that are stored in this region
     dataApartmentCount = models.PositiveIntegerField("Departamentos",null=True,blank=True,default=0)

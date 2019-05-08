@@ -1,4 +1,4 @@
-from django.contrib.gis.db import models
+from django.db import models
 from dbase.globals import *
 
 class RegionFull(models.Model):
@@ -10,7 +10,7 @@ class RegionFull(models.Model):
     # International code
     iso = models.CharField("Iso",max_length=6,null=False,blank=False)
     # Polygon or set of polygons that specify the shape of the region
-    mpoly = models.MultiPolygonField(null=True)
+    #mpoly = models.MultiPolygonField(null=True)
 
     # Number of apartments that are stored in this region
     dataApartmentCount = models.PositiveIntegerField("Departamentos",null=True,blank=True,default=0)

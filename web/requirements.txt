@@ -25,7 +25,6 @@ django-reset-migrations==0.3.1
 django-reversion==3.0.0
 docx2txt==0.6
 dpd-components==0.1.0
-EbookLib==0.15
 et-xmlfile==1.0.1
 Flask==1.0.2
 Flask-Compress==1.4.0

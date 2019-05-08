@@ -1,4 +1,4 @@
-from django.contrib.gis.db import models
+from django.db import models
 from region.models import Region
 from province.models import Province
 from commune.models import Commune
@@ -26,4 +26,4 @@ class Square(models.Model):
         blank=False,
         null=False,
         to_field='code')
-    mpoly = models.MultiPolygonField(null=True)
+    #mpoly = models.MultiPolygonField(null=True)

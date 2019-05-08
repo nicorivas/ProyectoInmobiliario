@@ -10,9 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('commune', '0006_auto_20181102_1240'),
         ('auth', '0009_alter_user_last_name_max_length'),
-        ('region', '0007_auto_20181102_1240'),
     ]
 
     operations = [
