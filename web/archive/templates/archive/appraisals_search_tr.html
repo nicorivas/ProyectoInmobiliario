@@ -57,7 +57,7 @@
   {% with table="archive" %}
     {% include 'list/btn_logbook.html' %}
   {% endwith %}
-  {% if appraisal.state == appraisal.STATE_ARCHIVED %}
+  {% if appraisal.state == appraisal.STATE_ARCHIVED or appraisal.state == appraisal.STATE_ABORTED%}
     {% with class="btn_unarchive_appraisal_modal" %}
       {% include 'list/btn_unarchive.html' %}
     {% endwith %}
