@@ -400,9 +400,14 @@ def parseBancoDeChile(text):
                 data['propertyType'] = Building.TYPE_CASA
         if 'COMUNA' in line.strip():
             comuna = text[i+6].strip().title()
-            commune = Commune.objects.get(name=comuna)
-            data['addressCommune'] = commune.id
-            data['addressRegion'] = commune.region.code
+            print(comuna)
+            try:
+                commune = Commune.objects.get(name_simple=unidecode.unidecode(comuna))
+                data['addressCommune'] = commune.id
+                data['addressRegion'] = commune.region.code
+            except Commune.DoesNotExist:
+                data['addressCommune'] = ""
+                data['addressRegion'] = ""
         if 'ROL' in line.strip():
             data['rol'] = text[i+6+c-1].strip()
         if 'DIRECCION' in line.strip():

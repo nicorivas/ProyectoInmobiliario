@@ -1,0 +1,19 @@
+.value_subtitle {
+    font-size: 1.0em;
+}
+
+.btn_subsection_close {
+    font-family: "Material Icons";
+    font-size: 1em;
+    margin-top: -1.0em;
+    margin-bottom: -1.0em;
+}
+
+.real_estate_address {
+    font-size: 0.9em;
+    padding-left: 0em;
+}
+
+.no_comparable_properties {
+    margin-bottom: 0em;
+}

@@ -55,10 +55,10 @@ function set_properties_list_actions() {
       },
       success: function (ret) {
         $("#properties_data").data(data)
-        $("#properties_list").find(".btn_property").each(function() {
-          $(this).removeClass("btn-active")
+        $("#properties_list").find(".property_list_item").each(function() {
+          $(this).removeClass("property_list_item_active")
         })
-        btn.addClass('btn-active')
+        btn.closest(".property_list_item").addClass('property_list_item_active')
         $("#property_info").html($.trim(ret));
         $('#property_info').show();
         set_property_view_actions();

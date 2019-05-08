@@ -1,6 +1,20 @@
+#sidebar {
+    padding-left: 0em;
+    padding-right: 0em;
+}
+
+#sidebar_title {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.real_estate_address {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
 #properties_list {
     min-height:40em;
-    padding-right:1em;
 }
 
 #btn_add_property_modal {
@@ -17,4 +31,12 @@ a:hover,a.hover {
 
 .list-group-item.loading a {
     color: rgb(201, 201, 201);
+}
+
+.real_estate_address {
+    font-size: 0.9em;
+}
+
+.property_list_item_active {
+    background: #f6f6ff;
 }

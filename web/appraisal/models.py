@@ -181,6 +181,7 @@ class Appraisal(models.Model):
     NONE = ''
     OTRA = 0
     HIPOTECARIA = 1
+    CONVENIO_HIPOTECARIO = 21
     GARANTIA = 8
     PREINFORME = 9
     COMERCIAL = 7
@@ -204,6 +205,7 @@ class Appraisal(models.Model):
     tipoTasacion_choices = [
         (NONE,'---------'),
         (HIPOTECARIA, 'Hipotecaria'),
+        (CONVENIO_HIPOTECARIO, 'Convenio hipotecario'),
         (GARANTIA, 'Garantía general'),
         (PREINFORME, 'Pre-informe'),
         (EVALUACION_PROYECTO_INMOBILIARIO,'Evaluación proyecto inmobiliario'),

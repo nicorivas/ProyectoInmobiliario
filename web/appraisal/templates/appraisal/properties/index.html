@@ -17,13 +17,15 @@
     data-ajax_save_property_url="{% url 'ajax_save_property_url' %}",
     data-ajax_add_rol_modal_url="{% url 'ajax_add_rol_modal_url' %}",
     data-ajax_edit_rol_modal_url="{% url 'ajax_edit_rol_modal_url' %}"
-    data-ajax_edit_rol_url="{% url 'ajax_edit_rol_url' %}"
-    data-ajax_remove_rol_url="{% url 'ajax_remove_rol_url' %}"></div>
+    data-ajax_edit_rol_url="{% url 'ajax_edit_rol_url' %}",
+    data-ajax_add_property_comparable_modal_url="{% url 'ajax_add_property_comparable_modal_url' %}",
+    data-ajax_remove_rol_url="{% url 'ajax_remove_rol_url' %}">
+    </div>
     
-  <div class="row mt-4" style="padding-left:2em;">
+  <div class="row mt-4 ml-0 mr-0">
 
     <!-- Sidebar -->
-    <div class="col-3 border-right">
+    <div class="col-3 border-right" id="sidebar">
       {% include "appraisal/properties/sidebar/sidebar.html" %}
     </div>
 

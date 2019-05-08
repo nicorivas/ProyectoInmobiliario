@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 from . import properti
+from . import comparable
 
 urlpatterns = [
     path('<int:appraisal_id>/',views.view_appraisal,name='views-appraisal'),
@@ -42,10 +43,11 @@ urlpatterns = [
     path('ajax/save_appraisal/', views.ajax_save_appraisal, name='ajax_save_appraisal_url'),
 
     path('ajax/load_tab_value/', views.ajax_load_tab_value, name="ajax_load_tab_value"),
+    path('ajax/load_tab_value_comparable', views.ajax_load_tab_value_comparable, name="ajax_load_tab_value_comparable_url"),
 
-    path('ajax/add_property_similar_modal/', views.ajax_add_property_similar_modal, name='ajax_add_property_similar_modal_url'),
-    path('ajax/add_property_similar/', views.ajax_add_property_similar, name='ajax_add_property_similar_url'),
-    path('ajax/edit_property_similar_modal/', views.ajax_edit_property_similar_modal, name='ajax_edit_property_similar_modal_url'),
-    path('ajax/edit_property_similar/', views.ajax_edit_property_similar, name='ajax_edit_property_similar_url'),
-    path('ajax/remove_property_similar/', views.ajax_remove_property_similar, name='ajax_remove_property_similar_url')
+    path('ajax/add_property_comparable_modal/', comparable.ajax_add_property_comparable_modal, name='ajax_add_property_comparable_modal_url'),
+    path('ajax/add_property_comparable/', comparable.ajax_add_property_comparable, name='ajax_add_property_comparable_url'),
+    path('ajax/edit_property_comparable_modal/', comparable.ajax_edit_property_comparable_modal, name='ajax_edit_property_comparable_modal_url'),
+    path('ajax/edit_property_comparable/', comparable.ajax_edit_property_comparable, name='ajax_edit_property_comparable_url'),
+    path('ajax/remove_property_comparable/', comparable.ajax_remove_property_comparable, name='ajax_remove_property_comparable_url')
 ]

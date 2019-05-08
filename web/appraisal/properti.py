@@ -133,8 +133,6 @@ def ajax_remove_property(request):
     appraisal = getAppraisalFromRequest(request)
     pd = getPropertyFromRequest(request)
 
-    print("pd",pd)
-
     appraisal.removeAppProperty(pd["property"].propertyType,pd["property"].id)
     appraisal.save()
 

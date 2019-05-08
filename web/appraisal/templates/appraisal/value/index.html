@@ -85,26 +85,20 @@
 
 </script>
 
-<div id="accordion">
-
-{% include "appraisal/value_similar.html" %}
+<div id="value_comparable">
+  {% include "appraisal/value/comparable/index.html" %}
 <hr/>
 
-<!--
-{% include "appraisal/value_market_properties.html" %}
-<hr/>
--->
-
-{% include "appraisal/value_map.html" %}
+{% include "appraisal/value/map.html" %}
 <hr/>
 
-{% include "appraisal/value_assets.html" %}
+{% include "appraisal/value/assets.html" %}
 <hr/>
 
-{% include "appraisal/value_renta.html" %}
+{% include "appraisal/value/rent.html" %}
 <hr/>
 
-{% include "appraisal/value_resumen.html" %}
+{% include "appraisal/value/summary.html" %}
 </div>
 
 <script>

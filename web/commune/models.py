@@ -5,6 +5,7 @@ from dbase.globals import *
 
 class CommuneFull(models.Model):
     name = models.CharField("Nombre",max_length=100)
+    name_simple = models.CharField("Nombre simple",max_length=100,null=True,blank=True)
     code = models.PositiveSmallIntegerField("Code",
         null=False,
         blank=False,
@@ -39,6 +40,7 @@ class CommuneFull(models.Model):
 
 class Commune(models.Model):
     name = models.CharField("Nombre",max_length=100)
+    name_simple = models.CharField("Nombre simple",max_length=100,null=True,blank=True)
     code = models.PositiveSmallIntegerField("Code",
         null=False,
         blank=False,

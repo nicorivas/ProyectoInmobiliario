@@ -43,7 +43,13 @@ docker build -t gcr.io/proyectoinmobiliario-212003/tasador:v0.x .
 docker push gcr.io/proyectoinmobiliario-212003/tasador:v0.x
 
 --- IF YOU WANT TO UPDATE (DO THIS!) ---
-(don't forget to upload static, see 4 and 5)
+
+1. Upload static (see 4 and 5)
+
+2. Create docker (see 8). Change version!
+
+3. Upload docker (see 9)
+
 Go to https://console.cloud.google.com
 Kubernetes engine
 Workloads
