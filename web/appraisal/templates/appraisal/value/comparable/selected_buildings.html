@@ -17,21 +17,16 @@
             <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
             <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> const.</th>
             <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup> tot.</th>
-            <th scope="col" style="width: 6em;text-align:right;">
-                <a href="#" class="btn_similar_add_terrain_modal">
-                    Agregar
-                </a>
-            </th>
             {% elif building.is_apartmentbuilding %}
             <th scope="col" style="width: 17em;text-align:right;">m<sup>2</sup> construidos</th>
             <th scope="col" style="width: 12em;text-align:right;">Precio Mercado</th>
             <th scope="col" style="width: 12em;text-align:right;">PM/m<sup>2</sup></th>
+            {% endif %}
             <th scope="col" style="width: 18em;text-align:right;">
-                <a href="#" class="btn_similar_add_terrain_modal">
+                <a href="#" class="btn_comparable_add_terrain_modal">
                     Agregar
                 </a>
             </th>
-            {% endif %}
             <th></th>
         </tr>
     </thead>
@@ -100,13 +95,7 @@
             <td></td>
         </tr>
         {% else %}
-        <tr class="border-bottom">
-            <td></td>
-                <td colspan="10" style="text-align:center;">
-                    <span class="badge badge-info">No se han agregado propiedades similares</span>
-                </td>
-            <td></td>
-        </tr>
+            {% include 'appraisal/value/comparable/selected_tr_no_properties.html' %}
         {% endif %}
 
         {% endif %}
@@ -150,7 +139,7 @@
         <tr class="border-bottom" style="background:#fff3cd;">
             <td></td>
                 <td colspan="7" style="text-align:center;">
-                    <small>No se han agregado propiedades similares</small>
+                    <small>No se han agregado propiedades comparables</small>
                 </td>
             <td></td>
         </tr>     
@@ -184,7 +173,7 @@
             <th scope="col" style="width: 10em;text-align:right;">PM/m<sup>2</sup> út.</th>
             <th scope="col" style="width: 10em;text-align:right;">PM/m<sup>2</sup> ter.</th>
             <th scope="col" style="width: 8em;text-align:right;">
-                <a href="#" class="btn_similar_add_terrain_modal">
+                <a href="#" class="btn_comparable_add_terrain_modal">
                     Agregar
                 </a>
             </th>
@@ -256,7 +245,7 @@
         <tr class="border-bottom" style="background:#fff3cd;">
             <td></td>
                 <td colspan="11" style="text-align:center;">
-                    <small>No se han agregado propiedades similares</small>
+                    <small>No se han agregado propiedades comparables</small>
                 </td>
             <td></td>
         </tr>     

@@ -181,6 +181,7 @@ class Appraisal(models.Model):
     NONE = ''
     OTRA = 0
     HIPOTECARIA = 1
+    CONVENIO_HIPOTECARIO = 21
     GARANTIA = 8
     PREINFORME = 9
     COMERCIAL = 7
@@ -204,6 +205,7 @@ class Appraisal(models.Model):
     tipoTasacion_choices = [
         (NONE,'---------'),
         (HIPOTECARIA, 'Hipotecaria'),
+        (CONVENIO_HIPOTECARIO, 'Convenio hipotecario'),
         (GARANTIA, 'Garantía general'),
         (PREINFORME, 'Pre-informe'),
         (EVALUACION_PROYECTO_INMOBILIARIO,'Evaluación proyecto inmobiliario'),
@@ -472,6 +474,10 @@ class Appraisal(models.Model):
         app_property = AppProperty(property_type=property_type,property_id=property_id,appraisal=self)
         app_property.save()
         return app_property
+
+    def removeAppProperty(self,property_type,property_id):
+        app_property = AppProperty.objects.get(property_type=property_type,property_id=property_id,appraisal=self)
+        app_property.delete()
 
     def getCommentChoices(self,comments=None,state=None):
         # List of comment types that can only happen once:

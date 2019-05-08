@@ -39,9 +39,11 @@
   {% with table="not_assigned" %}
     {% include 'list/btn_logbook.html' %}
   {% endwith %}
+  <!--
   {% if "asignador" in groups or user.is_superuser %}
-  {% with class="btn_archive_appraisal_modal" %}
-    {% include 'list/btn_archive.html' %}
-  {% endwith %}
+    {% with class="btn_archive_appraisal_modal" %}
+      {% include 'list/btn_archive.html' %}
+    {% endwith %}
   {% endif %}
+  -->
 </td>

@@ -16,14 +16,13 @@ from user.models import UserProfile
 import reversion
 from copy import deepcopy
 from reversion.models import Version
-from appraisal.data import propertyData
+from appraisal.data import getAppraisalFromRequest, getPropertyFromRequest
 
 import pytz
 import os
 import csv
 
 from .forms import FormRealEstate
-from .forms import FormTerrain
 from .forms import FormBuilding
 from .forms import FormApartment
 from .forms import FormHouse
@@ -36,14 +35,7 @@ from .forms import FormAddProperty
 from .forms import FormEditProperty
 from .forms import FormAddApartment
 from .forms import FormAddRol
-from .forms import FormCreateProperty
-from .forms import FormCreateTerrain
-from .forms import FormCreateApartmentBuilding
-from .forms import FormCreateApartment
-from .forms import FormCreateHouse
-from .forms import FormCreateAsset
 from .forms import FormCreateRol
-from .forms import FormCreateRealEstate
 from create import create
 
 
@@ -392,10 +384,10 @@ def ajax_save_appraisal(request):
     if request.POST['appraisal_id'] == '':
         return JsonResponse({})
 
-    pd = propertyData(request.POST)
+    appraisal = getAppraisalFromRequest(request)
 
-    if pd['appraisal']:
-        form_appraisal = FormAppraisal(request.POST,instance=pd['appraisal'])
+    if appraisal:
+        form_appraisal = FormAppraisal(request.POST,instance=appraisal)
         form_appraisal.save()
 
     return JsonResponse({})
@@ -411,21 +403,19 @@ def ajax_upload_photo(request):
     #    appraisal.photos.add(photo)
     return HttpResponse('')
 
-def propertyListHTML(request,appraisal,real_estate):
-
-    app_ids = getAppraisedPropertyIds(appraisal)
-
-    buildings = real_estate.buildings.all()
-    terrains = real_estate.terrains.all()
-    return render(request,'appraisal/properties/property_list.html',
-        {'real_estate':real_estate,
-         'app_ids':app_ids,
-         'terrains':terrains,
-         'buildings':buildings})
-
 def ajax_load_tab_value(request):
     pd = propertyData(request.GET)
     return render(request,'appraisal/value.html',{'appraisal':pd['appraisal'],'htmlBits':htmlBits})
+
+def ajax_load_tab_value_comparable(request):
+    appraisal = getAppraisalFromRequest(request)
+    app_properties = getAppraisedProperties(appraisal)
+    json_dict = {}
+    json_dict["app_properties"] = app_properties
+    json_dict["appraisal"] = appraisal
+    json_dict["htmlBits"] = htmlBits
+    json_dict["Building"] = Building
+    return render(request,'appraisal/value/comparable/body.html',json_dict)
 
 def ajax_load_realestate(request):
 
