@@ -1,0 +1,9 @@
+{% if user.is_superuser %}
+<a href="{{appraisal.url}}" class="address">
+    {{ appraisal.address_no_region }}
+</a>
+{% else %}
+<a class="address">
+    {{ appraisal.address_no_region }}
+</a>
+{% endif %}

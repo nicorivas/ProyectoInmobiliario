@@ -15,14 +15,10 @@ def ajax_logbook(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
     comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
     form_comment = FormComment(label_suffix='')
-    
-    print(appraisal_id)
-    print(appraisal)
-    print(appraisal.state)
 
-    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state,user=request.user)
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
 
     groups = request.user.groups.values_list('name',flat=True)
@@ -52,7 +48,7 @@ def ajax_logbook_close(request):
     2. Saves modified variables
     '''
     appraisal_id = int(request.POST['appraisal_id'])
-    request.user.user.removeNotification(ntype="comment",appraisal_id=appraisal_id)
+    request.user.profile.removeNotification(ntype="comment",appraisal_id=appraisal_id)
 
     appraisal = Appraisal.objects.get(id=appraisal_id)
 

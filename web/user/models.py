@@ -17,7 +17,7 @@ class Notification(models.Model):
     time_created = models.DateTimeField("Time created",blank=True,null=True)
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', primary_key=True)
     first_name = models.CharField(max_length=100, default='')
     last_name = models.CharField(max_length=100, default='')
     email = models.EmailField(blank=False, default='')
@@ -57,6 +57,10 @@ class UserProfile(models.Model):
     @property
     def full_name(self):
         return self.first_name + " " + self.last_name
+    
+    @property
+    def full_name_short(self):
+        return self.first_name + " " + self.last_name.split(' ')[0]
 
     @property
     def rut_verbose(self):

@@ -4,6 +4,7 @@ from realestate.models import RealEstate, Price
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.utils.functional import cached_property
+from django.contrib.auth.models import Permission
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -479,7 +480,7 @@ class Appraisal(models.Model):
         app_property = AppProperty.objects.get(property_type=property_type,property_id=property_id,appraisal=self)
         app_property.delete()
 
-    def getCommentChoices(self,comments=None,state=None):
+    def getCommentChoices(self,comments=None,state=None,user=None):
         # List of comment types that can only happen once:
         once_ids = [
             Comment.EVENT_CONTACTO_VALIDADO,
@@ -492,10 +493,20 @@ class Appraisal(models.Model):
         if comments == None:
             comments = self.comments.all()
 
+        # Get events for corresponding state
         if state in Comment.event_choices_state.keys():
             event_choices = Comment.event_choices_state[state]
         else:
             event_choices = []
+        
+        # Filter events based on user.
+        if user != None:
+            if not user.is_superuser:
+                permissions = Permission.objects.filter(user=user)
+                if "tasador" in user.groups.values_list('name',flat=True):
+                    if Comment.EVENT_ABORTADO in event_choices:
+                        event_choices.remove(Comment.EVENT_ABORTADO)
+
 
         # already commented
         comment_ids = comments.values_list('event',flat=True)
@@ -636,7 +647,7 @@ class Comment(models.Model):
         (EVENT_CONTACTO_INVALIDADO, "Contacto invalidado"),
         (EVENT_CLIENTE_VALIDADO, "Cliente validado"),
         (EVENT_CLIENTE_INVALIDADO, "Cliente invalido"),
-        (EVENT_ABORTADO, "Tasación anulada"),
+        (EVENT_ABORTADO, "Anular tasación"),
         (EVENT_TASADOR_SOLICITADO, "Tasador solicitado"),
         (EVENT_SOLICITUD_ACEPTADA, "Solicitud de tasador aceptada"),
         (EVENT_SOLICITUD_RECHAZADA, "Solicitud de tasador rechazada"),
@@ -676,8 +687,7 @@ class Comment(models.Model):
             EVENT_VISITA_ACORDADA,
             EVENT_PROPIEDAD_VISITADA,
             EVENT_INCIDENCIA,
-            EVENT_COMENTARIO,
-            EVENT_ABORTADO
+            EVENT_COMENTARIO
         ],
         Appraisal.STATE_IN_REVISION:[
             EVENT_INCIDENCIA,
