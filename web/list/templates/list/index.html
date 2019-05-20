@@ -11,6 +11,28 @@
 
 {% block content %}
 
-{% include "list/appraisals.html" %}
+<div class="container" style="max-width:100%">
+
+  <div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-11">
+      <h5 class="mb-4">Tasaciones</h5>
+    </div>
+  </div>
+
+  {% if appraisals_returned %}
+  <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
+    {% if appraisals_returned|length == 1 %}
+    Hay una tasación para ser reconsiderada
+    {% else %}
+    Hay {{ appraisals_returned|length }} tasaciones para ser reconsideradas
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% include "list/appraisals.html" %}
+
+</div>
 
 {% endblock %}

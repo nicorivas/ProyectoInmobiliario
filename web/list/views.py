@@ -73,7 +73,7 @@ def main(request):
 
     # Get the id's of appraisals to have notifications; then we need just one query
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     # Get groups this user is part of, then we just need one query
@@ -462,7 +462,7 @@ def ajax_comment(request):
     comments = appraisal.comments.all().order_by('-timeCreated')
 
     form_comment = FormComment(label_suffix='')
-    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state,user=request.user)
 
     # We need to add notifications to the relevant people. The tasador and visador of the appraisal,
     # and all other higher members like asignadores
@@ -505,7 +505,7 @@ def ajax_delete_comment(request):
     comment.delete()
 
     form_comment = FormComment(label_suffix='')
-    choices = appraisal.getCommentChoices(state=appraisal.state)
+    choices = appraisal.getCommentChoices(state=appraisal.state,user=request.user)
 
     return JsonResponse({'comment_id':comment_id,'choices':choices})
 
@@ -700,7 +700,7 @@ def ajax_upload_report(request):
     comments = appraisal.comments.select_related('user').all().order_by('-timeCreated')
     form_comment = FormComment(label_suffix='')
     
-    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state)
+    form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state,user=request.user)
 
     notifications = request.user.user.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 

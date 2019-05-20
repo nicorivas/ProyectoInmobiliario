@@ -1,4 +1,4 @@
-from django.contrib.gis.db import models
+from django.db import models
 from region.models import Region, RegionFull
 
 class ProvinceFull(models.Model):
@@ -13,7 +13,7 @@ class ProvinceFull(models.Model):
         blank=False,
         null=False,
         to_field='code')
-    mpoly = models.MultiPolygonField(null=True)
+    #mpoly = models.MultiPolygonField(null=True)
 
     def __str__(self):
         return self.name

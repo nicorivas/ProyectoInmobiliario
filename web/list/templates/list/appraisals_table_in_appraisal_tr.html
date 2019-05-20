@@ -15,9 +15,7 @@
   <span class="propertyType">{% include 'list/td_property_type_icon.html' %}</span>
 </td>
 <td>
-  <a class="address" href="{{appraisal.url}}">
-    {{ appraisal.address_no_region }}
-  </a>
+  {% include 'list/td_address.html' %}
 </td>
 <td>
   {% with button="remove" %}

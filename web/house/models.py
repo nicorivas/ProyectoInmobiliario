@@ -79,7 +79,7 @@ class House(models.Model):
         return "fas fa-home"
 
     def __str__(self):
-        return "{}, {} {} {}, {}, {}".format(
+        return "name: {}, street: {} #: {} #2: {}, c: {}, r: {}".format(
             self.building.name,
             self.building.real_estate.addressStreet,
             self.building.real_estate.addressNumber,

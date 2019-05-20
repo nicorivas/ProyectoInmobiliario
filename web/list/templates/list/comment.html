@@ -2,14 +2,14 @@
 {% has_notification_comment comment.id notifications_comment_ids as hnc %}
 <li class="list-group-item {{hnc|yesno:"list-group-item-warning,"}} {{comment.incidencia|yesno:"list-group-item-danger,"}} {{comment.small|yesno:"list-group-item-small,"}}" id="comment_{{comment.id}}"%}>
   <div class="row">
-    <div class="col-3">
+    <div class="col-4">
       {% if not comment.small %}
-        <span style="font-size:0.9em;color:#000;">{{comment.user.first_name}} {{comment.user.last_name}}</span>
+        <span style="font-size:0.9em;color:#000;">{{comment.user.profile.full_name_short}}</span>
       {% else %}
-        <span style="color:#666;"><small>{{comment.user.first_name}} {{comment.user.last_name}}</small></span>
+        <span style="font-size:0.9em;color:#666;"><small>{{comment.user.profile.full_name_short}}</small></span>
       {% endif %}
     </div>
-    <div class="col-5">
+    <div class="col-4">
       {% if not comment.small %}
         <span style="font-size:0.9em;font-style:italic;color:#000;">{{comment.get_event_display}}</span>
       {% else %}
@@ -32,6 +32,6 @@
     </div>
   </div>
   {% if comment.hasText %}
-  <p class="mb-0 mt-2 ml-0" style="color:#333;font-size:0.8em">{{comment.text}}</p>
+    <p class="mb-0 mt-2 ml-0" style="color:#333;font-size:0.8em">{{comment.text}}</p>
   {% endif %}
 </li>

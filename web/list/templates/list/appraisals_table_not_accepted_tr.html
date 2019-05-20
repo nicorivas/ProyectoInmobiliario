@@ -11,9 +11,7 @@
     {% include 'list/td_property_type_icon.html' %}
 </td>
 <td>
-  <a href="{{appraisal.url}}" class="address">
-    {{ appraisal.address_no_region }}
-  </a>
+  {% include 'list/td_address.html' %}
 </td>
 <td>
   {% include 'list/td_tasador_name.html' %}
