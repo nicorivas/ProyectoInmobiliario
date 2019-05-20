@@ -1,0 +1,168 @@
+{% if not appraisal.finished %}
+<div class="mr-4 ml-4">
+  <div class="row">
+    <div class="col">
+      <p style="margin:0em;">Muestras de mercado</p>
+    </div>
+    <div class="col text-right">
+      <a class="btn" style="font-family:Material Icons;font-size:1em;margin-top:-1.0em;margin-bottom:-1.0em;" data-toggle="collapse" href="#realEstateMarket" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+      </a>
+    </div>
+  </div>
+  <div id="realEstateMarket" class="collapse" aria-labelledby="heading">
+
+    {% if references|length_is:"0" %}
+
+    <div class="alert alert-light ml-3 mr-3 mt-4" role="alert">
+      <h4 class="alert-heading">No existen referencias</h4>
+      <p>Probablemente no se han ingresado suficientes datos para obtener propiedades similares</p>
+    </div>
+
+    {% else %}
+
+    <table id="table_references_real_estate" class="table table-sm mb-0">
+
+      <thead class="thead">
+
+        <tr>
+          <th></th>
+          <th scope="col" style="width: 1em;text-align:right;">#</th>
+          <th scope="col" style="width: 20em;text-align:left;">Dirección</th>
+          <th scope="col" style="width: 4em;text-align:center;">Tipo</th>
+          <th scope="col" style="width: 4em;text-align:center;">Fuente</th>
+          <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bed"></i></th>
+          <th scope="col" style="width: 3em;text-align:center;"><i class="fas fa-bath"></i></th>
+          {% if realestate.building.propertytype == 1 %}a
+          <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> const.</th>
+          <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terreno</th>
+          {% elif realestate.is_apartment %}
+          <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> útil</th>
+          <th scope="col" style="width: 7em;text-align:right;">m<sup>2</sup> terraza</th>
+          {% endif %}
+          <th scope="col" style="width: 10em;text-align:right;">Valor comercial</th>
+          {% if realestate.is_house %}
+          <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> con.</th>
+          <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
+          {% elif realestate.is_apartment %}
+          <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> útil</th>
+          <th scope="col" style="width: 10em;text-align:right;">V.C./ m<sup>2</sup> tot.</th>
+          {% endif %}
+          <th scope="col" style="width: 5em;"></th>
+          <th></th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr class="table-warning current">
+          <td></td>
+          <td></td>
+          <td scope="row">{{realestate.addressStreet}} {{realestate.addressNumber}}</td>
+          <td style="text-align:center;"><i class="{{realestate.get_propertyTypeIcon }}"></i></td>
+          <td></td>
+          {% if realestate.building.propertytype == 1 %}
+          <td style="text-align:center;">{{realestate.apartment.bedrooms|default_if_none:"-"}}</td>
+          <td style="text-align:center;">{{realestate.apartment.bathrooms}}</td>
+          <td class="td_c_area_1" style="text-align:right;">{{realestate.house.builtSquareMeters}}</td>
+          <td class="td_c_area_2" style="text-align:right;">{{realestate.house.terrainSquareMeters}}</td>
+          {% elif realestate.is_apartment %}
+          <td style="text-align:center;">{{realestate.apartment.bedrooms|default_if_none:"-"}}</td>
+          <td style="text-align:center;">{{realestate.apartment.bathrooms|default_if_none:"-"}}</td>
+          <td class="td_c_area_1" style="text-align:right;">{{realestate.apartment.usefulSquareMeters|default_if_none:"-"}}</td>
+          <td class="td_c_area_2" style="text-align:right;">{{realestate.apartment.terraceSquareMeters|default_if_none:"-"}}</td>
+          {% endif %}
+          <td class="td_c_market_price" style="text-align:right;"></td>
+          {% if realestate.is_house %}
+          <td class="td_c_market_price_per_built_square_meters" style="text-align:right;"></td>
+          <td class="td_c_market_price_per_total_square_meters" style="text-align:right;"></td>
+          {% elif realestate.is_apartment %}
+          <td class="td_c_market_price_per_useful_square_meters" style="text-align:right;"></td>
+          <td class="td_c_market_price_per_total_square_meters" style="text-align:right;"></td>
+          {% endif %}
+          <td></td>
+          <td></td>
+        </tr>
+
+        {% for r in references %}
+        {% if r.included_in_valuation %}
+        <tr class="table-success" id="trMarketRealEstate_{{r.realestate.id}}" value="{{r.realestate.id}}">
+        {% else %}
+        <tr id="trMarketRealEstate_{{r.realestate.id}}" value="{{r.realestate.id}}">
+        {% endif %}
+          <!--<td><small>{{o.latlng_verbose}}</small></td>-->
+          <td></td>
+          <td style="text-align:right;">
+            <small>{{forloop.counter}}.</small>
+          </td>
+          <td scope="row">
+            {{r.realestate.addressOrCoords }}
+          </td>
+          <td style="text-align:center;">
+            <i class="{{r.realestate.get_propertyTypeIcon }}"></i>
+          </td>
+          <td>
+            <a href="{{r.realestate.sourceUrl}}" target="_blank">{{ r.realestate.sourceNameNice }}</a>
+          </td>
+          <td style="text-align:center;">
+            {{ r.realestate.bedrooms }}
+          </td>
+          <td style="text-align:center;">
+            {{ r.realestate.bathrooms }}
+          </td>
+          {% if r.realestate.is_house %}
+          <td class="td_area_1" style="text-align:right;">
+            {{ r.realestate.builtSquareMetersVerbose }}
+          </td>
+          <td class="td_area_2" style="text-align:right;">
+            {{ r.realestate.terrainSquareMetersVerbose }}
+          </td>
+          {% elif realestate.is_apartment %}
+          <td class="td_area_1" style="text-align:right;">
+            {{ r.realestate.usefulSquareMetersVerbose }}
+          </td>
+          <td class="td_area_2" style="text-align:right;">
+            {{ r.realestate.terraceSquareMetersVerbose }}
+          </td>
+          {% endif %}
+          <td class="td_market_price" style="text-align:right;">
+            {{ r.realestate.marketPrice }}
+          </td>
+          {% if realestate.is_house %}
+          <td class="td_market_price_per_built_square_meters" style="text-align:right;">
+            {{ r.realestate.marketPricePerBuiltSquareMeters }}
+          </td>
+          <td class="td_market_price_per_total_square_meters" style="text-align:right;">
+            {{ r.realestate.marketPricePerTotalSquareMeters }}
+          </td>
+          {% elif realestate.is_apartment %}
+          <td class="td_market_price_per_useful_square_meters" style="text-align:right;">
+            {{ r.realestate.marketPricePerUsefulSquareMeters }}
+          </td>
+          <td class="td_market_price_per_total_square_meters" style="text-align:right;">
+            {{ r.realestate.marketPricePerTotalSquareMeters }}
+          </td>
+          {% endif %}
+          <td style="padding:0em; text-align:right;">
+            {% if r.included_in_valuation %}
+            <button type="button" class="btn btn-sm add" name="btn_valuation_add_realestate" value="{{r.realestate.id}}" style="padding:0px; border:0px;display: none;">
+              <i class="material-icons">add_box</i>
+            </button>
+            {% else %}
+            <button type="button" class="btn btn-sm add" name="btn_valuation_add_realestate" value="{{r.realestate.id}}" style="padding:0px; border:0px;">
+              <i class="material-icons">add_box</i>
+            </button>
+            {% endif %}
+          </td>
+          <td></td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endif %}
