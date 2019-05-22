@@ -215,21 +215,18 @@ def ajax_assign_tasador_modal(request):
     Assign a tasador from an appraisal. Gets called through AJAX when clicked
     on the corresponding modal, which has a form where you can select the user.
     '''
-    #regions = Regions.objects.all()
     appraisal = Appraisal.objects.get(id=int(request.GET['appraisal_id']))
+    return render(request,'list/modal_assign_tasador.html',{'appraisal':appraisal})
+
+def ajax_assign_tasador_tasadores(request):
     tasadores = User.objects.filter(groups__name__in=['tasador']).order_by('last_name')
     tasadores_info = appraiserWork(tasadores)
-
-    form = TasadorSearch(label_suffix='')
-    communes = Commune.objects.only('name').order_by('name')
     regions = Region.objects.only('name').order_by('code')
+    communes = Commune.objects.only('name').order_by('name')
+    form = TasadorSearch(label_suffix='')
     form.fields['addressRegion'].queryset = regions
     form.fields['addressCommune'].queryset = communes
-
-    return render(request,'list/modal_assign_tasador.html',
-        {'appraisal':appraisal,
-         'tasadores':tasadores_info,
-         'form':form})
+    return render(request,'list/modal_assign_tasador_tasadores.html',{'tasadores':tasadores_info,'form':form})
 
 def ajax_assign_visador_modal(request):
     '''
@@ -256,6 +253,10 @@ def ajax_assign_tasador(request):
     '''
     appraisal_id = int(request.POST['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
+
+    if 'tasador' not in request.POST:
+        return JsonResponse({'alert':"Debe seleccionar un tasador"}) 
+
     tasador_id = int(request.POST['tasador'])
     tasador = User.objects.get(id=tasador_id)
     user = request.user
@@ -266,14 +267,14 @@ def ajax_assign_tasador(request):
     comment = appraisal.addComment(Comment.EVENT_TASADOR_SOLICITADO,user,datetime.datetime.now(timezone_cl),
         text="Tasación solicitada a "+tasador.first_name +' '+ tasador.last_name)
     # 3
-    appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
+    appraisal.tasadorUser.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
     if appraisal.visadorUser:
-        appraisal.visadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
+        appraisal.visadorUser.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
     # 4
     appraisal.state = Appraisal.STATE_NOT_ACCEPTED
     appraisal.save()
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     appraisals_not_accepted = appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
@@ -299,7 +300,7 @@ def ajax_unassign_tasador(request):
         text="Tasador "+tasador.first_name+" "+tasador.last_name+" fue desasignado.")
     appraisal.save()
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     appraisals_not_assigned = appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
@@ -330,10 +331,10 @@ def ajax_assign_visador(request):
         appraisal.visadorUser = visador
         comment = appraisal.addComment(Comment.EVENT_VISADOR_ASIGNADO,user,datetime.datetime.now(timezone_cl),
             text="Visación asignada a "+visador.first_name+' '+visador.last_name)
-        appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
         appraisal.save()
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     if request.POST['source_table'] == 'table_not_assigned':
@@ -360,7 +361,7 @@ def ajax_unassign_visador(request):
     visador = appraisal.visadorUser
     comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(timezone_cl),
         text="Visador "+visador.first_name+' '+visador.last_name+" fue desasignado.")
-    appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
+    appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
     appraisal.visadorUser = None
     appraisal.save()
 
@@ -377,7 +378,7 @@ def ajax_accept_appraisal(request):
     appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(timezone_cl))
     appraisal.save()
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
@@ -409,9 +410,9 @@ def ajax_reject_appraisal(request):
     appraisal.save()
     # 4
     for user in User.objects.filter(groups__name='asignador'):
-        user.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
+        user.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
@@ -468,16 +469,16 @@ def ajax_comment(request):
     # and all other higher members like asignadores
     if appraisal.tasadorUser != None:
         if appraisal.tasadorUser != request.user: # dont add notifications to yourself
-            appraisal.tasadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
+            appraisal.tasadorUser.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
     if appraisal.visadorUser != None:
         if appraisal.visadorUser != request.user: # dont add notifications to yourself
-            appraisal.visadorUser.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)    
+            appraisal.visadorUser.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)    
     asignadores = User.objects.filter(groups__name='asignador')
     for asignador in asignadores:
         if asignador != request.user: # dont add notifications to yourself
-            asignador.user.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
+            asignador.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
 
     return render(request,'list/comment.html',{'comment':comment,'notifications_comment_ids':notifications_comment_ids})
@@ -595,7 +596,7 @@ def ajax_enviar_a_visador(request):
     appraisal.state = Appraisal.STATE_IN_REVISION
     appraisal.save()
     if appraisal.visadorUser:
-        appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -610,7 +611,7 @@ def ajax_devolver_a_tasador(request):
     appraisal.state = Appraisal.STATE_IN_APPRAISAL
     appraisal.save()
     if appraisal.tasadorUser:
-        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -627,7 +628,7 @@ def ajax_enviar_a_cliente(request):
     appraisal.state = Appraisal.STATE_SENT
     appraisal.save()
     if appraisal.tasadorUser:
-        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -643,7 +644,7 @@ def ajax_devolver_a_visador(request):
     appraisal.state = Appraisal.STATE_IN_REVISION
     appraisal.save()
     if appraisal.tasadorUser:
-        appraisal.tasadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -663,7 +664,7 @@ def ajax_mark_as_returned(request):
     appraisal.state = Appraisal.STATE_RETURNED
     appraisal.save()
     if appraisal.visadorUser:
-        appraisal.visadorUser.user.addNotification("comment",appraisal_id,comment.id)
+        appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
 
     return JsonResponse({})
 
@@ -702,7 +703,7 @@ def ajax_upload_report(request):
     
     form_comment.fields['event'].choices = appraisal.getCommentChoices(comments,state=appraisal.state,user=request.user)
 
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
 
     groups = request.user.groups.values_list('name',flat=True)

@@ -1,5 +1,4 @@
 function btn_assign_visador_modal() {
-  console.log("btn_assign_visador_modal")
   $(".btn_assign_visador_modal").unbind()
   $(".btn_assign_visador_modal").off()
   $(".btn_assign_visador_modal").on("click", function (event) {

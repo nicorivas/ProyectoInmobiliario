@@ -6,6 +6,8 @@ from appraisal.models import Appraisal
 import datetime
 import re
 import unidecode
+import requests
+from lxml import html
 
 def parse_email(string):
     if '<' in string:
@@ -129,8 +131,9 @@ def parseItau(ws):
             if solicitanteEjecutivoTelefono != '':
                 data['solicitanteEjecutivoTelefono'] = ws['P7'].value.strip().replace(' ','')
 
-
     tipoTasacion = ws['G9'].value
+    if tipoTasacion == "Operación:":
+        tipoTasacion = ws['H9'].value
     if tipoTasacion:
         tipoTasacion = tipoTasacion.strip()
         if tipoTasacion == 'CRÉDITO HIPOTECARIO':
@@ -179,11 +182,18 @@ def parseItau(ws):
         if cliente != '':
             data['cliente'] = ws['C14'].value.strip().title()
 
-    if '-' in ws['C16'].value:
-        data['clienteRut'] = parseRut(ws['C16'].value)
-    else:
-        data['clienteRut'] = parseRut(ws['C16'].value+ws['F16'].value)
-    
+    if ws['C16'].value != None:
+        if '-' in ws['C16'].value:
+            # Rut viene todo en la celda
+            data['clienteRut'] = parseRut(ws['C16'].value)
+        else:
+            if ws['F16'].value != None:
+                data['clienteRut'] = parseRut(ws['C16'].value+ws['F16'].value)
+            if ws['G16'].value != None:
+                data['clienteRut'] = parseRut(ws['C16'].value+ws['G16'].value)
+            else:
+                data['clienteRut'] = parseRut(ws['C16'])
+            
     clienteEmail = ws['C22'].value
     if isinstance(clienteEmail,type('')):
         if clienteEmail != '':
@@ -563,5 +573,87 @@ def parseSantander(text):
                 if len(text[i+c]) > 1 and text[i+c].strip()[1:-1] not in data['comments']:
                     data['comments'] += text[i+c].strip()
                 c += 1
+
+    return data
+
+def parseSantanderUrl(url):
+
+    data = {}
+    
+    with requests.Session() as s:
+
+        login_url = "https://extranet.gruposantander.cl/autentica.aspx"
+        login_data = {"user": "70149761", "clave": "protasa2018"}
+        response = s.post(login_url, data=login_data, headers=dict(referer="https://extranet.gruposantander.cl/"))
+        # These are to populate the session with the right cookies
+        response = s.get("https://extranet.gruposantander.cl/gateW.aspx?dst_url=https://tasaciones.extranetsantander.cl/segesta/login_prov_adm.aspx?qry=ok&UrlToken=&Target=principal&UsaToken=SI")
+        response = s.get("https://tasaciones.extranetsantander.cl/SEGESTA/VISTAS/PERFILES/INI_Generico.aspx",headers=dict(referer="https://extranet.gruposantander.cl/arriba2.aspx"))
+        # Now that we have the right cookies, really get the appraisal
+        response = s.get(url,headers=dict(referer=url))
+        tree = html.fromstring(response.content)
+        for c in Appraisal.petitioner_choices:
+            if c[1] == 'Santander':
+                data['solicitante'] = c[0]
+        data['solicitanteCodigo'] = tree.xpath('//*[@id="lbl_requerimientoID"]/text()')
+        data['solicitanteSucursal'] = tree.xpath('//*[@id="suc_ejecutivo"]/text()')
+
+        ejecutivo = tree.xpath('//*[@id="lbl_nomEjecutivo"]/text()')
+        if len(ejecutivo) > 0:
+            data['solicitanteEjecutivo'] = ejecutivo[0]
+        data['solicitanteEjecutivoEmail'] = tree.xpath('//*[@id="lbl_mailEjecutivo"]/text()')
+        data['appraisalTimeRequest'] = tree.xpath('//table//td[contains(text(),"Fecha Ingreso")]/../following-sibling::tr[1]/td[1]/text()')[0].replace("-","/")
+        data['appraisalTimeDue'] = tree.xpath('//table//td[contains(text(),"Entrega en Estándar Real")]/../following-sibling::tr[1]/td[6]/text()')[0].replace("-","/")
+
+        rubro = tree.xpath('//*[@id="lbl_rubro"]/text()')
+        if "Garantía General" in rubro:
+            data['tipoTasacion'] = Appraisal.GARANTIA
+            data['finalidad'] = Appraisal.GARANTIA
+
+        data['cliente'] = tree.xpath('//*[@id="lbl_nomSolicitante"]/text()')
+        data['clienteRut'] = tree.xpath('//*[@id="lbl_rutSolicitante"]/text()')
+
+        propietario = tree.xpath('//*[@id="lbl_nomPropietario"]/text()')
+        if len(propietario) > 0:
+            data['propietario'] = propietario[0].title()
+        propietarioRut = tree.xpath('//*[@id="lbl_rutPropietario"]/text()')
+        if len(propietarioRut) > 0:
+            data['propietarioRut'] = propietarioRut[0]
+
+        data['contacto'] = tree.xpath('//*[@id="lbl_nomContacto"]/text()')
+        data['contactoEmail'] = tree.xpath('//*[@id="lbl_emailContacto"]/text()')
+        data['contactoTelefono'] = tree.xpath('//*[@id="lbl_fono1Contacto"]/text()')
+
+        rubro = tree.xpath('//*[@id="lbl_rubro"]/text()')
+        if len(rubro) > 0:
+            rubro = rubro[0].strip()
+            if "Local Comercial" in rubro:
+                data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
+                data['tipoTasacion'] = Appraisal.COMERCIAL
+            if "Leasing" in rubro:
+                data['tipoTasacion'] = Appraisal.LEASING
+            if "Convenio Hipotecario" in rubro:
+                data['tipoTasacion'] = Appraisal.CONVENIO_HIPOTECARIO
+
+        grupo = tree.xpath('//*[@id="lbl_grupo"]/text()')
+        if len(grupo) > 0:
+            grupo = grupo[0].strip()
+            if "Oficina" in grupo:
+                data['propertyType'] = Building.TYPE_OFICINA
+
+        commune, region = parseCommune(tree.xpath('//*[@id="lbl_comuna"]/text()')[0])
+        data['addressCommune'] = commune.id
+        data['addressRegion'] = region.id
+
+        address = tree.xpath('//*[@id="lbl_direccion"]/text()')
+        if len(address) > 0:
+            street, number, number2 = parseAddress(address[0])
+            data['addressStreet'] = street
+            data['addressNumber'] = number
+            data['addressNumber2'] = number2
+
+        roles = tree.xpath('//*[@id="lbl_roles"]/text()')
+        if len(roles) > 0:
+            if roles[0] != "":
+                data["rol"] = roles[0].split(',')[0]
 
     return data

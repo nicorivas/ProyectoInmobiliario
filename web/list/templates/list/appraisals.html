@@ -8,6 +8,7 @@
   ajax_assign_tasador_modal_url = "{% url 'ajax_assign_tasador_modal_url' %}";
   ajax_assign_visador_modal_url = "{% url 'ajax_assign_visador_modal_url' %}";
   ajax_assign_tasador_url = "{% url 'ajax_assign_tasador_url' %}";
+  ajax_unassign_tasador_url = "{% url 'ajax_unassign_tasador_url' %}";
   ajax_assign_visador_url = "{% url 'ajax_assign_visador_url' %}";
   ajax_accept_appraisal_url = "{% url 'ajax_accept_appraisal_url' %}";
   ajax_reject_appraisal_url = "{% url 'ajax_reject_appraisal_url' %}";
@@ -115,8 +116,6 @@
   </div>
 </div>
 
-{% include "list/modals.html" %}
-
 </div>
 
 <script src="{% static 'list/js/tools.js' %}" type="text/javascript"></script>
@@ -125,23 +124,29 @@
 
 <script src="{% static 'logbook/js/logbook.js' %}" type="text/javascript"></script>
 
-
-
 <script>
+
+  function btn_assign_tasador_tasadores() {
+    var url = "{% url 'ajax_assign_tasador_tasadores_url' %}";
+    $.ajax({
+      url: url,
+      type: 'get',
+      error: function () {
+        alert("Error al cargar tasadores.");
+        return false;
+      },
+      success: function (data) {
+        $("#tasadores").html(data)
+        $("#modal_assign_tasador").find("#ld-alert").hide()
+      }
+    });
+  }
 
   var assignTableActions = function() {
 
     $(".btn_logbook").unbind()
     $(".btn_logbook").off()
     $(".btn_logbook").on("click", buttonLogbookClick)
-
-
-
-
-
-
-
-
 
     $(".btn_expenses").unbind()
     $(".btn_expenses").off()
@@ -180,10 +185,6 @@
         }
       });
     });
-
-
-
-
 
     $(".btn_archive_appraisal_modal").unbind()
     $(".btn_archive_appraisal_modal").off()
@@ -227,6 +228,35 @@
     // --------------------------------------------------------------------------------------------
     // Assign functions are called in the 'not_assigned' table, when
     // the corresponding buttons are clicked.
+    function btn_assign_tasador_modal() {
+      // Open the modal to assign tasadores.
+      $(".btn_assign_tasador_modal").unbind()
+      $(".btn_assign_tasador_modal").off()
+      $(".btn_assign_tasador_modal").on("click", function (event) {
+        // Assigns to a hidden input in the tasador modal the value of the
+        // appraisal, to have in the post request.
+        var url = ajax_assign_tasador_modal_url
+        var appraisal_id = $(this).val();
+        $.ajax({
+          url: url,
+          type: 'get',
+          data: {'appraisal_id':appraisal_id},
+          error: function () {
+            alert("Error al desplegar modal de tasador.");
+            $("#modal_assign_tasador").modal('hide');
+            return false;
+          },
+          success: function (data) {
+            $("#modal_assign_tasador").html(data)
+            $("#modal_assign_tasador").modal('show');
+            $('#modal_assign_tasador_appraisal_id').val(appraisal_id);
+            assignTableActions();
+            btn_assign_tasador_tasadores();
+          }
+        });
+      });
+    }
+
     btn_assign_tasador_modal();
     btn_assign_visador_modal();
     
@@ -258,38 +288,6 @@
       // to the appraisal id, which is the value of the button clicked.
       var id = $(this).val();
       $('#modal_unassign_visador_appraisal_id').val(id);
-    });
-
-    $("#btn_unassign_tasador").unbind()
-    $("#btn_unassign_tasador").off()
-    $("#btn_unassign_tasador").on("click", function (event) {
-      // Button clicked in the modal. Call an AJAX to unassign the tasador
-      // of the appraisal, and returns the 'not_assigned' table back,
-      // to be replaced.
-      var appraisal_id = $('#modal_unassign_tasador_appraisal_id').val();
-      var url = "{% url 'ajax_unassign_tasador_url' %}";
-      btn = $(this);
-      btn.addClass('running');
-      btn.prop('disabled', true);
-      $.ajax({
-        url: url,
-        type: 'get',
-        data: {'appraisal_id':appraisal_id},
-        error: function () {
-            alert("Error al desasignar tasador.");
-            btn.removeClass('running');
-            btn.prop('disabled', false);
-            return false;
-        },
-        success: function (data) {
-          btn.removeClass('running');
-          btn.prop('disabled', false);
-          removeRow("table_in_appraisal",appraisal_id)
-          replaceTable("table_not_assigned",data)
-          assignTableActions()
-          $("#modal_unassign_tasador").modal('hide')
-        }
-      });
     });
 
     $("#btn_unassign_visador").unbind()
@@ -345,6 +343,32 @@
           $('#modal_evaluate').html($.trim(data));
           $("#modal_evaluate").modal('show')
           btn_idle(btn)
+        }
+      });
+    });
+
+    $(".btn_edit_address_modal").unbind()
+    $(".btn_edit_address_modal").off()
+    $(".btn_edit_address_modal").on("click", function (event) {
+      event.preventDefault() // Don't really know if it's needed
+      var btn = $(this)
+      var data = {}
+      data["appraisal_id"] = btn.data("appraisal_id")
+      var url = "{% url 'ajax_edit_address_modal_url' %}";
+      $("#modal_edit_address").data("ajax_edit_address_modal_url","{% url 'ajax_edit_address_modal_url' %}")
+      $("#modal_edit_address").data("ajax_edit_address_url","{% url 'ajax_edit_address_url' %}")
+      $("#modal_edit_address").data("source","list")
+      $.ajax({
+        url: url,
+        type: 'get',
+        data: data,
+        error: function () {
+          alert("Error al cargar modal edit address");
+          return false;
+        },
+        success: function (ret) {
+          $("#modal_edit_address").html($.trim(ret));
+          $("#modal_edit_address").modal("show");
         }
       });
     });

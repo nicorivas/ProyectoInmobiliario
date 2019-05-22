@@ -3,10 +3,10 @@
 FROM gcr.io/google_appengine/python
 
 # Install GDAL
-RUN apt-get update && apt-get install -y \
-  binutils \
-  gdal-bin \
-  python-gdal
+#RUN apt-get update && apt-get install -y \
+#  binutils \
+#  gdal-bin \
+#  python-gdal
 
 # Create a virtualenv for the application dependencies.
 # If you want to use Python 3, add the -p python3.4 flag.

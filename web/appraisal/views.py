@@ -291,7 +291,7 @@ def view_appraisal(request, **kwargs):
     '''
 
     # Notifications
-    notifications = request.user.user.notifications.all()
+    notifications = request.user.profile.notifications.all()
     notifications_comment_ids = notifications.values_list('comment_id', flat=True) 
 
     # Comments, for the logbook

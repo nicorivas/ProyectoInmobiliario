@@ -15,25 +15,13 @@ import os, locale
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal204.dll'
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 SECRET_KEY = "k769%g32gq++w+yq-z9ac+!aeydo(nazzit=8r=tlkw"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('PRODUCTION_SETTING', None):
-    DEBUG = False
-else:
-    DEBUG = True
+DEBUG = True
 
-if os.getenv('PRODUCTION_SETTING', None):
-    ALLOWED_HOSTS = ['*','tasador.dataurbana.io']
-else:
-    ALLOWED_HOSTS = ['127.0.0.1','localhost','tasador.dataurbana.io']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 # Application definition
 
@@ -56,6 +44,7 @@ INSTALLED_APPS = [
     'create',
     'appraisal',
     'house',
+    'condominium',
     'store',
     'building',
     'apartmentbuilding',
@@ -109,28 +98,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'map.wsgi.application'
 
 # Database
-if os.getenv('GAE_APPLICATION', None):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '/cloudsql/proyectoinmobiliario-212003:southamerica-east1:protasa',
-            'PORT': '5432',
-            'NAME': 'data',
-            'USER': os.environ.get('DATABASE_USER'),
-            'PASSWORD': os.environ.get('DATABASE_PASSWORD')
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+        'NAME': 'data',
+        'USER': 'postgres',
+        'PASSWORD': 'iCga1kmX'
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
-            'NAME': 'data',
-            'USER': 'postgres',
-            'PASSWORD': 'iCga1kmX'
-        }
-    }
+}
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -165,25 +142,15 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Chile/Continental'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-# Google App Engine: set static root for local static files
-#STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
 STATIC_URL = '/static/'
-
-# https://cloud.google.com/appengine/docs/flexible/python/serving-static-files
 STATIC_ROOT = 'static/'
 
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 LOGIN_REDIRECT_URL = '/login/'
-
 LOGOUT_REDIRECT_URL = '/'
 
 INTERNAL_IPS = ['127.0.0.1']

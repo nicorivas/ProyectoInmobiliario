@@ -24,6 +24,34 @@ function load_sidebar() {
   });
 }
 
+function show_modal(modal_name) {
+  // Deactivate call, so that actions are resetted
+  $(".btn_"+modal_name+"_modal").unbind()
+  $(".btn_"+modal_name+"_modal").off()
+  // Actual event
+  $(".btn_"+modal_name+"_modal").on('click', function() {
+    event.preventDefault() // Don't really know if it's needed
+    var btn = $(this)
+    var data = {}
+    data["appraisal_id"] = $("#appraisal_data").data("appraisal_id")
+    data["real_estate_id"] = btn.closest(".real_estate_data").data("real_estate_id")
+    var url = $('#properties_data').data("ajax_"+modal_name+"_modal_url")
+      $.ajax({
+      url: url,
+      type: 'get',
+      data: data,
+      error: function () {
+          alert("Error al cargar modal '"+modal_name+"'");
+          return false;
+      },
+      success: function (ret) {
+        $("#modal_"+modal_name).html($.trim(ret));
+        $("#modal_"+modal_name).modal("show");
+      }
+    });
+  })
+}
+
 function set_properties_list_actions() {
 
   $(".btn_property").unbind()
@@ -65,6 +93,33 @@ function set_properties_list_actions() {
       }
     });
   })
+
+  show_modal("edit_address")
+
+  /*
+  $("#btn_edit_address_modal").ubind()
+  $("#btn_edit_address_modal").off()
+  $('#btn_edit_address_modal').on('click', function() {
+    event.preventDefault()
+    var btn = $(this)
+    var data = {}
+    data['appraisal_id'] = $("#appraisal_data").data("appraisal_id")
+    var url = $('#properties_data').data('ajax_edit_address_modal_url')
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: data,
+      error: function () {
+          alert("Error al cargar modal para editar direcciones.");
+          return false;
+      },
+      success: function (ret) {
+        $("#modal_edit_address").html($.trim(ret));
+        $("#modal_edit_address").modal("show");
+      }
+    });
+  }
+  */
 
   $("#btn_add_property_modal").unbind()
   $("#btn_add_property_modal").off()
@@ -149,7 +204,6 @@ function set_properties_list_actions() {
   $(".btn_remove_property").unbind()
   $(".btn_remove_property").off()
   $(".btn_remove_property").on('click', function() {
-    console.log("btn_remove_property")
     var btn = $(this)
     btn.closest("div.list-group-item").addClass("loading")
     var url = $("#properties_data").data("ajax_remove_property_url")

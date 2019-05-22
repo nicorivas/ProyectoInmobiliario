@@ -16,7 +16,8 @@ urlpatterns = [
 
     path('ajax/load_realestate/', views.ajax_load_realestate, name='ajax_load_realestate_url'),
     
-    #path('ajax/edit_address_modal/', address.ajax_edit_address_modal, name='ajax_edit_address_modal_url'),
+    path('ajax/edit_address_modal/', properti.ajax_edit_address_modal, name='ajax_edit_address_modal_url'),
+    path('ajax/edit_address/', properti.ajax_edit_address, name='ajax_edit_address_url'),
     #path('ajax/edit_address/', address.ajax_edit_address, name='ajax_edit_address_url'),
     #path('ajax/add_address_modal/', address.ajax_add_address_modal, name='ajax_add_address_modal_url'),
     #path('ajax/add_address/', address.ajax_add_address, name='ajax_add_address_url'),

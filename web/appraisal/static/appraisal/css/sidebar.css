@@ -8,9 +8,11 @@
     padding-right: 1em;
 }
 
-.real_estate_address {
+div .real_estate_address {
     padding-left: 1em;
     padding-right: 1em;
+    font-size: 0.9em;
+    margin-bottom: 1em;
 }
 
 #properties_list {
@@ -31,10 +33,6 @@ a:hover,a.hover {
 
 .list-group-item.loading a {
     color: rgb(201, 201, 201);
-}
-
-.real_estate_address {
-    font-size: 0.9em;
 }
 
 .property_list_item_active {

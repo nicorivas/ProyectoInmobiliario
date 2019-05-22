@@ -8,6 +8,7 @@ from terrain.models import Terrain
 from house.models import House
 from region.models import Region
 from commune.models import Commune
+from condominium.models import Condominium
 from multiupload.fields import MultiImageField
 from dbase.globals import *
 
@@ -368,7 +369,7 @@ class FormCreateProperty(forms.Form):
 
     class_bs = {'class':"form-control form-control-sm"}
 
-    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
+    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES_SHORT)
     addressRegion.widget.attrs.update(class_bs)
 
     addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
@@ -413,17 +414,39 @@ class FormCreateRol(forms.ModelForm):
 
 class FormEditAddress(forms.Form):
 
-    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES)
-    addressRegion.widget.attrs.update({'class':"form-control"})
+    css_class = "form-control form-control-sm"
+
+    addressRegion = forms.ChoiceField(label="Región",choices=REGION_CHOICES_SHORT)
+    addressRegion.widget.attrs.update({'class':css_class})
 
     addressCommune = forms.ChoiceField(label="Comuna",choices=COMMUNE_CHOICES)
-    addressCommune.widget.attrs.update({'class':"form-control"})
+    addressCommune.widget.attrs.update({'class':css_class})
 
     addressStreet = forms.CharField(max_length=200,label="Calle")
-    addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressStreet.widget.attrs.update({'class':css_class,'data-validation':"required"})
 
     addressNumber = forms.CharField(max_length=30,label="Número")
-    addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+    addressNumber.widget.attrs.update({'class':css_class,'data-validation':"required"})
+
+    addressLoteo = forms.CharField(max_length=200,label="Loteo",required=False)
+    addressLoteo.widget.attrs.update({'class':css_class})
+
+    addressSitio = forms.CharField(max_length=200,label="Sitio",required=False)
+    addressSitio.widget.attrs.update({'class':css_class})
+
+    addressSquare = forms.CharField(max_length=200,label="Manzana",required=False)
+    addressSquare.widget.attrs.update({'class':css_class})
+
+
+    addressSector = forms.CharField(max_length=200,label="Loteo / Población / Sector / Conjunto Habitacional",required=False)
+    addressSector.widget.attrs.update({'class':css_class})
+
+    addressCondominiumType = forms.ChoiceField(label="Grupo",choices=Condominium.ctype_choices)
+    addressCondominiumType.widget.attrs.update({'class':css_class})
+
+    addressCondominiumName = forms.CharField(max_length=200,label="Nombre grupo",required=False)
+    addressCondominiumName.widget.attrs.update({'class':css_class})
+
 
 class FormAddAddress(forms.Form):
 

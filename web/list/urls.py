@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from appraisal import properti as appraisal_views
 from logbook import views as logbookviews
 
 urlpatterns = [
@@ -36,4 +37,7 @@ urlpatterns = [
     path('ajax/expenses_modal/', views.ajax_expenses_modal, name='ajax_appraisal_expenses_modal_url'),
     path('ajax/expenses/save', views.ajax_save_expenses, name='ajax_save_expenses_url'),
     path('ajax/expenses/delete', views.ajax_delete_expenses, name='ajax_delete_expenses_url'),
+    path('ajax/assign_tasador_tasadores',views.ajax_assign_tasador_tasadores, name="ajax_assign_tasador_tasadores_url"),
+    path('ajax/edit_address_modal/', appraisal_views.ajax_edit_address_modal, name='ajax_edit_address_modal_url'),
+    path('ajax/edit_address/', appraisal_views.ajax_edit_address, name='ajax_edit_address_url'),
 ]

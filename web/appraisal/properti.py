@@ -4,17 +4,21 @@ from .forms import FormAddAddress
 from .forms import FormAddProperty
 from django.shortcuts import render
 from building.models import Building
+from region.models import Region
 from commune.models import Commune
+from condominium.models import Condominium
+from square.models import Square
 from realestate.models import RealEstate
 from django.http import JsonResponse
 from create import create
+from .forms import FormEditAddress
 from .forms import FormTerrain
 from .forms import FormHouse
 from .forms import FormBuilding
 from .forms import FormApartment
 from .views import getAppraisedProperties
 from list.html_bits import *
-from .data import getPropertyFromRequest, getAppraisalFromRequest
+from .data import getPropertyFromRequest, getAppraisalFromRequest, getRealEstateFromRequest
 
 def ajax_load_sidebar(request):
     """
@@ -27,6 +31,73 @@ def ajax_load_sidebar(request):
     json_dict = {}
     json_dict['app_properties'] = app_properties
     return render(request,'appraisal/properties/sidebar/properties_list.html',{**json_dict})
+
+def ajax_edit_address_modal(request):
+    appraisal = getAppraisalFromRequest(request)
+    real_estate = getRealEstateFromRequest(request)
+    if real_estate == None:
+        real_estate = appraisal.real_estates.first()
+    json_dict = {}
+    json_dict['appraisal'] = appraisal
+    json_dict['real_estate'] = real_estate
+    json_dict['form_edit_address'] = FormEditAddress(
+        label_suffix="",
+        initial={
+            'addressRegion': real_estate.addressRegion.code,
+            'addressCommune': real_estate.addressCommune.code,
+            'addressCondominium': real_estate.addressCondominium.name if real_estate.addressCondominium != None else "",
+            'addressSquare': real_estate.addressSquare.code if real_estate.addressSquare != None else "",
+            'addressStreet': real_estate.addressStreet,
+            'addressNumber': real_estate.addressNumber})
+    return render(request,'appraisal/modals/modal_edit_address.html',{**json_dict})
+
+def ajax_edit_address(request):
+
+    appraisal = getAppraisalFromRequest(request)
+    real_estate = getRealEstateFromRequest(request)
+    json_dict = {}
+
+    request_dictionary = request.POST
+
+    if "addressRegion" in request_dictionary:
+        real_estate.addressRegion = Region.objects.get(code=int(request_dictionary["addressRegion"]))
+    if "addressCommune" in request_dictionary:
+        real_estate.addressCommune = Commune.objects.get(code=int(request_dictionary["addressCommune"]))
+    real_estate.addressSector = request_dictionary['addressSector']
+    real_estate.addressNumber = request_dictionary['addressNumber']
+    real_estate.addressStreet = request_dictionary['addressStreet']
+    real_estate.addressSitio = request_dictionary['addressSitio']
+
+    if real_estate.addressCondominium is None and request_dictionary['addressCondominium'] != "":
+        condominium = Condominium(
+            name=request_dictionary['addressCondominium'])
+        condominium.save()
+        real_estate.addressCondominium = condominium
+    if real_estate.addressCondominium is not None and request_dictionary['addressCondominium'] != "":
+        if real_estate.addressCondominium.name != request_dictionary['addressCondominium']:
+            real_estate.addressCondominium.name = request_dictionary['addressCondominium']
+            real_estate.addressCondominium.save()
+    if real_estate.addressCondominium is not None and request_dictionary['addressCondominium'] == "":
+        real_estate.addressCondominium = None
+
+    if real_estate.addressSquare is None and request_dictionary['addressSquare'] != "":
+        square = Square(
+            code=request_dictionary['addressSquare'],
+            commune=real_estate.addressCommune,
+            province=real_estate.addressCommune.province,
+            region=real_estate.addressCommune.region)
+        square.save()
+        real_estate.addressSquare = square
+    if real_estate.addressSquare is not None and request_dictionary['addressSquare'] != "":
+        if real_estate.addressSquare.code != request_dictionary['addressSquare']:
+            real_estate.addressSquare.name = request_dictionary['addressSquare']
+            real_estate.addressSquare.save()
+    if real_estate.addressSquare is not None and request_dictionary['addressSquare'] == "":
+        real_estate.addressSquare = None
+    
+    real_estate.save()
+
+    return JsonResponse({})
 
 def ajax_add_property_modal(request):
     """
@@ -59,18 +130,12 @@ def ajax_add_property(request):
     Submit the form of the add property modal.
     """
 
-    print(request.POST)
-
     appraisal = getAppraisalFromRequest(request)
     pd = getPropertyFromRequest(request)
 
     prop, existed = pd['real_estate'].createOrGetProperty(
         int(request.POST['propertyType']),
         request.POST['addressNumber2'])
-
-    print("ajax_add_property",prop.id)
-    print("ajax_add_property",prop.propertyType)
-    print(existed)
 
     if existed:
         return JsonResponse({'error':"La propiedad ya existe"})
