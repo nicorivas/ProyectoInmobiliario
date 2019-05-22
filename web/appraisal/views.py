@@ -12,6 +12,9 @@ from terrain.models import Terrain
 from appraisal.models import Appraisal, Comment, Photo, Document, Rol
 from commune.models import Commune
 from user.models import UserProfile
+from .related import getSimilarRealEstate
+
+from .related import getSimilarRealEstate
 
 import reversion
 from copy import deepcopy
@@ -520,7 +523,12 @@ def ajax_add_property_similar_modal(request):
     elif pd['apartment_building']:
         pd['form_property'] = FormCreateApartmentBuilding(label_suffix='')
     pd['htmlBits'] = htmlBits
-    return render(request,'appraisal/modals_add_property_similar.html', pd)
+    references = getSimilarRealEstate(request)
+    pd['references'] = references
+    realestate = RealEstate.objects.get(pk=request.GET['real_estate_id'])
+    pd['realestate'] = realestate
+    print(references)
+    return render(request, 'appraisal/modals_add_property_similar.html', pd)
 
 def ajax_add_property_similar(request):
 
