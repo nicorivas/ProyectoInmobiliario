@@ -12,16 +12,17 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os, locale
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-SECRET_KEY = "k769%g32gq++w+yq-z9ac+!aeydo(nazzit=8r=tlkw"
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+#SECRET_KEY = "k769%g32gq++w+yq-z9ac+!aeydo(nazzit=8r=tlkw"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+if os.getenv('PRODUCTION_SETTING', None):
+    ALLOWED_HOSTS = ['*','tasador.dataurbana.io']
+else:
+    ALLOWED_HOSTS = ['127.0.0.1','localhost','tasador.dataurbana.io']
 
 # Application definition
 
@@ -108,6 +109,16 @@ DATABASES = {
         'PASSWORD': 'iCga1kmX'
     }
 }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'HOST': '/cloudsql/proyectoinmobiliario-212003:southamerica-east1:protasa',
+#        'PORT': '5432',
+#        'NAME': 'data',
+#        'USER': os.environ.get('DATABASE_USER'),
+#        'PASSWORD': os.environ.get('DATABASE_PASSWORD')
+#    }
+#}
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -142,15 +153,18 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Chile/Continental'
 
 USE_I18N = True
+
 USE_L10N = True
+
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
 STATIC_ROOT = 'static/'
 
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 LOGIN_REDIRECT_URL = '/login/'
+
 LOGOUT_REDIRECT_URL = '/'
 
 INTERNAL_IPS = ['127.0.0.1']
