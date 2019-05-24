@@ -382,37 +382,7 @@
       var id = $(this).val();
       $('#modal_unassign_visador_appraisal_id').val(id);
     });
-
-    $("#btn_unassign_tasador").unbind()
-    $("#btn_unassign_tasador").off()
-    $("#btn_unassign_tasador").on("click", function (event) {
-      // Button clicked in the modal. Call an AJAX to unassign the tasador
-      // of the appraisal, and returns the 'not_assigned' table back,
-      // to be replaced.
-      var appraisal_id = $('#modal_unassign_tasador_appraisal_id').val();
-      var url = "{% url 'ajax_unassign_tasador_url' %}";
-      btn = $(this);
-      btn.addClass('running');
-      btn.prop('disabled', true);
-      $.ajax({
-        url: url,
-        type: 'get',
-        data: {'appraisal_id':appraisal_id},
-        error: function () {
-            alert("Error al desasignar tasador.");
-            return false;
-        },
-        success: function (data) {
-          btn.removeClass('running');
-          btn.prop('disabled', false);
-          removeRow("active",appraisal_id)
-          replaceTable("not_assigned",data)
-          assignTableActions()
-          $("#modal_unassign_tasador").modal('hide')
-        }
-      });
-    });
-
+    
     $("#btn_unassign_visador").unbind()
     $("#btn_unassign_visador").off()
     $("#btn_unassign_visador").on("click", function (event) {

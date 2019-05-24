@@ -5,6 +5,8 @@ class RegionFull(models.Model):
 
     # Name of the region
     name = models.CharField("Nombre",max_length=100)
+    # Short name of the region
+    name_short = models.CharField("Nombre",max_length=100)
     # Code, as in numbers given by chilean state
     code = models.PositiveSmallIntegerField("Code",null=False,blank=False,unique=True)
     # International code
@@ -21,23 +23,25 @@ class RegionFull(models.Model):
     
     @property
     def shortName(self):
-        return REGION_NAME__SHORT_NAME[self.name]
+        return self.name_short
 
     def __str__(self):
-        return self.shortName
+        return self.name_short
 
 class Region(models.Model):
 
     # Name of the region
     name = models.CharField("Nombre",max_length=100)
+    # Short name of the region
+    name_short = models.CharField("Nombre",max_length=100)
     # Code, as in numbers given by chilean state
     code = models.PositiveSmallIntegerField("Code",null=False,blank=False,unique=True)
     # International code
     iso = models.CharField("Iso",max_length=6,null=False,blank=False)
     
     @property
-    def shortName(self):
-        return REGION_NAME__SHORT_NAME[self.name]
+    def short_name(self):
+        return self.name_short
 
     def __str__(self):
-        return self.shortName
+        return self.name_short

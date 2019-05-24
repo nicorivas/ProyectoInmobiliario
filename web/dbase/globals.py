@@ -36,7 +36,7 @@ REGION_NAME__ISO_CODE = {
 }
 
 REGION_NAME__SHORT_NAME = {
-    u'Arica y Parinacota':'Arica',
+    u'Arica y Parinacota':'Arica y Parinacota',
     u'Tarapacá':'Tarapacá',
     u'Antofagasta':'Antofagasta',
     u'Atacama':'Atacama',
@@ -73,7 +73,27 @@ REGION_NAME__CODE = {
     u'Región Metropolitana':13
 }
 
+REGION_SHORT_NAME__CODE = {
+    u'Arica y Parinacota':15,
+    u'Tarapacá':1,
+    u'Antofagasta':2,
+    u'Atacama':3,
+    u'Coquimbo':4,
+    u'Valparaíso':5,
+    u"O'Higgins":6,
+    u'Maule':7,
+    u'Biobío':8,
+    u'La Araucanía':9,
+    u'Los Ríos':14,
+    u'Los Lagos':10,
+    u'Aysén':11,
+    u'Magallanes':12,
+    u'Metropolitana':13
+}
+
 REGION_CHOICES = [(b,a) for a,b in REGION_NAME__CODE.items()]
+
+REGION_CHOICES_SHORT = [(b,a) for a,b in REGION_SHORT_NAME__CODE.items()]
 
 REGION_CODE__NAME = {v: k for k, v in REGION_NAME__CODE.items()}
 

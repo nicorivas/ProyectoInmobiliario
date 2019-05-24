@@ -2,6 +2,9 @@
 <a href="{{appraisal.url}}" class="address">
     {{ appraisal.address_no_region }}
 </a>
+{% with class="btn_edit_address_modal" %}
+    {% include "list/btn_edit.html" %}
+{% endwith %}
 {% else %}
 <a class="address">
     {{ appraisal.address_no_region }}

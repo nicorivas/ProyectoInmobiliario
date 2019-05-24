@@ -11,6 +11,8 @@ from .forms import AppraisalCreateForm
 
 from region.models import Region
 from commune.models import Commune
+from condominium.models import Condominium
+from square.models import Square
 from realestate.models import RealEstate
 from building.models import Building
 from appraisal.models import Appraisal, Rol
@@ -24,8 +26,14 @@ from openpyxl import load_workbook
 
 import datetime
 
+import requests
+
 import fitz
 import zipfile
+
+from bs4 import BeautifulSoup
+
+from lxml import html
 
 @login_required(login_url='/user/login')
 def view_create(request):
@@ -47,6 +55,25 @@ def view_create(request):
                 addressStreet=form.cleaned_data['addressStreet'],
                 addressCommune=form.cleaned_data['addressCommune'],
                 addressRegion=form.cleaned_data['addressRegion'])
+
+            real_estate.addressSector = form.cleaned_data['addressSector']
+            real_estate.addressSitio = form.cleaned_data['addressSitio']
+            if form.cleaned_data['addressCondominium'] != "":
+                try:
+                    condominium = Condominium.objects.get(name=form.cleaned_data['addressCondominium'])
+                except Condominium.DoesNotExist:
+                    condominium = Condominium(name=form.cleaned_data['addressCondominium'])
+                    condominium.save()
+                real_estate.addressCondominium = condominium
+            if form.cleaned_data['addressSquare'] != "":
+                try:
+                    square = Square.objects.get(code=form.cleaned_data['addressSquare'])
+                except Condominium.DoesNotExist:
+                    square = Square(code=form.cleaned_data['addressSquare'])
+                    square.save()
+                real_estate.addressSquare = square
+            real_estate.save()
+
 
             # 2. Crear apraisal
             if request.FILES:
@@ -163,56 +190,64 @@ def load_communes(request):
         'hr/commune_dropdown_list_options.html',
         {'communes': communes})
 
-def populate_from_file(request):
-
-
-    if 'archivo' not in request.FILES.keys():
-        data['error'] = 'Debe elegir un archivo antes de importar.'
-        return JsonResponse(data)
-
-    file = request.FILES['archivo']
-    filetype = file._name.split('.')[1]
+def import_request(request):
 
     data = {}
 
-    if filetype == 'xls':
+    url = request.POST['url']
 
-        data['error'] = "No es posible importar archivos excel '.xls'. Se recomienda guardar el archivo en formato '.xlsx'."
+    if 'archivo' not in request.FILES.keys() and url == "":
 
-    elif filetype == 'xlsx':
+        data['error'] = 'Debe elegir un archivo o ingresar una url antes de importar.'
+        return JsonResponse(data)
 
-        # Itau o Chile Avances
+    if url != "":
 
-        try:
-            wb = load_workbook(filename=file,read_only=True,data_only=True)
-        except zipfile.BadZipFile:
-            data['error'] = "Archivo parece estar asegurado. Se recomienda abrir y volver a guardar el archivo."
-            return JsonResponse(data)            
-        ws = wb.worksheets[0]
-        if ws['C1'].value != None and 'SOLICITUD DE TASACIÓN' in ws['C1'].value.strip():
-            data = parse.parseItau(ws)
-        elif ws['B5'].value != None and 'SOLICITUD DE INFORME' in ws['B5'].value.strip():
-            data = parse.parseBancoDeChileAvance(wb)
+        data = parse.parseSantanderUrl(url)
+
+    if 'archivo' in request.FILES.keys():
+
+        file = request.FILES['archivo']
+        filetype = file._name.split('.')[1]
+
+        if filetype == 'xls':
+
+            data['error'] = "No es posible importar archivos excel '.xls'. Se recomienda guardar el archivo en formato '.xlsx'."
+
+        elif filetype == 'xlsx':
+
+            # Itau o Chile Avances
+
+            try:
+                wb = load_workbook(filename=file,read_only=True,data_only=True)
+            except zipfile.BadZipFile:
+                data['error'] = "Archivo parece estar asegurado. Se recomienda abrir y volver a guardar el archivo."
+                return JsonResponse(data)            
+            ws = wb.worksheets[0]
+            if ws['C1'].value != None and 'SOLICITUD DE TASACIÓN' in ws['C1'].value.strip():
+                data = parse.parseItau(ws)
+            elif ws['B5'].value != None and 'SOLICITUD DE INFORME' in ws['B5'].value.strip():
+                data = parse.parseBancoDeChileAvance(wb)
+            else:
+                data['error'] = "Formato de tasación no reconocido."
+
+        elif filetype == 'pdf':
+
+            # Santander o Chile
+
+            file = file.read()
+            doc = fitz.open(filetype="pdf",stream=file)
+            page = doc.loadPage(0)
+            text = page.getText("text").splitlines()
+            if 'Solicito a usted' in text[0]:
+                data = parse.parseBancoDeChile(text)
+            elif 'Nº Req' in text[0]:
+                data = parse.parseSantander(text)
+            else:
+                data['error'] = "Formato de tasación no reconocido."
+
         else:
-            data['error'] = "Formato de tasación no reconocido."
 
-    elif filetype == 'pdf':
-
-        # Santander o Chile
-
-        file = file.read()
-        doc = fitz.open(filetype="pdf",stream=file)
-        page = doc.loadPage(0)
-        text = page.getText("text").splitlines()
-        if 'Solicito a usted' in text[0]:
-            data = parse.parseBancoDeChile(text)
-        elif 'Nº Req' in text[0]:
-            data = parse.parseSantander(text)
-        else:
-            data['error'] = "Formato de tasación no reconocido."
-
-    else:
-
-        data['error'] = "Formato de archivo no reconocido."
+            data['error'] = "Formato de archivo no reconocido."
 
     return JsonResponse(data)

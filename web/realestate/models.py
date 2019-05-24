@@ -8,6 +8,8 @@ from house.models import House
 from store.models import Store
 from apartmentbuilding.models import ApartmentBuilding
 from apartment.models import Apartment
+from condominium.models import Condominium
+from square.models import Square
 from datetime import date
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
@@ -54,6 +56,26 @@ class RealEstate(models.Model):
         blank=True,
         null=True,
         to_field='code')
+
+    addressSquare = models.ForeignKey(Square,
+        verbose_name="Manzana",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+    
+    addressLoteo = models.CharField("Loteo",
+        max_length=100,
+        blank=True,
+        null=True)
+
+    addressSitio = models.CharField("Sitio",
+        max_length=100,
+        blank=True,
+        null=True)
+
+    addressCondominium = models.ManyToManyField(Condominium,
+        verbose_name="Condominio",
+        blank=True)
 
     addressFromCoords = models.BooleanField("Direccion por coordenadas",
         default=False)
@@ -105,6 +127,8 @@ class RealEstate(models.Model):
     buildings = models.ManyToManyField(Building)
 
     assets = models.ManyToManyField(Asset)
+
+    # Containers
 
     BOOLEAN_NULL_CHOICES = (
         (1, "S/A"),
@@ -347,19 +371,20 @@ class RealEstate(models.Model):
         # Returns address fields as dictionary
         if self.addressCommune == None or self.addressRegion == None:
             return {}
-        return {'street':self.addressStreet,'number':self.addressNumber,'commune':self.addressCommune.name,'region':self.addressRegion.shortName}
+        return {'street':self.addressStreet,'number':self.addressNumber,'commune':self.addressCommune.name,'region':self.addressRegion.short_name}
 
     @property
     def address(self):
         # Returns whole address in a nice format
-        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.shortName
+        return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name+', '+self.addressRegion.short_name
 
     @property
     def address_no_region(self):
-        if self.addressCommune == None:
-            return self.addressStreet+' '+str(self.addressNumber)
-        else:
-            return self.addressStreet+' '+str(self.addressNumber)+', '+self.addressCommune.name
+        commune = ''
+        if self.addressCommune != None:
+            commune = ', '+self.addressCommune.name
+        
+        return "{}{}{}".format(self.addressStreet," "+self.addressNumber,commune)
 
     @property
     def addressVerboseNoRegionNoCommune(self):

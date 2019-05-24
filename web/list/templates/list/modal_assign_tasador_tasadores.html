@@ -1,0 +1,84 @@
+<div id="tasador_buscar">
+    <div class="form-row">
+    <div class="form-group col-6">
+        <input class="form-control mb-2" placeholder="Buscar tasador" id="input_tasador_buscar">
+    </div>
+    <div class="form-group col-6" id="region_select">
+        {{form.addressRegion}}
+    </div>
+    </div>
+</div>
+
+<table class="table table-sm table-borderless" id="table">
+    <thead>
+    <tr>
+        <th style="width:1em;"></th>
+        <th style="width:10em;">Nombre</th>
+        <th style="width:10em;" class="text-center">Tasaciones</th>
+        <th style="width:1em;"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for tasador in tasadores %}
+    <tr id="tasador_id" class="tasador" data-id-region="{{tasador.user.profile.addressRegion.id}}" data-id-commune="{{tasador.user.profile.addressCommune.id}}">
+        <td></td>
+        <td id="tasador">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="tasador" id="tasador_radio" value="{{tasador.user.id}}">
+            <label class="form-check-label" for="tasador_radio" id="nombre">
+            {{tasador.user.last_name}}, {{tasador.user.first_name}}
+            </label>
+        </div>
+        </td>
+        <td class="text-center">
+        {{tasador.activeAppraisals}}
+        </td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+  var search = function(val) {
+    val = val.toLowerCase()
+    $("tr.tasador").each(function() {
+      if (!val) {
+        $(this).show()
+        return
+      }
+      var nombre = $(this).find("#nombre").html().trim();
+      nombre = nombre.toLowerCase()
+      if (nombre.indexOf(val) < 0) {
+        $(this).hide()
+      } else {
+        $(this).show()
+      }
+    });
+  }
+  $("#input_tasador_buscar").on('keyup',function() {
+    val = $(this).val()
+    search(val)
+  })
+  $("#input_tasador_buscar").on('change',function() {
+    val = $(this).val()
+    search(val)
+  })
+</script>
+
+<script>
+  function validateRow(table,region) {
+    table.find('tr[class="tasador"]').each(function(i, el) {
+      if ($(el).data('id-region') != region) {
+        $(el).hide();
+      } else {
+        $(el).show();
+      }
+    });
+  }
+  $("#id_addressRegion").change(function() {
+    var region = $(this).val();
+    validateRow($("#table"),region)
+  })
+</script>

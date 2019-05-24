@@ -22,12 +22,12 @@
   <div class="card-body">
 
     <form class="needs-validation" action="/create/" method="post" id="form" enctype="multipart/form-data"
-      data-commune-url="{% url 'ajax_load_communes' %}" data-populate-from-file-url="{% url 'ajax_populate_from_file' %}" novalidate>
+      data-commune-url="{% url 'ajax_load_communes' %}" data-import_request-url="{% url 'ajax_import_request' %}" novalidate>
         {% csrf_token %}
 
         <div class="row mt-4">
           <div class="col-md-2 text-right">
-            <p class="font-weight-bold">Solicitud</p>
+            <p class="font-weight-bold">Importar</p>
           </div>
           <div class="col-md-5">
             <div class="form-group">
@@ -35,6 +35,16 @@
                 {{form.archivo}}
                 <label class="custom-file-label" for="validatedCustomFile"><i>Seleccione archivo de solicitud</i></label>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 text-right">
+          </div>
+          <div class="col-md-5">
+            <div class="form-group">
+              {{form.url}}
             </div>
           </div>
           <div class="col-1">
@@ -68,6 +78,7 @@
 
         <div class="row">
           <div class="col-md-2 text-right">
+            <p class="font-weight-bold">Solicitud</p>
           </div>
             <div class="col-md-2" id="petitioner">
                <div class="form-group">
@@ -142,7 +153,13 @@
           </div>
         </div>
 
-        <hr/>
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
 
         <div class="row">
           <div class="col-md-2 text-right">
@@ -168,7 +185,14 @@
           </div>
         </div>
 
-         <hr/>
+                 <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
+
 
          <div class="row">
             <div class="col-md-2 text-right">
@@ -205,7 +229,14 @@
             </div>
          </div>
 
-         <hr/>
+                 <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
+
 
         <div class="row">
           <div class="col-md-2 text-right">
@@ -242,7 +273,14 @@
           </div>
         </div>
 
-         <hr/>
+                 <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
+
 
          <div class="row">
             <div class="col-md-2 text-right">
@@ -279,7 +317,14 @@
             </div>
          </div>
 
-         <hr/>
+                 <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
+
 
          <div class="row" id="propertyType">
             <div class="col-md-2 text-right">
@@ -346,9 +391,64 @@
               {{form.addressNumber2}}
             </div>
          </div>
+        </div>
+
+        <div class="row">
+         <div class="col-md-2 text-right"></div>
+         <div class="col-md-4" id="div_addressCondominium">
+            <div class="form-group">
+              <label>
+                <span>Condominio</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
+              </label>
+              {{form.addressCondominium}}
+            </div>
+         </div>
+
+         <div class="col-md-2" id="div_addressSquare">
+            <div class="form-group">
+              <label>
+                <span>Manzana</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
+              </label>
+              {{form.addressSquare}}
+            </div>
+         </div>
+        
+        </div>
+        <div class="row">
+         <div class="col-md-2 text-right"></div>
+
+         <div class="col-md-4" id="div_addressSector">
+            <div class="form-group">
+              <label>
+                <span>Sector</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
+              </label>
+              {{form.addressSector}}
+            </div>
+         </div>
+
+         <div class="col-md-2" id="div_addressSector">
+            <div class="form-group">
+              <label>
+                <span>Sitio</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top" title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
+              </label>
+              {{form.addressSitio}}
+            </div>
+         </div>
+
       </div>
 
-      <hr/>
+              <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-6">
+            <hr>
+          </div>
+        </div>
+
 
          <div class="row">
             <div class="col-md-2 text-right">
@@ -561,7 +661,8 @@
     var populateFromFile = function (btn) {
       var form = document.getElementById('form');
       var formData = new FormData(form);
-      var url = $("#form").attr("data-populate-from-file-url");
+      var url = $("#form").attr("data-import_request-url");
+      $('#id_import_alert').hide()
       btn_loading(btn)
       $.ajax({
           url: url,
@@ -571,7 +672,7 @@
           contentType: false,
           dataType: 'json',
           error: function () {
-            alert("Error al procesar archivo.");
+            alert("Error al procesar archivo o url.");
             btn_idle(btn)
             return false;
           },
@@ -604,6 +705,7 @@
               $('#id_import_alert').show()
               $('#id_import_alert').html(data['error'])
             } else {
+              $('#id_import_alert').hide()
               formatFields();
               setAddressNumber2Label();
               $("#form").valid();

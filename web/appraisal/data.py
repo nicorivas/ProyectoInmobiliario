@@ -26,6 +26,27 @@ def getAppraisalFromRequest(request):
         except ValueError:
             return None
 
+def getRealEstateFromRequest(request):
+
+    real_estate = None
+
+    if request.method == "POST":
+        request_dictionary = request.POST
+    elif request.method == "GET":
+        request_dictionary = request.GET
+    else:
+        return None
+
+    if 'real_estate_id' in request_dictionary:
+        try:
+            real_estate_id = int(request_dictionary['real_estate_id'])
+            try:
+                return RealEstate.objects.get(id=real_estate_id)
+            except RealEstate.DoesNotExist:
+                return None
+        except ValueError:
+            return None
+
 def getPropertyFromRequest(request):
 
     if request.method == "POST":

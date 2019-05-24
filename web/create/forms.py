@@ -16,6 +16,9 @@ class AppraisalCreateForm(forms.Form):
         widget=forms.ClearableFileInput(
             attrs={'class':"custom-file-input",'multiple': False}))
 
+    url = forms.URLField(required=False)
+    url.widget.attrs.update({'class': "form-control"})
+
     tipoTasacion = forms.ChoiceField(
         label="Tipo Pedido",
         choices=Appraisal.tipoTasacion_choices)
@@ -115,6 +118,21 @@ class AppraisalCreateForm(forms.Form):
 
     addressNumber = forms.CharField(max_length=30,label="Número")
     addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+    addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
+    addressNumber2.widget.attrs.update({'class':"form-control"})
+
+    addressCondominium = forms.CharField(max_length=500,label="Condominio",required=False)
+    addressCondominium.widget.attrs.update({'class':"form-control"})
+
+    addressSquare = forms.IntegerField(label="Manzana",required=False)
+    addressSquare.widget.attrs.update({'class':"form-control"})
+    
+    addressSector = forms.CharField(max_length=100,label="Sector",required=False)
+    addressSector.widget.attrs.update({'class':"form-control"})
+
+    addressSitio = forms.CharField(max_length=100,label="Sitio",required=False)
+    addressSitio.widget.attrs.update({'class':"form-control"})
 
     addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
     addressNumber2.widget.attrs.update({'class':"form-control"})

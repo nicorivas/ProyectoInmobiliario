@@ -40,8 +40,19 @@
 		</div>
 	{% else %}
 		{% for real_estate, property_classes in app_properties.items %}
-			<div class="real_estate" data-real_estate_id="{{real_estate.id}}">
-				<p class="real_estate_address">{{real_estate.address_no_region}}</p>
+			<div class="real_estate_data" data-real_estate_id="{{real_estate.id}}">
+			<div class="real_estate">
+				<div class="real_estate_address">
+					<a href="#">{{real_estate.address_no_region}}
+					{% if real_estate.addressCondominium %}
+					<br><small>Condominio {{real_estate.addressCondominium.name}}</small>
+					{% endif %}
+					</a>
+					<button type="button" class="btn btn-sm btn_edit_address_modal" data-building_id="{{building.id}}" data-apartment_id="{{apartment.id}}" style="font-family:Material Icons;font-size:0.7em;margin-bottom:1px;padding-top:0em;padding-bottom:0em;padding-left:0.2em;padding-right:0.2em;">
+						<div class="icon">edit</div>
+						<div class="ld ld-ring ld-spin" style="display:none;"></div>
+					</button>
+				</div>
 				<div class="list-group list-group-flush">
 					{% for class_type, classes in property_classes.items %}
 						{% for class, properties in classes.items %}
