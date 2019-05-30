@@ -1,3 +1,12 @@
+'''
+
+DEPRECADO
+
+ALGUNAS FUNCIONES SE REUTILIZAN
+
+
+'''
+
 from __future__ import print_function
 from openpyxl import load_workbook
 import openpyxl
