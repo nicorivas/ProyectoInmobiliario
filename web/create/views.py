@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned
 
-from .forms import AppraisalCreateForm
+from .forms import AppraisalCreateForm, GrupoCreateForm
 
 from region.models import Region
 from commune.models import Commune
@@ -56,24 +56,24 @@ def view_create(request):
                 addressCommune=form.cleaned_data['addressCommune'],
                 addressRegion=form.cleaned_data['addressRegion'])
 
-            real_estate.addressSector = form.cleaned_data['addressSector']
+            #   Political divisions of land
+            real_estate.addressLoteo = form.cleaned_data['addressLoteo']
             real_estate.addressSitio = form.cleaned_data['addressSitio']
-            if form.cleaned_data['addressCondominium'] != "":
-                try:
-                    condominium = Condominium.objects.get(name=form.cleaned_data['addressCondominium'])
-                except Condominium.DoesNotExist:
-                    condominium = Condominium(name=form.cleaned_data['addressCondominium'])
-                    condominium.save()
-                real_estate.addressCondominium = condominium
-            if form.cleaned_data['addressSquare'] != "":
+            if form.cleaned_data['addressSquare'] != "" and form.cleaned_data['addressSquare'] != None:
                 try:
                     square = Square.objects.get(code=form.cleaned_data['addressSquare'])
                 except Condominium.DoesNotExist:
                     square = Square(code=form.cleaned_data['addressSquare'])
                     square.save()
                 real_estate.addressSquare = square
-            real_estate.save()
 
+            #   Cultural identifiers
+            for grupo in range(sum(1 for key in request_post.keys() if key.startswith("addressCondominiumType"))):
+                addressCondominiumType = request_post["addressCondominiumType_{}".format(grupo+1)]
+                addressCondominiumText = request_post["addressCondominiumText_{}".format(grupo+1)]
+                real_estate.addressCondominium.create(name=addressCondominiumText,ctype=addressCondominiumType)
+
+            real_estate.save()
 
             # 2. Crear apraisal
             if request.FILES:
@@ -251,3 +251,7 @@ def import_request(request):
             data['error'] = "Formato de archivo no reconocido."
 
     return JsonResponse(data)
+
+def ajax_load_grupo(request):
+    form = GrupoCreateForm
+    return render(request,'create/grupo.html',{'form': form})

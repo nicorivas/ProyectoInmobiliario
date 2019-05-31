@@ -8,6 +8,20 @@ import re
 import unidecode
 import requests
 from lxml import html
+import dateutil.parser
+
+def get_value(ws,cell):
+    if ws[cell].value == None:
+        return None
+    if type(ws[cell].value) == type(""):
+        if ws[cell].value == "":
+            return None
+        else:
+            return ws[cell].value
+
+def parse_date(string):
+    print(string)
+    return dateutil.parser.parse(string)
 
 def parse_email(string):
     if '<' in string:
@@ -17,7 +31,13 @@ def parse_email(string):
     else:
         return string.strip().lower()
 
-def parseAddress(address,commune=None):
+def parse_telephone(string):
+    if re.search('[a-zA-Z]', string):
+        return None
+    else:
+        return string.strip().replace(' ','')
+
+def parse_address(address,commune=None):
     addressNumber2 = None
     addressNumber = None
 
@@ -77,11 +97,11 @@ def parseAddress(address,commune=None):
 
     return [addressStreet,addressNumber,addressNumber2]
 
-def parseRut(rut):
+def parse_rut(rut):
     rut = rut.replace('.','').replace(',','').replace('-','').lower()
     return rut[:-1].strip()+'-'+rut[-1].strip()
 
-def parseCommune(string):
+def parse_commune(string):
     commune = string.strip().title()
     if '(' in commune:
         commune = commune[:commune.index('(')].strip()
@@ -91,6 +111,12 @@ def parseCommune(string):
     region = commune.region
     commune = commune
     return [commune, region]
+
+def parse_solicitante_ejecutivo(string):
+    return string.strip().title()
+
+def parse_solicitante_sucursal(string):
+    return string.strip().title()
 
 def parseItau(ws):
     '''
@@ -102,34 +128,25 @@ def parseItau(ws):
         if c[1] == 'Itaú':
             data['solicitante'] = c[0]
 
-    solicitanteEjecutivo = ws['C7'].value
-    if isinstance(solicitanteEjecutivo,type('')):
-        if solicitanteEjecutivo != '':
-            data['solicitanteEjecutivo'] = ws['C7'].value.strip().title()
-
-    solicitanteSucursal = ws['C9'].value
-    if isinstance(solicitanteSucursal,type('')):
-        if solicitanteSucursal != '':
-            data['solicitanteSucursal'] = ws['C9'].value.strip().title()
-
-    solicitanteEjecutivoEmail = ws['J7'].value
-    if isinstance(solicitanteEjecutivoEmail,type('')):
-        if solicitanteEjecutivoEmail != '':
-            data['solicitanteEjecutivoEmail'] = parse_email(solicitanteEjecutivoEmail)
-    if data['solicitanteEjecutivoEmail'] == 'email:':
-        solicitanteEjecutivoEmail = ws['K7'].value
-        if solicitanteEjecutivoEmail != '':
-            data['solicitanteEjecutivoEmail'] = parse_email(solicitanteEjecutivoEmail)
-
-    solicitanteEjecutivoTelefono = ws['O7'].value
-    if isinstance(solicitanteEjecutivoTelefono,type('')):
-        if solicitanteEjecutivoTelefono != '':
-            data['solicitanteEjecutivoTelefono'] = ws['O7'].value.strip().replace(' ','')
-    if data['solicitanteEjecutivoTelefono'] == "Teléfono:":
-        solicitanteEjecutivoTelefono = ws['P7'].value
-        if isinstance(solicitanteEjecutivoTelefono,type('')):
-            if solicitanteEjecutivoTelefono != '':
-                data['solicitanteEjecutivoTelefono'] = ws['P7'].value.strip().replace(' ','')
+    d = {
+            'appraisalTimeRequest':["M3",parse_date],
+            'solicitanteEjecutivo':["C7",parse_solicitante_ejecutivo],
+            'solicitanteEjecutivoEmail':["J7",parse_email],
+            'solicitanteSucursal':["C9",parse_solicitante_sucursal],
+            'solicitanteEjecutivoEmail':[["J7","K7"],parse_email],
+            'solicitanteEjecutivoTelefono':[["O7","P7"],parse_telephone],
+            'solicitanteEjecutivoTelefono':[["O7","P7"],parse_telephone],
+        }
+    for variable, info in d.items():
+        function = info[1]
+        coords = info[0]
+        if type(coords) == type([]):
+            for coord in coords:
+                value = get_value(ws,coord)
+                if value != None:
+                    data[variable] = function(value)
+                    if data[variable] != None:
+                        break
 
     tipoTasacion = ws['G9'].value
     if tipoTasacion == "Operación:":
@@ -157,25 +174,7 @@ def parseItau(ws):
 
     appraisalTimeRequest = ws['M3'].value
     if isinstance(appraisalTimeRequest,type('')):
-        if appraisalTimeRequest != '':
-            if appraisalTimeRequest.endswith(',') or appraisalTimeRequest.endswith('.'):
-                appraisalTimeRequest = appraisalTimeRequest[:-1]
-            if '-' in appraisalTimeRequest:
-                data['appraisalTimeRequest'] = appraisalTimeRequest.strip().replace('-','/')+' 00:00'
-            elif '.' in appraisalTimeRequest:
-                data['appraisalTimeRequest'] = appraisalTimeRequest.strip().replace('.','/')+' 00:00'
-            elif '/' in appraisalTimeRequest:
-                data['appraisalTimeRequest'] = appraisalTimeRequest.strip()+' 00:00'
-            else:
-                pass
-            try:
-                a = datetime.datetime.strptime(data['appraisalTimeRequest'],'%d/%m/%Y %H:%M')
-            except (ValueError, KeyError):
-                try:
-                    a = datetime.datetime.strptime(data['appraisalTimeRequest'],'%d/%m/%y %H:%M')
-                    data['appraisalTimeRequest'] = data['appraisalTimeRequest'][0:6]+'20'+data['appraisalTimeRequest'][6:]
-                except (ValueError, KeyError):
-                    data['appraisalTimeRequest'] = ''
+        data['appraisalTimeRequest'] = parse_date(appraisalTimeRequest).strftime('%d/%m/%Y %H:%M')
 
     cliente = ws['C14'].value
     if isinstance(cliente,type('')):
@@ -185,14 +184,14 @@ def parseItau(ws):
     if ws['C16'].value != None:
         if '-' in ws['C16'].value:
             # Rut viene todo en la celda
-            data['clienteRut'] = parseRut(ws['C16'].value)
+            data['clienteRut'] = parse_rut(ws['C16'].value)
         else:
             if ws['F16'].value != None:
-                data['clienteRut'] = parseRut(ws['C16'].value+ws['F16'].value)
+                data['clienteRut'] = parse_rut(ws['C16'].value+ws['F16'].value)
             if ws['G16'].value != None:
-                data['clienteRut'] = parseRut(ws['C16'].value+ws['G16'].value)
+                data['clienteRut'] = parse_rut(ws['C16'].value+ws['G16'].value)
             else:
-                data['clienteRut'] = parseRut(ws['C16'])
+                data['clienteRut'] = parse_rut(ws['C16'].value)
             
     clienteEmail = ws['C22'].value
     if isinstance(clienteEmail,type('')):
@@ -246,23 +245,25 @@ def parseItau(ws):
         else:
             data['propertyType'] = Building.TYPE_OTRO
 
-    try :
-        commune, region = parseCommune(ws['C45'].value)
-        data['addressCommune'] = commune.id
-        data['addressRegion'] = region.id
-    except Commune.DoesNotExist:
-        pass
+    if ws['C45'].value != None:
+        try :
+            commune, region = parse_commune(ws['C45'].value)
+            data['addressCommune'] = commune.id
+            data['addressRegion'] = region.id
+        except Commune.DoesNotExist:
+            pass
 
     addressStreet = ws['C41'].value
     if isinstance(addressStreet,type('')):
         if addressStreet != '':
-            addressStreet, addressNumber, addressNumber2 = parseAddress(addressStreet,
-                commune=Commune.objects.get(id=data.get('addressCommune')).name.lower())
-            data['addressStreet'] = addressStreet
-            if addressNumber:
-                data['addressNumber'] = addressNumber
-            if addressNumber2:
-                data['addressNumber2'] = addressNumber2
+            if 'addressCommune' in data.keys():
+                addressStreet, addressNumber, addressNumber2 = parse_address(addressStreet,
+                    commune=Commune.objects.get(id=data.get('addressCommune')).name.lower())
+                data['addressStreet'] = addressStreet
+                if addressNumber:
+                    data['addressNumber'] = addressNumber
+                if addressNumber2:
+                    data['addressNumber2'] = addressNumber2
 
     rol = ws['C43'].value
     if isinstance(rol,type('')):
@@ -312,7 +313,7 @@ def parseBancoDeChileAvance(wb):
     solicitanteEjecutivoRut = str(ws['M61'].value)+str(ws['N61'].value)
     if isinstance(solicitanteEjecutivoRut,type('')):
         if solicitanteEjecutivoRut != '':
-            data['solicitanteEjecutivoRut'] = parseRut(solicitanteEjecutivoRut)
+            data['solicitanteEjecutivoRut'] = parse_rut(solicitanteEjecutivoRut)
 
     cliente = ws['H9'].value
     if isinstance(cliente,type('')):
@@ -322,7 +323,7 @@ def parseBancoDeChileAvance(wb):
     clienteRut = ws['H10'].value
     clienteRutDF = ws['J10'].value
     if clienteRut != '' and clienteRutDF != '':
-        data['clienteRut'] = parseRut(str(clienteRut)+''+clienteRutDF)
+        data['clienteRut'] = parse_rut(str(clienteRut)+''+clienteRutDF)
 
     contacto = ws['E56'].value
     if isinstance(contacto,type('')):
@@ -358,7 +359,7 @@ def parseBancoDeChileAvance(wb):
     address = ws['K17'].value
     if isinstance(address,type('')):
         if address != '':
-            addressStreet, addressNumber, addressNumber2 = parseAddress(address)
+            addressStreet, addressNumber, addressNumber2 = parse_address(address)
             data['addressStreet'] = addressStreet
             if addressNumber:
                 data['addressNumber'] = addressNumber
@@ -426,7 +427,7 @@ def parseBancoDeChile(text):
             while not 'De propiedad de' in text[i+6+c+1].strip():
                 address += text[i+6+c].strip().title()
                 c += 1
-            addressStreet, addressNumber, addressNumber2 = parseAddress(address)
+            addressStreet, addressNumber, addressNumber2 = parse_address(address)
             data['addressStreet'] = addressStreet
             if addressNumber:
                 data['addressNumber'] = addressNumber
@@ -435,7 +436,7 @@ def parseBancoDeChile(text):
         if 'Cliente' in line.strip():
             data['cliente'] = text[i+2].strip().title()
         if 'Rut' == line.strip():
-            data['clienteRut'] = parseRut(text[i+2])
+            data['clienteRut'] = parse_rut(text[i+2])
         if 'Nombre' == line.strip():
             data['solicitanteEjecutivo'] = text[i+2].strip().title()
         if 'Teléfono' == line.strip():
@@ -497,7 +498,7 @@ def parseSantander(text):
                 data['cliente'] += ' '+text[i+c].strip().title()
                 c += 1
         elif 'RUT Cliente' in line.strip():
-            data['clienteRut'] = parseRut(line.split(':')[1])
+            data['clienteRut'] = parse_rut(line.split(':')[1])
         elif 'Nombre Propietario' in line.strip():
             data['propietario'] = line.split(':')[1].strip().title()
             c = 1
@@ -508,7 +509,7 @@ def parseSantander(text):
                 data['propietario'] += ' '+text[i+c].strip().title()
                 c += 1
         elif 'RUT Propietario' in line.strip():
-            data['propietarioRut'] = parseRut(line.split(':')[1])
+            data['propietarioRut'] = parse_rut(line.split(':')[1])
         elif 'Nombre Contacto' in line.strip():
             data['contacto'] = line.split(':')[1].strip().title()
         elif 'Telefono movil' in line.strip():
@@ -542,10 +543,10 @@ def parseSantander(text):
             data['rol'] = line.split(':')[1].strip()
         elif 'Comuna' in line.strip():
             communes = line.split(':')[1].strip().title()
-            commune, region = parseCommune(communes)
+            commune, region = parse_commune(communes)
             data['addressCommune'] = commune.id
             data['addressRegion'] = region.code
-            addressStreet, addressNumber, addressNumber2 = parseAddress(address,commune=commune.name)
+            addressStreet, addressNumber, addressNumber2 = parse_address(address,commune=commune.name)
             data['addressStreet'] = addressStreet
             if addressNumber:
                 data['addressNumber'] = addressNumber
@@ -640,13 +641,13 @@ def parseSantanderUrl(url):
             if "Oficina" in grupo:
                 data['propertyType'] = Building.TYPE_OFICINA
 
-        commune, region = parseCommune(tree.xpath('//*[@id="lbl_comuna"]/text()')[0])
+        commune, region = parse_commune(tree.xpath('//*[@id="lbl_comuna"]/text()')[0])
         data['addressCommune'] = commune.id
         data['addressRegion'] = region.id
 
         address = tree.xpath('//*[@id="lbl_direccion"]/text()')
         if len(address) > 0:
-            street, number, number2 = parseAddress(address[0])
+            street, number, number2 = parse_address(address[0])
             data['addressStreet'] = street
             data['addressNumber'] = number
             data['addressNumber2'] = number2
