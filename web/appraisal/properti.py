@@ -41,6 +41,7 @@ def ajax_edit_address_modal(request):
     json_dict['appraisal'] = appraisal
     json_dict['real_estate'] = real_estate
     json_dict['form_edit_address'] = FormEditAddress(
+        real_estate=real_estate,
         label_suffix="",
         initial={
             'addressRegion': real_estate.addressRegion.code,
@@ -65,26 +66,10 @@ def ajax_edit_address(request):
         real_estate.addressRegion = Region.objects.get(code=int(request_dictionary["addressRegion"]))
     if "addressCommune" in request_dictionary:
         real_estate.addressCommune = Commune.objects.get(code=int(request_dictionary["addressCommune"]))
-    
-    #real_estate.addressSector = request_dictionary['addressSector']
     real_estate.addressNumber = request_dictionary['addressNumber']
     real_estate.addressStreet = request_dictionary['addressStreet']
     real_estate.addressSitio = request_dictionary['addressSitio']
-
-    '''
-    if real_estate.addressCondominium is None and request_dictionary['addressCondominium'] != "":
-        condominium = Condominium(
-            name=request_dictionary['addressCondominium'])
-        condominium.save()
-        real_estate.addressCondominium = condominium
-    if real_estate.addressCondominium is not None and request_dictionary['addressCondominium'] != "":
-        if real_estate.addressCondominium.name != request_dictionary['addressCondominium']:
-            real_estate.addressCondominium.name = request_dictionary['addressCondominium']
-            real_estate.addressCondominium.save()
-    if real_estate.addressCondominium is not None and request_dictionary['addressCondominium'] == "":
-        real_estate.addressCondominium = None
-    '''
-
+    real_estate.addressLoteo = request_dictionary['addressLoteo']
     if real_estate.addressSquare is None and request_dictionary['addressSquare'] != "":
         square = Square(
             code=request_dictionary['addressSquare'],
@@ -99,6 +84,19 @@ def ajax_edit_address(request):
             real_estate.addressSquare.save()
     if real_estate.addressSquare is not None and request_dictionary['addressSquare'] == "":
         real_estate.addressSquare = None
+
+    for grupo in range(sum(1 for key in request_dictionary.keys() if key.startswith("addressCondominiumType"))):
+        ctype = request_dictionary["addressCondominiumType_{}".format(grupo)]
+        name = request_dictionary["addressCondominiumName_{}".format(grupo)]
+        cid = request_dictionary["addressCondominiumId_{}".format(grupo)]
+        if name != "":
+            try:
+                condominium = real_estate.addressCondominium.get(id=cid)
+                condominium.name = name
+                condominium.ctype = ctype
+                condominium.save()
+            except Condominium.DoesNotExist:
+                real_estate.addressCondominium.create(name=name,ctype=ctype)
     
     real_estate.save()
 

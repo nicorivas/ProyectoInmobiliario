@@ -2,6 +2,7 @@ from django import forms
 from region.models import Region
 from commune.models import Commune
 from building.models import Building
+from condominium.models import Condominium
 from realestate.models import RealEstate
 from appraisal.models import Appraisal
 from django.core.exceptions import ValidationError
@@ -17,7 +18,7 @@ class AppraisalCreateForm(forms.Form):
             attrs={'class':"custom-file-input",'multiple': False}))
 
     url = forms.URLField(required=False)
-    url.widget.attrs.update({'class': "form-control"})
+    url.widget.attrs.update({'class': "form-control",'placeholder': 'Ingrese la URL de la solicitud'})
 
     tipoTasacion = forms.ChoiceField(
         label="Tipo Pedido",
@@ -122,21 +123,15 @@ class AppraisalCreateForm(forms.Form):
     addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
     addressNumber2.widget.attrs.update({'class':"form-control"})
 
-    addressCondominium = forms.CharField(max_length=500,label="Condominio",required=False)
-    addressCondominium.widget.attrs.update({'class':"form-control"})
-
-    addressSquare = forms.IntegerField(label="Manzana",required=False)
-    addressSquare.widget.attrs.update({'class':"form-control"})
-    
-    addressSector = forms.CharField(max_length=100,label="Sector",required=False)
-    addressSector.widget.attrs.update({'class':"form-control"})
+    addressLoteo = forms.CharField(max_length=100,label="Loteo",required=False)
+    addressLoteo.widget.attrs.update({'class':"form-control"})
 
     addressSitio = forms.CharField(max_length=100,label="Sitio",required=False)
     addressSitio.widget.attrs.update({'class':"form-control"})
 
-    addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
-    addressNumber2.widget.attrs.update({'class':"form-control"})
-
+    addressSquare = forms.IntegerField(label="Manzana",required=False)
+    addressSquare.widget.attrs.update({'class':"form-control"})
+    
     appraisalTimeRequest = forms.DateTimeField(label="Fecha solicitud")
     appraisalTimeRequest.widget = DateTimePickerInput(options={
                      "format": "DD/MM/YYYY HH:MM",
@@ -144,10 +139,6 @@ class AppraisalCreateForm(forms.Form):
                      "showClear": True,
                      "showTodayButton": True
                  })
-    #    widget=forms.DateTimeInput(
-    #        attrs={'class': "form-control datetimepicker-input",
-    #               'data-target':"#datetimepicker1"}))
-    #appraisalTimeRequest.input_formats = ['%d/%m/%Y %H:%M']
     
     appraisalTimeDue = forms.DateTimeField(label="Fin de plazo")
     appraisalTimeDue.widget = DateTimePickerInput(options={
@@ -174,3 +165,11 @@ class AppraisalCreateForm(forms.Form):
             raise forms.ValidationError(('Plazo se debe fijar en el futuro'), code='invalid')
         # Remember to always return the cleaned data.
         return data
+
+class GrupoCreateForm(forms.Form):
+    
+    addressCondominiumType = forms.ChoiceField(label="Condominio tipo",choices=Condominium.ctype_choices,required=False)
+    addressCondominiumType.widget.attrs.update({'class':"form-control"})
+
+    addressCondominiumText = forms.CharField(max_length=500,label="Condominio texto",required=False)
+    addressCondominiumText.widget.attrs.update({'class':"form-control"})

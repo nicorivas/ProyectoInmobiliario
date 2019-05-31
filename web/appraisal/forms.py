@@ -437,15 +437,49 @@ class FormEditAddress(forms.Form):
     addressSquare = forms.CharField(max_length=200,label="Manzana",required=False)
     addressSquare.widget.attrs.update({'class':css_class})
 
-
     addressSector = forms.CharField(max_length=200,label="Loteo / Población / Sector / Conjunto Habitacional",required=False)
     addressSector.widget.attrs.update({'class':css_class})
 
-    addressCondominiumType = forms.ChoiceField(label="Grupo",choices=Condominium.ctype_choices)
-    addressCondominiumType.widget.attrs.update({'class':css_class})
+    def get_groups_fields(self):
+        for field_name in self.fields:
+            if field_name.startswith("addressCondominiumType_"):
+                yield [
+                    self[field_name],
+                    self["addressCondominiumName_"+field_name[-1:]],
+                    self["addressCondominiumId_"+field_name[-1:]]]
 
-    addressCondominiumName = forms.CharField(max_length=200,label="Nombre grupo",required=False)
-    addressCondominiumName.widget.attrs.update({'class':css_class})
+    def __init__(self, *args, **kwargs):
+        css_class = "form-control form-control-sm"
+        real_estate = kwargs.pop('real_estate')
+        super().__init__(*args, **kwargs)
+        for i, condominium in enumerate(real_estate.addressCondominium.all()):
+            field_name = "addressCondominiumType_{}".format(i)
+            self.fields[field_name] = forms.ChoiceField(label="Grupo",choices=Condominium.ctype_choices,required=False)
+            self.fields[field_name].widget.attrs.update({'class':css_class})
+            try:
+                self.initial[field_name] = condominium.ctype
+            except IndexError:
+                self.initial[field_name] = ""
+            field_name = "addressCondominiumName_{}".format(i)
+            self.fields[field_name] = forms.CharField(max_length=200,label="Nombre grupo",required=False)
+            self.fields[field_name].widget.attrs.update({'class':css_class})
+            try:
+                self.initial[field_name] = condominium.name
+            except IndexError:
+                self.initial[field_name] = ""
+            field_name = "addressCondominiumId_{}".format(i)
+            self.fields[field_name] = forms.IntegerField(label="Id grupo",required=False)
+            try:
+                self.initial[field_name] = condominium.id
+            except IndexError:
+                self.initial[field_name] = ""
+        
+        # If there are no condominiums, we add some empty fields
+        if real_estate.addressCondominium.count() == 0:
+            self.fields["addressCondominiumType_0"] = forms.ChoiceField(label="Grupo",choices=Condominium.ctype_choices,required=False)
+            self.fields["addressCondominiumType_0"].widget.attrs.update({'class':css_class})
+            self.fields["addressCondominiumName_0"] = forms.CharField(max_length=200,label="Nombre grupo",required=False)
+            self.fields["addressCondominiumName_0"].widget.attrs.update({'class':css_class})
 
 
 class FormAddAddress(forms.Form):

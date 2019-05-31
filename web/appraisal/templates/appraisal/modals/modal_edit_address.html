@@ -57,36 +57,44 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              {{form_edit_address.addressSquare.label_tag}}
-              {{form_edit_address.addressSquare}}
+              {{form_edit_address.addressSitio.label_tag}}
+              {{form_edit_address.addressSitio}}
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              {{form_edit_address.addressSitio.label_tag}}
-              {{form_edit_address.addressSitio}}
+              {{form_edit_address.addressSquare.label_tag}}
+              {{form_edit_address.addressSquare}}
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-6">
-            <label>Grupos</label>
+            <div class="form-group" style="margin-bottom:0em;">
+              <label>Grupos</label>
+            </div>
           </div>
           <div class="col-md-6" style="text-align:right;">
-            <small><a href="#">Agregar grupo</a></small>
+            <small><a href="#" id="btn_add_group">Agregar grupo</a></small>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              {{form_edit_address.addressCondominiumType}}
+
+        <div id="grupos">
+          {% for group_fields in form_edit_address.get_groups_fields %}
+            <div class="row" id="row_group_{{ forloop.counter0 }}">
+              <div class="col-md-4">
+                <div class="form-group">
+                  {{group_fields.0}}
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="form-group">
+                  {{group_fields.1}}
+                  {{group_fields.2.as_hidden}}
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="col-md-8">
-            <div class="form-group">
-              {{form_edit_address.addressCondominiumName}}
-            </div>
-          </div>
+          {% endfor %}
         </div>
 
         <div class="alert alert-warning" id="edit_address_alert" style="display:none;">
@@ -109,6 +117,26 @@
 </div>
 
 <script>
+  $("#btn_add_group").unbind()
+  $("#btn_add_group").off()
+  $('#btn_add_group').on('click', function() {
+    event.preventDefault()
+    n = $("#grupos select").length
+    a = $("#row_group_"+(n-1).toString()).clone()
+    console.log(a)
+    a.attr("id","row_group_"+n.toString())
+    a.find("#id_addressCondominiumType_"+(n-1).toString()).attr("name","addressCondominiumType_"+n.toString())
+    a.find("#id_addressCondominiumType_"+(n-1).toString()).val(0)
+    a.find("#id_addressCondominiumType_"+(n-1).toString()).attr("id","id_addressCondominiumType_"+n.toString())
+    a.find("#id_addressCondominiumName_"+(n-1).toString()).attr("name","addressCondominiumName_"+n.toString())
+    a.find("#id_addressCondominiumName_"+(n-1).toString()).val("")
+    a.find("#id_addressCondominiumName_"+(n-1).toString()).attr("id","id_addressCondominiumName_"+n.toString())
+    a.find("#id_addressCondominiumId_"+(n-1).toString()).attr("name","addressCondominiumId_"+n.toString())
+    a.find("#id_addressCondominiumId_"+(n-1).toString()).val("-1")
+    a.find("#id_addressCondominiumId_"+(n-1).toString()).attr("id","id_addressCondominiumId_"+n.toString())
+    $("#grupos").append(a)
+  })
+
   $("#btn_edit_address").unbind()
   $("#btn_edit_address").off()
   $('#btn_edit_address').on('click', function() {
