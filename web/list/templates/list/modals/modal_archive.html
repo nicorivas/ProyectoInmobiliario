@@ -24,3 +24,33 @@
     </div>
   </div>
 </div>
+
+<script>
+  $("#btn_archive_appraisal").unbind()
+  $("#btn_archive_appraisal").off()
+  $("#btn_archive_appraisal").on("click", function (event) {
+    // Button clicked in the modal. Call an AJAX to unassign the tasador
+    // of the appraisal, and returns the 'not_assigned' table back,
+    // to be replaced.
+    var appraisal_id = $(this).closest('#modal_archive').find('#appraisal_id').val();
+    var source_table = $(this).closest('#modal_archive').find('#source_table').val();
+    var url = "{% url 'ajax_archive_appraisal_url' %}";
+    btn = $(this);
+    btn_loading(btn);
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: { 'appraisal_id': appraisal_id },
+      error: function () {
+        btn_idle(btn)
+        alert("Error al archivar tasación.");
+        return false;
+      },
+      success: function (data) {
+        btn_idle(btn)
+        $("#modal_archive").modal('hide')
+        removeRow(source_table, appraisal_id, data)
+      }
+    });
+  });
+</script>

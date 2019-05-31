@@ -1,6 +1,7 @@
 $('#modal_logbook').on('hidden.bs.modal', logbookClose)
 
 function buttonLogbookClick(event) {
+  console.log("asd")
   event.preventDefault();
   btn = $(this)
   table = btn.data('table')

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import modals
 from appraisal import properti as appraisal_views
 from logbook import views as logbookviews
 
@@ -12,12 +13,17 @@ urlpatterns = [
     path('ajax/accept_appraisal/', views.ajax_accept_appraisal, name='ajax_accept_appraisal_url'),
     path('ajax/reject_appraisal/', views.ajax_reject_appraisal, name='ajax_reject_appraisal_url'),
     path('ajax/archive_appraisal/', views.ajax_archive_appraisal, name='ajax_archive_appraisal_url'),
-    path('ajax/assign_tasador_modal/', views.ajax_assign_tasador_modal, name='ajax_assign_tasador_modal_url'),
-    path('ajax/assign_visador_modal/', views.ajax_assign_visador_modal, name='ajax_assign_visador_modal_url'),
-    path('ajax/assign_tasador/', views.ajax_assign_tasador, name='ajax_assign_tasador_url'),
-    path('ajax/assign_visador/', views.ajax_assign_visador, name='ajax_assign_visador_url'),
-    path('ajax/unassign_tasador/', views.ajax_unassign_tasador, name='ajax_unassign_tasador_url'),
-    path('ajax/unassign_visador/', views.ajax_unassign_visador, name='ajax_unassign_visador_url'),
+    
+    path('ajax/assign_tasador_modal/', modals.ajax_assign_tasador_modal, name='ajax_assign_tasador_modal_url'),
+    path('ajax/assign_tasador/', modals.ajax_assign_tasador, name='ajax_assign_tasador_url'),
+    path('ajax/assign_tasador_tasadores',modals.ajax_assign_tasador_tasadores, name="ajax_assign_tasador_tasadores_url"),
+    path('ajax/unassign_tasador/', modals.ajax_unassign_tasador, name='ajax_unassign_tasador_url'),
+    
+    path('ajax/assign_visador_modal/', modals.ajax_assign_visador_modal, name='ajax_assign_visador_modal_url'),
+    path('ajax/assign_visador/', modals.ajax_assign_visador, name='ajax_assign_visador_url'),
+    path('ajax/assign_visador_visadores',modals.ajax_assign_visador_visadores, name="ajax_assign_visador_visadores_url"),
+    path('ajax/unassign_visador/', modals.ajax_unassign_visador, name='ajax_unassign_visador_url'),
+
     path('ajax/comment/', views.ajax_comment, name='ajax_comment_url'),
     path('ajax/validate_cliente/', views.ajax_validate_cliente, name='ajax_validate_cliente_url'),
     path('ajax/unvalidate_cliente/', views.ajax_unvalidate_cliente, name='ajax_unvalidate_cliente_url'),
@@ -37,7 +43,6 @@ urlpatterns = [
     path('ajax/expenses_modal/', views.ajax_expenses_modal, name='ajax_appraisal_expenses_modal_url'),
     path('ajax/expenses/save', views.ajax_save_expenses, name='ajax_save_expenses_url'),
     path('ajax/expenses/delete', views.ajax_delete_expenses, name='ajax_delete_expenses_url'),
-    path('ajax/assign_tasador_tasadores',views.ajax_assign_tasador_tasadores, name="ajax_assign_tasador_tasadores_url"),
     path('ajax/edit_address_modal/', appraisal_views.ajax_edit_address_modal, name='ajax_edit_address_modal_url'),
     path('ajax/edit_address/', appraisal_views.ajax_edit_address, name='ajax_edit_address_url'),
 ]

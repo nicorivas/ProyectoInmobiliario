@@ -59,15 +59,19 @@ def ajax_edit_address(request):
 
     request_dictionary = request.POST
 
+    print(request_dictionary)
+
     if "addressRegion" in request_dictionary:
         real_estate.addressRegion = Region.objects.get(code=int(request_dictionary["addressRegion"]))
     if "addressCommune" in request_dictionary:
         real_estate.addressCommune = Commune.objects.get(code=int(request_dictionary["addressCommune"]))
-    real_estate.addressSector = request_dictionary['addressSector']
+    
+    #real_estate.addressSector = request_dictionary['addressSector']
     real_estate.addressNumber = request_dictionary['addressNumber']
     real_estate.addressStreet = request_dictionary['addressStreet']
     real_estate.addressSitio = request_dictionary['addressSitio']
 
+    '''
     if real_estate.addressCondominium is None and request_dictionary['addressCondominium'] != "":
         condominium = Condominium(
             name=request_dictionary['addressCondominium'])
@@ -79,6 +83,7 @@ def ajax_edit_address(request):
             real_estate.addressCondominium.save()
     if real_estate.addressCondominium is not None and request_dictionary['addressCondominium'] == "":
         real_estate.addressCondominium = None
+    '''
 
     if real_estate.addressSquare is None and request_dictionary['addressSquare'] != "":
         square = Square(
@@ -96,6 +101,9 @@ def ajax_edit_address(request):
         real_estate.addressSquare = None
     
     real_estate.save()
+
+    if request_dictionary['source'] == "list":
+        return render(request,'list/appraisals_'+request_dictionary['parent']+'_tr.html',{'appraisal':appraisal})
 
     return JsonResponse({})
 

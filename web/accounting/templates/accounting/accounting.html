@@ -1,22 +1,21 @@
-{% extends "list/base.html" %}
-{% block title %}Tasador • Contabilidad{% endblock %}
-{% load static %}
+{% extends "base/index.html" %}
 
+{% block title %}Tasador • Contabilidad{% endblock %}
+
+{% load static %}
 
 {% block content %}
 
+{% load include_tags %}
+
 {{form.media}}
+
 {% load custom_tags %}
 
-<div class="row">
-      <div class="col-md-1">
-      </div>
-      <div class="col-md-11">
-         <h5 class="mb-4">Contabilidad</h5>
-      </div>
-   </div>
-
 <div class="container" style="max-width:100%">
+
+  {% show_header "Contabilidad" %}
+
   <div class="card mb-1">
     <div class="card-body">
         <form class="needs-validation" action="/accounting/" method="post" id="form" enctype="multipart/form-data" novalidate>

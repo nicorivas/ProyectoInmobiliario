@@ -1,4 +1,4 @@
-{% extends "list/base.html" %}
+{% extends "base/index.html" %}
 
 {% block title %}Tasador • Archivo{% endblock %}
 
@@ -16,6 +16,8 @@
 
 {% block content %}
 
+{% load include_tags %}
+
 {{form_search.media}}
 
 <script>
@@ -25,13 +27,7 @@
 
 <div class="container" style="max-width:100%">
 
-  <div class="row">
-    	<div class="col-md-1">
-    	</div>
-    	<div class="col-md-11">
-    		<h5 class="mb-4">Archivo</h5>
-		</div>
-	</div>
+  {% show_header "Archivo" %}
 
 	<form id="buscar">
         {% csrf_token %}

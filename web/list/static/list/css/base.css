@@ -70,7 +70,7 @@ input.edit_contact
 table.table-appraisals {
   table-layout:fixed;
   font-size:0.8em;
-  width:1350px;
+  width:100%;
 }
 
 input::-webkit-outer-spin-button,
@@ -129,4 +129,27 @@ button:focus {outline:0;}
   color: #000000;
   background-color: #fff9ca;
   border-color: #a28325;
+}
+
+.div-loading {
+  background: linear-gradient(180deg, #d5f3eb, #fffacf, #ecf0ff);
+  background-size: 600% 600%;
+  -webkit-animation: loading_animation 3s ease infinite;
+  -moz-animation: loading_animation 3s ease infinite;
+  animation: loading_animation 3s ease infinite;
+}
+@-webkit-keyframes loading_animation {
+  0%{background-position:53% 0%}
+  50%{background-position:48% 100%}
+  100%{background-position:53% 0%}
+}
+@-moz-keyframes loading_animation {
+  0%{background-position:53% 0%}
+  50%{background-position:48% 100%}
+  100%{background-position:53% 0%}
+}
+@keyframes loading_animation { 
+  0%{background-position:53% 0%}
+  50%{background-position:48% 100%}
+  100%{background-position:53% 0%}
 }

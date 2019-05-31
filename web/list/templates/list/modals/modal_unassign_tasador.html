@@ -1,0 +1,57 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title">Desasignar tasador</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+            <p>¿Esta seguro de que desea desasignar el tasador?</p>
+            <p>Un nuevo tasador deberá confirmar la asignación.</p>
+        </div>
+        <div class="modal-footer">
+        <form action="" method="post" id="form">
+            {% csrf_token %}
+            <input id="modal_unassign_tasador_appraisal_id" name="appraisal_id" type="hidden" value="2">
+            <input id="modal_assign_visador_source_table" name="parent" type="hidden" value="2">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary ld-ext-right" name="btn_unassign_tasador" id="btn_unassign_tasador" value="">
+            Desasignar
+            <div class="ld ld-ring ld-spin"></div>
+            </button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#btn_unassign_visador").unbind()
+    $("#btn_unassign_visador").off()
+    $("#btn_unassign_visador").on("click", function (event) {
+        // Button clicked in the modal. Call an AJAX to unassign the tasador
+        // of the appraisal, and returns the 'not_assigned' table back,
+        // to be replaced.
+        var btn = $(this)
+        var table_id = $('#modal_assign_visador_source_table').val()
+        var appraisal_id = $('#modal_assign_visador_appraisal_id').val();
+        var url = "{% url 'ajax_unassign_visador_url' %}";
+        btn_loading(btn)
+        $.ajax({
+            url: url,
+            type: 'get',
+            data: { 'appraisal_id': appraisal_id, 'table_id': table_id },
+            error: function () {
+                btn_idle(btn)
+                alert("Error al desasignar visador.");
+                return false;
+            },
+            success: function (data) {
+                btn_idle(btn)
+                $("#modal_assign_visador").modal('hide')
+                replaceRow(table_id, appraisal_id, data)
+                assignTableActions()
+            }
+        });
+    });
+</script>

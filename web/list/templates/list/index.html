@@ -1,33 +1,30 @@
-{% extends "list/base.html" %}
+{% extends "base/index.html" %}
+
 {% block title %}Tasador{% endblock %}
 {% load static %}
 {% block head %}
   <link rel="stylesheet" href="{% static 'list/css/main.css' %}">
-  <link rel="stylesheet" href="{% static 'list/css/logbook.css' %}">
   <link rel="stylesheet" href="{% static 'list/css/modals_expenses.css' %}">
   <link rel="stylesheet" href="{% static 'list/css/table_search.css' %}">
+  <link rel="stylesheet" href="{% static 'logbook/css/logbook.css' %}">
 {% endblock %}
 
 {% block content %}
 
+{% load include_tags %}
+
 <div class="container" style="max-width:100%">
 
-  <div class="row">
-    <div class="col-md-1">
-    </div>
-    <div class="col-md-11">
-      <h5 class="mb-4">Tasaciones</h5>
-    </div>
-  </div>
+  {% show_header "Tasaciones" %}
 
   {% if appraisals_returned %}
-  <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
-    {% if appraisals_returned|length == 1 %}
-    Hay una tasación para ser reconsiderada
-    {% else %}
-    Hay {{ appraisals_returned|length }} tasaciones para ser reconsideradas
-    {% endif %}
-  </div>
+    <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
+      {% if appraisals_returned|length == 1 %}
+      Hay una tasación para ser reconsiderada
+      {% else %}
+      Hay {{ appraisals_returned|length }} tasaciones para ser reconsideradas
+      {% endif %}
+    </div>
   {% endif %}
 
   {% include "list/appraisals.html" %}
@@ -35,5 +32,31 @@
   {% include "list/modals.html" %}
 
 </div>
+
+<script>
+
+    $('#modal_evaluate').on('hidden.bs.modal', function (e) {
+      // When the evaluation modal is closed, we replace the button to be colored.
+      var appraisal_id = $("#in_appraisal_id").val();
+      var url = "{% url 'ajax_evaluate_modal_close_url' %}";
+      var form = $('#evaluate_form')
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: form.serialize(),
+        error: function () {
+          alert("Error al cerrar la bitacora.");
+          return false;
+        },
+        success: function (data) {
+          replaceRow('table_sent',appraisal_id,data)
+          assignTableActions()
+        }
+      });
+      return false;
+    })
+
+    $("#urls").data()
+  </script>
 
 {% endblock %}

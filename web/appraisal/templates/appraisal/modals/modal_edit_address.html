@@ -14,7 +14,8 @@
         <div class="alert alert-secondary">
           Se cambiará la dirección de todas las propiedades actualmente asociadas a esta dirección.
         </div>
-
+        <input type="hidden" id="source" name="source">
+        <input type="hidden" id="parent" name="parent">
         <input type="hidden" id="in_appraisal_id" name="appraisal_id" value="{{appraisal.id}}">
         <input type="hidden" id="in_real_estate_id" name="real_estate_id" value="{{real_estate.id}}">
         <div class="row">
@@ -126,12 +127,16 @@
             alert("Error al editar direccion.");
             return false;
         },
-        success: function (data) {
+        success: function (res) {
           $("#modal_edit_address").modal('hide')
           if ($("#modal_edit_address").data("source") == "list") {
-
+            table_name = $("#modal_edit_address").data("parent")
+            appraisal_id = $("#modal_edit_address").data("appraisal_id")
+            $("#tr_"+table_name+"-"+appraisal_id).html(res)
+            assignTableActions()
+          } else {
+            load_sidebar();
           }
-          //load_sidebar();
         }
       });
     }

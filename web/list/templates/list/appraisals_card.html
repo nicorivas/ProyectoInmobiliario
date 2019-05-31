@@ -1,0 +1,24 @@
+<div class="card mb-1" id={{table}}>
+    <div class="card-body">
+
+        <p class="card-title">{{item.title}} <small>({{item.length}})</small></p>
+
+        {% if item.length > 0 %}
+            <div class="alert" style="display:none;">
+        {% else %}
+            <div class="alert">
+        {% endif %}
+            {% include "list/info_no_appraisals.html" %}
+        </div>
+        
+        {% if item.length > 0 %}
+        <table class="table table-sm table-borderless table-appraisals" id={{"table_"|add:table}}>
+        {% else %}
+        <table class="table table-sm table-borderless table-appraisals" id={{"table_"|add:table}} style="display:none;">
+        {% endif %}
+
+        {% include "list/appraisals_table.html" %}
+        
+        </table>
+    </div>
+</div>

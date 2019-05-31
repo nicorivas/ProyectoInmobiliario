@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'home',
     'list',
     'create',
+    'base',
+    'nav',
     'appraisal',
     'house',
     'condominium',
@@ -158,7 +160,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = 'http://storage.googleapis.com/tasador/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = 'static/'
 
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')

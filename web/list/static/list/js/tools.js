@@ -94,7 +94,7 @@ function replaceTable(table_name,data) {
   // into account the size of the table and hides the 
   // alert of no elements if the table returned has elements.
   $("#"+table_name).html($.trim(data))
-  var nrows = $("#"+table_name+" tr").length;
+  var nrows = $("table #"+table_name+" tr").length;
   if (nrows == 0) {
     $("#"+table_name).fadeOut()
     $("#div_alert_"+table_name).fadeIn()

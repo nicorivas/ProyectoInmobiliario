@@ -1,0 +1,20 @@
+<!doctype html>
+
+<html>
+
+{% include "base/head.html" %}
+
+<body>
+
+{% include "nav/nav.html" %}
+
+<div id="content">
+{% block content %}
+{% endblock content %}
+</div>
+
+{% include "base/footer.html" %}
+
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 <button type="button" id="{{appraisal.tasadorUser.id}}" 
-        value="{{appraisal.id}}"
         class="btn {{appraisal.appraisalevaluation|yesno:"btn-success,btn-dark"}} btn-sm btn-evaluate btn_evaluate_modal"
+        data-appraisal_id="{{appraisal.id}}"
         data-toggle="modal"
         data-target="#evaluateAppraisal"
         data-generalquality="{{appraisal.appraisalevaluation.generalQuality}}"
