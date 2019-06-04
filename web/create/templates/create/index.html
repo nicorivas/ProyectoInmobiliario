@@ -11,11 +11,13 @@
 {{form.media}}
 
 <div class="container" style="max-width:100%">
-
   {% show_header "Ingresar tasación" %}
-
   <div class="card">
     <div class="card-body">
+
+      <div style="display:flex; width: 100%;">
+
+      <div style="width: 1000px;">
 
       <form class="needs-validation" action="/create/" method="post" id="form" enctype="multipart/form-data"
         data-commune-url="{% url 'ajax_load_communes' %}" data-import_request-url="{% url 'ajax_import_request' %}"
@@ -26,7 +28,7 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Importar</p>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-9">
             <div class="form-group">
               <div class="custom-file">
                 {{form.archivo}}
@@ -40,7 +42,7 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-md-5">
+          <div class="col-md-9">
             <div class="form-group">
               {{form.url}}
             </div>
@@ -68,7 +70,7 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold"></p>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-10">
             <div class="alert alert-warning" role="alert" id="id_import_alert" style="display:none;">
             </div>
           </div>
@@ -78,25 +80,25 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Solicitud</p>
           </div>
-          <div class="col-md-2" id="petitioner">
+          <div class="col-md-3" id="petitioner">
             <div class="form-group">
               <label>Institución</label>
               {{form.solicitante}}
             </div>
           </div>
-          <div class="col-md-2" id="other" hidden>
+          <div class="col-md-3" id="other" hidden>
             <div class="form-group">
               {{form.solicitanteOther.label_tag}}
               {{form.solicitanteOther}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group" id="code">
               <label>Sucursal</label>
               {{form.solicitanteSucursal}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group" id="code">
               <label>Código</label>
               {{form.solicitanteCodigo}}
@@ -108,7 +110,7 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-md-4" id="petitioner">
+          <div class="col-md-9" id="petitioner">
             <div class="form-group">
               <label>Ejecutivo</label>
               {{form.solicitanteEjecutivo}}
@@ -119,13 +121,13 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-md-4" id="petitioner">
+          <div class="col-md-5" id="petitioner">
             <div class="form-group">
               <label>Email</label>
               {{form.solicitanteEjecutivoEmail}}
             </div>
           </div>
-          <div class="col-md-2" id="petitioner">
+          <div class="col-md-4" id="petitioner">
             <div class="form-group">
               <label>Teléfono</label>
               {{form.solicitanteEjecutivoTelefono}}
@@ -136,14 +138,14 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="form-group">
               {{form.appraisalTimeRequest.label_tag}}
               {{form.appraisalTimeRequest}}
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="form-group">
               {{form.appraisalTimeDue.label_tag}}
               {{form.appraisalTimeDue}}
@@ -154,7 +156,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -163,19 +165,19 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Tasación</p>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Tipo</label>
               {{form.tipoTasacion}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Finalidad</label>
               {{form.finalidad}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Visita</label>
               {{form.visita}}
@@ -186,7 +188,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -196,13 +198,13 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Cliente</p>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Nombre</label>
               {{form.cliente}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Rut</label>
               {{form.clienteRut}}
@@ -213,13 +215,13 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Email</label>
               {{form.clienteEmail}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Teléfono</label>
               {{form.clienteTelefono}}
@@ -230,7 +232,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -240,13 +242,13 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Propietario</p>
           </div>
-          <div class="col-4">
+          <div class="col-6">
             <div class="form-group">
               <label>Nombre</label>
               {{form.propietario}}
             </div>
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <div class="form-group">
               <label>Rut</label>
               {{form.propietarioRut}}
@@ -257,13 +259,13 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-4">
+          <div class="col-6">
             <div class="form-group">
               <label>Email</label>
               {{form.propietarioEmail}}
             </div>
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <div class="form-group">
               <label>Teléfono</label>
               {{form.propietarioTelefono}}
@@ -274,7 +276,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -284,13 +286,13 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Contacto</p>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Nombre</label>
               {{form.contacto}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Rut</label>
               {{form.contactoRut}}
@@ -301,13 +303,13 @@
         <div class="row">
           <div class="col-md-2 text-right">
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Email</label>
               {{form.contactoEmail}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Teléfono</label>
               {{form.contactoTelefono}}
@@ -318,7 +320,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -328,7 +330,7 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold">Bien</p>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <div class="form-group">
               <label>Tipo</label>
               <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top"
@@ -336,7 +338,7 @@
               {{form.propertyType}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <div class="form-group">
               <div class="valign-center">
                 <label>
@@ -352,13 +354,13 @@
 
         <div class="row">
           <div class="col-md-2 text-right"></div>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <div class="form-group">
               {{form.addressRegion.label_tag}}
               {{form.addressRegion}}
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <div class="form-group">
               {{form.addressCommune.label_tag}}
               {{form.addressCommune}}
@@ -368,21 +370,34 @@
 
         <div class="row">
           <div class="col-md-2 text-right"></div>
-          <div class="col-md-4">
+          <div class="col-md-9">
             <div class="form-group">
               {{form.addressStreet.label_tag}}
               {{form.addressStreet}}
             </div>
           </div>
-
-          <div class="col-md-1">
+        </div>
+        
+        <div class="row">
+          <div class="col-md-2 text-right"></div>
+          <div class="col-md-3">
             <div class="form-group">
               {{form.addressNumber.label_tag}}
               {{form.addressNumber}}
             </div>
           </div>
+          <div class="col-md-3" id="div_addressNumber3">
+            <div class="form-group">
+              <label>
+                <span>Rol</span>
+                <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top"
+                  title="Casa, Edificio, Block.">help_outline</i>
+              </label>
+              {{form.addressNumber3}}
+            </div>
+          </div>
 
-          <div class="col-md-1" id="div_addressNumber2">
+          <div class="col-md-3" id="div_addressNumber2">
             <div class="form-group">
               <label>
                 <span>Rol</span>
@@ -396,7 +411,7 @@
 
         <div class="row">
           <div class="col-md-2 text-right"></div>
-          <div class="col-md-2" id="div_addressCondominium">
+          <div class="col-md-3" id="div_addressCondominium">
             <div class="form-group">
               <label>
                 <span>Loteo</span>
@@ -407,10 +422,10 @@
             </div>
           </div>
 
-          <div class="col-md-2" id="div_addressSquare">
+          <div class="col-md-3" id="div_addressSquare">
             <div class="form-group">
               <label>
-                <span>Sitio</span>
+                <span>Lote / Sitio</span>
                 <i class="material-icons" style="font-size:1.0em;" data-toggle="tooltip" data-placement="top"
                   title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
               </label>
@@ -418,7 +433,7 @@
             </div>
           </div>
 
-          <div class="col-md-2" id="div_addressSquare">
+          <div class="col-md-3" id="div_addressSquare">
             <div class="form-group">
               <label>
                 <span>Manzana</span>
@@ -433,7 +448,7 @@
 
         <div class="row">
           <div class="col-md-2 text-right"></div>
-          <div class="col-md-8">
+          <div class="col-md-9">
             <div class="row">
               <div class="col-md-6">
                 <label>
@@ -442,7 +457,7 @@
                     title="Cualquier segundo identificador, como predio, departamento, número de casa, nombre de edificio, etc.">help_outline</i>
                 </label>
               </div>
-              <div class="col-md-3 text-right">
+              <div class="col-md-6 text-right">
                 <small><a href="#" id="addGrupo">Agregar grupo</a></small>
               </div>
             </div>
@@ -454,7 +469,7 @@
         <div class="row">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <hr>
           </div>
         </div>
@@ -463,7 +478,7 @@
           <div class="col-md-2 text-right">
             <p class="font-weight-bold"></p>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <div class="form-group">
               {{form.comments.label_tag}}
               {{form.comments}}
@@ -474,7 +489,7 @@
         <div class="form-group row mt-4">
           <div class="col-md-2">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <button class="btn btn-dark btn-block align-bottom" id="btn_create">
               <div class="text">Ingresar tasación</div>
               <div class="ld ld-ring ld-spin" style="display:none;"></div>
@@ -484,9 +499,14 @@
 
       </form>
 
+      </div>
+
+      <div style="flex: 1;"></div>
+
+      </div>
+
     </div>
   </div>
-
 </div>
 
 <script src="{% static 'list/js/tools.js' %}" type="text/javascript"></script>
@@ -523,12 +543,30 @@
 
   function setAddressNumber2Label() {
     var type = $("#propertyType option:selected");
-    if (type.val() == 2) {
-      $("#div_addressNumber2").find('label span').html('Dpto.');
-    } else if (type.val() == 6) {
+    console.log(type.val())
+    if (type.val() == 1) {
+      $("#div_addressNumber2").show()
+      $("#div_addressNumber2").find('label span').html('Casa');
+    } else if (type.val() == 3) {
+      $("#div_addressNumber2").show()
+      $("#div_addressNumber2").find('label span').html('Edificio / Block');
+    } else if (type.val() == 2) {
+      $("#div_addressNumber2").show()
+      $("#div_addressNumber3").show()
+      $("#div_addressNumber2").find('label span').html('Departamento');
+      $("#div_addressNumber3").find('label span').html('Edificio / Block');
+    } else if (type.val() == 6  || type.val() == 19) {
+      $("#div_addressNumber2").show()
       $("#div_addressNumber2").find('label span').html('Oficina');
+    } else if (type.val() == 7) {
+      $("#div_addressNumber2").show()
+      $("#div_addressNumber2").find('label span').html('Local');
+    } else if (type.val() == 12) {
+      $("#div_addressNumber2").show()
+      $("#div_addressNumber2").find('label span').html('Estacionamiento');
     } else {
-      $("#div_addressNumber2").find('label span').html('No. 2');
+      $("#div_addressNumber3").hide()
+      $("#div_addressNumber2").hide()
     }
   }
 
@@ -576,7 +614,6 @@
       "addressNumber": "required",
       "addressCommune": "required",
       "addressRegion": "required",
-      "cliente": "required",
       "clienteRut": "rut",
       "contacto": "required",
       "solicitanteCodigo": "required",
@@ -653,33 +690,6 @@
 
     $('#id_import_alert').hide()
 
-    var formatFields = function () {
-      $('#id_addressStreet').val(function () {
-        return toTitleCase($(this).val())
-      })
-      $('#id_contacto').val(function () {
-        return toTitleCase($(this).val())
-      })
-      $('#id_cliente').val(function () {
-        return toTitleCase($(this).val())
-      })
-      $('#id_solicitanteEjecutivo').val(function () {
-        return toTitleCase($(this).val())
-      })
-      $('#id_solicitanteEjecutivoEmail').val(function () {
-        return $(this).val().toLowerCase()
-      })
-      $('#id_solicitanteSucursal').val(function () {
-        return toTitleCase($(this).val())
-      })
-      $('#id_clienteEmail').val(function () {
-        return $(this).val().toLowerCase()
-      })
-      $('#id_contactoEmail').val(function () {
-        return $(this).val().toLowerCase()
-      })
-    }
-
     var populateFromFile = function (btn) {
       var form = document.getElementById('form');
       var formData = new FormData(form);
@@ -731,8 +741,7 @@
             $('#id_import_alert').show()
             $('#id_import_alert').html(data['error'])
           } else {
-            $('#id_import_alert').hide()
-            formatFields();
+            $('#id_import_alert').hide();
             setAddressNumber2Label();
             $("#form").valid();
           }

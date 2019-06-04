@@ -1,3 +1,6 @@
+import datetime
+import pytz
+import json
 from django.views.generic import FormView
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -9,10 +12,6 @@ from django.contrib.auth.models import User
 from user.views import appraiserWork, visadorWork
 from django.utils import timezone
 
-import pytz
-import json
-
-import datetime
 from copy import deepcopy
 from reversion.models import Version
 from appraisal.forms import FormExpenses
@@ -23,6 +22,7 @@ from appraisal.models import AppraisalEvaluation
 from create.forms import AppraisalCreateForm
 from commune.models import Commune
 from region.models import Region
+from appraisal.data import getAppraisalFromRequest
 
 '''To avoid database problems with time zone, timezone has to be set when date is submitted to the database, postgres 
 server will translate the date to UTC (example: date sent=2019-12-1 12:00 -03:00, in server=2019-12-1 15:00 +00)
@@ -31,64 +31,6 @@ So to sent date to database use: datime.datetime.now(pytz.timezone('timezone")).
 Caution: don't use timezone when comparing dates with datetime.datetime.now()
 '''
 timezone_cl = pytz.timezone('Chile/Continental')
-
-@login_required(login_url='/user/login')
-def main(request):
-
-    # Get appraisals that this user can see
-
-    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
-    appraisals_not_assigned = get_appraisals_not_assigned(request,appraisals)
-    appraisals_not_accepted = get_appraisals_not_accepted(request,appraisals)
-    appraisals_in_appraisal = get_appraisals_in_appraisal(request,appraisals)
-    appraisals_in_revision = get_appraisals_in_revision(request,appraisals)
-    appraisals_sent = get_appraisals_sent(request,appraisals)
-    appraisals_returned = get_appraisals_returned(request,appraisals)
-
-    # Comment class dictionary, to get in javascript the name of the events (big hack alert)
-
-    comment_mp = Comment.__dict__
-    comment_dict = {}
-    for k, v in comment_mp.items():
-        if isinstance(v,type('')) or isinstance(v,type(1)):
-            comment_dict[k] = v
-    comment_class = json.dumps(comment_dict)
-
-    appraisal_mp = Appraisal.__dict__
-    appraisal_dict = {}
-    for k, v in appraisal_mp.items():
-        if isinstance(v,type('')) or isinstance(v,type(1)):
-            appraisal_dict[k] = v
-    appraisal_class = json.dumps(appraisal_dict)
-
-    # Get the id's of appraisals to have notifications; then we need just one query
-
-    notifications = request.user.profile.notifications.all()
-    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
-
-    # Get groups this user is part of, then we just need one query
-
-    groups = request.user.groups.values_list('name',flat=True)
-
-    # Order of this list determines order in html
-
-    appraisals = [
-        {'id':'not_assigned', 'appraisals':appraisals_not_assigned, 'title':'Tasaciones por asignar', 'length':len(appraisals_not_assigned)},
-        {'id':'not_accepted', 'appraisals':appraisals_not_accepted, 'title':'Tasaciones por aceptar', 'length':len(appraisals_not_accepted)},
-        {'id':'in_appraisal', 'appraisals':appraisals_in_appraisal, 'title':'Tasaciones en proceso', 'length':len(appraisals_in_appraisal)},
-        {'id':'in_revision', 'appraisals':appraisals_in_revision, 'title':'Tasaciones en revisión', 'length':len(appraisals_in_revision)},
-        {'id':'returned', 'appraisals':appraisals_returned, 'title':'Tasaciones devueltas', 'length':len(appraisals_returned)},
-        {'id':'sent', 'appraisals':appraisals_sent, 'title':'Tasaciones enviadas', 'length':len(appraisals_sent)}
-    ]
-
-    context = {
-        'appraisals':appraisals,
-        'comment_class':comment_class,
-        'appraisal_class':appraisal_class,
-        'notifications_appraisal_ids':notifications_appraisal_ids,
-        'groups':groups}
-
-    return render(request, 'list/index.html', context)
 
 def get_appraisals_not_assigned(request,appraisals):
     appraisals_not_assigned = []
@@ -157,6 +99,64 @@ def get_appraisals_returned(request,appraisals):
     return appraisals_returned
 
 @login_required(login_url='/user/login')
+def main(request):
+
+    # Get appraisals that this user can see
+
+    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
+    appraisals_not_assigned = get_appraisals_not_assigned(request,appraisals)
+    appraisals_not_accepted = get_appraisals_not_accepted(request,appraisals)
+    appraisals_in_appraisal = get_appraisals_in_appraisal(request,appraisals)
+    appraisals_in_revision = get_appraisals_in_revision(request,appraisals)
+    appraisals_sent = get_appraisals_sent(request,appraisals)
+    appraisals_returned = get_appraisals_returned(request,appraisals)
+
+    # Comment class dictionary, to get in javascript the name of the events (big hack alert)
+
+    comment_mp = Comment.__dict__
+    comment_dict = {}
+    for k, v in comment_mp.items():
+        if isinstance(v,type('')) or isinstance(v,type(1)):
+            comment_dict[k] = v
+    comment_class = json.dumps(comment_dict)
+
+    appraisal_mp = Appraisal.__dict__
+    appraisal_dict = {}
+    for k, v in appraisal_mp.items():
+        if isinstance(v,type('')) or isinstance(v,type(1)):
+            appraisal_dict[k] = v
+    appraisal_class = json.dumps(appraisal_dict)
+
+    # Get the id's of appraisals to have notifications; then we need just one query
+
+    notifications = request.user.profile.notifications.all()
+    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+
+    # Get groups this user is part of, then we just need one query
+
+    groups = request.user.groups.values_list('name',flat=True)
+
+    # Order of this list determines order in html
+
+    appraisals = [
+        {'id':'not_assigned', 'appraisals':appraisals_not_assigned, 'title':'Tasaciones por asignar', 'length':len(appraisals_not_assigned), 'groups':['asignador']},
+        {'id':'not_accepted', 'appraisals':appraisals_not_accepted, 'title':'Tasaciones por aceptar', 'length':len(appraisals_not_accepted), 'groups':['tasador','asignador']},
+        {'id':'in_appraisal', 'appraisals':appraisals_in_appraisal, 'title':'Tasaciones en proceso', 'length':len(appraisals_in_appraisal), 'groups':['tasador','asignador']},
+        {'id':'in_revision', 'appraisals':appraisals_in_revision, 'title':'Tasaciones en revisión', 'length':len(appraisals_in_revision), 'groups':['visador','asignador']},
+        {'id':'returned', 'appraisals':appraisals_returned, 'title':'Tasaciones devueltas', 'length':len(appraisals_returned),'groups':['visador','asignador']},
+        {'id':'sent', 'appraisals':appraisals_sent, 'title':'Tasaciones enviadas', 'length':len(appraisals_sent),'groups':['visador','asignador']}
+    ]
+
+    context = {
+        'appraisals':appraisals,
+        'comment_class':comment_class,
+        'appraisal_class':appraisal_class,
+        'notifications_appraisal_ids':notifications_appraisal_ids,
+        'groups':groups}
+
+    return render(request, 'list/index.html', context)
+
+@login_required(login_url='/user/login')
 def imported_appraisals(request):
     evaluationForm = EvaluationForm()
     if request.method == 'POST':
@@ -204,73 +204,30 @@ def appraisals_get_state(state):
     appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser").filter(state=state).order_by('timeCreated')
     if state == Appraisal.STATE_NOT_ASSIGNED:
         item = {'id':'not_assigned', 'appraisals':appraisals, 'title':'Tasaciones por asignar', 'length':len(appraisals)}
+    elif state == Appraisal.STATE_NOT_ACCEPTED:
+        item = {'id':'not_accepted', 'appraisals':appraisals, 'title':'Tasaciones por aceptar', 'length':len(appraisals)}
     elif state == Appraisal.STATE_IN_APPRAISAL:
-        item = {'id':'in_appraisal', 'appraisals':appraisals, 'title':'Tasaciones en revision', 'length':len(appraisals)}
+        item = {'id':'in_appraisal', 'appraisals':appraisals, 'title':'Tasaciones en proceso', 'length':len(appraisals)}
     return item
 
-def ajax_accept_appraisal(request):
-
-    appraisal_id = int(request.POST['appraisal_id'])
-    #text = request.POST['text']
-
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-    appraisal.state = Appraisal.STATE_IN_APPRAISAL
-    
-    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(timezone_cl))
-    appraisal.save()
-
+def render_appraisals_table(request, state):
+    item = appraisals_get_state(state)
     notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
+    return render(request,'list/appraisals_table.html',{'item':item,'table':item["id"],'notifications_appraisal_ids':notifications_appraisal_ids})
 
-    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
-    appraisals_in_appraisal = get_appraisals_in_appraisal(request,appraisals)
-
-    return render(request,'list/appraisals_table_in_appraisal.html',
-        {'appraisals_in_appraisal':appraisals_in_appraisal,
-         'notifications_appraisal_ids':notifications_appraisal_ids})
-
-def ajax_reject_appraisal(request):
-    '''
-        Tasador asignado rechaza la solicitud de tasación.
-        1. Cambiar estado del appraisal
-        2. Desasignar el tasador
-        3. Agregar un evento
-        4. Notificar a todos los asignadores
-        #: Retornar lista de appraisals no asignadas, para reemplazar la tabla.
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-    #text = request.POST['text']
-
-    # 1
-    appraisal.state = Appraisal.STATE_NOT_ASSIGNED
-    # 2
-    appraisal.tasadorUser = None
-    # 3
-    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(timezone_cl))
-    appraisal.save()
-    # 4
-    for user in User.objects.filter(groups__name='asignador'):
-        user.profile.addNotification(ntype="comment",appraisal_id=appraisal_id,comment_id=comment.id)
-
-    notifications = request.user.profile.notifications.all()
-    notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
-
-    appraisals = Appraisal.objects.select_related("real_estate_main__addressCommune","tasadorUser","visadorUser","property_main").all().order_by('timeCreated')
-    appraisals_not_assigned = get_appraisals_not_assigned(request,appraisals)
-
-    return render(request,'list/appraisals_table_not_assigned.html',
-        {'appraisals_not_assigned':appraisals_not_assigned,
-         'notifications_appraisal_ids':notifications_appraisal_ids})
+def render_appraisals_row(request, table, appraisal):
+    return render(request,'list/appraisals_'+table+'_tr.html',{'appraisal':appraisal})
 
 def ajax_archive_appraisal(request):
-    # Handle the archive button, next to every appraisal
-    appraisal_id = int(request.GET['appraisal_id'])
-    appraisal = Appraisal.objects.get(pk=appraisal_id)
+    '''
+    Archive button of finished appraisals. Moves them in to the archive.
+    '''
+    appraisal = getAppraisalFromRequest(request)
     appraisal.state_last = appraisal.state
     appraisal.state = Appraisal.STATE_ARCHIVED
     appraisal.save()
-    return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal})
+    return render_appraisals_row(request, 'table_sent', appraisal)
 
 def ajax_comment(request):
     '''
@@ -384,6 +341,7 @@ def ajax_unvalidate_cliente(request):
     return JsonResponse({})
 
 def ajax_get_appraisal_row(request):
+    print(request.GET)
     appraisal_id = int(request.GET['appraisal_id'])
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
@@ -423,71 +381,6 @@ def ajax_evaluate_modal_close(request):
     groups = request.user.groups.values_list('name',flat=True)
 
     return render(request,'list/appraisals_table_sent_tr.html',{'appraisal':appraisal,'groups':groups})
-
-def ajax_enviar_a_visador(request):
-    '''
-    Appraisal must be sent back to in revision state.
-    Therefore notify the visador.
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    comment = appraisal.addComment(Comment.EVENT_ENVIADA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
-
-    appraisal.state = Appraisal.STATE_IN_REVISION
-    appraisal.save()
-    if appraisal.visadorUser:
-        appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
-
-    return JsonResponse({})
-
-def ajax_devolver_a_tasador(request):
-    '''
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_TASADOR,request.user,datetime.datetime.now(timezone_cl))
-
-    appraisal.state = Appraisal.STATE_IN_APPRAISAL
-    appraisal.save()
-    if appraisal.tasadorUser:
-        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
-
-    return JsonResponse({})
-
-def ajax_enviar_a_cliente(request):
-    '''
-    Appraisal must be sent back to in revision state.
-    Therefore notify the visador.
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    comment = appraisal.addComment(Comment.EVENT_ENTREGADO_AL_CLIENTE,request.user,datetime.datetime.now(timezone_cl))
-
-    appraisal.state = Appraisal.STATE_SENT
-    appraisal.save()
-    if appraisal.tasadorUser:
-        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
-
-    return JsonResponse({})
-
-
-def ajax_devolver_a_visador(request):
-    '''
-    '''
-    appraisal_id = int(request.POST['appraisal_id'])
-    appraisal = Appraisal.objects.get(id=appraisal_id)
-
-    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
-
-    appraisal.state = Appraisal.STATE_IN_REVISION
-    appraisal.save()
-    if appraisal.tasadorUser:
-        appraisal.tasadorUser.profile.addNotification("comment",appraisal_id,comment.id)
-
-    return JsonResponse({})
 
 def ajax_mark_as_returned(request):
     '''

@@ -45,7 +45,9 @@ def ajax_assign_tasador(request):
     appraisal = Appraisal.objects.get(id=appraisal_id)
 
     if 'tasador' not in request.POST:
-        return JsonResponse({'alert':"Debe seleccionar un tasador"}) 
+        response = JsonResponse({'alert':"Debe seleccionar un tasador"})
+        response.status_code = 403
+        return response
 
     tasador_id = int(request.POST['tasador'])
     tasador = User.objects.get(id=tasador_id)
@@ -67,11 +69,15 @@ def ajax_assign_tasador(request):
     notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
-    appraisals_not_accepted = views.appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
+    item = views.appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
     
-    return render(request,'list/appraisals_table_not_accepted.html',
-        {'appraisals_not_accepted':appraisals_not_accepted,
-         'notifications_appraisal_ids':notifications_appraisal_ids})
+    return render(request,'list/appraisals_table.html',{'item':item,'table':item["id"]})
+
+    #appraisals_not_accepted = views.appraisals_get_state(Appraisal.STATE_NOT_ACCEPTED)
+    #
+    #return render(request,'list/appraisals_table_not_accepted.html',
+    #    {'appraisals_not_accepted':appraisals_not_accepted,
+    #     'notifications_appraisal_ids':notifications_appraisal_ids})
 
 def ajax_unassign_tasador(request):
     '''
@@ -93,11 +99,13 @@ def ajax_unassign_tasador(request):
     notifications = request.user.profile.notifications.all()
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
-    appraisals_not_assigned = views.appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
+    item = views.appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
+    
+    return render(request,'list/appraisals_table.html',{'item':item,'table':item["id"]})
 
-    return render(request,'list/appraisals_table_not_assigned.html',
-        {'appraisals_not_assigned':appraisals_not_assigned,
-         'notifications_appraisal_ids':notifications_appraisal_ids})
+    #return render(request,'list/appraisals_table_not_assigned.html',
+    #    {'appraisals_not_assigned':appraisals_not_assigned,
+    #     'notifications_appraisal_ids':notifications_appraisal_ids})
 
 #------------------------------------------------------------------------------------------------
 
@@ -137,17 +145,23 @@ def ajax_assign_visador(request):
     notifications_appraisal_ids = notifications.values_list('appraisal_id', flat=True) 
 
     if request.POST['parent'] == 'table_not_assigned':
-        appraisals_not_assigned = views.appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
-        return render(request,'list/appraisals_table_not_assigned.html',
-            {'appraisals_not_assigned':appraisals_not_assigned,
-             'notifications_appraisal_ids':notifications_appraisal_ids,
-             'status':status})
+        item = views.appraisals_get_state(Appraisal.STATE_NOT_ASSIGNED)
     elif request.POST['parent'] == 'table_in_appraisal':
         item = views.appraisals_get_state(Appraisal.STATE_IN_APPRAISAL)
-        return render(request,'list/appraisals_table.html',{'item':item,'table':item["id"]})
-
+    
+    return render(request,'list/appraisals_table.html',{'item':item,'table':item["id"]})
 
 def ajax_assign_visador_visadores(request):
+    '''
+    Load list of visadores
+    '''
+    appraisal_id = int(request.GET['appraisal_id'])
+    appraisal = Appraisal.objects.get(id=appraisal_id)
+    if appraisal.visadorUser:
+        visador_current = appraisal.visadorUser.id
+    else:
+        visador_current = None
+
     visadores = User.objects.filter(groups__name__in=['visador']).order_by('last_name')
     visadores_info = visadorWork(visadores)
     regions = Region.objects.only('name').order_by('code')
@@ -155,7 +169,7 @@ def ajax_assign_visador_visadores(request):
     form = TasadorSearch(label_suffix='')
     form.fields['addressRegion'].queryset = regions
     form.fields['addressCommune'].queryset = communes
-    return render(request,'list/modals/modal_assign_visador_visadores.html',{'visadores':visadores_info,'form':form})
+    return render(request,'list/modals/modal_assign_visador_visadores.html',{'visadores':visadores_info,'visador_current':visador_current,'form':form})
 
 def ajax_unassign_visador(request):
     '''
@@ -163,13 +177,18 @@ def ajax_unassign_visador(request):
     on the corresponding confirmation modal.
     '''
     appraisal_id = int(request.GET['appraisal_id'])
-    table_id = request.GET['table_id']
+    table_id = request.GET['parent']
     appraisal = Appraisal.objects.get(id=appraisal_id)
     visador = appraisal.visadorUser
-    comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(timezone_cl),
-        text="Visador "+visador.first_name+' '+visador.last_name+" fue desasignado.")
-    appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
-    appraisal.visadorUser = None
-    appraisal.save()
+    if visador != None:
+        comment = appraisal.addComment(Comment.EVENT_VISADOR_DESASIGNADO,request.user,datetime.datetime.now(timezone_cl),
+            text="Visador "+visador.first_name+' '+visador.last_name+" fue desasignado.")
+        appraisal.visadorUser.profile.addNotification("comment",appraisal_id,comment.id)
+        appraisal.visadorUser = None
+        appraisal.save()
+    else:
+        response = JsonResponse({'alert':"Debe seleccionar un tasador"})
+        response.status_code = 403
+        return response
 
     return render(request,'list/appraisals_'+table_id+'_tr.html',{'appraisal':appraisal})

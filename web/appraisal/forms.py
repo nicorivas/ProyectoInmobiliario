@@ -437,9 +437,6 @@ class FormEditAddress(forms.Form):
     addressSquare = forms.CharField(max_length=200,label="Manzana",required=False)
     addressSquare.widget.attrs.update({'class':css_class})
 
-    addressSector = forms.CharField(max_length=200,label="Loteo / Población / Sector / Conjunto Habitacional",required=False)
-    addressSector.widget.attrs.update({'class':css_class})
-
     def get_groups_fields(self):
         for field_name in self.fields:
             if field_name.startswith("addressCondominiumType_"):
@@ -468,7 +465,7 @@ class FormEditAddress(forms.Form):
             except IndexError:
                 self.initial[field_name] = ""
             field_name = "addressCondominiumId_{}".format(i)
-            self.fields[field_name] = forms.IntegerField(label="Id grupo",required=False)
+            self.fields[field_name] = forms.IntegerField(label="ID grupo",required=False)
             try:
                 self.initial[field_name] = condominium.id
             except IndexError:
@@ -480,6 +477,8 @@ class FormEditAddress(forms.Form):
             self.fields["addressCondominiumType_0"].widget.attrs.update({'class':css_class})
             self.fields["addressCondominiumName_0"] = forms.CharField(max_length=200,label="Nombre grupo",required=False)
             self.fields["addressCondominiumName_0"].widget.attrs.update({'class':css_class})
+            self.fields["addressCondominiumId_0"] = forms.IntegerField(label="ID grupo",required=False)
+            self.fields["addressCondominiumId_0"].widget.attrs.update({'class':css_class})
 
 
 class FormAddAddress(forms.Form):

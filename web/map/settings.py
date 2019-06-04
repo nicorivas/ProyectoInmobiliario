@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'accounting',
     'mathfilters',
     'archive',
+    'export',
     'logbook',
     'bootstrap_datepicker_plus'#,
     #'debug_toolbar'

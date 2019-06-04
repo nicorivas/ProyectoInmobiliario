@@ -10,8 +10,9 @@ urlpatterns = [
     path('ajax/logbook/', logbookviews.ajax_logbook, name='ajax_logbook_url'),
     path('ajax/logbook_close/', logbookviews.ajax_logbook_close, name='ajax_logbook_close_url'),
     path('ajax/logbook_change_event/', logbookviews.ajax_logbook_change_event, name='ajax_logbook_change_event_url'),
-    path('ajax/accept_appraisal/', views.ajax_accept_appraisal, name='ajax_accept_appraisal_url'),
-    path('ajax/reject_appraisal/', views.ajax_reject_appraisal, name='ajax_reject_appraisal_url'),
+    path('ajax/accept_appraisal/', logbookviews.ajax_accept_appraisal, name='ajax_accept_appraisal_url'),
+    path('ajax/reject_appraisal/', logbookviews.ajax_reject_appraisal, name='ajax_reject_appraisal_url'),
+    
     path('ajax/archive_appraisal/', views.ajax_archive_appraisal, name='ajax_archive_appraisal_url'),
     
     path('ajax/assign_tasador_modal/', modals.ajax_assign_tasador_modal, name='ajax_assign_tasador_modal_url'),
@@ -19,6 +20,12 @@ urlpatterns = [
     path('ajax/assign_tasador_tasadores',modals.ajax_assign_tasador_tasadores, name="ajax_assign_tasador_tasadores_url"),
     path('ajax/unassign_tasador/', modals.ajax_unassign_tasador, name='ajax_unassign_tasador_url'),
     
+    # Flow
+    path('ajax/enviar_a_visador/', logbookviews.ajax_enviar_a_visador, name='ajax_enviar_a_visador_url'),
+    path('ajax/devolver_a_tasador/', logbookviews.ajax_devolver_a_tasador, name='ajax_devolver_a_tasador_url'),
+    path('ajax/enviar_a_cliente/', logbookviews.ajax_enviar_a_cliente, name='ajax_enviar_a_cliente_url'),
+    path('ajax/devolver_a_visador/', logbookviews.ajax_devolver_a_visador, name='ajax_devolver_a_visador_url'),
+
     path('ajax/assign_visador_modal/', modals.ajax_assign_visador_modal, name='ajax_assign_visador_modal_url'),
     path('ajax/assign_visador/', modals.ajax_assign_visador, name='ajax_assign_visador_url'),
     path('ajax/assign_visador_visadores',modals.ajax_assign_visador_visadores, name="ajax_assign_visador_visadores_url"),
@@ -31,10 +38,6 @@ urlpatterns = [
     path('ajax/get_appraisal_row/',views.ajax_get_appraisal_row,name="ajax_get_appraisal_row_url"),
     path('ajax/evaluate_modal/', views.ajax_evaluate_modal, name='ajax_evaluate_modal_url'),
     path('ajax/evaluate_modal_close/', views.ajax_evaluate_modal_close, name='ajax_evaluate_modal_close_url'),
-    path('ajax/enviar_a_visador/', views.ajax_enviar_a_visador, name='ajax_enviar_a_visador_url'),
-    path('ajax/devolver_a_tasador/', views.ajax_devolver_a_tasador, name='ajax_devolver_a_tasador_url'),
-    path('ajax/enviar_a_cliente/', views.ajax_enviar_a_cliente, name='ajax_enviar_a_cliente_url'),
-    path('ajax/devolver_a_visador/', views.ajax_devolver_a_visador, name='ajax_devolver_a_visador_url'),
     path('ajax/mark_as_returned/', views.ajax_mark_as_returned, name='ajax_mark_as_returned_url'),
     path('ajax/solve_conflict/', views.ajax_solve_conflict, name='ajax_solve_conflict_url'),
     path('ajax/upload_report/', views.ajax_upload_report, name='ajax_upload_report_url'),

@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 import datetime
 from bootstrap_datepicker_plus import DateTimePickerInput
 
-
 class AppraisalCreateForm(forms.Form):
 
     archivo = forms.FileField(
@@ -84,7 +83,7 @@ class AppraisalCreateForm(forms.Form):
     propietarioTelefono.widget.attrs.update({'class': "form-control"})
 
     contacto = forms.CharField(label="Nombre contacto", max_length=100, required=False)
-    contacto.widget.attrs.update({'class': "form-control",'data-validation':"required"})
+    contacto.widget.attrs.update({'class': "form-control"})
     contactoRut = forms.CharField(label="Rut contacto", max_length=100, required=False)
     contactoRut.widget.attrs.update({'class': "form-control"})
     contactoEmail = forms.EmailField(label="Email contacto", max_length=100, required=False)
@@ -117,8 +116,11 @@ class AppraisalCreateForm(forms.Form):
         label="Calle")
     addressStreet.widget.attrs.update({'class':"form-control",'data-validation':"required"})
 
-    addressNumber = forms.CharField(max_length=30,label="Número")
+    addressNumber = forms.CharField(max_length=30,label="Número / Km")
     addressNumber.widget.attrs.update({'class':"form-control",'data-validation':"required"})
+
+    addressNumber3 = forms.CharField(max_length=30,label="Casa / Edificio / Block",required=False)
+    addressNumber3.widget.attrs.update({'class':"form-control"})
 
     addressNumber2 = forms.CharField(max_length=30,label="Depto.",required=False)
     addressNumber2.widget.attrs.update({'class':"form-control"})
@@ -126,7 +128,7 @@ class AppraisalCreateForm(forms.Form):
     addressLoteo = forms.CharField(max_length=100,label="Loteo",required=False)
     addressLoteo.widget.attrs.update({'class':"form-control"})
 
-    addressSitio = forms.CharField(max_length=100,label="Sitio",required=False)
+    addressSitio = forms.CharField(max_length=100,label="Lote / Sitio",required=False)
     addressSitio.widget.attrs.update({'class':"form-control"})
 
     addressSquare = forms.IntegerField(label="Manzana",required=False)
@@ -168,7 +170,7 @@ class AppraisalCreateForm(forms.Form):
 
 class GrupoCreateForm(forms.Form):
     
-    addressCondominiumType = forms.ChoiceField(label="Condominio tipo",choices=Condominium.ctype_choices,required=False)
+    addressCondominiumType = forms.ChoiceField(label="Condominio tipo",choices=Condominium.ctype_choices_form,required=False)
     addressCondominiumType.widget.attrs.update({'class':"form-control"})
 
     addressCondominiumText = forms.CharField(max_length=500,label="Condominio texto",required=False)

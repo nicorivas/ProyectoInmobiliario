@@ -1,0 +1,13 @@
+{% if "visador" in groups or "asignador" in groups %}
+    {% for item in appraisals %}
+        {% if item.id == "returned" and item.length > 0 %}
+        <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
+            {% if appraisals_returned|length == 1 %}
+                Hay una tasación para ser reconsiderada
+            {% else %}
+                Hay {{ item.length }} tasaciones para ser reconsideradas
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}

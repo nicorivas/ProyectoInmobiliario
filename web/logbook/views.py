@@ -1,8 +1,15 @@
+import datetime
+import pytz
 import json
+from django.contrib.auth.models import User
 from appraisal.models import Appraisal, Comment
 from appraisal.forms import FormComment
 from django.http import HttpResponse
 from django.shortcuts import render
+from appraisal.data import getAppraisalFromRequest
+from list.views import render_appraisals_table, render_appraisals_row
+from django.http import JsonResponse
+timezone_cl = pytz.timezone('Chile/Continental')
 
 def main(request):
     return HttpResponse('')
@@ -47,6 +54,7 @@ def ajax_logbook_close(request):
     1. Deletes notifications.
     2. Saves modified variables
     '''
+    print(request.POST)
     appraisal_id = int(request.POST['appraisal_id'])
     request.user.profile.removeNotification(ntype="comment",appraisal_id=appraisal_id)
 
@@ -106,3 +114,101 @@ def ajax_logbook_change_event(request):
     #if request['event'] == 
 
     return JsonResponse({'comment_id':comment_id})
+
+def ajax_accept_appraisal(request):
+    '''
+    Called from logbook. Tasador or superuser accepts an appraisal assigned to him.
+    '''
+    # Change appraisal state
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_IN_APPRAISAL
+    # Add comment
+    appraisal.addComment(Comment.EVENT_SOLICITUD_ACEPTADA,request.user,datetime.datetime.now(timezone_cl))
+    appraisal.save()
+    
+    return render_appraisals_table(request, Appraisal.STATE_IN_APPRAISAL)
+    
+def ajax_reject_appraisal(request):
+    '''
+    Called from logbook. Tasador asignado rechaza la solicitud de tasación.
+    '''
+    # Change appraisal state
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_NOT_ASSIGNED
+    # Change tasador user of appraisal
+    appraisal.tasadorUser = None
+    # Add comment
+    comment = appraisal.addComment(Comment.EVENT_SOLICITUD_RECHAZADA,request.user,datetime.datetime.now(timezone_cl))
+    appraisal.save()
+    # Add notification
+    for user in User.objects.filter(groups__name='asignador'):
+        user.profile.addNotification(ntype="comment",appraisal_id=appraisal.id,comment_id=comment.id)
+
+    return render_appraisals_table(request, Appraisal.STATE_NOT_ASSIGNED)
+
+def ajax_enviar_a_visador(request):
+    '''
+    Appraisal is sent to the visador, after the tasador has done its work.
+    '''
+    # Change appraisal state
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_IN_REVISION
+    # Add comment
+    comment = appraisal.addComment(Comment.EVENT_ENVIADA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
+    # Add notification
+    if appraisal.visadorUser:
+        appraisal.visadorUser.profile.addNotification("comment",appraisal.id,comment.id)
+    #Save
+    appraisal.save()
+
+    return JsonResponse({})
+
+
+def ajax_devolver_a_tasador(request):
+    '''
+    Appraisal is sent back by the visador to the tasador.
+    '''
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_IN_APPRAISAL
+    # Add comment
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_TASADOR,request.user,datetime.datetime.now(timezone_cl))
+    # Add notification
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal.id,comment.id)
+    # Save
+    appraisal.save()
+
+    return JsonResponse({})
+
+
+def ajax_enviar_a_cliente(request):
+    '''
+    Appraisal must be sent back to in revision state. Therefore notify the visador.
+    '''
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_SENT
+    # Add comment
+    comment = appraisal.addComment(Comment.EVENT_ENTREGADO_AL_CLIENTE,request.user,datetime.datetime.now(timezone_cl))
+    # Add notification
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal.id,comment.id)
+    # Save
+    appraisal.save()
+
+    return JsonResponse({})
+
+def ajax_devolver_a_visador(request):
+    '''
+    Appraisal must be sent back to the visador.
+    '''
+    appraisal = getAppraisalFromRequest(request)
+    appraisal.state = Appraisal.STATE_IN_REVISION
+    # Add comment
+    comment = appraisal.addComment(Comment.EVENT_DEVUELTA_A_VISADOR,request.user,datetime.datetime.now(timezone_cl))
+    # Add notification
+    if appraisal.tasadorUser:
+        appraisal.tasadorUser.profile.addNotification("comment",appraisal.id,comment.id)
+    # Save
+    appraisal.save()
+
+    return JsonResponse({})

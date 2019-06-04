@@ -19,32 +19,38 @@ def get_value(ws,cell):
         else:
             return ws[cell].value
 
-def parse_date(string):
-    print(string)
-    return dateutil.parser.parse(string)
+def parse_date(string, **kwargs):
+    try:
+        date = dateutil.parser.parse(string).strftime("%d/%m/%Y %H:%M")
+    except ValueError:
+        return None
+    return date
 
-def parse_email(string):
+def parse_email(string, **kwargs):
     if '<' in string:
         iii = string.index('<')+1
         iif = string.index('>')
         return string[iii:iif].strip().lower()
+    if "@" not in string:
+        return None
     else:
         return string.strip().lower()
 
-def parse_telephone(string):
+def parse_telephone(string, **kwargs):
     if re.search('[a-zA-Z]', string):
         return None
     else:
         return string.strip().replace(' ','')
 
-def parse_address(address,commune=None):
+def parse_address(address, **kwargs):
     addressNumber2 = None
     addressNumber = None
 
     address = address.lower().strip()
 
+    commune = kwargs.pop("addressCommune",None)
     if commune:
-        commune = commune.lower()
+        commune = Commune.objects.get(id=commune).name.lower()
         if address.endswith(commune):
             address = address[:address.find(commune)].strip()
         commune = unidecode.unidecode(commune)
@@ -57,7 +63,9 @@ def parse_address(address,commune=None):
             match = re.search(dpto_string+' ?(\d+)', address)
             if match:
                 addressNumber2 = match.group(1)
-                address = address[:address.index(dpto_string)]
+                print(address)
+                address = address[:address.index(dpto_string)]+address[address.index(dpto_string)+len(dpto_string):]
+                print(address)
                 break
 
     casa_strings = ["casa.","casa "]
@@ -67,6 +75,16 @@ def parse_address(address,commune=None):
             if match:
                 addressNumber2 = match.group(0).title()
                 address = address[:address.index(casa_string)]
+                break
+        
+    km_strings = ["km"]
+    for km_string in km_strings:
+        if km_string in address:
+            print("AA:A:A:A")
+            match = re.search(km_string+' ?(\d+)', address)
+            if match:
+                addressNumber = "Km. "+match.group(1)
+                address = address[:address.index(km_string)]
                 break
 
     address = address.strip()
@@ -95,185 +113,175 @@ def parse_address(address,commune=None):
 
     addressStreet = addressStreet.title()
 
-    return [addressStreet,addressNumber,addressNumber2]
+    return {'addressStreet':addressStreet,'addressNumber':addressNumber,'addressNumber2':addressNumber2}
 
-def parse_rut(rut):
+def parse_rut(rut, **kwargs):
     rut = rut.replace('.','').replace(',','').replace('-','').lower()
     return rut[:-1].strip()+'-'+rut[-1].strip()
 
-def parse_commune(string):
+def parse_commune(string, **kwargs):
     commune = string.strip().title()
     if '(' in commune:
         commune = commune[:commune.index('(')].strip()
     if commune in COMMUNE_NAME_ASCII__UTF.keys():
         commune = COMMUNE_NAME_ASCII__UTF[commune]
     commune = Commune.objects.get(name=commune)
-    region = commune.region
-    commune = commune
-    return [commune, region]
+    return commune.id
 
-def parse_solicitante_ejecutivo(string):
+def parse_solicitante_ejecutivo(string, **kwargs):
     return string.strip().title()
 
-def parse_solicitante_sucursal(string):
+def parse_solicitante_sucursal(string, **kwargs):
+    sucursal = string.strip().title()
+    print(sucursal)
+    if sucursal == "Nlc":
+        print(sucursal)
+        return "NLC"
+    return sucursal
+
+def parse_tipo_tasacion(string, **kwargs):
+    if string == "Operación":
+        return None
+    else:
+        if string in ['CRÉDITO HIPOTECARIO']:
+            return Appraisal.HIPOTECARIA
+        elif string in ['CRÉDITO COMERCIAL']:
+            return Appraisal.COMERCIAL
+        elif string in ['INSTACOB']:
+            return Appraisal.TYPE_REMATE
+
+def parse_finalidad(string, **kwargs):
+    string = string.strip()
+    if string == "Operación":
+        return None
+    else:
+        if string == 'ACTUALIZAR GARANTÍA':
+            return Appraisal.GARANTIA
+        elif string == 'COMPRA INMUEBLE':
+            return Appraisal.CREDITO
+        elif string == 'LIQUIDACIÓN FORZADA':
+            return Appraisal.LIQUIDACION
+        elif string == 'DACIÓN EN PAGO':
+            return Appraisal.DACION_EN_PAGO
+
+def parse_time_request(string, **kwargs):
+    return parse_date(string)
+
+def parse_cliente(string, **kwargs):
     return string.strip().title()
 
-def parseItau(ws):
-    '''
-    Devuelve datos de solicitud ITAU
-    '''
+def parse_contacto(string, **kwargs):
+    return string.strip().title()
+
+def parse_property_type(string, **kwargs):
+    if string == None:
+        return None
+    else:
+        if string == 'CASAS':
+            return Building.TYPE_CASA
+        elif string == 'DEPARTAMENTOS':
+            return Building.TYPE_DEPARTAMENTO
+        elif string == 'OFICINAS':
+            return Building.TYPE_OFICINA
+        elif string == 'TERRENO PROYECTO INMOBILIARIO':
+            return Building.TYPE_TERRENO
+        elif string == 'SITIOS Y TERRENOS URBANOS':
+            return Building.TYPE_TERRENO
+        elif string == 'LOCALES COMERCIALES':
+            return Building.TYPE_LOCAL_COMERCIAL
+        elif string == 'CONSTRUCCIONES INDUSTRIALES':
+            return Building.TYPE_INDUSTRIA
+        elif 'BODEGAS' in string:
+            return Building.TYPE_BODEGA
+        elif 'ESTACIONAMIENTOS' in string:
+            return Building.TYPE_ESTACIONAMIENTO
+        elif 'BIENES RAICES RURALES' in string:
+            return Building.TYPE_PARCELA
+        elif 'PREDIOS' in string:
+            return Building.TYPE_TERRENO
+        else:
+            return Building.TYPE_OTRO
+
+def parse_rol(string, **kwargs):
+    return string
+
+def parse_comment(string, **kwargs):
+    return string
+
+def parse_with_dictionary(ws,dictionary):
     data = {}
-
-    for c in Appraisal.petitioner_choices:
-        if c[1] == 'Itaú':
-            data['solicitante'] = c[0]
-
-    d = {
-            'appraisalTimeRequest':["M3",parse_date],
-            'solicitanteEjecutivo':["C7",parse_solicitante_ejecutivo],
-            'solicitanteEjecutivoEmail':["J7",parse_email],
-            'solicitanteSucursal':["C9",parse_solicitante_sucursal],
-            'solicitanteEjecutivoEmail':[["J7","K7"],parse_email],
-            'solicitanteEjecutivoTelefono':[["O7","P7"],parse_telephone],
-            'solicitanteEjecutivoTelefono':[["O7","P7"],parse_telephone],
-        }
-    for variable, info in d.items():
+    for variable, info in dictionary.items():
         function = info[1]
         coords = info[0]
         if type(coords) == type([]):
             for coord in coords:
                 value = get_value(ws,coord)
                 if value != None:
-                    data[variable] = function(value)
-                    if data[variable] != None:
+                    if len(info) == 3:
+                        kwargs = {info[2]:data[info[2]]}
+                    else:
+                        kwargs = {}
+                    ret = function(value,**kwargs)
+                    print(coord,coords,variable,ret)
+                    if ret != None:
+                        if type(ret) == type({}):
+                            for key, value in ret.items():
+                                data[key] = value
+                        else:
+                            data[variable] = ret
                         break
+    return data
 
-    tipoTasacion = ws['G9'].value
-    if tipoTasacion == "Operación:":
-        tipoTasacion = ws['H9'].value
-    if tipoTasacion:
-        tipoTasacion = tipoTasacion.strip()
-        if tipoTasacion == 'CRÉDITO HIPOTECARIO':
-            data['tipoTasacion'] = Appraisal.HIPOTECARIA
-            data['finalidad'] = Appraisal.CREDITO
-        if tipoTasacion == 'CRÉDITO COMERCIAL':
-            data['tipoTasacion'] = Appraisal.COMERCIAL
-            data['finalidad'] = Appraisal.CREDITO
+def parseItau(ws):
+    '''
+    Devuelve datos de solicitud ITAU
+    '''
 
-    finalidad = ws['J9'].value
-    if finalidad:
-        finalidad = finalidad.strip()
-        if finalidad == 'ACTUALIZAR GARANTÍA':
-            data['finalidad'] = Appraisal.GARANTIA
-        elif finalidad == 'COMPRA INMUEBLE':
-            data['finalidad'] = Appraisal.CREDITO
-        elif finalidad == 'LIQUIDACIÓN FORZADA':
-            data['finalidad'] = Appraisal.LIQUIDACION
-        elif finalidad == 'DACIÓN EN PAGO':
-            data['finalidad'] = Appraisal.DACION_EN_PAGO
+    dictionary = {
+            'appraisalTimeRequest':[["M3","N3"],parse_time_request],
+            'solicitanteEjecutivo':[["C7"],parse_solicitante_ejecutivo],
+            'solicitanteEjecutivoEmail':[["J7","K7"],parse_email],
+            'solicitanteEjecutivoTelefono':[["O7","P7"],parse_telephone],
+            'solicitanteSucursal':[["C9"],parse_solicitante_sucursal],
+            'tipoTasacion':[["G9","H9","H7"],parse_tipo_tasacion],
+            'finalidad':[["J9"],parse_finalidad],
+            'cliente':[["C14"],parse_cliente],
+            'clienteEmail':[["C22"],parse_email],
+            'clienteTelefono':[["C24"],parse_telephone],
+            'contacto':[["C26"],parse_contacto],
+            'contactoEmail':[["C28"],parse_email],
+            'contactoTelefono':[["C30"],parse_telephone],
+            'propertyType':[["C37"],parse_property_type],
+            'addressCommune':[["C45"],parse_commune],
+            'addressStreet':[["C41"],parse_address,'addressCommune'],
+            'rol':[["C43"],parse_rol],
+            'comments':[["B54"],parse_comment]
+        }
+    
+    data = parse_with_dictionary(ws,dictionary)
 
-    appraisalTimeRequest = ws['M3'].value
-    if isinstance(appraisalTimeRequest,type('')):
-        data['appraisalTimeRequest'] = parse_date(appraisalTimeRequest).strftime('%d/%m/%Y %H:%M')
+    print(data)
 
-    cliente = ws['C14'].value
-    if isinstance(cliente,type('')):
-        if cliente != '':
-            data['cliente'] = ws['C14'].value.strip().title()
+    for c in Appraisal.petitioner_choices:
+        if c[1] == 'Itaú':
+            data['solicitante'] = c[0]
+
+    if 'addressRegion' not in data.keys():
+        if 'addressCommune' in data.keys() and data['addressCommune'] != None:
+            commune = Commune.objects.get(id=data['addressCommune'])
+            data['addressRegion'] = commune.region.code
 
     if ws['C16'].value != None:
         if '-' in ws['C16'].value:
             # Rut viene todo en la celda
             data['clienteRut'] = parse_rut(ws['C16'].value)
         else:
-            if ws['F16'].value != None:
+            if ws['F16'].value != None and ws['F16'].value != '-':
                 data['clienteRut'] = parse_rut(ws['C16'].value+ws['F16'].value)
-            if ws['G16'].value != None:
+            elif ws['G16'].value != None:
                 data['clienteRut'] = parse_rut(ws['C16'].value+ws['G16'].value)
             else:
                 data['clienteRut'] = parse_rut(ws['C16'].value)
-            
-    clienteEmail = ws['C22'].value
-    if isinstance(clienteEmail,type('')):
-        if clienteEmail != '':
-            data['clienteEmail'] = parse_email(clienteEmail)
-    
-    clienteTelefono = ws['C24'].value
-    if isinstance(clienteTelefono,type('')):
-        if clienteTelefono != '':
-            data['clienteTelefono'] = ws['C24'].value.strip().replace(' ','')
-    
-    contacto = ws['C26'].value
-    if isinstance(contacto,type('')):
-        if contacto != '':
-            data['contacto'] = ws['C26'].value.strip().title()
-
-    contactoEmail = ws['C28'].value
-    if isinstance(contactoEmail,type('')):
-        if contactoEmail != '':
-            data['contactoEmail'] = parse_email(contactoEmail)
-
-    contactoTelefono = ws['C30'].value
-    if isinstance(contactoTelefono,type('')):
-        if contactoTelefono != '':
-            data['contactoTelefono'] = ws['C30'].value.strip().replace(' ','')
-
-    tipo = ws['C37'].value
-    if tipo != None:
-        if isinstance(tipo,type('')):
-            tipo = tipo.strip()
-        if tipo == 'CASAS':
-            data['propertyType'] = Building.TYPE_CASA
-        elif tipo == 'DEPARTAMENTOS':
-            data['propertyType'] = Building.TYPE_DEPARTAMENTO
-        elif tipo == 'OFICINAS':
-            data['propertyType'] = Building.TYPE_OFICINA
-        elif tipo == 'TERRENO PROYECTO INMOBILIARIO':
-            data['propertyType'] = Building.TYPE_TERRENO
-        elif tipo == 'SITIOS Y TERRENOS URBANOS':
-            data['propertyType'] = Building.TYPE_TERRENO
-        elif tipo == 'LOCALES COMERCIALES':
-            data['propertyType'] = Building.TYPE_LOCAL_COMERCIAL
-        elif tipo == 'CONSTRUCCIONES INDUSTRIALES':
-            data['propertyType'] = Building.TYPE_INDUSTRIA
-        elif 'BODEGAS' in tipo:
-            data['propertyType'] = Building.TYPE_BODEGA
-        elif 'ESTACIONAMIENTOS' in tipo:
-            data['propertyType'] = Building.TYPE_ESTACIONAMIENTO
-        elif 'BIENES RAICES RURALES' in tipo:
-            data['propertyType'] = Building.TYPE_PARCELA
-        else:
-            data['propertyType'] = Building.TYPE_OTRO
-
-    if ws['C45'].value != None:
-        try :
-            commune, region = parse_commune(ws['C45'].value)
-            data['addressCommune'] = commune.id
-            data['addressRegion'] = region.id
-        except Commune.DoesNotExist:
-            pass
-
-    addressStreet = ws['C41'].value
-    if isinstance(addressStreet,type('')):
-        if addressStreet != '':
-            if 'addressCommune' in data.keys():
-                addressStreet, addressNumber, addressNumber2 = parse_address(addressStreet,
-                    commune=Commune.objects.get(id=data.get('addressCommune')).name.lower())
-                data['addressStreet'] = addressStreet
-                if addressNumber:
-                    data['addressNumber'] = addressNumber
-                if addressNumber2:
-                    data['addressNumber2'] = addressNumber2
-
-    rol = ws['C43'].value
-    if isinstance(rol,type('')):
-        if rol != '':
-            data['rol'] = ws['C43'].value.strip()
-
-    comments = ws['B54'].value
-    if isinstance(comments,type('')):
-        if comments != '':
-            data['comments'] = comments.strip()
 
     return data
 

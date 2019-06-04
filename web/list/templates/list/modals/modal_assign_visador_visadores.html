@@ -20,18 +20,26 @@
     </thead>
     <tbody>
     {% for visador in visadores %}
-    <tr id="visador_id" class="visador" data-id-region="{{visador.user.profile.addressRegion.id}}" data-id-commune="{{visador.user.profile.addressCommune.id}}">
+    {% if visador.user.id == visador_current %}
+    <tr id="{{visador.user.id}}" class="visador selected" data-id-region="{{visador.user.profile.addressRegion.id}}" data-id-commune="{{visador.user.profile.addressCommune.id}}">
+    {% else %}
+    <tr id="{{visador.user.id}}" class="visador" data-id-region="{{visador.user.profile.addressRegion.id}}" data-id-commune="{{visador.user.profile.addressCommune.id}}">
+    {% endif %}
         <td></td>
         <td id="visador">
         <div class="form-check">
+            {% if visador.user.id == visador_current %}
+            <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{visador.user.id}}" checked="checked">
+            {% else %}
             <input class="form-check-input" type="radio" name="visador" id="visador_radio" value="{{visador.user.id}}">
+            {% endif %}
             <label class="form-check-label" for="visador_radio" id="nombre">
             {{visador.user.last_name}}, {{visador.user.first_name}}
             </label>
         </div>
         </td>
         <td class="text-center">
-        {{visador.activeAppraisals}}
+          {{visador.activeAppraisals}}
         </td>
         <td></td>
     </tr>
