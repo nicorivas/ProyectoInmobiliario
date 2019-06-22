@@ -25,13 +25,3 @@ def has_group_or_super(user, group_name):
 @register.filter
 def filename(value):
     return os.path.basename(value.file.name)
-
-@register.inclusion_tag('list/appraisals_table_card.html')
-def include_appraisals_table(table):
-    return {
-        "div_id":"div_"+table,
-        "table_id":"table_"+table,
-        "template":"list/appraisals_table_"+table+".html",
-        "title": "Tasaciones por asignar",
-        "div_alert_id":"div_alert_table_"+table
-        }

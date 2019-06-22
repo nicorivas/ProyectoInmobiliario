@@ -40,6 +40,7 @@ urlpatterns = [
     path('vis/', include('vis.urls')),
     path('evaluation/', include('evaluation.urls')),
     path('archive/', include('archive.urls')),
+    path('export/', include('export.urls')),
     #path('', auth_views.LoginView.as_view(redirect_field_name='user:tasaciones', template_name='user/login.html',
     #    form_class=AuthenticationFormB), name='login'),
     path('logout/', auth_views.LogoutView.as_view(redirect_field_name='home')),

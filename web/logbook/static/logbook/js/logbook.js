@@ -1,7 +1,4 @@
-$('#modal_logbook').on('hidden.bs.modal', logbookClose)
-
 function buttonLogbookClick(event) {
-  console.log("asd")
   event.preventDefault();
   btn = $(this)
   table = btn.data('table')
@@ -20,8 +17,6 @@ function buttonLogbookClick(event) {
         return false;
     },
     success: function (data) {
-      //$('#modal_logbook').find('.modal-body').html($.trim(data));
-      console.log($.trim(data))
       $('#modal_logbook').html($.trim(data));
       $("#in_appraisal_id").val(appraisal_id); // hidden input
       $("input#table_id").attr("value",table);
@@ -51,6 +46,7 @@ function buttonLogbookClick(event) {
 function logbookClose(event) {
   // When the logbook modal is closed, we delete the notifications
   // related to this appraisal. We also save the form.
+  console.log("logbookClose")
   var appraisal_id = $("#in_appraisal_id").val();
   var url = ajax_logbook_close_url
   var form = $('#logbook_form')
@@ -262,41 +258,91 @@ function assignLogbookModalActions() {
     });
   })
 
+  $("#btn_solve_conflict").unbind()
+  $("#btn_solve_conflict").off()
+  $("#btn_solve_conflict").on("click", function (event) {
+    var url = ajax_solve_conflict_url;
+    var btn = $(this);
+    var appraisal_id = btn.val(); // button has id of appraisal
+    var table = 'table_'+$("#modal_logbook").data('table')
+    btn_loading(btn,hide_text=true);
+    $.ajax({
+      url: url,
+      type: 'get',
+      data: {'appraisal_id':appraisal_id,'table':table},
+      error: function() {
+        btn_idle(btn);
+        alert("Error al resolver conflicto.");
+        return false;
+      },
+      success: function (data) {
+        btn_idle(btn);
+        $("#tr_"+table+'-'+appraisal_id).removeClass('conflict')
+        $('div#conflict').slideUp();
+        //moveRow("table_sent","table_in_revision",appraisal_id)
+      }
+    })
+  });
+
+  $("input#report").change(function () {
+    var url = ajax_upload_report_url;
+    //var btn = $(this);
+    //btn_loading(btn,hide_text=true);
+    var form = $("#form_report")
+    var form_data = new FormData(form[0]);
+    var table = $("#table_id").val()
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: form_data,
+      processData: false,
+      contentType: false,
+      error: function() {
+        //btn_idle(btn);
+        alert("Error al adjuntar reporte.");
+      },
+      success: function (data) {
+        //btn_idle(btn);
+        $('#modal_logbook').find('.modal-body').html($.trim(data));
+        assignLogbookModalActions();
+        $("#in_appraisal_id").val(appraisal_id); // hidden input
+        $("#table_id").attr("value",table);
+        if (table == "not_accepted") {
+          $('#modal_logbook').find('#div_event').hide()
+          $('#modal_logbook').find('#div_comment_btn').hide()
+          $('#modal_logbook').find('#div_datetime').hide()
+          $('#modal_logbook').find('#div_accept_reject').show()
+        } else {
+          $("#id_event").trigger("change")
+        }
+      }
+    })
+  });
+
+  // FLOW. Actions that change the state of appraisals.
+
   $(".btn_accept").unbind()
   $(".btn_accept").off()
   $(".btn_accept").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
-    var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_accept_appraisal_url
     var btn = $(this)
-    var form = document.getElementById('form_comment');
-    var formData = new FormData(form);
-    btn.find('.ld').toggle();
-    btn.find('#icon').toggle();
-    btn.prop('disabled', true);
+    btn_loading(btn)
+    var data = {}
+    data["appraisal_id"] = btn.val()
+    btn_loading(btn)
     $.ajax({
       url: url,
-      type: 'post',
-      data: formData,
-      processData: false,
-      contentType: false,
+      type: 'get',
+      data: data,
       error: function() {
+        btn_idle(btn)
         alert("Error al aceptar tasación.");
-        btn.find('.ld').toggle();
-        btn.find('#icon').toggle();
-        btn.prop('disabled',false);
-        return false;
       },
-      success: function (data) {
-        removeRow("table_not_accepted",appraisal_id)
-        replaceTable("table_in_appraisal",data)
-        assignTableActions();
-      },
-      complete: function (data) {
-        btn.find('.ld').toggle();
-        btn.find('#icon').toggle();
-        btn.prop('disabled', false);
+      success: function (ret) {
+        btn_idle(btn)
         $('#modal_logbook').modal('hide');
+        moveRow("table_not_accepted","table_in_appraisal",data["appraisal_id"])
       }
     })
   });
@@ -305,38 +351,23 @@ function assignLogbookModalActions() {
   $(".btn_reject").off()
   $(".btn_reject").on("click", function (event) {
     // Button to reject an appraisals that has been requested.
-    var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_reject_appraisal_url
     var btn = $(this)
-    var form = document.getElementById('form_comment');
-    var formData = new FormData(form);
-    event.preventDefault();
-    btn.find('.ld').toggle();
-    btn.find('#icon').toggle();
-    btn.prop('disabled', true);
+    btn_loading(btn)
+    var data = {}
+    data["appraisal_id"] = btn.val()
     $.ajax({
       url: url,
-      type: 'post',
-      data: formData,
-      processData: false,
-      contentType: false,
+      type: 'get',
+      data: data,
       error: function() {
+        btn_idle(btn)
         alert("Error al rechazar tasación.");
-        btn.find('.ld').toggle();
-        btn.find('#icon').toggle();
-        btn.prop('disabled', false);
-        return false;
       },
-      success: function (data) {
-        removeRow("table_not_accepted",appraisal_id)
-        replaceTable("table_not_assigned",data)
-        assignTableActions();
-      },
-      complete: function (data) {
-        btn.find('.ld').toggle();
-        btn.find('#icon').toggle();
-        btn.prop('disabled', false);
+      success: function (ret) {
+        btn_idle(btn)
         $('#modal_logbook').modal('hide');
+        moveRow("table_not_accepted","table_not_assigned",data["appraisal_id"])
       }
     })
   });
@@ -344,28 +375,24 @@ function assignLogbookModalActions() {
   $(".btn_enviar_a_visador").unbind()
   $(".btn_enviar_a_visador").off()
   $(".btn_enviar_a_visador").on("click", function (event) {
-    // Button to accept an appraisals that has been requested.
-    var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_enviar_a_visador_url
     var btn = $(this)
-    var form = document.getElementById('form_comment');
-    var formData = new FormData(form);
     btn_loading(btn)
+    var data = {}
+    data["appraisal_id"] = btn.val()
     $.ajax({
       url: url,
-      type: 'post',
-      data: formData,
-      processData: false,
-      contentType: false,
+      type: 'get',
+      data: data,
       error: function() {
         btn_idle(btn);
         alert("Error al enviar tasación a revisión.");
         return false;
       },
-      success: function (data) {
+      success: function (ret) {
         btn_idle(btn);
         $('#modal_logbook').modal('hide');
-        moveRow("table_in_appraisal","table_in_revision",appraisal_id)
+        moveRow("table_in_appraisal","table_in_revision",data["appraisal_id"])
       }
     })
   });
@@ -374,27 +401,24 @@ function assignLogbookModalActions() {
   $(".btn_devolver_a_tasador").off()
   $(".btn_devolver_a_tasador").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
-    var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_devolver_a_tasador_url
     var btn = $(this)
-    var form = document.getElementById('form_comment');
-    var formData = new FormData(form);
     btn_loading(btn)
+    var data = {}
+    data["appraisal_id"] = btn.val()
     $.ajax({
       url: url,
-      type: 'post',
-      data: formData,
-      processData: false,
-      contentType: false,
+      type: 'get',
+      data: data,
       error: function() {
         btn_idle(btn);
         alert("Error al devolver la tasación al tasador.");
         return false;
       },
-      success: function (data) {
+      success: function (ret) {
         btn_idle(btn);
         $('#modal_logbook').modal('hide');
-        moveRow("table_in_revision","table_in_appraisal",appraisal_id)
+        moveRow("table_in_revision","table_in_appraisal",data["appraisal_id"])
       }
     })
   });
@@ -403,27 +427,24 @@ function assignLogbookModalActions() {
   $(".btn_enviar_a_cliente").off()
   $(".btn_enviar_a_cliente").on("click", function (event) {
     // Button to accept an appraisals that has been requested.
-    var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_enviar_a_cliente_url
     var btn = $(this)
-    var form = document.getElementById('form_comment');
-    var formData = new FormData(form);
     btn_loading(btn)
+    var data = {}
+    data["appraisal_id"] = btn.val()
     $.ajax({
       url: url,
-      type: 'post',
-      data: formData,
-      processData: false,
-      contentType: false,
+      type: 'get',
+      data: data,
       error: function() {
         btn_idle(btn);
         alert("Error al enviar la tasación al cliente.");
         return false;
       },
-      success: function (data) {
+      success: function (ret) {
         btn_idle(btn);
         $('#modal_logbook').modal('hide');
-        moveRow("table_in_revision","table_sent",appraisal_id)
+        moveRow("table_in_revision","table_sent",data["appraisal_id"])
       }
     })
   });
@@ -489,7 +510,6 @@ function assignLogbookModalActions() {
   $(".btn_mark_as_returned").unbind()
   $(".btn_mark_as_returned").off()
   $(".btn_mark_as_returned").on("click", function (event) {
-    // Button to accept an appraisals that has been requested.
     var appraisal_id = $(this).val(); // button has id of appraisal
     var url = ajax_mark_as_returned_url
     var btn = $(this)
@@ -511,67 +531,6 @@ function assignLogbookModalActions() {
         btn_idle(btn);
         $('#modal_logbook').modal('hide');
         moveRow("table_sent","table_returned",appraisal_id)
-      }
-    })
-  });
-
-  $("#btn_solve_conflict").unbind()
-  $("#btn_solve_conflict").off()
-  $("#btn_solve_conflict").on("click", function (event) {
-    var url = ajax_solve_conflict_url;
-    var btn = $(this);
-    var appraisal_id = btn.val(); // button has id of appraisal
-    var table = 'table_'+$("#modal_logbook").data('table')
-    btn_loading(btn,hide_text=true);
-    $.ajax({
-      url: url,
-      type: 'get',
-      data: {'appraisal_id':appraisal_id,'table':table},
-      error: function() {
-        btn_idle(btn);
-        alert("Error al resolver conflicto.");
-        return false;
-      },
-      success: function (data) {
-        btn_idle(btn);
-        $("#tr_"+table+'-'+appraisal_id).removeClass('conflict')
-        $('div#conflict').slideUp();
-        //moveRow("table_sent","table_in_revision",appraisal_id)
-      }
-    })
-  });
-
-  $("input#report").change(function () {
-    var url = ajax_upload_report_url;
-    //var btn = $(this);
-    //btn_loading(btn,hide_text=true);
-    var form = $("#form_report")
-    var form_data = new FormData(form[0]);
-    var table = $("#table_id").val()
-    $.ajax({
-      url: url,
-      type: 'post',
-      data: form_data,
-      processData: false,
-      contentType: false,
-      error: function() {
-        //btn_idle(btn);
-        alert("Error al adjuntar reporte.");
-      },
-      success: function (data) {
-        //btn_idle(btn);
-        $('#modal_logbook').find('.modal-body').html($.trim(data));
-        assignLogbookModalActions();
-        $("#in_appraisal_id").val(appraisal_id); // hidden input
-        $("#table_id").attr("value",table);
-        if (table == "not_accepted") {
-          $('#modal_logbook').find('#div_event').hide()
-          $('#modal_logbook').find('#div_comment_btn').hide()
-          $('#modal_logbook').find('#div_datetime').hide()
-          $('#modal_logbook').find('#div_accept_reject').show()
-        } else {
-          $("#id_event").trigger("change")
-        }
       }
     })
   });

@@ -8,6 +8,7 @@
     {% include 'list/appraisals_table_search.html' %}
   </tr>
   {% for appraisal in item.appraisals %}
+    {% has_notification_appraisal appraisal.id notifications_appraisal_ids as hna %}
     <tr class='appraisal {{item.id}} {{hna|yesno:"notification,"}} {{appraisal.in_conflict|yesno:"conflict,"}}' id="tr_table_{{item.id}}-{{appraisal.id}}">
       {% with template="list/appraisals_table_"|add:table|add:"_tr.html"%}
         {% include template %}

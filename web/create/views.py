@@ -69,9 +69,10 @@ def view_create(request):
 
             #   Cultural identifiers
             for grupo in range(sum(1 for key in request_post.keys() if key.startswith("addressCondominiumType"))):
-                addressCondominiumType = request_post["addressCondominiumType_{}".format(grupo+1)]
-                addressCondominiumText = request_post["addressCondominiumText_{}".format(grupo+1)]
-                real_estate.addressCondominium.create(name=addressCondominiumText,ctype=addressCondominiumType)
+                if request_post["addressCondominiumText_{}".format(grupo+1)] != "":
+                    addressCondominiumType = request_post["addressCondominiumType_{}".format(grupo+1)]
+                    addressCondominiumText = request_post["addressCondominiumText_{}".format(grupo+1)]
+                    real_estate.addressCondominium.create(name=addressCondominiumText,ctype=addressCondominiumType)
 
             real_estate.save()
 

@@ -44,6 +44,8 @@ def ajax_edit_address_modal(request):
         real_estate=real_estate,
         label_suffix="",
         initial={
+            'addressSitio': real_estate.addressSitio,
+            'addressLoteo': real_estate.addressLoteo,
             'addressRegion': real_estate.addressRegion.code,
             'addressCommune': real_estate.addressCommune.code,
             'addressCondominium': real_estate.addressCondominium.name if real_estate.addressCondominium != None else "",

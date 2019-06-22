@@ -17,10 +17,9 @@ from openpyxl import load_workbook
 
 import time
 
-def read_excel(filename):
+def read_excel(wb):
 
-    wb = load_workbook(filename=filename,read_only=True,data_only=True)
-    ws = wb.active
+    ws = wb.get_sheet_by_name("TASACIÓN")
 
     excel_to_variable_dict = {
         "O14": "solicitanteSucursal",
@@ -80,6 +79,7 @@ def read_excel(filename):
     }
     app = {}
     for key, value in excel_to_variable_dict.items():
+        print(key,value,ws[key].value)
         app[value] = ws[key].value
 
     # Terrenos
@@ -126,6 +126,10 @@ def read_excel(filename):
     app["obras"] = obras
 
     return app
+
+def fill_web_inner(dictionary):
+    '''
+    '''    
 
 def fill_web(dictionary):
 
@@ -306,8 +310,3 @@ def fill_web(dictionary):
         browser.find_element_by_id("txtAlturaEdificacion").send_keys(dictionary["alturaMaxima"])
     if dictionary["densidadBrutaMaxima"] != None:
         browser.find_element_by_id("txtDensidad").send_keys(dictionary["densidadBrutaMaxima"])
-
-app = read_excel("Formato Garantias Generales 3436.xlsx")
-print(app)
-
-fill_web(app)

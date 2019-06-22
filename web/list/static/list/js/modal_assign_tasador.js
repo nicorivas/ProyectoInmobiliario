@@ -15,26 +15,27 @@ function btn_assign_tasador() {
       url: url,
       type: 'post',
       data: formData,
-      error: function () {
-        alert("Error al asignar tasador.");
-        btn.removeClass('running')
-        btn.prop('disabled', false);
-        return false;
-      },
-      success: function (data) {
-        if ("alert" in data) {
-          $("#modal_assign_tasador").find("#alert_message").html(data["error"])
+      error: function (data) {
+        if ("alert" in data.responseJSON) {
+          $("#modal_assign_tasador").find("#alert_message").html(data.responseJSON["alert"])
           $("#modal_assign_tasador").find("#alert").show()
           btn.removeClass('running')
           btn.prop('disabled', false);
+          return false;
         } else {
-          removeRow("table_not_assigned",appraisal_id)
-          replaceTable("table_not_accepted",data)
-          assignTableActions()
-          $("#modal_assign_tasador").modal('hide')
+          alert("Error al asignar tasador.");
           btn.removeClass('running')
           btn.prop('disabled', false);
+          return false;
         }
+      },
+      success: function (data) {
+        removeRow("table_not_assigned",appraisal_id)
+        replaceTable("table_not_accepted",data)
+        assignTableActions()
+        $("#modal_assign_tasador").modal('hide')
+        btn.removeClass('running')
+        btn.prop('disabled', false);
       }
     });
   });

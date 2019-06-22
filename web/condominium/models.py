@@ -20,6 +20,7 @@ class Condominium(models.Model):
     TYPE_VILLA = 4
     TYPE_CERRO = 5
     TYPE_CONJUNTO_HABITACIONAL = 6
+    TYPE_FUNDO = 7
     ctype_choices = [
         (TYPE_CONDOMINIO, "Condominio"),
         (TYPE_POBLACION, "Población"),
@@ -27,10 +28,13 @@ class Condominium(models.Model):
         (TYPE_VILLA, "Villa"),
         (TYPE_CERRO, "Cerro"),
         (TYPE_CONJUNTO_HABITACIONAL, "Conjunto Habitacional"),
+        (TYPE_FUNDO, "Fundo"),
         (TYPE_OTRO, "Otro"),]
     ctype = models.PositiveIntegerField(
         choices=ctype_choices,
         default=TYPE_OTRO)
+    ctype_choices_form = ctype_choices
+    ctype_choices_form.insert(0,('','----'))
 
     @property 
     def generic_name(self):

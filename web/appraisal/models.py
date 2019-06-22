@@ -189,7 +189,6 @@ class Appraisal(models.Model):
     REVISION = 2
     ESCRITORIO = 3
     PILOTO = 4
-    TERRENO = 5
     EVALUACION_PROYECTO_INMOBILIARIO = 11
     EVALUACION_PROYECTO_AUTOCONSTRUCCION = 12
     AVANCE_DE_OBRA_INMOBILIARIO = 6
@@ -197,7 +196,7 @@ class Appraisal(models.Model):
     RETASACION_GARANTIA_GENERAL = 20
     FINAL_INMOBILIARIA = 13
     FINAL_AUTOCONSTRUCCION = 14
-    REMATE = 15
+    TYPE_REMATE = 15
     AGRICOLA = 16
     VEHICULO = 17
     MAQUINAS_Y_EQUIPOS = 18
@@ -216,7 +215,7 @@ class Appraisal(models.Model):
         (RETASACION_GARANTIA_GENERAL,'Retasación garantía general'),
         (FINAL_INMOBILIARIA,'Final inmobiliaria'),
         (FINAL_AUTOCONSTRUCCION,'Final autoconstrucción'),
-        (REMATE,'Remate'),
+        (TYPE_REMATE,'Remate'),
         (AGRICOLA,'Agrícola'),
         (VEHICULO,'Vehículo'),
         (MAQUINAS_Y_EQUIPOS,'Máquinas y equipos'),

@@ -46,13 +46,8 @@ function join_data(form,element) {
 function addRow(table_name, appraisal_id, html) {
   // Add row to a table.
   $("<tr class='appraisal "+table_name.split('_')[1]+"' id='tr_"+table_name+"-"+appraisal_id+"' style='display:none;'>"+html+"</tr>").appendTo($('#'+table_name)).fadeIn()
-  //$("#tr_"+table_name+"-"+appraisal_id).slideDown()
-  $("#div_alert_"+table_name).fadeOut()
+  $("#"+table_name).siblings(".alert").fadeOut()
   $("#"+table_name).fadeIn()
-}
-
-function getTableName(appraisal_id) {
-
 }
 
 function removeRow(table_name, appraisal_id) {
@@ -63,7 +58,7 @@ function removeRow(table_name, appraisal_id) {
   var nrows = $("#"+table_name+" tr.appraisal").length;
   if (nrows == 1) {
     $("#"+table_name).fadeOut()
-    $("#div_alert_"+table_name).fadeToggle()
+    $("#"+table_name).siblings(".alert").fadeToggle()
   }
 }
 
@@ -94,12 +89,12 @@ function replaceTable(table_name,data) {
   // into account the size of the table and hides the 
   // alert of no elements if the table returned has elements.
   $("#"+table_name).html($.trim(data))
-  var nrows = $("table #"+table_name+" tr").length;
+  var nrows = $("#"+table_name+" tr").length;
   if (nrows == 0) {
     $("#"+table_name).fadeOut()
-    $("#div_alert_"+table_name).fadeIn()
+    $("#"+table_name).siblings(".alert").fadeIn()
   } else {
     $("#"+table_name).fadeIn()
-    $("#div_alert_"+table_name).fadeOut()
+    $("#"+table_name).siblings(".alert").fadeOut()
   }
 }

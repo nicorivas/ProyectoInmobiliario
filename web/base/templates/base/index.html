@@ -2,19 +2,30 @@
 
 <html>
 
-{% include "base/head.html" %}
+    <head>
 
-<body>
+        <title>
+            {% block title %}{% endblock %}
+        </title>
 
-{% include "nav/nav.html" %}
+        {% include "base/head.html" %}
 
-<div id="content">
-{% block content %}
-{% endblock content %}
-</div>
+        {% block head %}
+        {% endblock head %}
 
-{% include "base/footer.html" %}
+    </head>
 
-</body>
+    <body>
+
+        {% include "nav/nav.html" %}
+
+        <div id="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+
+        {% include "base/footer.html" %}
+
+    </body>
 
 </html>

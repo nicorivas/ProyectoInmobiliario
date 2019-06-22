@@ -1,30 +1,32 @@
-function btn_assign_tasador_tasadores() {
+function btn_assign_tasador_tasadores(data) {
     var url = "ajax/assign_tasador_tasadores";
     $.ajax({
         url: url,
+        data: data,
         type: 'get',
         error: function () {
             alert("Error al cargar tasadores.");
             return false;
         },
-        success: function (data) {
-            $("#tasadores").html(data)
+        success: function (ret) {
+            $("#tasadores").html(ret)
             $("#modal_assign_tasador").find("#ld-alert").hide()
         }
     });
 }
 
-function btn_assign_visador_visadores() {
+function btn_assign_visador_visadores(data) {
     var url = "ajax/assign_visador_visadores";
     $.ajax({
         url: url,
+        data: data,
         type: 'get',
         error: function () {
             alert("Error al cargar visadores.");
             return false;
         },
-        success: function (data) {
-            $("#visadores").html(data)
+        success: function (ret) {
+            $("#visadores").html(ret)
             $("#modal_assign_visador").find("#ld-alert").hide()
         }
     });
@@ -33,7 +35,7 @@ function btn_assign_visador_visadores() {
 
 function show_modal(modal_name, data = {}, success_function = null, parent = null) {
     // Deactivate call, so that actions are resetted
-    $(".btn_" + modal_name + "_logbook").unbind()
+    $(".btn_" + modal_name + "_modal").unbind()
     $(".btn_" + modal_name + "_modal").off()
     // Actual event
     $(".btn_" + modal_name + "_modal").on('click', function () {
@@ -74,7 +76,7 @@ function show_modal(modal_name, data = {}, success_function = null, parent = nul
                 // Data is assigned to the modal
                 $("#modal_" + modal_name).data(data)
                 if (success_function != null) {
-                    success_function()
+                    success_function(data)
                 }
             }
         });

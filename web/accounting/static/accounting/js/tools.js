@@ -64,23 +64,6 @@ function removeRow(table_name, appraisal_id) {
   }
 }
 
-function moveRow(table_from, table_to, appraisal_id) {
-  var url = "{% url 'ajax_get_appraisal_row_url' %}"
-  $.ajax({
-    url: url,
-    type: 'get',
-    data: {'appraisal_id':appraisal_id,'table':table_to},
-    error: function() {
-      alert("Error al cambiar fila.");
-    },
-    success: function (ret) {
-      removeRow(table_from,appraisal_id)
-      addRow(table_to,appraisal_id,ret)
-      assignTableActions();
-    }
-  })
-}
-
 function replaceRow(table_name, appraisal_id, html) {
   // Replace row
   $("#tr_"+table_name+"-"+appraisal_id).html(html)
