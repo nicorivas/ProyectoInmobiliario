@@ -1,0 +1,6 @@
+Esta directorio contiene los archivos respectivos para hacer la extracion, transformacion y carga de los datos de archivos
+de tasacion de ProTasa, como tambien de los datos extraidos del Portal Inmobiliario (PI) y Toc Toc (TT).
+
+El directorio  (path)/ETL/scrap/  contiene los primeros scripts que realizan los ETL del PI y de TT y de tasaciones del
+banco Santander e ITAU. Estos scripts contiene algunas funciones que se han reutilizado y que se mantienen, pero una vez
+se hayan actualizado los scripts, quedaran completamente obsoletas.
