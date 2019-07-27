@@ -5,12 +5,33 @@ import xlrd
 import pyexcel
 import re
 import sys
+import datetime
+import decimal
 import os
 import django
 import json
+from json import JSONDecoder
 import pandas as pd
 sys.path.append('/Users/Pablo Ferreiro/ProyectoInmobiliario/') #para pc
 
+
+class DateTimeDecoder(json.JSONDecoder):
+
+    def __init__(self, *args, **kargs):
+        JSONDecoder.__init__(self, object_hook=self.dict_to_object,
+                             *args, **kargs)
+
+    def dict_to_object(self, d):
+        if '__type__' not in d:
+            return d
+
+        type = d.pop('__type__')
+        try:
+            dateobj = datetime(**d)
+            return dateobj
+        except:
+            d['__type__'] = type
+            return d
 
 def get_clean_address(rawaddress):
     data = {}
@@ -236,3 +257,13 @@ def law_to_database(text):
             'Antigüedad':9
         }
         return law[text]
+
+
+
+file = 'D:/TASACIONES GENERALES CHILE/Santander/Hipotecarias/18 5A In 22287 Los Maitenes 11839.xls'
+with open(file, encoding = 'ansi') as json_file:
+    print(json_file)
+    list =  json.load(json_file, cls=DateTimeDecoder, parse_float=decimal.Decimal)
+    data = list[0]
+json_file.close()
+print(data)
